@@ -1,3 +1,5 @@
+use serde::Serialize;
+
 use crate::data::components::{
     planet::Planet,
     system::{systems, SystemType},
@@ -6,7 +8,35 @@ use crate::data::components::{
 
 use super::expansions::Expansions;
 
-#[derive(Debug, Clone, PartialEq)]
+pub const ALL_FACTIONS: [Faction; 25] = [
+    Faction::Arborec,
+    Faction::BaronyOfLetnev,
+    Faction::ClanOfSaar,
+    Faction::EmbersOfMuaat,
+    Faction::EmiratesOfHacan,
+    Faction::FederationOfSol,
+    Faction::GhostsOfCreuss,
+    Faction::L1Z1XMindnet,
+    Faction::MentakCoalition,
+    Faction::NaaluCollective,
+    Faction::NekroVirus,
+    Faction::SardakkNorr,
+    Faction::UniversitiesOfJolNar,
+    Faction::Winnu,
+    Faction::XxchaKingdom,
+    Faction::YinBrotherhood,
+    Faction::YssarilTribers,
+    Faction::ArgentFlight,
+    Faction::Empyrean,
+    Faction::MahactGeneSorcerers,
+    Faction::NaazRokhaAlliance,
+    Faction::Nomad,
+    Faction::TitansOfUl,
+    Faction::VuilRaithCabal,
+    Faction::CouncilKeleres,
+];
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum Faction {
     // Vanilla
     Arborec,

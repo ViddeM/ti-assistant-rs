@@ -105,3 +105,16 @@ a {
     color-scheme: dark;
   }
 }
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+}
+
+.card {
+  background-color: #404040;
+  border-radius: 6px;
+  padding: 8px
+}

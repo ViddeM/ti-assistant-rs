@@ -1,26 +1,25 @@
-const PLAYER_COUNTS = [3, 4, 5, 6, 7, 8];
+import { Api } from "@/api/Api";
+import { CreateGameForm } from "./CreateGameForm";
 
-export const NewGame = () => {
-  return (
-    <form>
+export default async function NewGame() {
+  const response = await Api.gameOptions.get();
+
+  if (response.error) {
+    return (
       <div>
-        <label htmlFor="player-count">Player count</label>
-        <div>
-          {PLAYER_COUNTS.map((n) => (
-            <button
-              type="button"
-              disabled={n === playerCount}
-              onClick={() => setPlayerCount(n)}
-            >
-              {n}
-            </button>
-          ))}
-        </div>
+        <p>{response.error}</p>
       </div>
+    );
+  }
+
+  if (!response.data) {
+    console.error("No response data?");
+    return (
       <div>
-        <label>Victory Points</label>
-        <input type="number" min="4" max="20" value={victoryPoints} />
+        <p>Unknown error</p>
       </div>
-    </form>
-  );
-};
+    );
+  }
+
+  return <CreateGameForm gameOptions={response.data!!} />;
+}
