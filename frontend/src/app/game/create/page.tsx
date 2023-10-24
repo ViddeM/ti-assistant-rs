@@ -21,5 +21,7 @@ export default async function NewGame() {
     );
   }
 
+  // const submitForm = Api.gameOptions.create
+
   return <CreateGameForm gameOptions={response.data!!} />;
 }

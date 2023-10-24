@@ -14,7 +14,7 @@ interface CreateGameFormProps {
 
 export const CreateGameForm = ({ gameOptions }: CreateGameFormProps) => {
   const [playerCount, setPlayerCount] = useState<number>(6);
-  const [victoryPoints, setVictoryPoints] = useState<number>(6);
+  const [victoryPoints, setVictoryPoints] = useState<number>(10);
   const [stage, setStage] = useState<Stage>("options");
   const [players, setPlayers] = useState<Player[]>([]);
 
@@ -26,7 +26,9 @@ export const CreateGameForm = ({ gameOptions }: CreateGameFormProps) => {
   }, [playerCount]);
 
   return (
-    <form className={`${styles.formContainer} card`}>
+    <form className={`${styles.formContainer} card`} onSubmit={e => {
+      e.preventDefault()
+    }}>
       {stage === "options" ? (
         <GameOptionsForm
           playerCounts={gameOptions.playerCounts}

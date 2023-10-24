@@ -51,7 +51,7 @@ export const GameOptionsForm = ({
         }}
       />
     </div>
-    <button style={{ alignSelf: "right" }} onClick={nextStage}>
+    <button onClick={nextStage}>
       Next
     </button>
   </>

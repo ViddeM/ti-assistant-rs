@@ -1,4 +1,5 @@
 import { Faction } from "@/api/GameOptions";
+import styles from "./styles.module.scss"
 
 export interface Player {
   name: string;
@@ -22,7 +23,7 @@ export const FactionsForm = ({
   const selectedFactions = players.map((p) => p.faction);
 
   return (
-    <div>
+    <>
       <button type="button" onClick={prevStage}>
         Back
       </button>
@@ -38,7 +39,7 @@ export const FactionsForm = ({
         />
       ))}
       <button type="submit">Submit</button>
-    </div>
+    </>
   );
 };
 
@@ -50,10 +51,11 @@ interface PlayerSelectProps {
 
 const PlayerSelect = ({ factions, player, setPlayer }: PlayerSelectProps) => {
   return (
-    <div>
+    <div className={styles.playerSelect}>
       <div>
         <label>Player Name: </label>
         <input
+          required={true}
           value={player.name}
           onChange={(e) => {
             setPlayer({
@@ -65,7 +67,7 @@ const PlayerSelect = ({ factions, player, setPlayer }: PlayerSelectProps) => {
       </div>
 
       <div>
-        <label>Player Faction</label>
+        <label>Player Faction: </label>
         <select
           value={player.faction}
           onChange={(e) => {
