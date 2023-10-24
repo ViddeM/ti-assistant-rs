@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::data::components::{
     planet::Planet,
@@ -36,7 +36,7 @@ pub const ALL_FACTIONS: [Faction; 25] = [
     Faction::CouncilKeleres,
 ];
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Faction {
     // Vanilla
     Arborec,
@@ -55,7 +55,7 @@ pub enum Faction {
     Winnu,
     XxchaKingdom,
     YinBrotherhood,
-    YssarilTribers,
+    YssarilTribes,
     // PoK expansions
     ArgentFlight,
     Empyrean,
