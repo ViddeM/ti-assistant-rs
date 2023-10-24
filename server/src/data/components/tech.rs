@@ -287,7 +287,7 @@ impl Technology {
             Technology::SpaceDockII => t!(
                 TechType::UnitUpgrade,
                 TechOrigin::Base,
-                tr!([((TechCategory::Cybernetic, 2))])
+                tr!([(TechCategory::Cybernetic, 2)])
             ),
             Technology::WarSun => t!(
                 TechType::UnitUpgrade,

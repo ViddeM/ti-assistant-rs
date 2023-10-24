@@ -1,9 +1,10 @@
 use crate::data::{common::faction::Faction, components::planet::Planet};
 
+#[derive(Clone, Debug)]
 pub struct Player {
-    name: String,
-    faction: Faction,
-    planets: Vec<Planet>,
+    pub name: String,
+    pub faction: Faction,
+    pub planets: Vec<Planet>,
 }
 
 impl Player {

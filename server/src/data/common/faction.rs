@@ -133,13 +133,12 @@ impl Faction {
         // TODO: Handle Council Keleres (they get to chose one from the Mentak/XXcha/Argent Flights starting systems)
         systems()
             .values()
-            .into_iter()
             .filter(|s| match &s.system_type {
                 SystemType::HomeSystem(f) => f.eq(self),
                 _ => false,
             })
             .flat_map(|s| &s.planets)
-            .map(|p| p.clone())
+            .cloned()
             .collect()
     }
 
