@@ -5,38 +5,11 @@
 }
 
 .strategyCardButton {
-    border: 4px solid black;
-    border-radius: 6px;
-    padding: 4px;
-    background-color: black;
-    color: white;
-    font-size: 1.5rem;
     margin: 8px 0;
     display: flex;
     flex-direction: row;
-
-    &:disabled {
-        border-color: black;
-        background-color: #505050;
-
-        &:hover {
-            cursor: default;
-            filter: none;
-        }
-
-        &:active {
-            filter: none;
-        }
-    }
-
-    &:hover {
-        filter: brightness(0.8);
-        cursor: pointer;
-    }
-
-    &:active {
-        filter: brightness(0.6);
-    }
+    border-width: 4px;
+    font-size: 1.5rem;
 
     & > p {
         margin: 0 auto;

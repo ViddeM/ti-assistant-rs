@@ -1,5 +1,6 @@
 import { Faction } from "@/api/GameOptions";
-import styles from "./styles.module.scss"
+import styles from "./styles.module.scss";
+import { Button } from "@/components/elements/button/Button";
 
 export interface Player {
   name: string;
@@ -24,9 +25,9 @@ export const FactionsForm = ({
 
   return (
     <>
-      <button type="button" onClick={prevStage}>
+      <Button type="button" onClick={prevStage}>
         Back
-      </button>
+      </Button>
       {players.map((p, index) => (
         <PlayerSelect
           key={p.faction}
@@ -38,7 +39,7 @@ export const FactionsForm = ({
           )}
         />
       ))}
-      <button type="submit">Submit</button>
+      <Button type="submit">Submit</Button>
     </>
   );
 };

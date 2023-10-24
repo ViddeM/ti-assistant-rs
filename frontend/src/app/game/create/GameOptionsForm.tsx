@@ -1,3 +1,5 @@
+import { Button } from "@/components/elements/button/Button";
+
 export interface GameOptionsFormProps {
   playerCounts: number[];
   minScore: number;
@@ -27,14 +29,14 @@ export const GameOptionsForm = ({
       <label htmlFor="player-count">Player count</label>
       <div>
         {playerCounts.map((n) => (
-          <button
+          <Button
             key={n}
             type="button"
             disabled={n === playerCount}
             onClick={() => setPlayerCount(n)}
           >
             {n}
-          </button>
+          </Button>
         ))}
       </div>
     </div>
@@ -51,8 +53,6 @@ export const GameOptionsForm = ({
         }}
       />
     </div>
-    <button onClick={nextStage}>
-      Next
-    </button>
+    <Button onClick={nextStage}>Next</Button>
   </>
 );

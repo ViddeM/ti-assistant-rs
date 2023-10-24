@@ -1,0 +1,31 @@
+.buttonBase {
+    border: 1px solid white;
+    border-radius: 6px;
+    padding: 4px;
+    background-color: black;
+    color: white;
+    font-size: 1rem;
+
+    &:hover {
+        filter: brightness(0.8);
+        cursor: pointer;
+    }
+
+    &:active {
+        filter: brightness(0.6);
+    }
+
+    &:disabled {
+        border-color: black;
+        background-color: #505050;
+
+        &:hover {
+            cursor: default;
+            filter: none;
+        }
+
+        &:active {
+            filter: none;
+        }
+    }
+}
