@@ -1,0 +1,14 @@
+@import "../../../resources/styles/vars.scss";
+
+.playerBoxContainer {
+    width: 400px;
+    padding: $padding;
+    border: 4px solid black;
+    border-radius: $border-radius;
+    margin: 1rem 0;
+    font-weight: bolder;
+}
+
+.playerTitleText {
+    font-size: 18px;
+}

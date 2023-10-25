@@ -1,14 +1,15 @@
-import { Faction } from "@/api/GameOptions";
+import { FactionResponse } from "@/api/GameOptions";
 import styles from "./styles.module.scss";
 import { Button } from "@/components/elements/button/Button";
+import { Faction } from "@/resources/types/factions";
 
 export interface Player {
   name: string;
-  faction: string;
+  faction: Faction;
 }
 
 export interface FactionsForm {
-  factions: Faction[];
+  factions: FactionResponse[];
   players: Player[];
 
   setPlayer: (index: number, player: Player) => void;
@@ -45,7 +46,7 @@ export const FactionsForm = ({
 };
 
 interface PlayerSelectProps {
-  factions: Faction[];
+  factions: FactionResponse[];
   player: Player;
   setPlayer: (player: Player) => void;
 }
@@ -74,7 +75,7 @@ const PlayerSelect = ({ factions, player, setPlayer }: PlayerSelectProps) => {
           onChange={(e) => {
             setPlayer({
               ...player,
-              faction: e.target.value,
+              faction: e.target.value as Faction,
             });
           }}
         >

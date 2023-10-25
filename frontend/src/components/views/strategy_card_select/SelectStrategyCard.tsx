@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import styles from "./SelectStrategyCard.module.scss";
-import Image from "next/image";
 import { Button } from "@/components/elements/button/Button";
+import { StrategyCardButton } from "./StrategyCardButton";
+import { Faction } from "@/components/elements/factionIcon/FactionIcon";
 
 type SelectedCard = {
   cardNumber: number;
-  faction: string;
+  faction: Faction;
 };
 
 export const SelectStrategyCardView = () => {
@@ -46,43 +47,10 @@ export const SelectStrategyCardView = () => {
   );
 };
 
-interface StrategyCardButtonProps {
-  cardName: string;
-  cardNumber: number;
-  selectedByFaction: string | null;
-  setSelected: () => void;
-}
-
-const StrategyCardButton = ({
-  cardName,
-  cardNumber,
-  selectedByFaction,
-  setSelected,
-}: StrategyCardButtonProps) => {
-  const [selectedCards, setSelectedCards] = useState<SelectedCard[]>([]);
-
-  return (
-    <Button
-      onClick={setSelected}
-      disabled={selectedByFaction !== null}
-      className={`${styles[`strategyCard${cardName}`]} ${
-        styles.strategyCardButton
-      }`}
-    >
-      {cardNumber}.<p>{cardName}</p>
-      {selectedByFaction && (
-        <Image
-          src={`/icons/factions/${selectedByFaction}.png`}
-          alt={`Faction Icon ${selectedByFaction}`}
-          width={32}
-          height={32}
-        />
-      )}
-    </Button>
-  );
-};
-
-const data = {
+const data: {
+  players: { name: string; faction: Faction }[];
+  strategyCards: { name: string; number: number }[];
+} = {
   players: [
     {
       name: "Adam",

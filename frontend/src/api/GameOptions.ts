@@ -1,11 +1,13 @@
+import { Faction } from "@/resources/types/factions";
+
 export interface GameOptions {
   playerCounts: number[];
   minScore: number;
   maxScore: number;
-  factions: Faction[];
+  factions: FactionResponse[];
 }
 
-export interface Faction {
-  faction: string;
+export interface FactionResponse {
+  faction: Faction;
   name: string;
 }

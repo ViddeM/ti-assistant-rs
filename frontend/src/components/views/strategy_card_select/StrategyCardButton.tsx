@@ -1,5 +1,17 @@
 import { Button } from "@/components/elements/button/Button";
-import { StrategyCardButtonProps } from "./SelectStrategyCard";
+import styles from "./SelectStrategyCard.module.scss";
+import Image from "next/image";
+import {
+  Faction,
+  FactionIcon,
+} from "@/components/elements/factionIcon/FactionIcon";
+
+interface StrategyCardButtonProps {
+  cardName: string;
+  cardNumber: number;
+  selectedByFaction: Faction | null;
+  setSelected: () => void;
+}
 
 export const StrategyCardButton = ({
   cardName,
@@ -16,14 +28,7 @@ export const StrategyCardButton = ({
       }`}
     >
       {cardNumber}.<p>{cardName}</p>
-      {selectedByFaction && (
-        <Image
-          src={`/icons/factions/${selectedByFaction}.png`}
-          alt={`Faction Icon ${selectedByFaction}`}
-          width={32}
-          height={32}
-        />
-      )}
+      {selectedByFaction && <FactionIcon faction={selectedByFaction} />}
     </Button>
   );
 };
