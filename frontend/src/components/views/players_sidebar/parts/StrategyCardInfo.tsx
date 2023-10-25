@@ -5,9 +5,11 @@ export interface StrategyCardInfoProps {
 }
 
 export const StrategyCardInfo = ({ cards }: StrategyCardInfoProps) => {
-  <div>
-    {cards.map((c) => (
-      <p>{c}</p>
-    ))}
-  </div>;
+  return (
+    <div>
+      {cards.map((c) => (
+        <p key={c}>{c}</p>
+      ))}
+    </div>
+  );
 };

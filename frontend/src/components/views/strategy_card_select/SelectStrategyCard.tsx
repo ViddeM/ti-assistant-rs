@@ -4,10 +4,11 @@ import { useState } from "react";
 import styles from "./SelectStrategyCard.module.scss";
 import { Button } from "@/components/elements/button/Button";
 import { StrategyCardButton } from "./StrategyCardButton";
-import { Faction } from "@/components/elements/factionIcon/FactionIcon";
+import { Faction } from "@/resources/types/factions";
+import { StrategyCard } from "@/resources/types/strategyCards";
 
 type SelectedCard = {
-  cardNumber: number;
+  card: StrategyCard;
   faction: Faction;
 };
 
@@ -20,18 +21,16 @@ export const SelectStrategyCardView = () => {
       <div className={styles.strategyCardsContainer}>
         {data.strategyCards.map((card) => (
           <StrategyCardButton
-            key={card.number}
-            cardName={card.name}
-            cardNumber={card.number}
+            key={card}
+            strategyCard={card}
             selectedByFaction={
-              selectedCards.filter((c) => c.cardNumber === card.number)[0]
-                ?.faction ?? null
+              selectedCards.filter((c) => c.card === card)[0]?.faction ?? null
             }
             setSelected={() =>
               setSelectedCards([
                 ...selectedCards,
                 {
-                  cardNumber: card.number,
+                  card: card,
                   faction:
                     data.players[selectedCards.length % data.players.length]
                       .faction,
@@ -49,7 +48,7 @@ export const SelectStrategyCardView = () => {
 
 const data: {
   players: { name: string; faction: Faction }[];
-  strategyCards: { name: string; number: number }[];
+  strategyCards: StrategyCard[];
 } = {
   players: [
     {
@@ -70,37 +69,13 @@ const data: {
     },
   ],
   strategyCards: [
-    {
-      name: "Leadership",
-      number: 1,
-    },
-    {
-      name: "Diplomacy",
-      number: 2,
-    },
-    {
-      name: "Politics",
-      number: 3,
-    },
-    {
-      name: "Construction",
-      number: 4,
-    },
-    {
-      name: "Trade",
-      number: 5,
-    },
-    {
-      name: "Warfare",
-      number: 6,
-    },
-    {
-      name: "Technology",
-      number: 7,
-    },
-    {
-      name: "Imperial",
-      number: 8,
-    },
+    "Leadership",
+    "Diplomacy",
+    "Politics",
+    "Construction",
+    "Trade",
+    "Warfare",
+    "Technology",
+    "Imperial",
   ],
 };

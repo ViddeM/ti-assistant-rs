@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "../resources/styles/globals.scss";
-import "../resources/styles/slider.scss";
 import "../resources/styles/vars.scss";
+import localFont from "next/font/local";
 
-const inter = Inter({ subsets: ["latin"] });
+const sliderFont = localFont({
+  src: "../resources/fonts/slider/slider_regular.ttf",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "TI Assistant (RS)",
@@ -17,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={sliderFont.className}>
+      <body>
         <main className="main">{children}</main>
       </body>
     </html>

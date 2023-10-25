@@ -25,9 +25,7 @@ export const PlayerSidebar = () => {
   return (
     <div className="card">
       {players.map((p) => (
-        <PlayerBox key={p.name} player={p}>
-          <StrategyCardInfo strategyCards={["Leadership", "Technology"]} />
-        </PlayerBox>
+        <PlayerBox key={p.name} player={p} />
       ))}
     </div>
   );
@@ -39,13 +37,7 @@ interface PlayerProps {
   color: string;
 }
 
-const PlayerBox = ({
-  player,
-  children,
-}: {
-  player: PlayerProps;
-  children: React.ReactNode;
-}) => {
+const PlayerBox = ({ player }: { player: PlayerProps }) => {
   return (
     <div
       style={{ borderColor: player.color, color: player.color }}
@@ -54,7 +46,9 @@ const PlayerBox = ({
       <div className={styles.playerTitleText}>
         <FactionIcon faction={player.faction} /> {player.name}
       </div>
-      {children}
+      <div className={styles.content}>
+        <StrategyCardInfo cards={["Leadership", "Technology"]} />
+      </div>
     </div>
   );
 };

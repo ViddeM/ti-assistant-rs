@@ -1,21 +1,20 @@
 import { Button } from "@/components/elements/button/Button";
 import styles from "./SelectStrategyCard.module.scss";
-import Image from "next/image";
+import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
+import { Faction } from "@/resources/types/factions";
 import {
-  Faction,
-  FactionIcon,
-} from "@/components/elements/factionIcon/FactionIcon";
+  StrategyCard,
+  StrategyCardNumber,
+} from "@/resources/types/strategyCards";
 
 interface StrategyCardButtonProps {
-  cardName: string;
-  cardNumber: number;
+  strategyCard: StrategyCard;
   selectedByFaction: Faction | null;
   setSelected: () => void;
 }
 
 export const StrategyCardButton = ({
-  cardName,
-  cardNumber,
+  strategyCard,
   selectedByFaction,
   setSelected,
 }: StrategyCardButtonProps) => {
@@ -23,11 +22,9 @@ export const StrategyCardButton = ({
     <Button
       onClick={setSelected}
       disabled={selectedByFaction !== null}
-      className={`${styles[`strategyCard${cardName}`]} ${
-        styles.strategyCardButton
-      }`}
+      className={`${styles.strategyCardButton} style${strategyCard}`}
     >
-      {cardNumber}.<p>{cardName}</p>
+      {StrategyCardNumber[strategyCard]}.<p>{strategyCard}</p>
       {selectedByFaction && <FactionIcon faction={selectedByFaction} />}
     </Button>
   );

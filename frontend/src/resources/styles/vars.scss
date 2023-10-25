@@ -1,4 +1,44 @@
-$font: Slider, -apple-system, -system-ui;
-
 $padding: 4px;
 $border-radius: 8px;
+
+$leadershipColor: red;
+$diplomacyColor: orange;
+$politicsColor: yellow;
+$constructionColor: green;
+$tradeColor: darkcyan;
+$warfareColor: lightblue;
+$technologyColor: blue;
+$imperialColor: purple;
+
+.styleLeadership {
+    color: $leadershipColor;
+    border-color: $leadershipColor;
+}
+.styleDiplomacy {
+    color: $diplomacyColor;
+    border-color: $diplomacyColor;
+}
+.stylePolitics {
+    color: $politicsColor;
+    border-color: $politicsColor;
+}
+.styleConstruction {
+    color: $constructionColor;
+    border-color: $constructionColor;
+}
+.styleTrade {
+    color: $tradeColor;
+    border-color: $tradeColor;
+}
+.styleWarfare {
+    color: $warfareColor;
+    border-color: $warfareColor;
+}
+.styleTechnology {
+    color: $technologyColor;
+    border-color: $technologyColor;
+}
+.styleImperial {
+    color: $imperialColor;
+    border-color: $imperialColor;
+}

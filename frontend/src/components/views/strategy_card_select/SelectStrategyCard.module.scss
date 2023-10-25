@@ -1,3 +1,5 @@
+@import "../../../resources/styles/vars";
+
 .strategyCardsContainer {
     display: flex;
     flex-direction: column;
@@ -17,27 +19,26 @@
 }
 
 .strategyCardLeadership {
-    border-color: red;
+    border-color: $leadershipColor;
 }
 .strategyCardDiplomacy {
-    border-color: orange;
+    border-color: $diplomacyColor;
 }
 .strategyCardPolitics {
-    border-color: yellow;
-
+    border-color: $politicsColor;
 }
 .strategyCardConstruction {
-    border-color: green;
+    border-color: $constructionColor;
 }
 .strategyCardTrade {
-    border-color: darkcyan;
+    border-color: $tradeColor;
 }
 .strategyCardWarfare {
-    border-color: lightblue;
+    border-color: $warfareColor;
 }
 .strategyCardTechnology {
-    border-color: blue;
+    border-color: $technologyColor;
 }
 .strategyCardImperial {
-    border-color: purple;
+    border-color: $imperialColor;
 }
