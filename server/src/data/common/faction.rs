@@ -25,7 +25,7 @@ pub const ALL_FACTIONS: [Faction; 25] = [
     Faction::Winnu,
     Faction::XxchaKingdom,
     Faction::YinBrotherhood,
-    Faction::YssarilTribers,
+    Faction::YssarilTribes,
     Faction::ArgentFlight,
     Faction::Empyrean,
     Faction::MahactGeneSorcerers,
@@ -87,7 +87,7 @@ impl Faction {
             Faction::Winnu => Expansions::Base,
             Faction::XxchaKingdom => Expansions::Base,
             Faction::YinBrotherhood => Expansions::Base,
-            Faction::YssarilTribers => Expansions::Base,
+            Faction::YssarilTribes => Expansions::Base,
             Faction::ArgentFlight => Expansions::ProphecyOfKings,
             Faction::Empyrean => Expansions::ProphecyOfKings,
             Faction::MahactGeneSorcerers => Expansions::ProphecyOfKings,
@@ -117,7 +117,7 @@ impl Faction {
             Faction::Winnu => "The Winnu",
             Faction::XxchaKingdom => "The Xxcha Kingdom",
             Faction::YinBrotherhood => "The Yin Brotherhood",
-            Faction::YssarilTribers => "The Yssaril Tribes",
+            Faction::YssarilTribes => "The Yssaril Tribes",
             Faction::ArgentFlight => "The Argent Flight",
             Faction::Empyrean => "The Empyrean",
             Faction::MahactGeneSorcerers => "The Mahact Gene-Sorcerers",
@@ -171,7 +171,7 @@ impl Faction {
             Faction::Winnu => vec![], // Choose any 1 technology that has no prereqs
             Faction::XxchaKingdom => vec![Technology::GravitonLaserSystem],
             Faction::YinBrotherhood => vec![Technology::SarweenTools],
-            Faction::YssarilTribers => vec![Technology::NeuralMotivator],
+            Faction::YssarilTribes => vec![Technology::NeuralMotivator],
             Faction::ArgentFlight => vec![], // Choose TWO of the following: Neural Motivator, Sarween Tools, Plasma Scoring
             Faction::Empyrean => vec![Technology::DarkEnergyTap],
             Faction::MahactGeneSorcerers => {

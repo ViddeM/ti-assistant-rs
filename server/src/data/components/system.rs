@@ -143,7 +143,7 @@ pub fn systems() -> HashMap<String, System> {
         ),
         s!(
             "15",
-            SystemType::HomeSystem(Faction::YssarilTribers),
+            SystemType::HomeSystem(Faction::YssarilTribes),
             vec![Planet::Retillion, Planet::Shalloq]
         ),
         s!(

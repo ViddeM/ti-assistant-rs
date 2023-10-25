@@ -399,7 +399,7 @@ impl Technology {
             ),
             Technology::TransparasteelPlating => t!(
                 TechType::Category(TechCategory::Biotic),
-                TechOrigin::Faction(Faction::YssarilTribers),
+                TechOrigin::Faction(Faction::YssarilTribes),
                 tr!([(TechCategory::Biotic, 1)])
             ),
             Technology::GeneticRecombination => t!(
@@ -434,7 +434,7 @@ impl Technology {
             ),
             Technology::MageonImplants => t!(
                 TechType::Category(TechCategory::Biotic),
-                TechOrigin::Faction(Faction::YssarilTribers),
+                TechOrigin::Faction(Faction::YssarilTribes),
                 tr!([(TechCategory::Biotic, 3)])
             ),
             Technology::ChaosMapping => t!(
