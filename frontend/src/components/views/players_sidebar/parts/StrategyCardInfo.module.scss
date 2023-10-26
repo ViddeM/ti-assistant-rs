@@ -1,0 +1,20 @@
+@import "../../../../resources/styles/vars.scss";
+
+.strategyCardsContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.cardContainer {
+    color: white;
+    border-width: 2px;
+    border-style: solid;
+    padding: $padding;
+    border-radius: $border-radius;
+    margin-bottom: 4px;
+    min-width: 7rem;
+}
+
+.cardPlayed {
+    filter: brightness(0.4)
+}
