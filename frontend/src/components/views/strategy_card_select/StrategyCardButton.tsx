@@ -1,4 +1,4 @@
-import { Button } from "@/components/elements/button/Button";
+import { Button, ButtonBase } from "@/components/elements/button/Button";
 import styles from "./SelectStrategyCard.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Faction } from "@/resources/types/factions";
@@ -19,13 +19,13 @@ export const StrategyCardButton = ({
   setSelected,
 }: StrategyCardButtonProps) => {
   return (
-    <Button
+    <ButtonBase
       onClick={setSelected}
       disabled={selectedByFaction !== null}
       className={`${styles.strategyCardButton} style${strategyCard}`}
     >
       {StrategyCardNumber[strategyCard]}.<p>{strategyCard}</p>
       {selectedByFaction && <FactionIcon faction={selectedByFaction} />}
-    </Button>
+    </ButtonBase>
   );
 };

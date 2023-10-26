@@ -1,9 +1,8 @@
 .buttonBase {
-    border: 1px solid white;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 6px;
     padding: 4px;
-    background-color: black;
-    color: white;
     font-size: 1rem;
 
     &:hover {
@@ -28,4 +27,9 @@
             filter: none;
         }
     }
+}
+
+.button {
+    background-color: black;
+    color: white;
 }
