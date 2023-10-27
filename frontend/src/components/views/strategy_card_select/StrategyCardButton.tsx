@@ -11,17 +11,19 @@ interface StrategyCardButtonProps {
   strategyCard: StrategyCard;
   selectedByFaction: Faction | null;
   setSelected: () => void;
+  finishedSelectingCards: boolean;
 }
 
 export const StrategyCardButton = ({
   strategyCard,
   selectedByFaction,
   setSelected,
+  finishedSelectingCards,
 }: StrategyCardButtonProps) => {
   return (
     <ButtonBase
       onClick={setSelected}
-      disabled={selectedByFaction !== null}
+      disabled={selectedByFaction !== null || finishedSelectingCards}
       className={`${styles.strategyCardButton} style${strategyCard}`}
     >
       {StrategyCardNumber[strategyCard]}.<p>{strategyCard}</p>

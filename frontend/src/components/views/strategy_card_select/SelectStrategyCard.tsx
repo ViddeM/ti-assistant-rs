@@ -15,11 +15,13 @@ export type SelectedCard = {
 interface SelectedCardProps {
   selectedCards: SelectedCard[];
   selectCard: (card: StrategyCard) => void;
+  expectedStrategyCards: number;
 }
 
 export const SelectStrategyCardView = ({
   selectedCards,
   selectCard,
+  expectedStrategyCards,
 }: SelectedCardProps) => {
   return (
     <div className="card">
@@ -33,10 +35,15 @@ export const SelectStrategyCardView = ({
               selectedCards.filter((c) => c.card === card)[0]?.faction ?? null
             }
             setSelected={() => selectCard(card)}
+            finishedSelectingCards={
+              selectedCards.length === expectedStrategyCards
+            }
           />
         ))}
 
-        <Button>Start Action Phase</Button>
+        <Button disabled={selectedCards.length !== expectedStrategyCards}>
+          Start Action Phase
+        </Button>
       </div>
     </div>
   );

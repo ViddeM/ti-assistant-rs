@@ -15,6 +15,7 @@ import { StrategyCard } from "@/resources/types/strategyCards";
 export default function Game() {
   const [players, setPlayers] = useState<Player[]>(data.players);
   const selectedCards = playersToSelectedCards(players);
+  const expectedStrategyCards = getExpectedStrategyCards(players.length);
 
   return (
     <div className={styles.gamePageContainer}>
@@ -32,10 +33,18 @@ export default function Game() {
           });
           setPlayers(newPlayers);
         }}
+        expectedStrategyCards={expectedStrategyCards}
       />
       <div />
     </div>
   );
+}
+
+function getExpectedStrategyCards(numPlayers: number): number {
+  if (numPlayers > 4) {
+    return 1 * numPlayers;
+  }
+  return 2 * numPlayers;
 }
 
 function playersToSelectedCards(players: Player[]): SelectedCard[] {
@@ -78,12 +87,12 @@ const data: {
       faction: "EmbersOfMuaat",
       cards: [],
     },
-    {
-      name: "TestDude",
-      color: "#FF0",
-      faction: "NaaluCollective",
-      cards: [],
-    },
+    // {
+    //   name: "TestDude",
+    //   color: "#FF0",
+    //   faction: "NaaluCollective",
+    //   cards: [],
+    // },
     {
       name: "Tux",
       color: "#00F",
