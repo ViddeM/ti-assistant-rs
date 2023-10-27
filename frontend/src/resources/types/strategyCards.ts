@@ -1,3 +1,14 @@
+export const ALL_STRATEGY_CARDS: StrategyCard[] = [
+  "Leadership",
+  "Diplomacy",
+  "Politics",
+  "Construction",
+  "Trade",
+  "Warfare",
+  "Technology",
+  "Imperial",
+];
+
 export type StrategyCard =
   | "Leadership"
   | "Diplomacy"

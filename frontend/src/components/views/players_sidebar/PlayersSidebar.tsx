@@ -4,7 +4,7 @@ import { Faction } from "@/resources/types/factions";
 import { StrategyCardInfo } from "./parts/StrategyCardInfo";
 import { StrategyCard } from "@/resources/types/strategyCards";
 
-interface Player {
+export interface Player {
   name: string;
   faction: Faction;
   color: string;
@@ -14,55 +14,7 @@ interface Player {
   }[];
 }
 
-const players: Player[] = [
-  {
-    name: "Tux",
-    faction: "Empyrean",
-    color: "#000",
-    cards: [
-      {
-        name: "Leadership",
-        played: false,
-      },
-      {
-        name: "Construction",
-        played: true,
-      },
-    ],
-  },
-  {
-    name: "Vidde",
-    faction: "UniversitiesOfJolNar",
-    color: "#F00",
-    cards: [
-      {
-        name: "Warfare",
-        played: true,
-      },
-      {
-        name: "Imperial",
-        played: false,
-      },
-    ],
-  },
-  {
-    name: "Gurr",
-    faction: "CouncilKeleres",
-    color: "#0F0",
-    cards: [
-      {
-        name: "Diplomacy",
-        played: true,
-      },
-      {
-        name: "Technology",
-        played: true,
-      },
-    ],
-  },
-];
-
-export const PlayerSidebar = () => {
+export const PlayerSidebar = ({ players }: { players: Player[] }) => {
   return (
     <div className="card">
       {players.map((p) => (
@@ -75,7 +27,7 @@ export const PlayerSidebar = () => {
 const PlayerBox = ({ player }: { player: Player }) => {
   return (
     <div
-      style={{ borderColor: player.color, color: player.color }}
+      style={{ borderColor: player.color }}
       className={styles.playerBoxContainer}
     >
       <div className={styles.playerTitleRow}>
