@@ -1,6 +1,12 @@
+@import "../../../resources/styles/vars.scss";
+
 .gamePageContainer {
     width: 100%;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column-reverse;
+
+    @media (min-width: $widthMedium) {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }

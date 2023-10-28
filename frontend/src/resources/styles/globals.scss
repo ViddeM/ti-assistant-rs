@@ -57,13 +57,17 @@ a {
 
 .card {
   background-color: $backgroundColor;
-  border-radius: 6px;
-  padding: 8px
+  padding: $padding;
+  border-radius: $border-radius;
 }
 
 .main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 3rem;
+  padding: 1rem 0;
+
+  @media (min-width: $widthMedium) {
+    padding: 3rem;
+  }
 }

@@ -1,12 +1,25 @@
 @import "../../../resources/styles/vars.scss";
 
+.playerSideBarCard {
+    border-radius: 0;
+    margin-top: 1rem;
+
+    @media (min-width: $widthMedium) {
+        max-width: 400px;
+        margin-top: 0;
+        border-radius: $border-radius;
+    }
+}
+
 .playerBoxContainer {
-    width: 400px;
     padding: $padding;
     border: 4px solid black;
     border-radius: $border-radius;
-    margin-bottom: 0.5rem;
     font-weight: bolder;
+
+    &:not(:last-child) {
+        margin-bottom: 0.5rem;
+    }
 }
 
 .activePlayer {
@@ -23,7 +36,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-bottom: 4px;
+    margin-bottom: $margin;
 }
 
 .playerName {

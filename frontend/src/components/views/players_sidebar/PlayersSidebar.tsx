@@ -18,7 +18,7 @@ export interface Player {
 
 export const PlayerSidebar = ({ players }: { players: Player[] }) => {
   return (
-    <div className="card">
+    <div className={`${styles.playerSideBarCard} card`}>
       {players.map((p) => (
         <PlayerBox key={p.name} player={p} />
       ))}
