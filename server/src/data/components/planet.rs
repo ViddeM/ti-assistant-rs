@@ -1,3 +1,5 @@
+use serde::{Deserialize, Serialize};
+
 use super::tech::TechCategory;
 
 pub enum PlanetTrait {
@@ -24,7 +26,7 @@ macro_rules! p {
     };
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Planet {
     Nestphar,
     ArcPrime,

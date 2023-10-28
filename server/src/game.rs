@@ -1,4 +1,5 @@
 use eyre::{bail, ensure, eyre};
+use serde::{Deserialize, Serialize};
 use std::{
     collections::{HashMap, HashSet},
     sync::Arc,
@@ -6,6 +7,8 @@ use std::{
 
 use crate::{data::components::strategy_card::StrategyCard, phases::Phase, player::Player};
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Game {
     players: Vec<Player>,
     current: GameState,
@@ -49,7 +52,8 @@ impl Game {
     }
 }
 
-#[derive(Clone, Default, Debug)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct GameState {
     /// The current phase of the game.
     pub phase: Phase,
@@ -60,7 +64,7 @@ struct GameState {
     /// The order that players are sitting around the table, starting with the speaker.
     pub table_order: Vec<PlayerId>,
 
-    /// The current turn order, either based on table order or strategy cards.
+    /// The current turn order, either based on table order or strategy cards (initiative).
     pub turn_order: Vec<PlayerId>,
 
     /// Which players hold which strategy cards.
@@ -79,7 +83,8 @@ struct GameState {
     pub strategic_action: Option<StrategyCardProgress>,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct StrategyCardProgress {
     pub card: StrategyCard,
     pub other_players: HashMap<PlayerId, bool>,
@@ -91,7 +96,7 @@ const MAX_PLAYER_COUNT: usize = 8;
 // TODO: maybe make this be not a string...
 pub type PlayerId = Arc<str>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Event {
     /* -- SETUP PHASE EVENTS -- */
     AddPlayer {
