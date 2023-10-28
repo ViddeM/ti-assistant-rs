@@ -1,37 +1,61 @@
+"use client";
+
 import {
   Player,
   PlayerSidebar,
 } from "@/components/views/players_sidebar/PlayersSidebar";
 import { SelectStrategyCardView } from "@/components/views/strategy_card_select/SelectStrategyCard";
-import styles from "./styles.module.scss";
 import { StrategyCard } from "@/resources/types/strategyCards";
-import { Api } from "@/api/Api";
 import { Game as ApiGame, GameState } from "@/api/Game";
 import { ActionPhaseView } from "@/components/views/action_phase_View/ActionPhaseView";
-import { Suspense } from "react";
+import { useEffect, useState } from "react";
+import { GameOptions } from "@/api/GameOptions";
+import useWebSocket from "react-use-websocket";
 
-export default async function Game() {
-  const resp = await Api.game.get_example();
-  if (resp.error) {
-    return <div>Error</div>;
-  }
+export default function Game() {
+  const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
 
-  if (!resp.data) {
-    return <div>Failed to load data</div>;
-  }
+  const { sendMessage, lastMessage, readyState } = useWebSocket(
+    "ws://localhost:5555"
+  );
 
-  const gameState = resp.data.gameState;
-  const sidebarPlayers = getPlayersFromGame(gameState);
+  useEffect(() => {
+    if (lastMessage !== null) {
+      console.log("MESSAGE", lastMessage);
+    }
+  }, [lastMessage]);
+
+  // useEffect(() => {
+  //   const ws = new WebSocket("ws://localhost:5555");
+  //   ws.onopen = () => {
+  //     console.log("Connected to websocket");
+  //   };
+  //   ws.onmessage = (event) => {
+  //     console.log("Received ", event.data);
+  //     const data = event.data;
+  //     if (data.GameOptions) {
+  //       setGameOptions(data.GameOptions as GameOptions);
+  //     }
+  //   };
+  //   ws.onclose = () => {
+  //     console.log("Disconnected from websocket");
+  //   };
+  //   return () => {
+  //     ws.close();
+  //   };
+  // }, []);
+
+  console.log("GAME OPTIONS", gameOptions);
 
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <div className={styles.gamePageContainer}>
-          <PlayerSidebar players={sidebarPlayers} />
-          <PhaseView {...resp.data} />
-          <div />
-        </div>
-      </Suspense>
+      <div />
+      {gameOptions && <div>{gameOptions.maxScore}</div>}
+      {/* <div className={styles.gamePageContainer}>
+        <PlayerSidebar players={sidebarPlayers} />
+        <PhaseView {...resp.data} />
+        <div />
+      </div> */}
     </>
   );
 }
