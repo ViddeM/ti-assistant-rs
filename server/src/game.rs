@@ -10,9 +10,9 @@ use crate::{data::components::strategy_card::StrategyCard, phases::Phase, player
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
-    players: Vec<Player>,
-    current: GameState,
-    history: Vec<Event>,
+    pub players: Vec<Player>,
+    pub current: GameState,
+    pub history: Vec<Event>,
 }
 
 impl Game {
@@ -54,7 +54,7 @@ impl Game {
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct GameState {
+pub struct GameState {
     /// The current phase of the game.
     pub phase: Phase,
 
@@ -85,7 +85,7 @@ struct GameState {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-struct StrategyCardProgress {
+pub struct StrategyCardProgress {
     pub card: StrategyCard,
     pub other_players: HashMap<PlayerId, bool>,
 }

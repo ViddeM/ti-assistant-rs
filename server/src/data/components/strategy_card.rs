@@ -25,15 +25,4 @@ impl StrategyCard {
             StrategyCard::Imperial => 8,
         }
     }
-
-    pub const ALL: [StrategyCard; 8] = [
-        StrategyCard::Leadership,
-        StrategyCard::Diplomacy,
-        StrategyCard::Politics,
-        StrategyCard::Construction,
-        StrategyCard::Trade,
-        StrategyCard::Warfare,
-        StrategyCard::Technology,
-        StrategyCard::Imperial,
-    ];
 }

@@ -1,7 +1,8 @@
 use rocket::serde::json::Json;
 use serde::Serialize;
+use strum::IntoEnumIterator;
 
-use crate::data::common::faction::{Faction, ALL_FACTIONS};
+use crate::data::common::faction::Faction;
 
 const MIN_PLAYER_COUNT: u32 = 3;
 const MAX_PLAYER_COUNT: u32 = 8;
@@ -30,8 +31,7 @@ pub async fn get_game_options() -> Json<GameOptionsResponse> {
         player_counts: (MIN_PLAYER_COUNT..=MAX_PLAYER_COUNT).collect::<Vec<u32>>(),
         min_score: MIN_SCORE,
         max_score: MAX_SCORE,
-        factions: ALL_FACTIONS
-            .into_iter()
+        factions: Faction::iter()
             .map(|f| FactionResponse {
                 faction: f.clone(),
                 name: f.name(),

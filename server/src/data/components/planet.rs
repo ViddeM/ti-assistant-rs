@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumIter;
 
 use super::tech::TechCategory;
 
@@ -26,7 +27,7 @@ macro_rules! p {
     };
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter)]
 pub enum Planet {
     Nestphar,
     ArcPrime,

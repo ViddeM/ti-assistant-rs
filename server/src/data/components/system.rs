@@ -1,9 +1,12 @@
 use std::collections::HashMap;
 
+use serde::{Deserialize, Serialize};
+
 use crate::data::common::faction::Faction;
 
 use super::planet::Planet;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum WormHoleType {
     Alpha,
     Beta,
@@ -11,6 +14,7 @@ pub enum WormHoleType {
     Delta,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SystemType {
     Anomaly(AnomalyType),
     Hyperlane,
@@ -18,6 +22,7 @@ pub enum SystemType {
     HomeSystem(Faction),
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum AnomalyType {
     AsteroidField,
     Nebula,
@@ -26,6 +31,8 @@ pub enum AnomalyType {
     GravityRift,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct System {
     pub id: String,
     pub system_type: SystemType,

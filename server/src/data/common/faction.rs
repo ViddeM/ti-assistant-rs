@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumIter;
 
 use crate::data::components::{
     planet::Planet,
@@ -8,35 +9,7 @@ use crate::data::components::{
 
 use super::expansions::Expansions;
 
-pub const ALL_FACTIONS: [Faction; 25] = [
-    Faction::Arborec,
-    Faction::BaronyOfLetnev,
-    Faction::ClanOfSaar,
-    Faction::EmbersOfMuaat,
-    Faction::EmiratesOfHacan,
-    Faction::FederationOfSol,
-    Faction::GhostsOfCreuss,
-    Faction::L1Z1XMindnet,
-    Faction::MentakCoalition,
-    Faction::NaaluCollective,
-    Faction::NekroVirus,
-    Faction::SardakkNorr,
-    Faction::UniversitiesOfJolNar,
-    Faction::Winnu,
-    Faction::XxchaKingdom,
-    Faction::YinBrotherhood,
-    Faction::YssarilTribes,
-    Faction::ArgentFlight,
-    Faction::Empyrean,
-    Faction::MahactGeneSorcerers,
-    Faction::NaazRokhaAlliance,
-    Faction::Nomad,
-    Faction::TitansOfUl,
-    Faction::VuilRaithCabal,
-    Faction::CouncilKeleres,
-];
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter)]
 pub enum Faction {
     // Vanilla
     Arborec,
