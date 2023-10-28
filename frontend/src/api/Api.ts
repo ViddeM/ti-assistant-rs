@@ -1,3 +1,4 @@
+import { Game } from "./Game";
 import { GameOptions } from "./GameOptions";
 
 const BASE_URL = "http://localhost:8000/api";
@@ -7,8 +8,8 @@ export const Api = {
     get: () => getRequest<GameOptions>("/game_options"),
   },
   game: {
-    create: () => postRequest<any>("/game", {})
-  }
+    get_example: () => getRequest<Game>("/game/example"),
+  },
 };
 
 export type Response<T> = {
@@ -16,20 +17,26 @@ export type Response<T> = {
   error?: string;
 };
 
-async function postRequest<T>(endpoint: string, data: any): Promise<Response<T>> {
+async function postRequest<T>(
+  endpoint: string,
+  data: any
+): Promise<Response<T>> {
   let body = JSON.stringify(data);
 
   return await sendRequest(endpoint, {
     method: "POST",
-    body: body
-  })
+    body: body,
+  });
 }
 
 async function getRequest<T>(endpoint: string): Promise<Response<T>> {
-  return await sendRequest(endpoint)
+  return await sendRequest(endpoint);
 }
 
-async function sendRequest<T>(endpoint: string, requestOptions?: RequestInit): Promise<Response<T>> {
+async function sendRequest<T>(
+  endpoint: string,
+  requestOptions?: RequestInit
+): Promise<Response<T>> {
   const url = `${BASE_URL}/${endpoint}`;
   const res = await fetch(url, requestOptions);
   if (!res.ok) {

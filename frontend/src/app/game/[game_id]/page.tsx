@@ -1,26 +1,29 @@
-"use client";
-
 import {
   Player,
   PlayerSidebar,
 } from "@/components/views/players_sidebar/PlayersSidebar";
-import {
-  SelectStrategyCardView,
-  SelectedCard,
-} from "@/components/views/strategy_card_select/SelectStrategyCard";
+import { SelectedCard } from "@/components/views/strategy_card_select/SelectStrategyCard";
 import styles from "./styles.module.scss";
-import { useState } from "react";
 import { StrategyCard } from "@/resources/types/strategyCards";
+import { Api } from "@/api/Api";
+import { Game, GameState } from "@/api/Game";
 
-export default function Game() {
-  const [players, setPlayers] = useState<Player[]>(data.players);
-  const selectedCards = playersToSelectedCards(players);
-  const expectedStrategyCards = getExpectedStrategyCards(players.length);
+export default async function Game() {
+  const resp = await Api.game.get_example();
+  if (resp.error) {
+    return <div>Error</div>;
+  }
+
+  if (!resp.data) {
+    return <div>Failed to load data</div>;
+  }
+
+  const sidebarPlayers = getPlayersFromGame(resp.data.current);
 
   return (
     <div className={styles.gamePageContainer}>
-      <PlayerSidebar players={players} />
-      <SelectStrategyCardView
+      <PlayerSidebar players={sidebarPlayers} />
+      {/* <SelectStrategyCardView
         selectedCards={selectedCards}
         selectCard={(card) => {
           const playerIndex = selectedCards.length % players.length;
@@ -34,7 +37,7 @@ export default function Game() {
           setPlayers(newPlayers);
         }}
         expectedStrategyCards={expectedStrategyCards}
-      />
+      /> */}
       <div />
     </div>
   );
@@ -101,3 +104,22 @@ const data: {
     },
   ],
 };
+
+function getPlayersFromGame(gameState: GameState): Player[] {
+  return Object.entries(gameState.players).map(([id, p]) => {
+    return {
+      name: p.name,
+      faction: p.faction,
+      color: "#000",
+      cards: Object.entries(gameState.strategyCardHolders)
+        .filter(([_, playerId]) => id === playerId)
+        .map(([card]) => {
+          let stratCard = card as StrategyCard;
+          return {
+            name: stratCard,
+            played: gameState.spentStrategyCards.includes(stratCard),
+          };
+        }),
+    };
+  });
+}
