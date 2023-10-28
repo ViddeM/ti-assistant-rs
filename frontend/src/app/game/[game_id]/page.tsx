@@ -6,7 +6,7 @@ import { SelectStrategyCardView } from "@/components/views/strategy_card_select/
 import styles from "./styles.module.scss";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import { Api } from "@/api/Api";
-import { Game, GameState } from "@/api/Game";
+import { Game as ApiGame, GameState } from "@/api/Game";
 import { ActionPhaseView } from "@/components/views/action_phase_View/ActionPhaseView";
 import { Suspense } from "react";
 
@@ -20,7 +20,7 @@ export default async function Game() {
     return <div>Failed to load data</div>;
   }
 
-  const gameState = resp.data.current;
+  const gameState = resp.data.gameState;
   const sidebarPlayers = getPlayersFromGame(gameState);
 
   return (
@@ -28,7 +28,7 @@ export default async function Game() {
       <Suspense fallback={<div>Loading...</div>}>
         <div className={styles.gamePageContainer}>
           <PlayerSidebar players={sidebarPlayers} />
-          <PhaseView {...gameState} />
+          <PhaseView {...resp.data} />
           <div />
         </div>
       </Suspense>
@@ -36,7 +36,7 @@ export default async function Game() {
   );
 }
 
-const PhaseView = (gameState: GameState) => {
+const PhaseView = ({ gameState, systems }: ApiGame) => {
   switch (gameState.phase) {
     case "Strategy":
       return (
@@ -47,7 +47,7 @@ const PhaseView = (gameState: GameState) => {
         />
       );
     case "Action":
-      return <ActionPhaseView gameState={gameState} />;
+      return <ActionPhaseView gameState={gameState} systems={systems} />;
     default:
       return <div>PHASE NOT YET IMPLEMENTED</div>;
   }

@@ -40,7 +40,10 @@ const PlayerBox = ({ player }: { player: Player }) => {
     >
       <div className={styles.playerTitleRow}>
         <FactionIcon faction={player.faction} />
-        <p className={styles.playerName}>{player.name}</p>
+        <p className={styles.playerName}>
+          {player.name}
+          {player.isActive ? " - ACTIVE" : player.hasPassed ? " - PASSED" : ""}
+        </p>
       </div>
       <div className={styles.content}>
         <StrategyCardInfo cards={player.cards} />

@@ -5,9 +5,15 @@ import { StrategyCard } from "@/resources/types/strategyCards";
 export type PlayerId = string;
 
 export interface Game {
-  players: string[]; // TODO
-  current: GameState;
-  history: string[]; // TODO
+  gameState: GameState;
+  systems: System[];
+}
+
+export interface System {
+  id: string;
+  systemType: object;
+  planets: string[];
+  wormholes: object[];
 }
 
 export interface GameState {
