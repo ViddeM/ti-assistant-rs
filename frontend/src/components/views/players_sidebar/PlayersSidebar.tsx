@@ -8,6 +8,8 @@ export interface Player {
   name: string;
   faction: Faction;
   color: string;
+  isActive: boolean;
+  hasPassed: boolean;
   cards: {
     name: StrategyCard;
     played: boolean;
@@ -28,7 +30,13 @@ const PlayerBox = ({ player }: { player: Player }) => {
   return (
     <div
       style={{ borderColor: player.color }}
-      className={styles.playerBoxContainer}
+      className={`${styles.playerBoxContainer} ${
+        player.isActive
+          ? styles.activePlayer
+          : player.hasPassed
+          ? styles.passedPlayer
+          : ""
+      }`}
     >
       <div className={styles.playerTitleRow}>
         <FactionIcon faction={player.faction} />

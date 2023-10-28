@@ -18,7 +18,7 @@ export interface GameState {
   strategyCardHolders: { [key: string]: PlayerId };
   currentPlayer: string | null;
   spentStrategyCards: StrategyCard[];
-  passedPlayers: PlayerId;
+  passedPlayers: PlayerId[];
   strategicAction: StrategyCardProgress | null;
 }
 

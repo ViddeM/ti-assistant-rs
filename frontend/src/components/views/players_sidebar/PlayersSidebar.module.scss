@@ -9,6 +9,15 @@
     font-weight: bolder;
 }
 
+.activePlayer {
+    background-color: #306030;
+}
+
+.passedPlayer {
+    background-color: #202020;
+    color: #606060;
+}
+
 .playerTitleRow {
     font-size: 1.5rem;
     display: flex;

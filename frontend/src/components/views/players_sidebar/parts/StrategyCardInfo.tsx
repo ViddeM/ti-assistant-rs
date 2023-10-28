@@ -13,6 +13,7 @@ export const StrategyCardInfo = ({ cards }: StrategyCardInfoProps) => {
     <div className={styles.strategyCardsContainer}>
       {cards.map((c) => (
         <div
+          key={c.name}
           className={`${styles.cardContainer} style${c.name} ${
             c.played ? styles.cardPlayed : ""
           }`}
