@@ -1,0 +1,34 @@
+@import "../../../resources/styles/vars.scss";
+
+.setupCard {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    min-width: 260px;
+}
+
+.displayPlayerContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding-bottom: $paddingLarge;
+    border-top: 1px solid black;
+}
+
+.factionRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.factionName {
+    margin-left: $margin;
+}
+
+.addPlayerForm {
+    padding: $paddingLarge 0;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
