@@ -78,9 +78,26 @@ const PhaseView = ({
     case "Strategy":
       return (
         <SelectStrategyCardView
-          selectedCards={[]}
-          expectedStrategyCards={2}
-          selectCard={() => {}}
+          selectedCards={Object.entries(gameState.strategyCardHolders).map(
+            ([strategyCard, playerId]) => {
+              return {
+                card: strategyCard as StrategyCard,
+                faction: gameState.players[playerId].faction,
+              };
+            }
+          )}
+          expectedStrategyCards={getExpectedStrategyCards(
+            Object.keys(gameState.players).length
+          )}
+          selectCard={(card) => {
+            sendMessage({
+              TakeStrategyCard: {
+                player: gameState.currentPlayer,
+                card: card,
+              },
+            });
+          }}
+          startActionPhase={() => sendMessage("CompleteStrategyPhase")}
         />
       );
     case "Action":
@@ -112,4 +129,12 @@ function getPlayersFromGame(gameState: GameState): Player[] {
         }),
     };
   });
+}
+
+function getExpectedStrategyCards(noPlayers: number): number {
+  if (noPlayers > 4) {
+    return 1 * noPlayers;
+  }
+
+  return 2 * noPlayers;
 }
