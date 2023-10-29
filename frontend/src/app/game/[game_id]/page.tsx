@@ -11,9 +11,11 @@ import { ActionPhaseView } from "@/components/views/action_phase_View/ActionPhas
 import { useEffect, useState } from "react";
 import { GameOptions } from "@/api/GameOptions";
 import useWebSocket from "react-use-websocket";
+import { SetupPhase } from "@/components/views/setup/SetupPhase";
 
 export default function Game() {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
+  const [gameState, setGameState] = useState<GameState | null>(null);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     "ws://localhost:5555"
@@ -22,35 +24,31 @@ export default function Game() {
   useEffect(() => {
     if (lastMessage !== null) {
       console.log("MESSAGE", lastMessage);
+      const data = JSON.parse(lastMessage.data);
+
+      const msgOpts = data["GameOptions"];
+      if (msgOpts && !gameOptions) {
+        setGameOptions(msgOpts as GameOptions);
+      }
+
+      const gs = data["GameState"];
+      if (gs && !gameState) {
+        setGameState(gs as GameState);
+      }
     }
-  }, [lastMessage]);
+  }, [lastMessage, gameOptions]);
 
-  // useEffect(() => {
-  //   const ws = new WebSocket("ws://localhost:5555");
-  //   ws.onopen = () => {
-  //     console.log("Connected to websocket");
-  //   };
-  //   ws.onmessage = (event) => {
-  //     console.log("Received ", event.data);
-  //     const data = event.data;
-  //     if (data.GameOptions) {
-  //       setGameOptions(data.GameOptions as GameOptions);
-  //     }
-  //   };
-  //   ws.onclose = () => {
-  //     console.log("Disconnected from websocket");
-  //   };
-  //   return () => {
-  //     ws.close();
-  //   };
-  // }, []);
-
-  console.log("GAME OPTIONS", gameOptions);
+  console.log("GameState", gameState);
 
   return (
     <>
-      <div />
-      {gameOptions && <div>{gameOptions.maxScore}</div>}
+      {gameOptions && gameState && (
+        <SetupPhase
+          gameOptions={gameOptions}
+          gameState={gameState}
+          sendMessage={sendMessage}
+        />
+      )}
       {/* <div className={styles.gamePageContainer}>
         <PlayerSidebar players={sidebarPlayers} />
         <PhaseView {...resp.data} />
