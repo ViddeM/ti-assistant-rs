@@ -19,6 +19,10 @@ impl WsClient {
     }
 
     pub fn send_message(&mut self, message: &WsMessage) {
+        if !self.conn.can_write() {
+            panic!("Unable to write: Connection is closed");
+        }
+
         let serialized = serde_json::to_string(message).expect("Failed to serialize message");
         if let Err(e) = self.conn.write_message(Message::text(serialized)) {
             eprintln!("Failed to send message to clients, err: {e}");
@@ -28,6 +32,10 @@ impl WsClient {
     pub fn receive_message<ResponseMessage: DeserializeOwned>(
         &mut self,
     ) -> Option<ResponseMessage> {
+        if !self.conn.can_read() {
+            panic!("Unable to read: Connection is closed");
+        }
+
         let response = match self.conn.read_message() {
             Ok(r) => r,
             Err(e) => {

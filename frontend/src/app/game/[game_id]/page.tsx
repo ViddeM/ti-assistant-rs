@@ -6,12 +6,13 @@ import {
 } from "@/components/views/players_sidebar/PlayersSidebar";
 import { SelectStrategyCardView } from "@/components/views/strategy_card_select/SelectStrategyCard";
 import { StrategyCard } from "@/resources/types/strategyCards";
-import { Game as ApiGame, GameState } from "@/api/Game";
+import { GameState } from "@/api/Game";
 import { ActionPhaseView } from "@/components/views/action_phase_View/ActionPhaseView";
 import { useEffect, useState } from "react";
 import { GameOptions } from "@/api/GameOptions";
 import useWebSocket from "react-use-websocket";
 import { SetupPhase } from "@/components/views/setup/SetupPhase";
+import styles from "./styles.module.scss";
 
 export default function Game() {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
@@ -32,34 +33,48 @@ export default function Game() {
       }
 
       const gs = data["GameState"];
-      if (gs && !gameState) {
+      if (gs) {
         setGameState(gs as GameState);
       }
     }
   }, [lastMessage, gameOptions]);
 
-  console.log("GameState", gameState);
+  const sendMsg = (data: any) => sendMessage(JSON.stringify(data));
 
   return (
     <>
       {gameOptions && gameState && (
+        <div className={styles.gamePageContainer}>
+          <PlayerSidebar players={getPlayersFromGame(gameState)} />
+          <PhaseView
+            gameState={gameState}
+            gameOptions={gameOptions}
+            sendMessage={sendMsg}
+          />
+        </div>
+      )}
+    </>
+  );
+}
+
+const PhaseView = ({
+  gameState,
+  gameOptions,
+  sendMessage,
+}: {
+  gameState: GameState;
+  gameOptions: GameOptions;
+  sendMessage: (data: any) => void;
+}) => {
+  switch (gameState.phase) {
+    case "Setup":
+      return (
         <SetupPhase
           gameOptions={gameOptions}
           gameState={gameState}
           sendMessage={sendMessage}
         />
-      )}
-      {/* <div className={styles.gamePageContainer}>
-        <PlayerSidebar players={sidebarPlayers} />
-        <PhaseView {...resp.data} />
-        <div />
-      </div> */}
-    </>
-  );
-}
-
-const PhaseView = ({ gameState, systems }: ApiGame) => {
-  switch (gameState.phase) {
+      );
     case "Strategy":
       return (
         <SelectStrategyCardView
@@ -69,7 +84,9 @@ const PhaseView = ({ gameState, systems }: ApiGame) => {
         />
       );
     case "Action":
-      return <ActionPhaseView gameState={gameState} systems={systems} />;
+      return (
+        <ActionPhaseView gameState={gameState} systems={gameOptions.systems} />
+      );
     default:
       return <div>PHASE NOT YET IMPLEMENTED</div>;
   }

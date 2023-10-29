@@ -3,15 +3,13 @@
 
 use std::net::TcpListener;
 
-use data::{common::faction::Faction, components::system::System};
-use serde::Serialize;
-use strum::IntoEnumIterator;
+use data::common::faction::Faction;
 
 use crate::{
-    data::components::system::systems,
     game::{Event, Game},
+    player::Player,
     websocket_client::WsClient,
-    ws_message::{GameOptions, WsMessage},
+    ws_message::WsMessage,
 };
 
 #[macro_use]
@@ -42,6 +40,9 @@ pub async fn main() {
 
     ws_client.send_message(&WsMessage::game_options());
     ws_client.send_message(&WsMessage::game_state(game.current.clone()));
+
+    let v = serde_json::to_string_pretty(&Event::StartGame).unwrap();
+    println!("V: {v}");
 
     loop {
         if let Some(event) = ws_client.receive_message::<Event>() {
