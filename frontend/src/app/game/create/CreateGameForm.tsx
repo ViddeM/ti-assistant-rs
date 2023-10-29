@@ -26,9 +26,12 @@ export const CreateGameForm = ({ gameOptions }: CreateGameFormProps) => {
   }, [playerCount]);
 
   return (
-    <form className={`${styles.formContainer} card`} onSubmit={e => {
-      e.preventDefault()
-    }}>
+    <form
+      className={`${styles.formContainer} card`}
+      onSubmit={(e) => {
+        e.preventDefault();
+      }}
+    >
       {stage === "options" ? (
         <GameOptionsForm
           playerCounts={gameOptions.playerCounts}
