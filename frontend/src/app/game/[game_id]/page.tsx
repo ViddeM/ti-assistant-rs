@@ -13,6 +13,7 @@ import { GameOptions } from "@/api/GameOptions";
 import useWebSocket from "react-use-websocket";
 import { SetupPhase } from "@/components/views/setup/SetupPhase";
 import styles from "./styles.module.scss";
+import { StrategyCardView } from "@/components/views/strategy_card_view/StrategyCardView";
 
 export default function Game() {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
@@ -102,7 +103,15 @@ const PhaseView = ({
       );
     case "Action":
       return (
-        <ActionPhaseView gameState={gameState} systems={gameOptions.systems} />
+        <ActionPhaseView
+          gameState={gameState}
+          systems={gameOptions.systems}
+          sendMessage={sendMessage}
+        />
+      );
+    case "StrategicAction":
+      return (
+        <StrategyCardView gameState={gameState} sendMessage={sendMessage} />
       );
     default:
       return <div>PHASE NOT YET IMPLEMENTED</div>;
@@ -123,9 +132,11 @@ function getPlayersFromGame(gameState: GameState): Player[] {
         .map(([card]) => {
           const stratCard = card as StrategyCard;
           const played = gameState.spentStrategyCards.includes(stratCard);
+          const isActive = gameState.strategicAction?.card === card;
           return {
             name: stratCard,
             played: played,
+            isActive: isActive,
           };
         }),
     };

@@ -1,8 +1,7 @@
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./PlayersSidebar.module.scss";
 import { Faction } from "@/resources/types/factions";
-import { StrategyCardInfo } from "./parts/StrategyCardInfo";
-import { StrategyCard } from "@/resources/types/strategyCards";
+import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
 
 export interface Player {
   name: string;
@@ -10,10 +9,7 @@ export interface Player {
   color: string;
   isActive: boolean;
   hasPassed: boolean;
-  cards: {
-    name: StrategyCard;
-    played: boolean;
-  }[];
+  cards: StrategicCardInfo[];
 }
 
 export const PlayerSidebar = ({ players }: { players: Player[] }) => {

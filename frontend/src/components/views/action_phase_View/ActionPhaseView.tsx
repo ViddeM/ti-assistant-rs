@@ -12,11 +12,13 @@ type SubAction = "Tactical" | "Component" | "StrategyCard";
 export interface ActionPhaseViewProps {
   gameState: GameState;
   systems: System[];
+  sendMessage: (data: any) => void;
 }
 
 export const ActionPhaseView = ({
   gameState,
   systems,
+  sendMessage,
 }: ActionPhaseViewProps) => {
   const [subAction, setSubAction] = useState<SubAction | null>(null);
 
@@ -38,6 +40,13 @@ export const ActionPhaseView = ({
         <Button
           className={styles.actionButton}
           disabled={playableStrategyCards.length > 0}
+          onClick={() =>
+            sendMessage({
+              PassAction: {
+                player: gameState.currentPlayer,
+              },
+            })
+          }
         >
           Pass
         </Button>
@@ -45,7 +54,16 @@ export const ActionPhaseView = ({
           <Button
             key={c}
             className={styles.actionButton}
-            onClick={() => setSubAction("StrategyCard")}
+            // onClick={() => setSubAction("StrategyCard")}
+
+            onClick={() =>
+              sendMessage({
+                StrategicActionBegin: {
+                  card: c,
+                  player: currentPlayer,
+                },
+              })
+            }
           >
             {c}
           </Button>

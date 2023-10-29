@@ -121,6 +121,7 @@ pub enum Event {
         card: StrategyCard,
     },
 
+    #[serde(rename_all = "camelCase")]
     StrategicActionSecondary {
         player: PlayerId,
         did_secondary: bool,

@@ -3,11 +3,8 @@
 
 use std::net::TcpListener;
 
-use data::common::faction::Faction;
-
 use crate::{
     game::{Event, Game},
-    player::Player,
     websocket_client::WsClient,
     ws_message::WsMessage,
 };

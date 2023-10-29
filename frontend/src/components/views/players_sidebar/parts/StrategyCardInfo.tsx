@@ -1,11 +1,14 @@
 import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./StrategyCardInfo.module.scss";
 
+export interface StrategicCardInfo {
+  name: StrategyCard;
+  played: boolean;
+  isActive: boolean;
+}
+
 export interface StrategyCardInfoProps {
-  cards: {
-    name: StrategyCard;
-    played: boolean;
-  }[];
+  cards: StrategicCardInfo[];
 }
 
 export const StrategyCardInfo = ({ cards }: StrategyCardInfoProps) => {
@@ -15,7 +18,7 @@ export const StrategyCardInfo = ({ cards }: StrategyCardInfoProps) => {
         <div
           key={c.name}
           className={`${styles.cardContainer} style${c.name} ${
-            c.played ? styles.cardPlayed : ""
+            c.isActive ? styles.cardActive : c.played ? styles.cardPlayed : ""
           }`}
         >
           <p key={c.name}>{c.name}</p>
