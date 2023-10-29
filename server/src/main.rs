@@ -38,9 +38,6 @@ pub async fn main() {
     ws_client.send_message(&WsMessage::game_options());
     ws_client.send_message(&WsMessage::game_state(game.current.clone()));
 
-    let v = serde_json::to_string_pretty(&Event::StartGame).unwrap();
-    println!("V: {v}");
-
     loop {
         if let Some(event) = ws_client.receive_message::<Event>() {
             game.apply(event);

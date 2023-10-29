@@ -4,9 +4,14 @@ use strum::IntoEnumIterator;
 use crate::{
     data::{
         common::faction::Faction,
-        components::system::{systems, System},
+        components::{
+            public_objectives::PublicObjectives,
+            secret_objectives::SecretObjectives,
+            system::{systems, System},
+        },
     },
     game::GameState,
+    phases::Phase,
 };
 
 #[derive(Debug, Clone, Serialize)]
@@ -28,6 +33,28 @@ impl WsMessage {
                 })
                 .collect::<Vec<FactionResponse>>(),
             systems: systems().into_iter().map(|(_, system)| system).collect(),
+            public_objectives: PublicObjectives::iter()
+                .map(|o| {
+                    let info = o.get_objective_info();
+                    PublicObjectiveResponse {
+                        id: o,
+                        points: info.points,
+                        name: info.name,
+                        condition: info.condition,
+                    }
+                })
+                .collect(),
+            secret_objectives: SecretObjectives::iter()
+                .map(|o| {
+                    let info = o.get_objective_info();
+                    SecretObjectiveResponse {
+                        id: o,
+                        phase: info.phase,
+                        name: info.name,
+                        condition: info.condition,
+                    }
+                })
+                .collect(),
         })
     }
 
@@ -49,6 +76,8 @@ pub struct GameOptions {
     max_score: u32,
     factions: Vec<FactionResponse>,
     systems: Vec<System>,
+    public_objectives: Vec<PublicObjectiveResponse>,
+    secret_objectives: Vec<SecretObjectiveResponse>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -56,4 +85,22 @@ pub struct GameOptions {
 pub struct FactionResponse {
     faction: Faction,
     name: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PublicObjectiveResponse {
+    id: PublicObjectives,
+    points: u8,
+    name: String,
+    condition: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SecretObjectiveResponse {
+    id: SecretObjectives,
+    phase: Phase,
+    name: String,
+    condition: String,
 }

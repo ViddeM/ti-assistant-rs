@@ -1,8 +1,12 @@
-use rocket::serde::json::Json;
 use serde::Serialize;
-use strum::IntoEnumIterator;
 
-use crate::data::common::faction::Faction;
+use crate::{
+    data::{
+        common::faction::Faction,
+        components::{public_objectives::PublicObjectives, secret_objectives::SecretObjectives},
+    },
+    phases::Phase,
+};
 
 const MIN_PLAYER_COUNT: u32 = 3;
 const MAX_PLAYER_COUNT: u32 = 8;
@@ -16,6 +20,8 @@ pub struct GameOptionsResponse {
     min_score: u32,
     max_score: u32,
     factions: Vec<FactionResponse>,
+    public_objectives: Vec<PublicObjectiveResponse>,
+    secret_objectives: Vec<SecretObjectiveResponse>,
 }
 
 #[derive(Serialize)]
@@ -25,17 +31,20 @@ pub struct FactionResponse {
     name: String,
 }
 
-#[get("/game_options")]
-pub async fn get_game_options() -> Json<GameOptionsResponse> {
-    Json(GameOptionsResponse {
-        player_counts: (MIN_PLAYER_COUNT..=MAX_PLAYER_COUNT).collect::<Vec<u32>>(),
-        min_score: MIN_SCORE,
-        max_score: MAX_SCORE,
-        factions: Faction::iter()
-            .map(|f| FactionResponse {
-                faction: f.clone(),
-                name: f.name(),
-            })
-            .collect::<Vec<FactionResponse>>(),
-    })
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PublicObjectiveResponse {
+    id: PublicObjectives,
+    points: u8,
+    name: String,
+    condition: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SecretObjectiveResponse {
+    id: SecretObjectives,
+    phase: Phase,
+    name: String,
+    condition: String,
 }
