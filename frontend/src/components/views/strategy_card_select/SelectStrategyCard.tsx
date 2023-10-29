@@ -16,12 +16,14 @@ interface SelectedCardProps {
   selectedCards: SelectedCard[];
   selectCard: (card: StrategyCard) => void;
   expectedStrategyCards: number;
+  startActionPhase: () => void;
 }
 
 export const SelectStrategyCardView = ({
   selectedCards,
   selectCard,
   expectedStrategyCards,
+  startActionPhase,
 }: SelectedCardProps) => {
   return (
     <div className="card">
@@ -41,7 +43,10 @@ export const SelectStrategyCardView = ({
           />
         ))}
 
-        <Button disabled={selectedCards.length !== expectedStrategyCards}>
+        <Button
+          disabled={selectedCards.length !== expectedStrategyCards}
+          onClick={startActionPhase}
+        >
           Start Action Phase
         </Button>
       </div>
