@@ -6,7 +6,7 @@ import {
 } from "@/components/views/players_sidebar/PlayersSidebar";
 import { SelectStrategyCardView } from "@/components/views/strategy_card_select/SelectStrategyCard";
 import { StrategyCard } from "@/resources/types/strategyCards";
-import { GameState } from "@/api/Game";
+import { GameState, PlayerId } from "@/api/Game";
 import { ActionPhaseView } from "@/components/views/action_phase_View/ActionPhaseView";
 import { useEffect, useState } from "react";
 import { GameOptions } from "@/api/GameOptions";
@@ -110,7 +110,8 @@ const PhaseView = ({
 };
 
 function getPlayersFromGame(gameState: GameState): Player[] {
-  return Object.entries(gameState.players).map(([id, p]) => {
+  return getPlayerOrder(gameState).map((id) => {
+    const p = gameState.players[id];
     return {
       name: p.name,
       faction: p.faction,
@@ -129,6 +130,19 @@ function getPlayersFromGame(gameState: GameState): Player[] {
         }),
     };
   });
+}
+
+// TODO: Look over these
+function getPlayerOrder(gameState: GameState): PlayerId[] {
+  const phase = gameState.phase;
+  switch (phase) {
+    case "Setup":
+      return Object.keys(gameState.players);
+    case "Strategy":
+      return gameState.tableOrder;
+    default:
+      return gameState.turnOrder;
+  }
 }
 
 function getExpectedStrategyCards(noPlayers: number): number {

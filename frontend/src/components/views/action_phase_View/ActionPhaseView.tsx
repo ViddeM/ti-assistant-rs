@@ -74,7 +74,7 @@ export const ActionPhaseView = ({
                     {systems
                       .flatMap((s) => s.planets)
                       .map((s) => (
-                        <option>{s}</option>
+                        <option key={s}>{s}</option>
                       ))}
                   </Dropdown>
                   <Button>Take</Button>
