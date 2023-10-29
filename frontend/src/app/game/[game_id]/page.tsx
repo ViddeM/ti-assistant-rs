@@ -14,6 +14,7 @@ import useWebSocket from "react-use-websocket";
 import { SetupPhase } from "@/components/views/setup/SetupPhase";
 import styles from "./styles.module.scss";
 import { StrategyCardView } from "@/components/views/strategy_card_view/StrategyCardView";
+import { StatusPhaseView } from "@/components/views/status_phase_view/StatusPhaseView";
 
 export default function Game() {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
@@ -113,6 +114,8 @@ const PhaseView = ({
       return (
         <StrategyCardView gameState={gameState} sendMessage={sendMessage} />
       );
+    case "Status":
+      return <StatusPhaseView />;
     default:
       return <div>PHASE NOT YET IMPLEMENTED</div>;
   }

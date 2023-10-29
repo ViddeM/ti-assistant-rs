@@ -4,10 +4,6 @@ import { GameState, System } from "@/api/Game";
 import { Button } from "@/components/elements/button/Button";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./ActionPhaseView.module.scss";
-import { useState } from "react";
-import { Dropdown } from "@/components/elements/dropdown/Dropdown";
-
-type SubAction = "Tactical" | "Component" | "StrategyCard";
 
 export interface ActionPhaseViewProps {
   gameState: GameState;
@@ -17,11 +13,8 @@ export interface ActionPhaseViewProps {
 
 export const ActionPhaseView = ({
   gameState,
-  systems,
   sendMessage,
 }: ActionPhaseViewProps) => {
-  const [subAction, setSubAction] = useState<SubAction | null>(null);
-
   const currentPlayer = gameState.currentPlayer as string | null;
 
   if (!currentPlayer) {
@@ -54,8 +47,6 @@ export const ActionPhaseView = ({
           <Button
             key={c}
             className={styles.actionButton}
-            // onClick={() => setSubAction("StrategyCard")}
-
             onClick={() =>
               sendMessage({
                 StrategicActionBegin: {
@@ -70,43 +61,17 @@ export const ActionPhaseView = ({
         ))}
         <Button
           className={styles.actionButton}
-          onClick={() => setSubAction("Tactical")}
+          onClick={() =>
+            sendMessage({
+              TacticalAction: {
+                player: gameState.currentPlayer,
+              },
+            })
+          }
         >
           Tactical
         </Button>
-        <Button
-          className={styles.actionButton}
-          onClick={() => setSubAction("Component")}
-        >
-          Component
-        </Button>
       </div>
-      {subAction && (
-        <>
-          <div className={styles.actionOptions}>
-            {subAction === "Tactical" ? (
-              <>
-                <div>
-                  <label>Take control of planet</label>
-                  <Dropdown className={styles.actionButton}>
-                    {systems
-                      .flatMap((s) => s.planets)
-                      .map((s) => (
-                        <option key={s}>{s}</option>
-                      ))}
-                  </Dropdown>
-                  <Button>Take</Button>
-                </div>
-                <Button className={styles.actionButton}>
-                  Score action phase objective
-                </Button>
-              </>
-            ) : (
-              <p>{subAction} not implemented</p>
-            )}
-          </div>
-        </>
-      )}
     </div>
   );
 };
