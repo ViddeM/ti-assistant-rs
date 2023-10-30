@@ -23,6 +23,20 @@
     }
 }
 
+.playerBoxLegend {
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 6px;
+}
+
+.whiteBackground {
+    background-color: white;
+}
+
+.grayBackground {
+    background-color: rgb(24, 24, 24);
+}
+
 .activePlayer {
     background-color: #306030;
 }

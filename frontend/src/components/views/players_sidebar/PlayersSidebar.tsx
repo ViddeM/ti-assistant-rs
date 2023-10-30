@@ -25,10 +25,10 @@ export const PlayerSidebar = ({ players }: { players: Player[] }) => {
 
 const PlayerBox = ({ player }: { player: Player }) => {
   return (
-    <div
+    <fieldset
       className={`playerColorBorder${player.color} ${
         styles.playerBoxContainer
-      } ${
+      } playerColor${player.color} ${
         player.isActive
           ? styles.activePlayer
           : player.hasPassed
@@ -36,16 +36,24 @@ const PlayerBox = ({ player }: { player: Player }) => {
           : ""
       }`}
     >
+      <legend
+        className={`${styles.playerBoxLegend} playerColorBorder${
+          player.color
+        } ${
+          player.color === "Black"
+            ? styles.whiteBackground
+            : styles.grayBackground
+        }`}
+      >
+        {player.name}
+      </legend>
+
       <div className={styles.playerTitleRow}>
         <FactionIcon faction={player.faction} />
-        <p className={styles.playerName}>
-          {player.name}
-          {player.isActive ? " - ACTIVE" : player.hasPassed ? " - PASSED" : ""}
-        </p>
       </div>
       <div className={styles.content}>
         <StrategyCardInfo cards={player.cards} />
       </div>
-    </div>
+    </fieldset>
   );
 };
