@@ -3,6 +3,7 @@ import styles from "./PlayersSidebar.module.scss";
 import { Faction } from "@/resources/types/factions";
 import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
 import { Color } from "@/api/GameOptions";
+import { Icon } from "@/components/elements/icon/Icon";
 
 export interface Player {
   name: string;
@@ -54,6 +55,9 @@ const PlayerBox = ({ player }: { player: Player }) => {
       <div className={styles.content}>
         <StrategyCardInfo cards={player.cards} />
       </div>
+      <Icon name="biotic" isFilled>
+        13
+      </Icon>
     </fieldset>
   );
 };
