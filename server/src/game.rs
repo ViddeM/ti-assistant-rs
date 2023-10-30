@@ -137,6 +137,11 @@ pub enum Event {
     PassAction {
         player: PlayerId,
     },
+
+    /* -- STATUS PHASE EVENTS -- */
+    // TODO: Score objectives & Reveal objectives
+    CompleteStatusPhase,
+    // TODO: Agenda phase
 }
 
 impl GameState {
@@ -262,6 +267,19 @@ impl GameState {
 
                 self.passed_players.insert(player);
                 self.advance_turn()?;
+            }
+            Event::CompleteStatusPhase => {
+                // TODO: Require objectives scored & revealed
+
+                // TODO: Agenda phase
+
+                // Reset state
+                // TODO: Set current player to speaker
+                self.phase = Phase::Strategy;
+                self.turn_order = self.table_order.clone();
+                self.strategy_card_holders = HashMap::new();
+                self.passed_players = HashSet::new();
+                self.spent_strategy_cards = HashSet::new();
             }
         }
         Ok(())

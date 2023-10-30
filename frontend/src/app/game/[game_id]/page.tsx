@@ -115,7 +115,9 @@ const PhaseView = ({
         <StrategyCardView gameState={gameState} sendMessage={sendMessage} />
       );
     case "Status":
-      return <StatusPhaseView gameOptions={gameOptions} />;
+      return (
+        <StatusPhaseView gameOptions={gameOptions} sendMessage={sendMessage} />
+      );
     default:
       return <div>PHASE NOT YET IMPLEMENTED</div>;
   }

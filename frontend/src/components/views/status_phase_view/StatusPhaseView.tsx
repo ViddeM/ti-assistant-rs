@@ -1,12 +1,17 @@
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import styles from "./StatusPhaseView.module.scss";
 import { GameOptions } from "@/api/GameOptions";
+import { Button } from "@/components/elements/button/Button";
 
 export interface StatusPhaseViewProps {
   gameOptions: GameOptions;
+  sendMessage: (data: any) => void;
 }
 
-export const StatusPhaseView = ({ gameOptions }: StatusPhaseViewProps) => {
+export const StatusPhaseView = ({
+  gameOptions,
+  sendMessage,
+}: StatusPhaseViewProps) => {
   return (
     <div className={`card ${styles.statusViewCard}`}>
       <h2>Status Phase</h2>
@@ -42,6 +47,10 @@ export const StatusPhaseView = ({ gameOptions }: StatusPhaseViewProps) => {
         <li>Repair Units</li>
         <li>Return Strategy Cards</li>
       </ol>
+      {/* TODO: Agenda phase */}
+      <Button onClick={() => sendMessage("CompleteStatusPhase")}>
+        Start next turn
+      </Button>
     </div>
   );
 };
