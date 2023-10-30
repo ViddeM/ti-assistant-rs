@@ -3,7 +3,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     data::{
-        common::faction::Faction,
+        common::{color::Color, faction::Faction},
         components::{
             public_objectives::PublicObjectives,
             secret_objectives::SecretObjectives,
@@ -32,6 +32,7 @@ impl WsMessage {
                     name: f.name(),
                 })
                 .collect::<Vec<FactionResponse>>(),
+            colors: Color::iter().collect(),
             systems: systems().into_iter().map(|(_, system)| system).collect(),
             public_objectives: PublicObjectives::iter()
                 .map(|o| {
@@ -74,6 +75,7 @@ pub struct GameOptions {
     player_counts: Vec<u32>,
     min_score: u32,
     max_score: u32,
+    colors: Vec<Color>,
     factions: Vec<FactionResponse>,
     systems: Vec<System>,
     public_objectives: Vec<PublicObjectiveResponse>,

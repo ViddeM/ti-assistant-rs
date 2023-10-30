@@ -31,4 +31,49 @@
     padding: $paddingLarge 0;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.colorsContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.colorButton {
+    border-radius: $border-radius;
+    min-width: 2rem;
+    min-height: 2rem;
+    margin: $margin;
+    border: 2px solid white;
+
+    &:hover {
+        filter: brightness(0.5);
+        cursor: pointer;
+    }
+}
+
+.disabledColorButton {
+    background-color: gray;
+    cursor: default;
+    
+
+    &:hover {
+        filter: none;
+        cursor: default;
+    }
+}
+
+.colorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: $margin 0;
+}
+
+.startGameButton {
+    margin-top: $margin;
 }

@@ -1,6 +1,7 @@
 import { Faction } from "@/resources/types/factions";
 import { GamePhase } from "@/resources/types/gamePhase";
 import { StrategyCard } from "@/resources/types/strategyCards";
+import { Color } from "./GameOptions";
 
 export type PlayerId = string;
 
@@ -36,5 +37,6 @@ export interface StrategyCardProgress {
 export interface Player {
   name: string;
   faction: Faction;
+  color: Color;
   planets: string[];
 }

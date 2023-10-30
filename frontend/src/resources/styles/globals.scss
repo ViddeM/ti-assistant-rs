@@ -71,3 +71,74 @@ a {
     padding: 3rem;
   }
 }
+
+.styleLeadership {
+    color: $leadershipColor;
+    border-color: $leadershipColor;
+}
+.styleDiplomacy {
+    color: $diplomacyColor;
+    border-color: $diplomacyColor;
+}
+.stylePolitics {
+    color: $politicsColor;
+    border-color: $politicsColor;
+}
+.styleConstruction {
+    color: $constructionColor;
+    border-color: $constructionColor;
+}
+.styleTrade {
+    color: $tradeColor;
+    border-color: $tradeColor;
+}
+.styleWarfare {
+    color: $warfareColor;
+    border-color: $warfareColor;
+}
+.styleTechnology {
+    color: $technologyColor;
+    border-color: $technologyColor;
+}
+.styleImperial {
+    color: $imperialColor;
+    border-color: $imperialColor;
+}
+
+.playerColorBackgroundBlack {
+  background-color: $playerColorBlack;
+}
+.playerColorBackgroundBlue {
+  background-color: $playerColorBlue;
+}
+.playerColorBackgroundGreen {
+  background-color: $playerColorGreen;
+}
+.playerColorBackgroundRed {
+  background-color: $playerColorRed;
+}
+.playerColorBackgroundYellow {
+  background-color: $playerColorYellow;
+}
+.playerColorBackgroundPurple {
+  background-color: $playerColorPurple;
+}
+
+.playerColorBorderBlack {
+  border-color: $playerColorBlack;
+}
+.playerColorBorderBlue {
+  border-color: $playerColorBlue;
+}
+.playerColorBorderGreen {
+  border-color: $playerColorGreen;
+}
+.playerColorBorderRed {
+  border-color: $playerColorRed;
+}
+.playerColorBorderYellow {
+  border-color: $playerColorYellow;
+}
+.playerColorBorderPurple {
+  border-color: $playerColorPurple;
+}

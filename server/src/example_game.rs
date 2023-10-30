@@ -1,5 +1,8 @@
 use crate::{
-    data::{common::faction::Faction, components::strategy_card::StrategyCard},
+    data::{
+        common::{color::Color, faction::Faction},
+        components::strategy_card::StrategyCard,
+    },
     game::{Event, Game},
     player::Player,
 };
@@ -11,6 +14,7 @@ pub fn play_example_game() -> Game {
         Event::AddPlayer {
             player: Player {
                 name: "Tux".into(),
+                color: Color::Black,
                 faction: Faction::SardakkNorr,
                 planets: vec![],
             },
@@ -18,6 +22,7 @@ pub fn play_example_game() -> Game {
         Event::AddPlayer {
             player: Player {
                 name: "Vidde".into(),
+                color: Color::Purple,
                 faction: Faction::UniversitiesOfJolNar,
                 planets: vec![],
             },
@@ -25,6 +30,7 @@ pub fn play_example_game() -> Game {
         Event::AddPlayer {
             player: Player {
                 name: "Gurr".into(),
+                color: Color::Green,
                 faction: Faction::NekroVirus,
                 planets: vec![],
             },

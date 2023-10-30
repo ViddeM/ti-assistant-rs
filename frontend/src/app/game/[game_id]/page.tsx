@@ -129,7 +129,7 @@ function getPlayersFromGame(gameState: GameState): Player[] {
     return {
       name: p.name,
       faction: p.faction,
-      color: "#000",
+      color: p.color,
       isActive: gameState.currentPlayer === p.name,
       hasPassed: gameState.passedPlayers.includes(id),
       cards: Object.entries(gameState.strategyCardHolders)

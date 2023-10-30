@@ -2,11 +2,12 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./PlayersSidebar.module.scss";
 import { Faction } from "@/resources/types/factions";
 import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
+import { Color } from "@/api/GameOptions";
 
 export interface Player {
   name: string;
   faction: Faction;
-  color: string;
+  color: Color;
   isActive: boolean;
   hasPassed: boolean;
   cards: StrategicCardInfo[];
@@ -25,8 +26,9 @@ export const PlayerSidebar = ({ players }: { players: Player[] }) => {
 const PlayerBox = ({ player }: { player: Player }) => {
   return (
     <div
-      style={{ borderColor: player.color }}
-      className={`${styles.playerBoxContainer} ${
+      className={`playerColorBorder${player.color} ${
+        styles.playerBoxContainer
+      } ${
         player.isActive
           ? styles.activePlayer
           : player.hasPassed

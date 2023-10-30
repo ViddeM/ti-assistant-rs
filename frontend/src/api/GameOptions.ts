@@ -7,6 +7,7 @@ export interface GameOptions {
   minScore: number;
   maxScore: number;
   factions: FactionResponse[];
+  colors: Color[];
   systems: System[];
   secretObjectives: SecretObjectiveInfo[];
   publicObjectives: PublicObjectiveInfo[];
@@ -30,3 +31,5 @@ export interface PublicObjectiveInfo {
   name: string;
   condition: string;
 }
+
+export type Color = "Blue" | "Green" | "Red" | "Yellow" | "Black" | "Purple";

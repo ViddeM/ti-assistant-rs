@@ -1,7 +1,7 @@
 "use client";
 
 import { GameState, Player } from "@/api/Game";
-import { FactionResponse, GameOptions } from "@/api/GameOptions";
+import { Color, FactionResponse, GameOptions } from "@/api/GameOptions";
 import { Button } from "@/components/elements/button/Button";
 import styles from "./SetupPhase.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
@@ -29,19 +29,20 @@ export const SetupPhase = ({
     gameOptions.factions,
     Object.values(gameState.players)
   );
+  const takenColors = Object.values(gameState.players).map((p) => p.color);
 
-  const addPlayer = (name: string, faction: Faction) => {
+  const addPlayer = (name: string, faction: Faction, color: Color) => {
     sendMessage({
       AddPlayer: {
         player: {
           name: name,
           faction: faction,
+          color: color,
           planets: [],
         },
       },
     });
   };
-
   return (
     <div className={`card ${styles.setupCard}`}>
       <h2>Setup</h2>
@@ -50,11 +51,14 @@ export const SetupPhase = ({
       ))}
       {playerCount < 8 && (
         <AddPlayer
+          colors={gameOptions.colors}
+          takenColors={takenColors}
           availableFactions={availableFactions}
           addPlayer={addPlayer}
         />
       )}
       <Button
+        className={styles.startGameButton}
         disabled={!allowedNumberOfPlayers}
         onClick={() => {
           sendMessage("StartGame");
@@ -80,18 +84,27 @@ const DisplayPlayer = (player: Player) => {
 
 interface AddPlayerProps {
   availableFactions: FactionResponse[];
-  addPlayer: (name: string, faction: Faction) => void;
+  colors: Color[];
+  takenColors: Color[];
+  addPlayer: (name: string, faction: Faction, color: Color) => void;
 }
 
-const AddPlayer = ({ availableFactions, addPlayer }: AddPlayerProps) => {
+const AddPlayer = ({
+  availableFactions,
+  addPlayer,
+  colors,
+  takenColors,
+}: AddPlayerProps) => {
   const [newPlayerName, setNewPlayerName] = useState<string>("");
   const [newPlayerFaction, setNewPlayerFaction] = useState<Faction | null>(
     null
   );
+  const [color, setColor] = useState<Color>(colors[0]);
 
   const resetForm = () => {
     setNewPlayerName("");
     setNewPlayerFaction(null);
+    setColor(colors.filter((c) => !takenColors.includes(c) && c !== color)[0]);
   };
 
   return (
@@ -101,7 +114,7 @@ const AddPlayer = ({ availableFactions, addPlayer }: AddPlayerProps) => {
         e.preventDefault();
 
         if (newPlayerFaction !== null) {
-          addPlayer(newPlayerName, newPlayerFaction);
+          addPlayer(newPlayerName, newPlayerFaction, color);
           resetForm();
         }
       }}
@@ -137,6 +150,30 @@ const AddPlayer = ({ availableFactions, addPlayer }: AddPlayerProps) => {
             </option>
           ))}
         </Dropdown>
+      </div>
+      <div className={styles.colorsContainer}>
+        {colors.map((c) => (
+          <div key={c} className={styles.colorContainer}>
+            <label htmlFor={`id-${c}`}>
+              <div
+                className={`${styles.colorButton} ${
+                  takenColors.includes(c)
+                    ? styles.disabledColorButton
+                    : `playerColorBackground${c}`
+                }`}
+              />
+            </label>
+            <input
+              name="color"
+              id={`id-${c}`}
+              type="radio"
+              value={c}
+              checked={c === color}
+              disabled={takenColors.includes(c)}
+              onClick={() => setColor(c)}
+            />
+          </div>
+        ))}
       </div>
       <Button
         type="submit"

@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     data::{
-        common::faction::Faction,
+        common::{color::Color, faction::Faction},
         components::{public_objectives::PublicObjectives, secret_objectives::SecretObjectives},
     },
     phases::Phase,
@@ -20,6 +20,7 @@ pub struct GameOptionsResponse {
     min_score: u32,
     max_score: u32,
     factions: Vec<FactionResponse>,
+    colors: Vec<Color>,
     public_objectives: Vec<PublicObjectiveResponse>,
     secret_objectives: Vec<SecretObjectiveResponse>,
 }

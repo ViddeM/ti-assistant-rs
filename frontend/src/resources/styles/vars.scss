@@ -20,35 +20,9 @@ $widthMedium: 48em;
 $widthLarge: 64em;
 $widthExtraLarge: 80em;
 
-.styleLeadership {
-    color: $leadershipColor;
-    border-color: $leadershipColor;
-}
-.styleDiplomacy {
-    color: $diplomacyColor;
-    border-color: $diplomacyColor;
-}
-.stylePolitics {
-    color: $politicsColor;
-    border-color: $politicsColor;
-}
-.styleConstruction {
-    color: $constructionColor;
-    border-color: $constructionColor;
-}
-.styleTrade {
-    color: $tradeColor;
-    border-color: $tradeColor;
-}
-.styleWarfare {
-    color: $warfareColor;
-    border-color: $warfareColor;
-}
-.styleTechnology {
-    color: $technologyColor;
-    border-color: $technologyColor;
-}
-.styleImperial {
-    color: $imperialColor;
-    border-color: $imperialColor;
-}
+$playerColorBlack: black;
+$playerColorBlue: blue;
+$playerColorGreen: green;
+$playerColorRed: red;
+$playerColorYellow: yellow;
+$playerColorPurple: purple;
