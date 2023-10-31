@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
 use crate::{
@@ -10,17 +10,27 @@ use crate::{
             system::{systems, System},
         },
     },
-    game::GameState,
+    game::{Event, GameState},
     phases::Phase,
 };
 
+// TODO
+pub type GameId = String;
+
+#[derive(Debug, Clone, Deserialize)]
+pub enum WsMessageIn {
+    JoinGame(GameId),
+    NewGame,
+    Event(Event),
+}
+
 #[derive(Debug, Clone, Serialize)]
-pub enum WsMessage {
+pub enum WsMessageOut {
     GameOptions(GameOptions),
     GameState(GameState),
 }
 
-impl WsMessage {
+impl WsMessageOut {
     pub fn game_options() -> Self {
         Self::GameOptions(GameOptions {
             player_counts: (MIN_PLAYER_COUNT..=MAX_PLAYER_COUNT).collect::<Vec<u32>>(),

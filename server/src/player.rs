@@ -7,6 +7,14 @@ use crate::data::{
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct NewPlayer {
+    pub name: String,
+    pub faction: Faction,
+    pub color: Color,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Player {
     pub name: String,
     pub faction: Faction,
@@ -22,6 +30,17 @@ impl Player {
             faction,
             color,
             planets,
+        }
+    }
+}
+
+impl From<NewPlayer> for Player {
+    fn from(new: NewPlayer) -> Self {
+        Player {
+            name: new.name,
+            faction: new.faction,
+            color: new.color,
+            planets: Default::default(),
         }
     }
 }

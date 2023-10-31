@@ -4,35 +4,32 @@ use crate::{
         components::strategy_card::StrategyCard,
     },
     game::{Event, Game},
-    player::Player,
+    player::NewPlayer,
 };
 
 pub fn play_example_game() -> Game {
-    let mut game = Game::new(vec![]);
+    let mut game = Game::default();
 
     let events = vec![
         Event::AddPlayer {
-            player: Player {
+            player: NewPlayer {
                 name: "Tux".into(),
                 color: Color::Black,
                 faction: Faction::SardakkNorr,
-                planets: vec![],
             },
         },
         Event::AddPlayer {
-            player: Player {
+            player: NewPlayer {
                 name: "Vidde".into(),
                 color: Color::Purple,
                 faction: Faction::UniversitiesOfJolNar,
-                planets: vec![],
             },
         },
         Event::AddPlayer {
-            player: Player {
+            player: NewPlayer {
                 name: "Gurr".into(),
                 color: Color::Green,
                 faction: Faction::NekroVirus,
-                planets: vec![],
             },
         },
         Event::StartGame,

@@ -1,67 +1,52 @@
-use std::net::TcpStream;
-
+use crate::ws_message::WsMessageOut;
+use eyre::{bail, Context};
+use futures::sink::SinkExt;
+use futures::stream::StreamExt;
 use serde::de::DeserializeOwned;
-use tungstenite::Message;
-#[doc(hidden)]
-use tungstenite::WebSocket;
-
-use crate::ws_message::WsMessage;
+use tokio::net::TcpStream;
+use tokio_tungstenite::{tungstenite::Message, WebSocketStream};
 
 #[derive(Debug)]
 pub struct WsClient {
-    conn: WebSocket<TcpStream>,
+    conn: WebSocketStream<TcpStream>,
 }
 
 impl WsClient {
-    pub fn accept(stream: TcpStream) -> Self {
-        let ws = tungstenite::accept(stream).expect("Failed to initiate websocket");
+    pub async fn accept(stream: TcpStream) -> Self {
+        let ws = tokio_tungstenite::accept_async(stream)
+            .await
+            .expect("Failed to initiate websocket");
         Self { conn: ws }
     }
 
-    pub fn send_message(&mut self, message: &WsMessage) {
-        if !self.conn.can_write() {
-            panic!("Unable to write: Connection is closed");
-        }
-
-        let serialized = serde_json::to_string(message).expect("Failed to serialize message");
-        if let Err(e) = self.conn.write_message(Message::text(serialized)) {
-            eprintln!("Failed to send message to clients, err: {e}");
-        }
+    pub async fn send_message(&mut self, message: &WsMessageOut) -> eyre::Result<()> {
+        let serialized = serde_json::to_string(message).wrap_err("Failed to serialize message")?;
+        self.conn
+            .send(Message::text(serialized))
+            .await
+            .wrap_err("failed to send message to client")
     }
 
-    pub fn receive_message<ResponseMessage: DeserializeOwned>(
+    pub async fn receive_message<ResponseMessage: DeserializeOwned>(
         &mut self,
-    ) -> Option<ResponseMessage> {
-        if !self.conn.can_read() {
-            panic!("Unable to read: Connection is closed");
-        }
-
-        let response = match self.conn.read_message() {
-            Ok(r) => r,
-            Err(e) => {
-                eprintln!("Failed to read message, error {e}");
-                return None;
+    ) -> eyre::Result<ResponseMessage> {
+        let response = match self.conn.next().await {
+            Some(Ok(r)) => r,
+            Some(Err(e)) => {
+                bail!("Failed to read message, error {e}");
+            }
+            None => {
+                bail!("EOF")
             }
         };
 
         let text_response = response
             .to_text()
-            .expect("Failed to read text from response");
-        match serde_json::from_str(text_response) {
-            Ok(m) => Some(m),
-            Err(e) => {
-                eprintln!("Failed to parse message [{text_response}], got err {e}");
-                self.close();
-                None
-            }
-        }
-    }
+            .wrap_err("Failed to read text from response")?;
 
-    pub fn close(&mut self) {
-        println!("Closing WS connection");
+        log::debug!("got message ¿{text_response}?");
 
-        if self.conn.can_write() {
-            self.conn.close(None).expect("Failed to disconnect player");
-        }
+        serde_json::from_str(text_response)
+            .wrap_err_with(|| format!("Failed to parse message {text_response:?}"))
     }
 }

@@ -5,9 +5,13 @@ use std::{
     sync::Arc,
 };
 
-use crate::{data::components::strategy_card::StrategyCard, phases::Phase, player::Player};
+use crate::{
+    data::components::strategy_card::StrategyCard,
+    phases::Phase,
+    player::{NewPlayer, Player},
+};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
     pub players: Vec<Player>,
@@ -16,26 +20,18 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(players: Vec<Player>) -> Self {
-        Self {
-            players,
-            current: Default::default(),
-            history: Default::default(),
-        }
-    }
-
     /// Apply an event and update the game state.
     ///
     /// If the event is not valid for the current state it is rejected.
     pub fn apply(&mut self, event: Event) {
-        println!("{event:?}");
+        log::debug!("{event:?}");
         if let Err(e) = self.current.apply(event.clone()) {
-            println!("event not valid for current state");
-            println!("{e}");
+            log::warn!("event not valid for current state");
+            log::warn!("{e}");
             return;
         }
 
-        println!("{:#?}", self.current);
+        log::info!("{:#?}", self.current);
         self.history.push(event);
     }
 
@@ -100,7 +96,7 @@ pub type PlayerId = Arc<str>;
 pub enum Event {
     /* -- SETUP PHASE EVENTS -- */
     AddPlayer {
-        player: Player,
+        player: NewPlayer,
     },
     StartGame,
 
@@ -155,7 +151,7 @@ impl GameState {
                 );
                 let id: PlayerId = player.name.clone().into();
                 self.table_order.push(id.clone());
-                self.players.insert(id, player);
+                self.players.insert(id, player.into());
             }
             Event::StartGame => {
                 self.assert_phase(Phase::Setup)?;
