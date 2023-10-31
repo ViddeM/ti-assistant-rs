@@ -70,6 +70,8 @@ pub async fn handle_client(stream: TcpStream, from: SocketAddr, lobbies: Arc<Lob
                     bail!("new game id collision: {id:?}");
                 }
 
+                log::info!("created new game {id:?}");
+
                 lobbies.insert(id, Arc::clone(&lobby));
 
                 lobby

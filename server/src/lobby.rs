@@ -1,5 +1,5 @@
 use rand::random;
-use serde::{Deserialize, Serialize};
+use serde::{de::Error, Deserialize, Serialize};
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
 
@@ -29,7 +29,7 @@ impl Serialize for GameId {
     where
         S: serde::Serializer,
     {
-        self.0.serialize(serializer)
+        format!("{:08x}", self.0).serialize(serializer)
     }
 }
 
@@ -38,7 +38,10 @@ impl<'de> Deserialize<'de> for GameId {
     where
         D: serde::Deserializer<'de>,
     {
-        Ok(Self(u32::deserialize(deserializer)?))
+        let s = <&str>::deserialize(deserializer)?;
+        let id = u32::from_str_radix(s, 16)
+            .map_err(|_| D::Error::custom("failed to parse game id, expected hex string"))?;
+        Ok(Self(id))
     }
 }
 
