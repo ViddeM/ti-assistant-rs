@@ -7,7 +7,10 @@ import { Icon } from "@/components/elements/icon/Icon";
 
 export interface Player {
   name: string;
-  faction: Faction;
+  faction: {
+    faction: Faction;
+    name: string;
+  };
   color: Color;
   isActive: boolean;
   hasPassed: boolean;
@@ -46,18 +49,30 @@ const PlayerBox = ({ player }: { player: Player }) => {
             : styles.grayBackground
         }`}
       >
-        {player.name}
+        <h6 style={{ textOverflow: "ellipsis" }}>{player.name} </h6>
       </legend>
-
-      <div className={styles.playerTitleRow}>
-        <FactionIcon faction={player.faction} />
-      </div>
       <div className={styles.content}>
         <StrategyCardInfo cards={player.cards} />
       </div>
-      <Icon name="biotic" isFilled>
-        13
-      </Icon>
+      <div>
+        <div className={styles.planetContent}>
+          <div className={styles.resourceRow}>
+            <div className={styles.planetsCount}>
+              <p>18</p>
+            </div>
+            <p>14</p>
+            <Icon name="resource" isFilled />
+            <Icon name="influence" isFilled />
+            <p>19</p>
+          </div>
+          <div className={styles.resourceRow}>
+            2
+            <Icon name="cultural" />
+            3<Icon name="industrial" />
+            8<Icon name="hazardous" />
+          </div>
+        </div>
+      </div>
     </fieldset>
   );
 };

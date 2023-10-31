@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, ImgHTMLAttributes } from "react";
+import { FC, HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
 import styles from "./Icon.module.scss";
 import Image from "next/image";
 
@@ -18,18 +18,27 @@ export type IconType =
 
 export type IconProps = {
   name: IconType;
-  isFilled: boolean;
+  isFilled?: boolean;
+  width?: number;
+  height?: number;
+  children?: ReactNode;
 };
 
-export const Icon: FC<IconProps> = ({ name, isFilled }) => {
+export const Icon: FC<IconProps> = ({
+  name,
+  isFilled,
+  width,
+  height,
+  children,
+}) => {
   const style = `${styles.icon}`;
 
   return (
     <Image
       src={`/icons/resources/${name}${isFilled ? "_filled" : ""}.png`}
       alt={`${name}${isFilled ? "_filled" : ""} icon`}
-      width={32}
-      height={32}
+      width={width ? width : 16}
+      height={height ? height : 16}
       className={style}
     />
   );

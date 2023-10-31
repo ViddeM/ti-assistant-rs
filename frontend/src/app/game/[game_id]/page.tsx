@@ -47,7 +47,7 @@ export default function Game() {
     <>
       {gameOptions && gameState && (
         <div className={styles.gamePageContainer}>
-          <PlayerSidebar players={getPlayersFromGame(gameState)} />
+          <PlayerSidebar players={getPlayersFromGame(gameState, gameOptions)} />
           <PhaseView
             gameState={gameState}
             gameOptions={gameOptions}
@@ -123,12 +123,15 @@ const PhaseView = ({
   }
 };
 
-function getPlayersFromGame(gameState: GameState): Player[] {
+function getPlayersFromGame(
+  gameState: GameState,
+  gameOptions: GameOptions
+): Player[] {
   return getPlayerOrder(gameState).map((id) => {
     const p = gameState.players[id];
     return {
       name: p.name,
-      faction: p.faction,
+      faction: gameOptions.factions.filter((f) => f.faction === p.faction)[0],
       color: p.color,
       isActive: gameState.currentPlayer === p.name,
       hasPassed: gameState.passedPlayers.includes(id),

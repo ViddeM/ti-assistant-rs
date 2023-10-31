@@ -170,7 +170,7 @@ const AddPlayer = ({
               value={c}
               checked={c === color}
               disabled={takenColors.includes(c)}
-              onClick={() => setColor(c)}
+              onChange={() => setColor(c)}
             />
           </div>
         ))}
