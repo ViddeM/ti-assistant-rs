@@ -1,18 +1,23 @@
 #![forbid(unsafe_code)]
 #![allow(dead_code)]
 
-use std::{collections::HashMap, net::SocketAddr, sync::Arc};
+use std::{net::SocketAddr, sync::Arc};
 
 use eyre::bail;
-use game::GameState;
+use lobby::GameId;
 use tokio::{
     net::{TcpListener, TcpStream},
     select, spawn,
     sync::{broadcast, RwLock},
 };
-use ws_message::{GameId, WsMessageOut};
+use ws_message::WsMessageOut;
 
-use crate::{game::Game, websocket_client::WsClient, ws_message::WsMessageIn};
+use crate::{
+    game::Game,
+    lobby::{Lobbies, Lobby},
+    websocket_client::WsClient,
+    ws_message::WsMessageIn,
+};
 
 #[macro_use]
 extern crate rocket;
@@ -46,16 +51,6 @@ pub async fn main() {
     }
 }
 
-#[derive(Default)]
-pub struct Lobbies {
-    list: RwLock<HashMap<GameId, Arc<Lobby>>>,
-}
-
-pub struct Lobby {
-    game: RwLock<Game>,
-    state_updates: broadcast::Sender<GameState>,
-}
-
 pub async fn handle_client(stream: TcpStream, from: SocketAddr, lobbies: Arc<Lobbies>) {
     async fn inner(stream: TcpStream, from: SocketAddr, lobbies: Arc<Lobbies>) -> eyre::Result<()> {
         let mut ws_client = WsClient::accept(stream).await;
@@ -64,7 +59,7 @@ pub async fn handle_client(stream: TcpStream, from: SocketAddr, lobbies: Arc<Lob
 
         let lobby = match message {
             WsMessageIn::NewGame => {
-                let id: GameId = "asdf".to_string(); //TODO: randomize id
+                let id = GameId::random();
                 let lobby = Arc::new(Lobby {
                     game: RwLock::new(Game::default()),
                     state_updates: broadcast::Sender::new(100),

@@ -11,11 +11,9 @@ use crate::{
         },
     },
     game::{Event, GameState},
+    lobby::GameId,
     phases::Phase,
 };
-
-// TODO
-pub type GameId = String;
 
 #[derive(Debug, Clone, Deserialize)]
 pub enum WsMessageIn {
