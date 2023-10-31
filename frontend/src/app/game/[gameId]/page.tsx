@@ -8,7 +8,7 @@ import { SelectStrategyCardView } from "@/components/views/strategy_card_select/
 import { StrategyCard } from "@/resources/types/strategyCards";
 import { GameState, PlayerId } from "@/api/Game";
 import { ActionPhaseView } from "@/components/views/action_phase_View/ActionPhaseView";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GameOptions } from "@/api/GameOptions";
 import useWebSocket from "react-use-websocket";
 import { SetupPhase } from "@/components/views/setup/SetupPhase";
@@ -16,13 +16,17 @@ import styles from "./styles.module.scss";
 import { StrategyCardView } from "@/components/views/strategy_card_view/StrategyCardView";
 import { StatusPhaseView } from "@/components/views/status_phase_view/StatusPhaseView";
 
-export default function Game() {
+const NEW_GAME_ID = "new";
+
+export default function Game({ params }: { params: { gameId: string } }) {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     "ws://localhost:5555"
   );
+
+  const initialized = useRef(false);
 
   useEffect(() => {
     if (lastMessage !== null) {
@@ -42,6 +46,23 @@ export default function Game() {
   }, [lastMessage, gameOptions]);
 
   const sendMsg = (data: any) => sendMessage(JSON.stringify(data));
+  const sendEvent = (data: any) => sendMsg({ Event: data });
+
+  useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      console.log("Fuckoff you bastard");
+      if (params.gameId === NEW_GAME_ID) {
+        sendMessage('"NewGame"');
+      } else {
+        sendMessage(
+          JSON.stringify({
+            JoinGame: params.gameId,
+          })
+        );
+      }
+    }
+  }, [params]);
 
   return (
     <>
@@ -51,7 +72,7 @@ export default function Game() {
           <PhaseView
             gameState={gameState}
             gameOptions={gameOptions}
-            sendMessage={sendMsg}
+            sendMessage={sendEvent}
           />
         </div>
       )}
