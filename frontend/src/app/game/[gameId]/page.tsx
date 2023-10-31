@@ -51,7 +51,6 @@ export default function Game({ params }: { params: { gameId: string } }) {
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-      console.log("Fuckoff you bastard");
       if (params.gameId === NEW_GAME_ID) {
         sendMessage('"NewGame"');
       } else {
