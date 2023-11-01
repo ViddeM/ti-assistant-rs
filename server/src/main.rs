@@ -19,10 +19,6 @@ use crate::{
     ws_message::WsMessageIn,
 };
 
-#[macro_use]
-extern crate rocket;
-
-pub mod api;
 pub mod data;
 pub mod example_game;
 pub mod game;
