@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use eyre::ensure;
 use serde::{Deserialize, Serialize};
 
 use crate::data::common::faction::Faction;
@@ -373,4 +374,19 @@ pub fn systems() -> HashMap<String, System> {
         s!("91A", SystemType::Hyperlane),
         s!("91B", SystemType::Hyperlane),
     ])
+}
+
+pub fn get_system_for_planet(planet: &Planet) -> System {
+    let systems = systems()
+        .values()
+        .filter(|s| s.planets.contains(planet))
+        .map(|s| s.clone())
+        .collect::<Vec<System>>();
+
+    ensure!(
+        systems.len() != 1,
+        "A planet should only be a part of one system"
+    );
+
+    systems[0]
 }

@@ -21,16 +21,9 @@ export type IconProps = {
   isFilled?: boolean;
   width?: number;
   height?: number;
-  children?: ReactNode;
 };
 
-export const Icon: FC<IconProps> = ({
-  name,
-  isFilled,
-  width,
-  height,
-  children,
-}) => {
+export const Icon: FC<IconProps> = ({ name, isFilled, width, height }) => {
   const style = `${styles.icon}`;
 
   return (

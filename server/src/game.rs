@@ -6,7 +6,7 @@ use std::{
 };
 
 use crate::{
-    data::components::strategy_card::StrategyCard,
+    data::components::{planet::Planet, strategy_card::StrategyCard, system::System},
     phases::Phase,
     player::{NewPlayer, Player},
 };
@@ -76,7 +76,20 @@ pub struct GameState {
     pub passed_players: HashSet<PlayerId>,
 
     /// Tracks progress of a strategy card action.
-    pub strategic_action: Option<StrategyCardProgress>,
+    pub action_progress: Option<ActionPhaseProgress>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum ActionPhaseProgress {
+    #[serde(rename_all = "camelCase")]
+    StrategyCard {
+        card: StrategyCard,
+        other_players: HashMap<PlayerId, bool>,
+    },
+    #[serde(rename_all = "camelCase")]
+    Tactical {
+        activated_system: Option<System>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -108,7 +121,16 @@ pub enum Event {
     CompleteStrategyPhase,
 
     /* -- ACTION PHASE EVENTS -- */
-    TacticalAction {
+    TacticalActionBegin {
+        player: PlayerId,
+    },
+
+    TacticalActionTakePlanet {
+        player: PlayerId,
+        planet: Planet,
+    },
+
+    TacticalActionCommit {
         player: PlayerId,
     },
 
@@ -186,7 +208,37 @@ impl GameState {
                 self.calculate_action_turn_order()?;
                 self.phase = Phase::Action;
             }
-            Event::TacticalAction { player } => {
+            Event::TacticalActionBegin { player } => {
+                self.assert_phase(Phase::Action)?;
+                self.assert_player_turn(&player)?;
+                self.phase = Phase::TacticalAction;
+                self.action_progress = Some(ActionPhaseProgress::Tactical {
+                    activated_system: None,
+                });
+            }
+            Event::TacticalActionTakePlanet { player, planet } => {
+                self.assert_phase(Phase::TacticalAction)?;
+                self.assert_player_turn(&player)?;
+
+                let Some(action_progress) = &mut self.action_progress else {
+                    bail!("no strategic action in progress");
+                };
+
+                match action_progress {
+                    ActionPhaseProgress::StrategyCard {
+                        card,
+                        other_players,
+                    } => bail!("cannot perform take planet actions during a strategic action"),
+                    ActionPhaseProgress::Tactical { activated_system } => {}
+                }
+
+                self.players.values_mut().for_each(|p| {
+                    p.planets = p.planets.into_iter().filter(|p| p != &planet).collect()
+                });
+                let current_player = self.get_current_player()?;
+                current_player.planets.push(planet);
+            }
+            Event::TacticalActionCommit { player } => {
                 self.assert_phase(Phase::Action)?;
                 self.assert_player_turn(&player)?;
                 self.advance_turn()?;
@@ -203,11 +255,11 @@ impl GameState {
                     "strategy card can't already be used",
                 );
                 ensure!(
-                    self.strategic_action.is_none(),
-                    "we are already performing a strategic action",
+                    self.action_progress.is_none(),
+                    "we are already performing an action phase action",
                 );
                 self.phase = Phase::StrategicAction;
-                self.strategic_action = Some(StrategyCardProgress {
+                self.action_progress = Some(ActionPhaseProgress::StrategyCard {
                     card,
                     other_players: Default::default(),
                 });
@@ -224,19 +276,38 @@ impl GameState {
                     "current player can't perform the secondary on a strategy card",
                 );
 
-                let Some(strategic_action) = &mut self.strategic_action else {
+                let Some(action_progress) = &mut self.action_progress else {
                     bail!("no strategic action in progress");
                 };
-                strategic_action.other_players.insert(player, did_secondary);
+
+                match action_progress {
+                    ActionPhaseProgress::Tactical { activated_system } => {
+                        bail!("cannot perform strategic actions during a tactical action")
+                    }
+                    ActionPhaseProgress::StrategyCard {
+                        card,
+                        other_players,
+                    } => other_players.insert(player, did_secondary),
+                };
             }
             Event::StrategicActionCommit => {
                 self.assert_phase(Phase::StrategicAction)?;
                 ensure!(
-                    self.strategic_action.is_some(),
-                    "not currently performing a strategic action",
+                    self.action_progress.is_some(),
+                    "not currently performing an action",
+                );
+                ensure!(
+                    match self.action_progress.unwrap() {
+                        ActionPhaseProgress::StrategyCard {
+                            card,
+                            other_players,
+                        } => true,
+                        ActionPhaseProgress::Tactical { activated_system } => false,
+                    },
+                    "not currently performing a strategic action"
                 );
                 self.phase = Phase::Action;
-                self.strategic_action = None;
+                self.action_progress = None;
                 self.advance_turn()?;
             }
             Event::ComponentAction {
@@ -354,6 +425,20 @@ impl GameState {
             );
         }
         Ok(())
+    }
+
+    pub fn get_current_player(&self) -> Result<&mut Player, GameError> {
+        let current_player_id = match self.current_player {
+            Some(p) => p,
+            None => bail!("invalid game state, expected there to be a player"),
+        };
+
+        let current_player = match self.players.get_mut(&current_player_id) {
+            Some(p) => p,
+            None => bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
+        };
+
+        Ok(current_player)
     }
 }
 

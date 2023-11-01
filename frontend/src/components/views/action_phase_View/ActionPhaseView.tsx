@@ -61,13 +61,7 @@ export const ActionPhaseView = ({
         ))}
         <Button
           className={styles.actionButton}
-          onClick={() =>
-            sendMessage({
-              TacticalAction: {
-                player: gameState.currentPlayer,
-              },
-            })
-          }
+          onClick={() => sendMessage("TacticalAction")}
         >
           Tactical
         </Button>

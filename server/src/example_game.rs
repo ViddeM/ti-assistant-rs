@@ -58,8 +58,8 @@ pub fn play_example_game() -> Game {
             card: StrategyCard::Politics,
         },
         Event::CompleteStrategyPhase,
-        Event::TacticalAction {
-            player: "Tux".into(),
+        Event::TacticalActionBegin {
+            activated_system: None,
         },
         Event::StrategicActionBegin {
             player: "Gurr".into(),
