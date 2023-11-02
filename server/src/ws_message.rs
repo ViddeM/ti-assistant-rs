@@ -41,7 +41,7 @@ impl WsMessageOut {
                 })
                 .collect::<Vec<FactionResponse>>(),
             colors: Color::iter().collect(),
-            systems: systems().into_iter().map(|(_, system)| system).collect(),
+            systems: systems().into_values().collect(),
             public_objectives: PublicObjectives::iter()
                 .map(|o| {
                     let info = o.get_objective_info();
