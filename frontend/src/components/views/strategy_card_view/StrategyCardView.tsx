@@ -3,7 +3,7 @@ import { Button } from "@/components/elements/button/Button";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./StrategyCardView.module.scss";
 
-export interface StrategyCardView {
+export interface StrategyCardViewProps {
   gameState: GameState;
   sendMessage: (data: any) => void;
 }
@@ -11,8 +11,8 @@ export interface StrategyCardView {
 export const StrategyCardView = ({
   gameState,
   sendMessage,
-}: StrategyCardView) => {
-  const strategicAction = gameState.strategicAction!!;
+}: StrategyCardViewProps) => {
+  const strategicAction = gameState.actionProgress?.Strategic!!;
   const doAction = (playerId: PlayerId, didSecondary: boolean) => {
     sendMessage({
       StrategicActionSecondary: {
@@ -24,7 +24,7 @@ export const StrategyCardView = ({
 
   return (
     <div className={`card ${styles.strategyCardView}`}>
-      <h2>{gameState.strategicAction?.card}</h2>
+      <h2>{gameState.actionProgress?.Strategic?.card}</h2>
       {Object.keys(gameState.players)
         .filter((p) => p !== gameState.currentPlayer)
         .map((p) => gameState.players[p])

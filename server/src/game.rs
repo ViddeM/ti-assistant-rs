@@ -6,7 +6,11 @@ use std::{
 };
 
 use crate::{
-    data::components::{planet::Planet, strategy_card::StrategyCard, system::System},
+    data::components::{
+        planet::Planet,
+        strategy_card::StrategyCard,
+        system::{System, SystemId},
+    },
     phases::Phase,
     player::{NewPlayer, Player},
 };
@@ -82,35 +86,36 @@ pub struct GameState {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ActionPhaseProgress {
     #[serde(rename_all = "camelCase")]
-    StrategyCard {
+    Strategic {
         card: StrategyCard,
         other_players: HashMap<PlayerId, bool>,
     },
-    #[serde(rename_all = "camelCase")]
-    Tactical {
-        activated_system: Option<System>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
-    },
+    Tactical(TacticalProgress),
 }
 
 impl ActionPhaseProgress {
     fn is_strategy_card(&self) -> bool {
-        matches!(self, ActionPhaseProgress::StrategyCard { .. })
+        matches!(self, ActionPhaseProgress::Strategic { .. })
     }
 
     fn is_tactical(&self) -> bool {
         matches!(self, ActionPhaseProgress::Tactical { .. })
     }
+}
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TacticalProgress {
+    activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
+    taken_planets: Vec<Planet>,
+}
+
+impl TacticalProgress {
     /// Returns true if the provided system is the currently activated system or there isn't an activated system.
-    fn system_is_activated_or_none(&self, system: &System) -> bool {
-        match self {
-            ActionPhaseProgress::Tactical {
-                activated_system: None,
-            } => true,
-            ActionPhaseProgress::Tactical {
-                activated_system: Some(s),
-            } => s == system,
-            _ => false,
+    fn system_is_activated_or_none(&self, system_id: &SystemId) -> bool {
+        match self.activated_system.as_ref() {
+            Some(id) => id == system_id,
+            None => true,
         }
     }
 }
@@ -235,9 +240,10 @@ impl GameState {
                 self.assert_phase(Phase::Action)?;
                 self.assert_player_turn(&player)?;
                 self.phase = Phase::TacticalAction;
-                self.action_progress = Some(ActionPhaseProgress::Tactical {
+                self.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress {
                     activated_system: None,
-                });
+                    taken_planets: vec![],
+                }));
             }
             Event::TacticalActionTakePlanet { player, planet } => {
                 self.assert_phase(Phase::TacticalAction)?;
@@ -246,23 +252,8 @@ impl GameState {
                     self.action_progress.is_some(),
                     "Must have action progress to perform take planet action."
                 );
-                ensure!(
-                    self.action_progress.as_ref().unwrap().is_tactical(),
-                    "Invalid state: Expected to be in tactical action"
-                );
 
                 let planet_system = System::for_planet(&planet)?;
-                ensure!(
-                    self.action_progress
-                        .as_ref()
-                        .unwrap()
-                        .system_is_activated_or_none(&planet_system),
-                    "Trying to take planet in a system that isn't the currently activated system!"
-                );
-
-                self.action_progress = Some(ActionPhaseProgress::Tactical {
-                    activated_system: Some(planet_system),
-                });
 
                 // In case someone else currently owns the planet, remove it from them.
                 self.players
@@ -270,7 +261,17 @@ impl GameState {
                     .for_each(|p| p.remove_planet(&planet));
 
                 let current_player = self.get_current_player()?;
-                current_player.planets.insert(planet);
+                current_player.planets.insert(planet.clone());
+
+                match self.action_progress.as_mut() {
+                    Some(ActionPhaseProgress::Tactical(tactical)) => {
+                        tactical.activated_system = Some(planet_system.id);
+                        tactical.taken_planets.push(planet);
+                    }
+                    other => {
+                        bail!("Invalid game state, expected tactical action, got {other:?}")
+                    }
+                };
             }
             Event::TacticalActionCommit { player } => {
                 self.assert_phase(Phase::Action)?;
@@ -294,7 +295,7 @@ impl GameState {
                     "we are already performing an action phase action",
                 );
                 self.phase = Phase::StrategicAction;
-                self.action_progress = Some(ActionPhaseProgress::StrategyCard {
+                self.action_progress = Some(ActionPhaseProgress::Strategic {
                     card,
                     other_players: Default::default(),
                 });
@@ -319,7 +320,7 @@ impl GameState {
                     ActionPhaseProgress::Tactical { .. } => {
                         bail!("cannot perform strategic actions during a tactical action")
                     }
-                    ActionPhaseProgress::StrategyCard { other_players, .. } => {
+                    ActionPhaseProgress::Strategic { other_players, .. } => {
                         other_players.insert(player, did_secondary)
                     }
                 };

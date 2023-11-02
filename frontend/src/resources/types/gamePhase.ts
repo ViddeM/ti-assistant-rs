@@ -3,5 +3,6 @@ export type GamePhase =
   | "Strategy"
   | "Action"
   | "StrategicAction"
+  | "TacticalAction"
   | "Status"
   | "Agenda";

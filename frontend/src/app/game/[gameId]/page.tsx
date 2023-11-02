@@ -13,8 +13,12 @@ import { GameOptions } from "@/api/GameOptions";
 import useWebSocket from "react-use-websocket";
 import { SetupPhase } from "@/components/views/setup/SetupPhase";
 import styles from "./styles.module.scss";
-import { StrategyCardView } from "@/components/views/strategy_card_view/StrategyCardView";
+import {
+  StrategyCardView,
+  StrategyCardViewProps,
+} from "@/components/views/strategy_card_view/StrategyCardView";
 import { StatusPhaseView } from "@/components/views/status_phase_view/StatusPhaseView";
+import { TacticalView } from "@/components/views/tactical_view/TacticalView";
 
 const NEW_GAME_ID = "new";
 
@@ -134,6 +138,14 @@ const PhaseView = ({
       return (
         <StrategyCardView gameState={gameState} sendMessage={sendMessage} />
       );
+    case "TacticalAction":
+      return (
+        <TacticalView
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendMessage={sendMessage}
+        />
+      );
     case "Status":
       return (
         <StatusPhaseView gameOptions={gameOptions} sendMessage={sendMessage} />
@@ -160,7 +172,7 @@ function getPlayersFromGame(
         .map(([card]) => {
           const stratCard = card as StrategyCard;
           const played = gameState.spentStrategyCards.includes(stratCard);
-          const isActive = gameState.strategicAction?.card === card;
+          const isActive = gameState.actionProgress?.Strategic?.card === card;
           return {
             name: stratCard,
             played: played,

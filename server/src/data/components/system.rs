@@ -32,10 +32,12 @@ pub enum AnomalyType {
     GravityRift,
 }
 
+pub type SystemId = String;
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct System {
-    pub id: String,
+    pub id: SystemId,
     pub system_type: SystemType,
     pub planets: Vec<Planet>,
     pub wormholes: Vec<WormHoleType>,

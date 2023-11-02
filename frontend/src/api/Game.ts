@@ -26,12 +26,22 @@ export interface GameState {
   currentPlayer: string | null;
   spentStrategyCards: StrategyCard[];
   passedPlayers: PlayerId[];
-  strategicAction: StrategyCardProgress | null;
+  actionProgress: ActionProgress | null;
+}
+
+export interface ActionProgress {
+  Strategic?: StrategyCardProgress;
+  Tactical?: TacticalProgress;
 }
 
 export interface StrategyCardProgress {
   card: StrategyCard;
   otherPlayers: { [key: PlayerId]: boolean };
+}
+
+export interface TacticalProgress {
+  activatedSystem: string | null;
+  takenPlanets: string[];
 }
 
 export interface Player {
