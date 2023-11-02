@@ -1,7 +1,7 @@
 use crate::{
     data::{
         common::{color::Color, faction::Faction},
-        components::strategy_card::StrategyCard,
+        components::{planet::Planet, strategy_card::StrategyCard},
     },
     game::{Event, Game},
     player::NewPlayer,
@@ -58,14 +58,21 @@ pub fn play_example_game() -> Game {
             card: StrategyCard::Politics,
         },
         Event::CompleteStrategyPhase,
-        Event::TacticalActionBegin {
-            activated_system: None,
-        },
         Event::StrategicActionBegin {
             player: "Gurr".into(),
             card: StrategyCard::Diplomacy,
         },
         Event::StrategicActionCommit,
+        Event::TacticalActionBegin {
+            player: "Vidde".into(),
+        },
+        Event::TacticalActionTakePlanet {
+            player: "Vidde".into(),
+            planet: Planet::Abaddon,
+        },
+        Event::TacticalActionCommit {
+            player: "Vidde".into(),
+        },
         Event::StrategicActionBegin {
             player: "Vidde".into(),
             card: StrategyCard::Technology,

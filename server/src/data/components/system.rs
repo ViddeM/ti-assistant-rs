@@ -7,7 +7,7 @@ use crate::data::common::faction::Faction;
 
 use super::planet::Planet;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum WormHoleType {
     Alpha,
     Beta,
@@ -15,7 +15,7 @@ pub enum WormHoleType {
     Delta,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum SystemType {
     Anomaly(AnomalyType),
     Hyperlane,
@@ -23,7 +23,7 @@ pub enum SystemType {
     HomeSystem(Faction),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum AnomalyType {
     AsteroidField,
     Nebula,
@@ -32,13 +32,30 @@ pub enum AnomalyType {
     GravityRift,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct System {
     pub id: String,
     pub system_type: SystemType,
     pub planets: Vec<Planet>,
     pub wormholes: Vec<WormHoleType>,
+}
+
+impl System {
+    pub fn for_planet(planet: &Planet) -> Result<Self, eyre::Error> {
+        let systems = systems()
+            .values()
+            .filter(|s| s.planets.contains(planet))
+            .map(|s| s.clone())
+            .collect::<Vec<System>>();
+
+        ensure!(
+            systems.len() != 1,
+            "A planet should only be a part of one system"
+        );
+
+        Ok(systems[0].clone())
+    }
 }
 
 macro_rules! s {
@@ -374,19 +391,4 @@ pub fn systems() -> HashMap<String, System> {
         s!("91A", SystemType::Hyperlane),
         s!("91B", SystemType::Hyperlane),
     ])
-}
-
-pub fn get_system_for_planet(planet: &Planet) -> System {
-    let systems = systems()
-        .values()
-        .filter(|s| s.planets.contains(planet))
-        .map(|s| s.clone())
-        .collect::<Vec<System>>();
-
-    ensure!(
-        systems.len() != 1,
-        "A planet should only be a part of one system"
-    );
-
-    systems[0]
 }

@@ -92,6 +92,35 @@ pub enum ActionPhaseProgress {
     },
 }
 
+impl ActionPhaseProgress {
+    fn is_strategy_card(&self) -> bool {
+        match self {
+            ActionPhaseProgress::StrategyCard { .. } => true,
+            _ => false,
+        }
+    }
+
+    fn is_tactical(&self) -> bool {
+        match self {
+            ActionPhaseProgress::Tactical { .. } => true,
+            _ => false,
+        }
+    }
+
+    /// Returns true if the provided system is the currently activated system or there isn't an activated system.
+    fn system_is_activated_or_none(&self, system: &System) -> bool {
+        match self {
+            ActionPhaseProgress::Tactical {
+                activated_system: None,
+            } => true,
+            ActionPhaseProgress::Tactical {
+                activated_system: Some(s),
+            } => s == system,
+            _ => false,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct StrategyCardProgress {
@@ -219,28 +248,40 @@ impl GameState {
             Event::TacticalActionTakePlanet { player, planet } => {
                 self.assert_phase(Phase::TacticalAction)?;
                 self.assert_player_turn(&player)?;
+                ensure!(
+                    self.action_progress.is_some(),
+                    "Must have action progress to perform take planet action."
+                );
+                ensure!(
+                    self.action_progress.as_ref().unwrap().is_tactical(),
+                    "Invalid state: Expected to be in tactical action"
+                );
 
-                let Some(action_progress) = &mut self.action_progress else {
-                    bail!("no strategic action in progress");
-                };
+                let planet_system = System::for_planet(&planet)?;
+                ensure!(
+                    self.action_progress
+                        .as_ref()
+                        .unwrap()
+                        .system_is_activated_or_none(&planet_system),
+                    "Trying to take planet in a system that isn't the currently activated system!"
+                );
 
-                match action_progress {
-                    ActionPhaseProgress::StrategyCard {
-                        card,
-                        other_players,
-                    } => bail!("cannot perform take planet actions during a strategic action"),
-                    ActionPhaseProgress::Tactical { activated_system } => {}
-                }
-
-                self.players.values_mut().for_each(|p| {
-                    p.planets = p.planets.into_iter().filter(|p| p != &planet).collect()
+                self.action_progress = Some(ActionPhaseProgress::Tactical {
+                    activated_system: Some(planet_system),
                 });
+
+                // In case someone else currently owns the planet, remove it from them.
+                self.players
+                    .values_mut()
+                    .for_each(|p| p.remove_planet(&planet));
+
                 let current_player = self.get_current_player()?;
-                current_player.planets.push(planet);
+                current_player.planets.insert(planet);
             }
             Event::TacticalActionCommit { player } => {
                 self.assert_phase(Phase::Action)?;
                 self.assert_player_turn(&player)?;
+                self.action_progress = None;
                 self.advance_turn()?;
             }
             Event::StrategicActionBegin { player, card } => {
@@ -281,13 +322,12 @@ impl GameState {
                 };
 
                 match action_progress {
-                    ActionPhaseProgress::Tactical { activated_system } => {
+                    ActionPhaseProgress::Tactical { .. } => {
                         bail!("cannot perform strategic actions during a tactical action")
                     }
-                    ActionPhaseProgress::StrategyCard {
-                        card,
-                        other_players,
-                    } => other_players.insert(player, did_secondary),
+                    ActionPhaseProgress::StrategyCard { other_players, .. } => {
+                        other_players.insert(player, did_secondary)
+                    }
                 };
             }
             Event::StrategicActionCommit => {
@@ -297,13 +337,7 @@ impl GameState {
                     "not currently performing an action",
                 );
                 ensure!(
-                    match self.action_progress.unwrap() {
-                        ActionPhaseProgress::StrategyCard {
-                            card,
-                            other_players,
-                        } => true,
-                        ActionPhaseProgress::Tactical { activated_system } => false,
-                    },
+                    self.action_progress.as_ref().unwrap().is_strategy_card(),
                     "not currently performing a strategic action"
                 );
                 self.phase = Phase::Action;
@@ -427,13 +461,13 @@ impl GameState {
         Ok(())
     }
 
-    pub fn get_current_player(&self) -> Result<&mut Player, GameError> {
-        let current_player_id = match self.current_player {
+    pub fn get_current_player(&mut self) -> Result<&mut Player, GameError> {
+        let current_player_id = match self.current_player.as_ref() {
             Some(p) => p,
             None => bail!("invalid game state, expected there to be a player"),
         };
 
-        let current_player = match self.players.get_mut(&current_player_id) {
+        let current_player = match self.players.get_mut(current_player_id) {
             Some(p) => p,
             None => bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
         };

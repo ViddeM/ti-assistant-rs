@@ -27,7 +27,7 @@ macro_rules! p {
     };
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, Hash)]
 pub enum Planet {
     Nestphar,
     ArcPrime,
