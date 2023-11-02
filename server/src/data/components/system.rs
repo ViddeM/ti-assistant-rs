@@ -46,7 +46,7 @@ impl System {
         let systems = systems()
             .values()
             .filter(|s| s.planets.contains(planet))
-            .map(|s| s.clone())
+            .cloned()
             .collect::<Vec<System>>();
 
         ensure!(

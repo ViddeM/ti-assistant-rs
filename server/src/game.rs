@@ -94,17 +94,11 @@ pub enum ActionPhaseProgress {
 
 impl ActionPhaseProgress {
     fn is_strategy_card(&self) -> bool {
-        match self {
-            ActionPhaseProgress::StrategyCard { .. } => true,
-            _ => false,
-        }
+        matches!(self, ActionPhaseProgress::StrategyCard { .. })
     }
 
     fn is_tactical(&self) -> bool {
-        match self {
-            ActionPhaseProgress::Tactical { .. } => true,
-            _ => false,
-        }
+        matches!(self, ActionPhaseProgress::Tactical { .. })
     }
 
     /// Returns true if the provided system is the currently activated system or there isn't an activated system.
