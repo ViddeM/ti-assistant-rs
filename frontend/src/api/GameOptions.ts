@@ -32,4 +32,12 @@ export interface PublicObjectiveInfo {
   condition: string;
 }
 
-export type Color = "Blue" | "Green" | "Red" | "Yellow" | "Black" | "Purple";
+export type Color =
+  | "Blue"
+  | "Green"
+  | "Red"
+  | "Yellow"
+  | "Black"
+  | "Purple"
+  | "Orange"
+  | "Pink";

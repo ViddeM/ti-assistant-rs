@@ -49,6 +49,7 @@ p {
 a {
   text-decoration: none;
   font-weight: bold;
+  color: white;
 
   &:hover {
     text-decoration: underline;
@@ -123,6 +124,12 @@ a {
 .playerColorBackgroundPurple {
   background-color: $playerColorPurple;
 }
+.playerColorBackgroundOrange {
+  background-color: $playerColorOrange;
+}
+.playerColorBackgroundPink {
+  background-color: $playerColorPink;
+}
 
 .playerColorBorderBlack {
   border-color: $playerColorBlack;
@@ -160,4 +167,10 @@ a {
 }
 .playerColorPurple {
   color: $playerColorPurple;
+}
+.playerColorOrange {
+  color: $playerColorOrange;
+}
+.playerColorPink {
+  color: $playerColorPink;
 }
