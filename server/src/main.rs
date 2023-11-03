@@ -42,12 +42,13 @@ pub struct Opt {
     port: u16,
 
     /// Postgres URI
-    #[clap(long = "db", env = "DATABASE_URI")]
-    database_uri: Option<String>,
+    #[clap(long = "db", env = "DATABASE_URL")]
+    database_url: Option<String>,
 }
 
 #[tokio::main]
 pub async fn main() {
+    dotenvy::dotenv().ok();
     pretty_env_logger::init();
 
     let opt = Arc::new(Opt::parse());
@@ -92,7 +93,7 @@ pub async fn handle_client(
                 let id = GameId::random();
                 let name = generate_game_name(id);
 
-                if let Some(database_uri) = &opt.database_uri {
+                if let Some(database_uri) = &opt.database_url {
                     log::info!("persisting new game {id:?} in database");
 
                     // TODO: use a connection pool
@@ -122,7 +123,7 @@ pub async fn handle_client(
 
                 if let Some(lobby) = list.get(&id) {
                     (id, Arc::clone(lobby))
-                } else if let Some(database_uri) = &opt.database_uri {
+                } else if let Some(database_uri) = &opt.database_url {
                     // TODO: use a connection pool
                     let mut db = AsyncPgConnection::establish(database_uri).await?;
 
@@ -191,7 +192,7 @@ pub async fn handle_client(
                     // TODO: propagate errors back over the socket?
                     lobby.game.apply(event.clone());
 
-                    if let Some(database_uri) = &opt.database_uri {
+                    if let Some(database_uri) = &opt.database_url {
                         // TODO: use a connection pool
                         let mut db = AsyncPgConnection::establish(database_uri).await?;
 

@@ -21,3 +21,4 @@ clap = { version = "4.4.7", features = ["derive", "env"] }
 diesel = { version = "2.1.3", features = ["serde_json"] }
 diesel-async = { version = "0.4.1", features = ["postgres"] }
 bytemuck = "1.14.0"
+dotenvy = "0.15.7"
