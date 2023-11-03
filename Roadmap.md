@@ -2,12 +2,12 @@
 
 ## MVP TODO:
 ### Infra
- - [ ] Multiple games
- - [ ] Multiple WS clients per game
- - [ ] Persist gamestate
+ - [x] Multiple games
+ - [x] Multiple WS clients per game
+ - [x] Persist gamestate
 
 ### Gameplay
- - [ ] Planets
+ - [x] Planets
    - [ ] Resource Tracking
  - [ ] Score
    - [ ] Objective tracking
@@ -30,3 +30,4 @@
  - [ ] Go over all objective cards and see if we have missed any interactions
  - [ ] Go over all planets and see if we have missed any interactions
  - [ ] Test play with both this and OG ti-assistant
+ 
