@@ -13,10 +13,7 @@ import { GameOptions } from "@/api/GameOptions";
 import useWebSocket from "react-use-websocket";
 import { SetupPhase } from "@/components/views/setup/SetupPhase";
 import styles from "./styles.module.scss";
-import {
-  StrategyCardView,
-  StrategyCardViewProps,
-} from "@/components/views/strategy_card_view/StrategyCardView";
+import { StrategyCardView } from "@/components/views/strategy_card_view/StrategyCardView";
 import { StatusPhaseView } from "@/components/views/status_phase_view/StatusPhaseView";
 import { TacticalView } from "@/components/views/tactical_view/TacticalView";
 

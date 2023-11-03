@@ -274,9 +274,10 @@ impl GameState {
                 };
             }
             Event::TacticalActionCommit { player } => {
-                self.assert_phase(Phase::Action)?;
+                self.assert_phase(Phase::TacticalAction)?;
                 self.assert_player_turn(&player)?;
                 self.action_progress = None;
+                self.phase = Phase::Action;
                 self.advance_turn()?;
             }
             Event::StrategicActionBegin { player, card } => {
