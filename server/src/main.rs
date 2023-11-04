@@ -26,6 +26,7 @@ pub mod data;
 pub mod db;
 pub mod example_game;
 pub mod game;
+pub mod gc;
 pub mod lobby;
 pub mod phases;
 pub mod player;
@@ -44,25 +45,34 @@ pub struct Opt {
     /// Postgres URI
     #[clap(long = "db", env = "DATABASE_URL")]
     database_url: Option<String>,
+
+    /// Cron string that defines when to unload inactive games from memory.
+    ///
+    /// Format: "sec min hour day_of_month month day_of_week year"
+    #[clap(long, env = "MEM_GC_CRON")]
+    mem_gc_cron: Option<String>,
 }
 
 #[tokio::main]
-pub async fn main() {
+pub async fn main() -> eyre::Result<()> {
     dotenvy::dotenv().ok();
-    pretty_env_logger::init();
-
     let opt = Arc::new(Opt::parse());
 
-    log::info!("Listening on {}:{}", opt.host, opt.port);
-
-    let server = TcpListener::bind((opt.host.as_str(), opt.port))
-        .await
-        .expect("Failed to setup TCP listener");
+    color_eyre::install()?;
+    pretty_env_logger::init();
 
     let lobbies = Arc::new(Lobbies::default());
 
+    gc::setup_game_gc(&opt, &lobbies)?;
+
+    let server = TcpListener::bind((opt.host.as_str(), opt.port))
+        .await
+        .wrap_err_with(|| format!("Failed to listen on {}:{}", opt.host, opt.port))?;
+    log::info!("Listening on {}:{}", opt.host, opt.port);
+
     loop {
-        let (stream, from) = server.accept().await.expect("Failed to accept client");
+        // TODO: figure out if this error should really be fatal
+        let (stream, from) = server.accept().await.wrap_err("Failed to accept client")?;
         spawn(handle_client(
             Arc::clone(&opt),
             stream,
