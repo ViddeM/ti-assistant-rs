@@ -40,7 +40,7 @@ impl From<NewPlayer> for Player {
             name: new.name,
             faction: new.faction,
             color: new.color,
-            planets: planets,
+            planets,
         }
     }
 }
