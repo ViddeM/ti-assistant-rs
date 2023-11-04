@@ -1,8 +1,7 @@
-import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./PlayersSidebar.module.scss";
 import { Faction } from "@/resources/types/factions";
 import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
-import { Color } from "@/api/GameOptions";
+import { Color, PlanetInfo } from "@/api/GameOptions";
 import { Icon } from "@/components/elements/icon/Icon";
 
 export interface Player {
@@ -15,6 +14,12 @@ export interface Player {
   isActive: boolean;
   hasPassed: boolean;
   cards: StrategicCardInfo[];
+  planets: PlayerPlanetInfo[];
+}
+
+export interface PlayerPlanetInfo {
+  planet: string;
+  info: PlanetInfo;
 }
 
 export const PlayerSidebar = ({ players }: { players: Player[] }) => {
@@ -58,7 +63,7 @@ const PlayerBox = ({ player }: { player: Player }) => {
         <div className={styles.planetContent}>
           <div className={styles.resourceRow}>
             <div className={styles.planetsCount}>
-              <p>18</p>
+              <p>{player.planets.length}</p>
             </div>
             <p>14</p>
             <Icon name="resource" isFilled />

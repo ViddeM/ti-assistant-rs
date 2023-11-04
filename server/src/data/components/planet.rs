@@ -3,12 +3,15 @@ use strum_macros::EnumIter;
 
 use super::tech::TechCategory;
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum PlanetTrait {
     Cultural,
     Hazardous,
     Industrial,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PlanetInfo {
     planet_trait: Option<PlanetTrait>,
     tech_speciality: Option<TechCategory>,

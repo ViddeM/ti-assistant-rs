@@ -185,6 +185,12 @@ function getPlayersFromGame(
             isActive: isActive,
           };
         }),
+      planets: p.planets.map((p) => {
+        return {
+          planet: p,
+          info: gameOptions.planetInfos[p],
+        };
+      }),
     };
   });
 }

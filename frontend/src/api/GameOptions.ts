@@ -9,9 +9,20 @@ export interface GameOptions {
   factions: FactionResponse[];
   colors: Color[];
   systems: System[];
+  planetInfos: { [key: string]: PlanetInfo };
   secretObjectives: SecretObjectiveInfo[];
   publicObjectives: PublicObjectiveInfo[];
 }
+
+export interface PlanetInfo {
+  planetTrait: PlanetTrait | null;
+  techSpeciality: TechSpeciality | null;
+  resources: number;
+  influce: number;
+}
+
+export type PlanetTrait = "Cultural" | "Hazardous" | "Industrial";
+export type TechSpeciality = "Biotic" | "Propulsion" | "Cybernetic" | "Warfare";
 
 export interface FactionResponse {
   faction: Faction;

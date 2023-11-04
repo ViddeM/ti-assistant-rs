@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
@@ -5,6 +7,7 @@ use crate::{
     data::{
         common::{color::Color, faction::Faction},
         components::{
+            planet::{Planet, PlanetInfo},
             public_objectives::PublicObjectives,
             secret_objectives::SecretObjectives,
             system::{systems, System},
@@ -43,6 +46,9 @@ impl WsMessageOut {
                 .collect::<Vec<FactionResponse>>(),
             colors: Color::iter().collect(),
             systems: systems().into_values().collect(),
+            planet_infos: Planet::iter()
+                .map(|p| (p.clone(), p.planet_info()))
+                .collect(),
             public_objectives: PublicObjectives::iter()
                 .map(|o| {
                     let info = o.get_objective_info();
@@ -91,6 +97,7 @@ pub struct GameOptions {
     colors: Vec<Color>,
     factions: Vec<FactionResponse>,
     systems: Vec<System>,
+    planet_infos: HashMap<Planet, PlanetInfo>,
     public_objectives: Vec<PublicObjectiveResponse>,
     secret_objectives: Vec<SecretObjectiveResponse>,
 }
