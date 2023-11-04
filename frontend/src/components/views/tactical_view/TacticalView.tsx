@@ -63,7 +63,13 @@ export const TacticalView = ({
       ) : (
         <div>
           <label>Take planet:</label>
-          <Dropdown onChange={(e) => setSelectedPlanet(e.target.value)}>
+          <Dropdown
+            onChange={(e) => {
+              const v = e.target.value;
+              setSelectedPlanet(v === "" ? null : v);
+            }}
+          >
+            <option value={""}>--select a planet--</option>
             {gameOptions.systems
               .flatMap((s) =>
                 s.planets.filter((p) => !currentPlayerPlanets.includes(p))
