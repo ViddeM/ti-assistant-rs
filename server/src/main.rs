@@ -16,7 +16,7 @@ use tokio::{
 use ws_message::WsMessageOut;
 
 use crate::{
-    gameplay::{game::Game, game_event_handler::update_game_state},
+    gameplay::game::Game,
     lobby::{generate_game_name, Lobbies, Lobby},
     websocket_client::WsClient,
     ws_message::WsMessageIn,
@@ -199,7 +199,7 @@ pub async fn handle_client(
 
                     log::debug!("applying event {event:?}");
                     // TODO: propagate errors back over the socket?
-                    update_game_state(&mut lobby.game.current, event.clone());
+                    lobby.game.apply(event.clone());
 
                     if let Some(database_uri) = &opt.database_url {
                         // TODO: use a connection pool
