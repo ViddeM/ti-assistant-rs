@@ -38,7 +38,6 @@ export const SetupPhase = ({
           name: name,
           faction: faction,
           color: color,
-          planets: [],
         },
       },
     });
