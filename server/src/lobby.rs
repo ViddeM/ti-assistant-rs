@@ -4,7 +4,7 @@ use serde::{de::Error, Deserialize, Serialize};
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use tokio::sync::{broadcast, RwLock};
 
-use crate::game::{Game, GameState};
+use crate::gameplay::{game::Game, game_state::GameState};
 
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, AsExpression, FromSqlRow)]
 #[diesel(sql_type = diesel::sql_types::Integer)]

@@ -7,15 +7,15 @@ use crate::{
     data::{
         common::{color::Color, faction::Faction},
         components::{
+            phase::Phase,
             planet::{Planet, PlanetInfo},
             public_objectives::PublicObjectives,
             secret_objectives::SecretObjectives,
             system::{systems, System},
         },
     },
-    game::{Event, GameState},
+    gameplay::{event::Event, game_state::GameState},
     lobby::GameId,
-    phases::Phase,
 };
 
 #[derive(Debug, Clone, Deserialize)]

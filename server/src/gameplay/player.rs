@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, sync::Arc};
 
 use serde::{Deserialize, Serialize};
 
@@ -6,6 +6,9 @@ use crate::data::{
     common::{color::Color, faction::Faction},
     components::planet::Planet,
 };
+
+// TODO: maybe make this be not a string...
+pub type PlayerId = Arc<str>;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
