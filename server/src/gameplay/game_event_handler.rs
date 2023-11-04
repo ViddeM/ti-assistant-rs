@@ -4,7 +4,10 @@ use eyre::{bail, ensure};
 
 use crate::{
     data::components::{phase::Phase, system::System},
-    gameplay::{game_state::ActionPhaseProgress, player::PlayerId},
+    gameplay::{
+        game_state::{ActionPhaseProgress, StrategicProgress},
+        player::PlayerId,
+    },
 };
 
 use super::{
@@ -124,10 +127,10 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "we are already performing an action phase action",
             );
             game_state.phase = Phase::StrategicAction;
-            game_state.action_progress = Some(ActionPhaseProgress::Strategic {
+            game_state.action_progress = Some(ActionPhaseProgress::Strategic(StrategicProgress {
                 card,
                 other_players: Default::default(),
-            });
+            }));
             game_state.spent_strategy_cards.insert(card);
         }
         Event::StrategicActionSecondary {
@@ -149,8 +152,8 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 ActionPhaseProgress::Tactical { .. } => {
                     bail!("cannot perform strategic actions during a tactical action")
                 }
-                ActionPhaseProgress::Strategic { other_players, .. } => {
-                    other_players.insert(player, did_secondary)
+                ActionPhaseProgress::Strategic(strategic) => {
+                    strategic.other_players.insert(player, did_secondary)
                 }
             };
         }

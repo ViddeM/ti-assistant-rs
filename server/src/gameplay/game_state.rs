@@ -46,21 +46,25 @@ pub struct GameState {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ActionPhaseProgress {
     #[serde(rename_all = "camelCase")]
-    Strategic {
-        card: StrategyCard,
-        other_players: HashMap<PlayerId, bool>,
-    },
+    Strategic(StrategicProgress),
     Tactical(TacticalProgress),
 }
 
 impl ActionPhaseProgress {
     pub fn is_strategy_card(&self) -> bool {
-        matches!(self, ActionPhaseProgress::Strategic { .. })
+        matches!(self, ActionPhaseProgress::Strategic(_))
     }
 
     pub fn is_tactical(&self) -> bool {
-        matches!(self, ActionPhaseProgress::Tactical { .. })
+        matches!(self, ActionPhaseProgress::Tactical(_))
     }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct StrategicProgress {
+    pub card: StrategyCard,
+    pub other_players: HashMap<PlayerId, bool>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
