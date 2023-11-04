@@ -18,7 +18,7 @@ export interface PlanetInfo {
   planetTrait: PlanetTrait | null;
   techSpeciality: TechSpeciality | null;
   resources: number;
-  influce: number;
+  influence: number;
 }
 
 export type PlanetTrait = "Cultural" | "Hazardous" | "Industrial";
