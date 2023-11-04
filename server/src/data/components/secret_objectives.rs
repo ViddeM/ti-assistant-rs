@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
 
-use crate::phases::Phase;
+use super::phase::Phase;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

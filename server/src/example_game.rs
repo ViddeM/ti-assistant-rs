@@ -3,8 +3,7 @@ use crate::{
         common::{color::Color, faction::Faction},
         components::{planet::Planet, strategy_card::StrategyCard},
     },
-    game::{Event, Game},
-    player::NewPlayer,
+    gameplay::{event::Event, game::Game, player::NewPlayer},
 };
 
 pub fn play_example_game() -> Game {
