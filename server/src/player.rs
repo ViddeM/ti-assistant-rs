@@ -25,17 +25,6 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(name: String, color: Color, faction: Faction) -> Self {
-        let planets = faction.get_starting_planets();
-        log::info!("Starting planets for player {name} is {planets:?}");
-        Self {
-            name,
-            faction,
-            color,
-            planets,
-        }
-    }
-
     pub fn remove_planet(&mut self, planet: &Planet) {
         self.planets.remove(planet);
     }
@@ -43,11 +32,12 @@ impl Player {
 
 impl From<NewPlayer> for Player {
     fn from(new: NewPlayer) -> Self {
+        let planets = new.faction.get_starting_planets();
         Player {
             name: new.name,
             faction: new.faction,
             color: new.color,
-            planets: Default::default(),
+            planets: planets,
         }
     }
 }
