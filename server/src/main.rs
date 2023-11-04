@@ -2,11 +2,9 @@
 #![forbid(unsafe_code)]
 #![allow(dead_code)]
 
-use std::{net::SocketAddr, str::FromStr, sync::Arc};
+use std::{net::SocketAddr, sync::Arc};
 
-use chrono::Local;
 use clap::Parser;
-use cron::Schedule;
 use diesel::{insert_into, ExpressionMethods, QueryDsl};
 use diesel_async::{AsyncConnection, AsyncPgConnection, RunQueryDsl};
 use eyre::{bail, Context};
@@ -14,7 +12,6 @@ use lobby::GameId;
 use tokio::{
     net::{TcpListener, TcpStream},
     select, spawn,
-    time::sleep,
 };
 use ws_message::WsMessageOut;
 
@@ -29,6 +26,7 @@ pub mod data;
 pub mod db;
 pub mod example_game;
 pub mod game;
+pub mod gc;
 pub mod lobby;
 pub mod phases;
 pub mod player;
@@ -63,23 +61,14 @@ pub async fn main() -> eyre::Result<()> {
     color_eyre::install()?;
     pretty_env_logger::init();
 
+    let lobbies = Arc::new(Lobbies::default());
+
+    gc::setup_game_gc(&opt, &lobbies)?;
+
     let server = TcpListener::bind((opt.host.as_str(), opt.port))
         .await
         .wrap_err_with(|| format!("Failed to listen on {}:{}", opt.host, opt.port))?;
     log::info!("Listening on {}:{}", opt.host, opt.port);
-
-    let lobbies = Arc::new(Lobbies::default());
-
-    if let Some(mem_gc_cron) = &opt.mem_gc_cron {
-        if opt.database_url.is_none() {
-            log::warn!("you have specified mem_gc_cron without specifying database_url");
-            log::warn!("beware: this means games will be deleted when the cron job fires");
-        }
-
-        let schedule =
-            Schedule::from_str(mem_gc_cron).wrap_err("failed to parse mem_gc_cron string")?;
-        spawn(unload_inactive_games(schedule, Arc::clone(&lobbies)));
-    }
 
     loop {
         // TODO: figure out if this error should really be fatal
@@ -240,57 +229,4 @@ pub async fn handle_client(
     } else {
         log::info!("{from} disconnected");
     }
-}
-
-/// Background tasks that periodically goes through all games in memory and unloads the ones with
-/// no clients.
-pub async fn unload_inactive_games(cron: Schedule, lobbies: Arc<Lobbies>) {
-    log::info!("scheduling inactive games gc task");
-
-    loop {
-        let Some(next_gc) = cron.upcoming(Local).next() else {
-            break;
-        };
-
-        log::debug!("next gc at {next_gc}");
-
-        let Ok(sleep_for) = (next_gc - Local::now()).to_std() else {
-            break;
-        };
-
-        sleep(sleep_for).await;
-
-        log::debug!("unloading inactive games");
-
-        let mut list = lobbies.list.write().await;
-        let mut delete_queue = Vec::new();
-        for (game_id, lobby) in list.iter() {
-            let Ok(lobby) = lobby.try_write() else {
-                // if the lock was already held, a client must be connected, and the game must
-                // still be active
-                continue;
-            };
-
-            // each client task must hold a state update receiver.
-            if lobby.state_updates.receiver_count() > 0 {
-                // if there are no receivers, there can be no clients.
-                continue;
-            }
-
-            delete_queue.push(*game_id);
-        }
-
-        if delete_queue.is_empty() {
-            log::debug!("no inactive games to unload");
-        } else {
-            log::info!("unloading {} inactive games", delete_queue.len());
-        }
-
-        for game_id in delete_queue {
-            log::debug!("game {game_id:?} looks inactive. unloading it.");
-            list.remove(&game_id);
-        }
-    }
-
-    log::info!("inactive games gc task exiting");
 }
