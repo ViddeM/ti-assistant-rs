@@ -173,6 +173,7 @@ pub async fn handle_client(
         ws_client
             .send_message(&WsMessageOut::game_options())
             .await?;
+        ws_client.send_message(&WsMessageOut::join_game(id)).await?;
 
         let mut state_updates = {
             let lobby = lobby.read().await;

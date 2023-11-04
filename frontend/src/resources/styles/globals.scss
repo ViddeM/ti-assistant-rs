@@ -65,8 +65,11 @@ a {
 .main {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
+  width: 100vw;
+  height: 100vh;
 
   @media (min-width: $widthMedium) {
     padding: 3rem;

@@ -26,6 +26,7 @@ pub enum WsMessageIn {
 pub enum WsMessageOut {
     GameOptions(GameOptions),
     GameState(GameState),
+    JoinedGame(GameId),
 }
 
 impl WsMessageOut {
@@ -69,6 +70,10 @@ impl WsMessageOut {
 
     pub fn game_state(state: GameState) -> Self {
         Self::GameState(state)
+    }
+
+    pub fn join_game(game_id: GameId) -> Self {
+        Self::JoinedGame(game_id)
     }
 }
 

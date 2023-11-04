@@ -22,6 +22,7 @@ const NEW_GAME_ID = "new";
 export default function Game({ params }: { params: { gameId: string } }) {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
+  const [gameId, setGameId] = useState<string | null>(null);
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(
     "ws://localhost:5555"
@@ -33,6 +34,11 @@ export default function Game({ params }: { params: { gameId: string } }) {
     if (lastMessage !== null) {
       console.log("MESSAGE", lastMessage);
       const data = JSON.parse(lastMessage.data);
+
+      const joinedGameId = data["JoinedGame"];
+      if (joinedGameId && !gameId) {
+        setGameId(joinedGameId);
+      }
 
       const msgOpts = data["GameOptions"];
       if (msgOpts && !gameOptions) {
@@ -66,6 +72,9 @@ export default function Game({ params }: { params: { gameId: string } }) {
 
   return (
     <>
+      <div className="card">
+        <h4>Game: {gameId}</h4>
+      </div>
       {gameOptions && gameState && (
         <div className={styles.gamePageContainer}>
           <PlayerSidebar players={getPlayersFromGame(gameState, gameOptions)} />
