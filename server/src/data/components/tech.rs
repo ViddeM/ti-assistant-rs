@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumIter;
 
 use crate::data::common::faction::Faction;
 
@@ -12,17 +13,19 @@ pub enum TechCategory {
     Warfare,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub enum TechType {
     Category(TechCategory),
     UnitUpgrade,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub enum TechOrigin {
     Base,
     Faction(Faction),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 pub enum Technology {
     // Biotic
     NeuralMotivator,
@@ -117,6 +120,8 @@ pub enum Technology {
     ValkyrieParticleWeave,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct TechInfo {
     tech_type: TechType,
     origin: TechOrigin,

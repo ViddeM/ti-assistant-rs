@@ -25,6 +25,7 @@ use crate::{
 pub mod data;
 pub mod db;
 pub mod example_game;
+pub mod game_options;
 pub mod gameplay;
 pub mod gc;
 pub mod lobby;
