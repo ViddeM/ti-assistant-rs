@@ -65,7 +65,7 @@ impl ActionPhaseProgress {
 pub struct StrategicProgress {
     pub card: StrategyCard,
     pub primary: Option<StrategicPrimaryProgress>,
-    pub other_players: HashMap<PlayerId, bool>,
+    pub other_players: HashMap<PlayerId, StrategicSecondaryProgress>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -74,6 +74,19 @@ pub enum StrategicPrimaryProgress {
         tech: Technology,
         extra: Option<Technology>,
     },
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum StrategicSecondaryProgress {
+    Leadership,
+    Diplomacy,
+    Politics,
+    Construction,
+    Trade,
+    Warfare,
+    Technology { tech: Technology },
+    Imperial,
+    Skipped,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

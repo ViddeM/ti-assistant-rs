@@ -5,8 +5,11 @@ use eyre::{bail, ensure};
 use crate::{
     data::components::{phase::Phase, strategy_card::StrategyCard, system::System},
     gameplay::{
-        event::StrategicPrimaryAction,
-        game_state::{ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress},
+        event::{StrategicPrimaryAction, StrategicSecondaryAction},
+        game_state::{
+            ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
+            StrategicSecondaryProgress,
+        },
         player::PlayerId,
     },
 };
@@ -174,10 +177,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 }
             }
         }
-        Event::StrategicActionSecondary {
-            player,
-            did_secondary,
-        } => {
+        Event::StrategicActionSecondary { player, action } => {
             game_state.assert_phase(Phase::StrategicAction)?;
             let current_player = game_state.current_player()?;
             ensure!(
@@ -193,8 +193,23 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 ActionPhaseProgress::Tactical { .. } => {
                     bail!("cannot perform strategic actions during a tactical action")
                 }
-                ActionPhaseProgress::Strategic(strategic) => {
-                    strategic.other_players.insert(player, did_secondary)
+                ActionPhaseProgress::Strategic(progress) => {
+                    ensure!(
+                        action.is_for_card(progress.card),
+                        "Mismatch between strategic progress {progress:?} and action {action:?}"
+                    );
+
+                    progress
+                        .other_players
+                        .insert(player.clone(), StrategicSecondaryProgress::Skipped);
+
+                    match action {
+                        StrategicSecondaryAction::Technology { tech } => {
+                            let player = game_state.players.get_mut(&player).unwrap();
+                            player.technologies.insert(tech);
+                        }
+                        _ => {}
+                    }
                 }
             };
         }

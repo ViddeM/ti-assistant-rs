@@ -37,7 +37,7 @@ export interface ActionProgress {
 export interface StrategyCardProgress {
   card: StrategyCard;
   primary: StrategicPrimaryProgress | null;
-  otherPlayers: { [key: PlayerId]: boolean };
+  otherPlayers: { [key: PlayerId]: StrategicSecondaryProgress };
 }
 
 export interface StrategicPrimaryProgress {
@@ -46,6 +46,18 @@ export interface StrategicPrimaryProgress {
     extra: string | null;
   };
 }
+
+export type StrategicSecondaryProgress =
+  | "Leadership"
+  | "Diplomacy"
+  | "Politics"
+  | "Construction"
+  | "Trade"
+  | "Warfare"
+  | {
+      tech: string;
+    }
+  | "Imperial";
 
 export interface TacticalProgress {
   activatedSystem: string | null;

@@ -47,7 +47,7 @@ pub enum Event {
     #[serde(rename_all = "camelCase")]
     StrategicActionSecondary {
         player: PlayerId,
-        did_secondary: bool,
+        action: StrategicSecondaryAction,
     },
 
     StrategicActionCommit,
@@ -73,4 +73,41 @@ pub enum StrategicPrimaryAction {
         tech: Technology,
         extra: Option<Technology>,
     },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum StrategicSecondaryAction {
+    Skip,
+    Leadership,
+    Diplomacy,
+    Politics,
+    Construction,
+    Trade,
+    Warfare,
+    Technology { tech: Technology },
+    Imperial,
+}
+
+impl StrategicSecondaryAction {
+    pub fn is_for_card(&self, card: StrategyCard) -> bool {
+        match (self, card) {
+            (StrategicSecondaryAction::Skip, _) => true,
+            (StrategicSecondaryAction::Leadership, StrategyCard::Leadership) => true,
+            (StrategicSecondaryAction::Diplomacy, StrategyCard::Diplomacy) => true,
+            (StrategicSecondaryAction::Politics, StrategyCard::Politics) => true,
+            (StrategicSecondaryAction::Construction, StrategyCard::Construction) => true,
+            (StrategicSecondaryAction::Trade, StrategyCard::Trade) => true,
+            (StrategicSecondaryAction::Warfare, StrategyCard::Warfare) => true,
+            (StrategicSecondaryAction::Technology { tech }, StrategyCard::Technology) => true,
+            (StrategicSecondaryAction::Imperial, StrategyCard::Imperial) => true,
+            _ => false,
+        }
+    }
+
+    pub fn skipped(&self) -> bool {
+        match self {
+            StrategicSecondaryAction::Skip => true,
+            _ => false,
+        }
+    }
 }
