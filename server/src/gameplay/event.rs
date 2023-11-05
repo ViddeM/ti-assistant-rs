@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::data::components::{planet::Planet, strategy_card::StrategyCard};
+use crate::data::components::{planet::Planet, strategy_card::StrategyCard, tech::Technology};
 
 use super::player::{NewPlayer, PlayerId};
 
@@ -39,6 +39,12 @@ pub enum Event {
     },
 
     #[serde(rename_all = "camelCase")]
+    StrategicActionPrimary {
+        player: PlayerId,
+        action: StrategicPrimaryAction,
+    },
+
+    #[serde(rename_all = "camelCase")]
     StrategicActionSecondary {
         player: PlayerId,
         did_secondary: bool,
@@ -59,4 +65,12 @@ pub enum Event {
     // TODO: Score objectives & Reveal objectives
     CompleteStatusPhase,
     // TODO: Agenda phase
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum StrategicPrimaryAction {
+    Technology {
+        tech: Technology,
+        extra: Option<Technology>,
+    },
 }
