@@ -36,7 +36,15 @@ export interface ActionProgress {
 
 export interface StrategyCardProgress {
   card: StrategyCard;
+  primary: StrategicPrimaryProgress | null;
   otherPlayers: { [key: PlayerId]: boolean };
+}
+
+export interface StrategicPrimaryProgress {
+  Technology?: {
+    tech: string;
+    extra: string | null;
+  };
 }
 
 export interface TacticalProgress {
@@ -49,4 +57,5 @@ export interface Player {
   faction: Faction;
   color: Color;
   planets: string[];
+  technologies: string[];
 }

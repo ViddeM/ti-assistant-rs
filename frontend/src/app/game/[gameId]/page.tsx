@@ -142,7 +142,11 @@ const PhaseView = ({
       );
     case "StrategicAction":
       return (
-        <StrategyCardView gameState={gameState} sendMessage={sendMessage} />
+        <StrategyCardView
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendMessage={sendMessage}
+        />
       );
     case "TacticalAction":
       return (
@@ -189,6 +193,12 @@ function getPlayersFromGame(
         return {
           planet: p,
           info: gameOptions.planetInfos[p],
+        };
+      }),
+      technologies: p.technologies.map((t) => {
+        return {
+          tech: t,
+          info: gameOptions.technologies[t],
         };
       }),
     };

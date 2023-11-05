@@ -12,6 +12,7 @@ export interface GameOptions {
   planetInfos: { [key: string]: PlanetInfo };
   secretObjectives: SecretObjectiveInfo[];
   publicObjectives: PublicObjectiveInfo[];
+  technologies: { [key: string]: TechInfo };
 }
 
 export interface PlanetInfo {
@@ -20,6 +21,26 @@ export interface PlanetInfo {
   resources: number;
   influence: number;
 }
+
+export interface TechInfo {
+  techType: TechType;
+  origin: TechOrigin;
+  requirements: { [key: string]: number };
+}
+
+export type TechType =
+  | "UnitUpgrade"
+  | {
+      Category: TechCategory;
+    };
+
+export type TechCategory = "Biotic" | "Propulsion" | "Cybernetic" | "Warfare";
+
+export type TechOrigin =
+  | "Base"
+  | {
+      Faction: Faction;
+    };
 
 export type PlanetTrait = "Cultural" | "Hazardous" | "Industrial";
 export type TechSpeciality = "Biotic" | "Propulsion" | "Cybernetic" | "Warfare";

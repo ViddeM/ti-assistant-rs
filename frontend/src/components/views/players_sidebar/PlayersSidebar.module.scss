@@ -64,6 +64,11 @@
     font-size: $fontSizeSmall
 }
 
+.techContent {
+    color: $primaryTextColor;
+    font-size: $fontSizeSmall
+}
+
 .resourceRow {
     display: flex;
     flex-direction: row;
@@ -81,4 +86,23 @@
         margin-top: 4px;
         text-align: center;
     }
+}
+
+.planetTechContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+    > :first-child {
+        border-right: 2px solid white;
+    }
+
+    > * {
+        flex: 1;
+        padding: 0 0.5rem;
+    }
+}
+
+.techIcon {
+    color: blue;
 }

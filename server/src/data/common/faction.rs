@@ -11,7 +11,7 @@ use crate::data::components::{
 
 use super::expansions::Expansions;
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, EnumIter)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter)]
 pub enum Faction {
     // Vanilla
     Arborec,

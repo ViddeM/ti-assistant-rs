@@ -6,7 +6,7 @@ use crate::{
     data::components::{phase::Phase, strategy_card::StrategyCard, system::System},
     gameplay::{
         event::StrategicPrimaryAction,
-        game_state::{ActionPhaseProgress, StrategicProgress},
+        game_state::{ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress},
         player::PlayerId,
     },
 };
@@ -153,12 +153,19 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "Primary action has already been performed"
             );
 
-            match (progress.card, action) {
+            match (progress.card.clone(), action) {
                 (StrategyCard::Technology, StrategicPrimaryAction::Technology { tech, extra }) => {
+                    /* Set the progress */
+                    progress.primary = Some(StrategicPrimaryProgress::Technology {
+                        tech: tech.clone(),
+                        extra: extra.clone(),
+                    });
+
+                    /* Give the tech to the current player */
                     let current_player = game_state.get_current_player()?;
 
                     current_player.take_tech(tech.clone())?;
-                    if let Some(t) = extra {
+                    if let Some(t) = extra.clone() {
                         current_player.take_tech(t.clone())?;
                     }
                 }
