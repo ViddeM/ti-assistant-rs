@@ -8,7 +8,7 @@
 
 ### Gameplay
  - [x] Planets
-   - [ ] Resource Tracking
+   - [x] Resource Tracking
  - [ ] Score
    - [ ] Objective tracking
    - [ ] Mecatrol rex
@@ -18,7 +18,7 @@
  - [ ] Time spent / player
  - [ ] Relics
  - [ ] Separation between base/PoK/codexes
- - [ ] Strategy cards (speaker handling etc)
+ - [x] Strategy cards (speaker handling etc)
 
 ### Prettify things
  - [ ] Make things pretty (FE)

@@ -117,7 +117,7 @@ impl Faction {
             .collect()
     }
 
-    pub fn get_starting_techs(&self) -> Vec<Technology> {
+    pub fn get_starting_techs(&self) -> HashSet<Technology> {
         match self {
             Faction::Arborec => vec![Technology::MagenDefenceGrid],
             Faction::BaronyOfLetnev => {
@@ -164,5 +164,7 @@ impl Faction {
             Faction::VuilRaithCabal => vec![Technology::SelfAssemblyRoutines],
             Faction::CouncilKeleres => vec![], // Choose 2 non-faction technologies owned by other players.
         }
+        .into_iter()
+        .collect()
     }
 }

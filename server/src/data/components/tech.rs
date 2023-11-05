@@ -22,6 +22,7 @@ pub enum TechOrigin {
     Faction(Faction),
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
 pub enum Technology {
     // Biotic
     NeuralMotivator,

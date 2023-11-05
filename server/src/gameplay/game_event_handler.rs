@@ -3,8 +3,9 @@ use std::collections::{HashMap, HashSet};
 use eyre::{bail, ensure};
 
 use crate::{
-    data::components::{phase::Phase, system::System},
+    data::components::{phase::Phase, strategy_card::StrategyCard, system::System},
     gameplay::{
+        event::StrategicPrimaryAction,
         game_state::{ActionPhaseProgress, StrategicProgress},
         player::PlayerId,
     },
@@ -129,9 +130,42 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.phase = Phase::StrategicAction;
             game_state.action_progress = Some(ActionPhaseProgress::Strategic(StrategicProgress {
                 card,
+                primary: None,
                 other_players: Default::default(),
             }));
             game_state.spent_strategy_cards.insert(card);
+        }
+        Event::StrategicActionPrimary { player, action } => {
+            game_state.assert_phase(Phase::StrategicAction)?;
+            game_state.assert_player_turn(&player)?;
+            ensure!(
+                game_state.action_progress.is_some(),
+                "Invalid game state: expected action_progress not to be None"
+            );
+            let progress = game_state.action_progress.as_mut().unwrap();
+            let progress = match progress {
+                ActionPhaseProgress::Strategic(p) => p,
+                _ => bail!("Invalid action phase progress '{:?}'", progress),
+            };
+
+            ensure!(
+                progress.primary.is_none(),
+                "Primary action has already been performed"
+            );
+
+            match (progress.card, action) {
+                (StrategyCard::Technology, StrategicPrimaryAction::Technology { tech, extra }) => {
+                    let current_player = game_state.get_current_player()?;
+
+                    current_player.take_tech(tech.clone())?;
+                    if let Some(t) = extra {
+                        current_player.take_tech(t.clone())?;
+                    }
+                }
+                (card, action) => {
+                    bail!("Missmatch between progress card {card:?} and action {action:?}")
+                }
+            }
         }
         Event::StrategicActionSecondary {
             player,

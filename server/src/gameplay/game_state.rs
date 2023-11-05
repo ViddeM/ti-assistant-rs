@@ -4,7 +4,7 @@ use eyre::{bail, eyre};
 use serde::{Deserialize, Serialize};
 
 use crate::data::components::{
-    phase::Phase, planet::Planet, strategy_card::StrategyCard, system::SystemId,
+    phase::Phase, planet::Planet, strategy_card::StrategyCard, system::SystemId, tech::Technology,
 };
 
 use super::{
@@ -64,7 +64,16 @@ impl ActionPhaseProgress {
 #[serde(rename_all = "camelCase")]
 pub struct StrategicProgress {
     pub card: StrategyCard,
+    pub primary: Option<StrategicPrimaryProgress>,
     pub other_players: HashMap<PlayerId, bool>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum StrategicPrimaryProgress {
+    Technology {
+        tech: Technology,
+        extra: Option<Technology>,
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
