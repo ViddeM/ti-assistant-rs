@@ -65,9 +65,7 @@ export const StrategyTechnologySecondaryView = ({
                   }
                 />
                 <Button
-                  onClick={() =>
-                    sendTechSecondaryMessage(player.name, "Skipped")
-                  }
+                  onClick={() => sendTechSecondaryMessage(player.name, "Skip")}
                 >
                   Skip
                 </Button>

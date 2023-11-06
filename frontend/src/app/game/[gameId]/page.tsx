@@ -201,6 +201,7 @@ function getPlayersFromGame(
           info: gameOptions.technologies[t],
         };
       }),
+      isSpeaker: gameState.speaker === p.name,
     };
   });
 }

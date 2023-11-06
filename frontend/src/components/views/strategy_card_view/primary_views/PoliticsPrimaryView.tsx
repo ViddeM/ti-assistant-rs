@@ -12,7 +12,7 @@ export const PoliticsPrimaryView = ({
   gameState,
   sendMessage,
 }: PoliticsPrimaryViewProps) => {
-  const [nextSpeaker, setNextSpeaker] = useState<string | null>(null);
+  const [nextSpeaker, setNextSpeaker] = useState<string>("");
 
   const progress = gameState.actionProgress?.Strategic?.primary;
   const nonSpeakerPlayers = Object.keys(gameState.players).filter(
@@ -25,8 +25,8 @@ export const PoliticsPrimaryView = ({
       ) : (
         <>
           <label>Select next speaker</label>
-          <Dropdown>
-            <option>--Select player--</option>
+          <Dropdown onChange={(e) => setNextSpeaker(e.target.value)}>
+            <option value="">--Select player--</option>
             {nonSpeakerPlayers.map((p) => (
               <option key={p} value={p}>
                 {p}
@@ -34,13 +34,14 @@ export const PoliticsPrimaryView = ({
             ))}
           </Dropdown>
           <Button
+            disabled={nextSpeaker === ""}
             onClick={() =>
               sendMessage({
                 StrategicActionPrimary: {
                   player: gameState.currentPlayer!!,
                   action: {
                     Politics: {
-                      nextSpeaker: nextSpeaker,
+                      newSpeaker: nextSpeaker,
                     },
                   },
                 },
