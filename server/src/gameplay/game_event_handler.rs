@@ -6,10 +6,7 @@ use crate::{
     data::components::{phase::Phase, strategy_card::StrategyCard, system::System},
     gameplay::{
         event::{StrategicPrimaryAction, StrategicSecondaryAction},
-        game_state::{
-            ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
-            StrategicSecondaryProgress,
-        },
+        game_state::{ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress},
         player::PlayerId,
     },
 };
@@ -201,7 +198,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
                     progress
                         .other_players
-                        .insert(player.clone(), StrategicSecondaryProgress::Skipped);
+                        .insert(player.clone(), action.clone().into());
 
                     match action {
                         StrategicSecondaryAction::Technology { tech } => {

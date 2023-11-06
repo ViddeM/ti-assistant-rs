@@ -57,7 +57,8 @@ export type StrategicSecondaryProgress =
   | {
       tech: string;
     }
-  | "Imperial";
+  | "Imperial"
+  | "Skipped";
 
 export interface TacticalProgress {
   activatedSystem: string | null;
