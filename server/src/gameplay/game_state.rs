@@ -1,4 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use eyre::{bail, eyre};
 use serde::{Deserialize, Serialize};
@@ -20,6 +23,9 @@ pub struct GameState {
 
     /// Which players are in the game.
     pub players: HashMap<PlayerId, Player>,
+
+    /// The current speaker, if any.
+    pub speaker: Option<PlayerId>,
 
     /// The order that players are sitting around the table, starting with the speaker.
     pub table_order: Vec<PlayerId>,
@@ -74,6 +80,8 @@ pub enum StrategicPrimaryProgress {
         tech: Technology,
         extra: Option<Technology>,
     },
+    #[serde(rename_all = "camelCase")]
+    Politics { new_speaker: PlayerId },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -129,6 +137,26 @@ impl GameState {
         Ok(())
     }
 
+    pub fn calculate_turn_order_from_speaker(&mut self) -> Result<(), GameError> {
+        let speaker = self.speaker()?;
+        let speaker_index = self
+            .table_order
+            .iter()
+            .position(|p| p == speaker)
+            .ok_or(eyre!("No speaker index?"))?;
+
+        let num_players = self.players.len();
+        self.turn_order = (0..num_players)
+            .into_iter()
+            .map(|pos| {
+                let index = (pos + speaker_index) % num_players;
+                self.table_order[index].clone()
+            })
+            .collect::<Vec<Arc<str>>>();
+
+        Ok(())
+    }
+
     /// Advance to the next players turn, if all players have passed, advance to the next phase.
     pub fn advance_turn(&mut self) -> Result<(), GameError> {
         let current_player = self.current_player()?;
@@ -167,7 +195,11 @@ impl GameState {
     pub fn current_player(&self) -> Result<&PlayerId, GameError> {
         self.current_player
             .as_ref()
-            .ok_or_else(|| eyre!("no active player"))
+            .ok_or(eyre!("no active player"))
+    }
+
+    pub fn speaker(&self) -> Result<&PlayerId, GameError> {
+        self.speaker.as_ref().ok_or(eyre!("No speaker"))
     }
 
     pub fn assert_player_turn(&self, player: &PlayerId) -> Result<(), GameError> {

@@ -76,6 +76,8 @@ pub enum StrategicPrimaryAction {
         tech: Technology,
         extra: Option<Technology>,
     },
+    #[serde(rename_all = "camelCase")]
+    Politics { new_speaker: PlayerId },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

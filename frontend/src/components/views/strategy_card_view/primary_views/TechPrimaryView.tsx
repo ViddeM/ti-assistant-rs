@@ -4,17 +4,17 @@ import { useState } from "react";
 import { GameState } from "@/api/Game";
 import { GameOptions } from "@/api/GameOptions";
 
-interface StrategyTechnologyPrimaryViewProps {
+interface TechnologyPrimaryViewProps {
   gameState: GameState;
   gameOptions: GameOptions;
   sendMessage: (data: any) => void;
 }
 
-export const StrategyTechnologyPrimaryView = ({
+export const TechnologyPrimaryView = ({
   gameState,
   gameOptions,
   sendMessage,
-}: StrategyTechnologyPrimaryViewProps) => {
+}: TechnologyPrimaryViewProps) => {
   const [firstTech, setFirstTech] = useState<string | null>(null);
   const [secondTech, setSecondTech] = useState<string | null>(null);
   const progress = gameState.actionProgress?.Strategic?.primary;

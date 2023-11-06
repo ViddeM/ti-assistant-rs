@@ -1,5 +1,5 @@
 import { GameState } from "@/api/Game";
-import { StrategyTechnologyPrimaryView } from "./primary_views/TechPrimaryView";
+import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { GameOptions } from "@/api/GameOptions";
 
 export interface StrategyCardPrimaryProps {
@@ -18,7 +18,7 @@ export const StrategyCardPrimary = ({
   switch (strategyProgress.card) {
     case "Technology":
       return (
-        <StrategyTechnologyPrimaryView
+        <TechnologyPrimaryView
           gameOptions={gameOptions}
           gameState={gameState}
           sendMessage={sendMessage}
