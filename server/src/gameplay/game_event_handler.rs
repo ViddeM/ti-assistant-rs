@@ -157,7 +157,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "Primary action has already been performed"
             );
 
-            match (progress.card.clone(), action) {
+            match (progress.card, action) {
                 (StrategyCard::Technology, StrategicPrimaryAction::Technology { tech, extra }) => {
                     /* Set the progress */
                     progress.primary = Some(StrategicPrimaryProgress::Technology {
@@ -211,6 +211,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                         .other_players
                         .insert(player.clone(), action.clone().into());
 
+                    // TODO: add other relevant strategy cards (initially Imperial)
                     match action {
                         StrategicSecondaryAction::Technology { tech } => {
                             let player = game_state.players.get_mut(&player).unwrap();

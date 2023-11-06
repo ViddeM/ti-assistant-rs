@@ -95,25 +95,31 @@ pub enum StrategicSecondaryAction {
 
 impl StrategicSecondaryAction {
     pub fn is_for_card(&self, card: StrategyCard) -> bool {
-        match (self, card) {
-            (StrategicSecondaryAction::Skip, _) => true,
-            (StrategicSecondaryAction::Leadership, StrategyCard::Leadership) => true,
-            (StrategicSecondaryAction::Diplomacy, StrategyCard::Diplomacy) => true,
-            (StrategicSecondaryAction::Politics, StrategyCard::Politics) => true,
-            (StrategicSecondaryAction::Construction, StrategyCard::Construction) => true,
-            (StrategicSecondaryAction::Trade, StrategyCard::Trade) => true,
-            (StrategicSecondaryAction::Warfare, StrategyCard::Warfare) => true,
-            (StrategicSecondaryAction::Technology { .. }, StrategyCard::Technology) => true,
-            (StrategicSecondaryAction::Imperial, StrategyCard::Imperial) => true,
-            _ => false,
-        }
+        matches!(
+            (self, card),
+            (StrategicSecondaryAction::Skip, _)
+                | (
+                    StrategicSecondaryAction::Leadership,
+                    StrategyCard::Leadership
+                )
+                | (StrategicSecondaryAction::Diplomacy, StrategyCard::Diplomacy)
+                | (StrategicSecondaryAction::Politics, StrategyCard::Politics)
+                | (
+                    StrategicSecondaryAction::Construction,
+                    StrategyCard::Construction
+                )
+                | (StrategicSecondaryAction::Trade, StrategyCard::Trade)
+                | (StrategicSecondaryAction::Warfare, StrategyCard::Warfare)
+                | (
+                    StrategicSecondaryAction::Technology { .. },
+                    StrategyCard::Technology
+                )
+                | (StrategicSecondaryAction::Imperial, StrategyCard::Imperial)
+        )
     }
 
     pub fn skipped(&self) -> bool {
-        match self {
-            StrategicSecondaryAction::Skip => true,
-            _ => false,
-        }
+        matches!(self, StrategicSecondaryAction::Skip)
     }
 }
 
