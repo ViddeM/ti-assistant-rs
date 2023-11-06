@@ -2,6 +2,7 @@ import { GameState } from "@/api/Game";
 import { GameOptions } from "@/api/GameOptions";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { SelectTechView } from "../common_views/SelectTechView";
+import { Button } from "@/components/elements/button/Button";
 
 interface StrategyTechnologySecondaryViewProps {
   gameState: GameState;
@@ -15,6 +16,14 @@ export const StrategyTechnologySecondaryView = ({
   sendMessage,
 }: StrategyTechnologySecondaryViewProps) => {
   const donePlayers = gameState.actionProgress?.Strategic?.otherPlayers!!;
+  const sendTechSecondaryMessage = (player: string, action: any) => {
+    sendMessage({
+      StrategicActionSecondary: {
+        player: player,
+        action: action,
+      },
+    });
+  };
 
   return (
     <div>
@@ -23,33 +32,45 @@ export const StrategyTechnologySecondaryView = ({
         .map((p) => {
           const player = gameState.players[p]!!;
           if (donePlayers[p]) {
+            const choice = donePlayers[p] as
+              | "Skipped"
+              | {
+                  Technology: {
+                    tech: string;
+                  };
+                };
+            console.log("Choice", choice);
             return (
-              <div>
+              <div key={p}>
                 {player.name} <FactionIcon faction={player.faction} />
-                <p>{(donePlayers[p] as { tech: string }).tech}</p>
+                {choice === "Skipped" ? (
+                  <p>--Skipped--</p>
+                ) : (
+                  <p>Tech: {choice.Technology.tech}</p>
+                )}
               </div>
             );
           } else {
             return (
-              <div>
+              <div key={p}>
                 {player.name} <FactionIcon faction={player.faction} />
                 <SelectTechView
                   gameState={gameState}
                   gameOptions={gameOptions}
                   playerId={player.name}
                   onSelect={(tech) =>
-                    sendMessage({
-                      StrategicActionSecondary: {
-                        player: player.name,
-                        action: {
-                          Technology: {
-                            tech: tech,
-                          },
-                        },
-                      },
+                    sendTechSecondaryMessage(player.name, {
+                      Technology: { tech: tech },
                     })
                   }
                 />
+                <Button
+                  onClick={() =>
+                    sendTechSecondaryMessage(player.name, "Skipped")
+                  }
+                >
+                  Skip
+                </Button>
               </div>
             );
           }

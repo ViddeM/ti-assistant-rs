@@ -2,7 +2,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::components::{planet::Planet, strategy_card::StrategyCard, tech::Technology};
 
-use super::player::{NewPlayer, PlayerId};
+use super::{
+    game_state::StrategicSecondaryProgress,
+    player::{NewPlayer, PlayerId},
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Event {
@@ -98,7 +101,7 @@ impl StrategicSecondaryAction {
             (StrategicSecondaryAction::Construction, StrategyCard::Construction) => true,
             (StrategicSecondaryAction::Trade, StrategyCard::Trade) => true,
             (StrategicSecondaryAction::Warfare, StrategyCard::Warfare) => true,
-            (StrategicSecondaryAction::Technology { tech }, StrategyCard::Technology) => true,
+            (StrategicSecondaryAction::Technology { .. }, StrategyCard::Technology) => true,
             (StrategicSecondaryAction::Imperial, StrategyCard::Imperial) => true,
             _ => false,
         }
@@ -108,6 +111,22 @@ impl StrategicSecondaryAction {
         match self {
             StrategicSecondaryAction::Skip => true,
             _ => false,
+        }
+    }
+}
+
+impl From<StrategicSecondaryAction> for StrategicSecondaryProgress {
+    fn from(value: StrategicSecondaryAction) -> Self {
+        match value {
+            StrategicSecondaryAction::Skip => Self::Skipped,
+            StrategicSecondaryAction::Leadership => Self::Leadership,
+            StrategicSecondaryAction::Diplomacy => Self::Diplomacy,
+            StrategicSecondaryAction::Politics => Self::Politics,
+            StrategicSecondaryAction::Construction => Self::Construction,
+            StrategicSecondaryAction::Trade => Self::Trade,
+            StrategicSecondaryAction::Warfare => Self::Warfare,
+            StrategicSecondaryAction::Technology { tech } => Self::Technology { tech },
+            StrategicSecondaryAction::Imperial => Self::Imperial,
         }
     }
 }
