@@ -270,9 +270,9 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             // TODO: Agenda phase
 
             // Reset state
-            // TODO: Set current player to speaker
             game_state.phase = Phase::Strategy;
-            game_state.turn_order = game_state.table_order.clone();
+            game_state.calculate_turn_order_from_speaker()?;
+            game_state.current_player = Some(game_state.speaker()?.clone());
             game_state.strategy_card_holders = HashMap::new();
             game_state.passed_players = HashSet::new();
             game_state.spent_strategy_cards = HashSet::new();
