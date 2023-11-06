@@ -22,7 +22,6 @@ export const StrategyCardView = ({
     Object.keys(strategicAction.otherPlayers).length ===
     Object.keys(gameState.players).length - 1;
   const primaryDone = isPrimaryDone(gameState);
-  console.log("Done? ", secondaryDone, primaryDone);
 
   return (
     <div className={`card ${styles.strategyCardView}`}>
