@@ -13,6 +13,7 @@ export interface Player {
   color: Color;
   isActive: boolean;
   hasPassed: boolean;
+  isSpeaker: boolean;
   cards: StrategicCardInfo[];
   planets: PlayerPlanetInfo[];
   technologies: Tech[];
@@ -85,7 +86,10 @@ const PlayerBox = ({ player }: { player: Player }) => {
             : styles.grayBackground
         }`}
       >
-        <h6 style={{ textOverflow: "ellipsis" }}>{player.name} </h6>
+        <h6 style={{ textOverflow: "ellipsis" }}>
+          {player.name}
+          {player.isSpeaker && " - Speaker"}
+        </h6>
       </legend>
       <div className={styles.content}>
         <StrategyCardInfo cards={player.cards} />

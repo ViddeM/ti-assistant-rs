@@ -1,10 +1,10 @@
-import { GameState, PlayerId } from "@/api/Game";
+import { GameState } from "@/api/Game";
 import { Button } from "@/components/elements/button/Button";
-import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./StrategyCardView.module.scss";
 import { GameOptions } from "@/api/GameOptions";
-import { StrategyTechnologyPrimaryView } from "./primary_views/TechPrimaryView";
+import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { StrategyCardSecondary } from "./StrategyCardSecondary";
+import { PoliticsPrimaryView } from "./primary_views/PoliticsPrimaryView";
 
 export interface StrategyCardViewProps {
   gameState: GameState;
@@ -67,11 +67,15 @@ const StrategyCardPrimary = ({
   switch (strategyProgress.card) {
     case "Technology":
       return (
-        <StrategyTechnologyPrimaryView
+        <TechnologyPrimaryView
           gameOptions={gameOptions}
           gameState={gameState}
           sendMessage={sendMessage}
         />
+      );
+    case "Politics":
+      return (
+        <PoliticsPrimaryView gameState={gameState} sendMessage={sendMessage} />
       );
     default:
       return <p>No primary</p>;

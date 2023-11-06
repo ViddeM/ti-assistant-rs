@@ -39,9 +39,13 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "can't have less than {MIN_PLAYER_COUNT} players"
             );
 
-            // set turn order for strategy phase
-            game_state.turn_order = game_state.table_order.clone();
-            game_state.current_player = game_state.turn_order.first().cloned();
+            // TODO: in the future we should set this in the frontend.
+            game_state.speaker = game_state
+                .players
+                .iter()
+                .fold(None, |_, (id, _)| Some(id.clone()));
+            game_state.current_player = game_state.speaker.clone();
+            game_state.calculate_turn_order_from_speaker()?;
             game_state.phase = Phase::Strategy;
         }
         Event::TakeStrategyCard { player, card } => {
@@ -169,8 +173,15 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                         current_player.take_tech(t.clone())?;
                     }
                 }
+                (StrategyCard::Politics, StrategicPrimaryAction::Politics { new_speaker }) => {
+                    progress.primary = Some(StrategicPrimaryProgress::Politics {
+                        new_speaker: new_speaker.clone(),
+                    });
+
+                    game_state.speaker = Some(new_speaker);
+                }
                 (card, action) => {
-                    bail!("Missmatch between progress card {card:?} and action {action:?}")
+                    bail!("Mismatch between progress card {card:?} and action {action:?}")
                 }
             }
         }

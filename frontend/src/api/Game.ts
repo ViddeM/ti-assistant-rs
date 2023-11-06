@@ -19,6 +19,7 @@ export interface System {
 
 export interface GameState {
   phase: GamePhase;
+  speaker: PlayerId | null;
   players: { [key: PlayerId]: Player };
   tableOrder: PlayerId[];
   turnOrder: PlayerId[];
@@ -44,6 +45,9 @@ export interface StrategicPrimaryProgress {
   Technology?: {
     tech: string;
     extra: string | null;
+  };
+  Politics?: {
+    newSpeaker: string;
   };
 }
 
