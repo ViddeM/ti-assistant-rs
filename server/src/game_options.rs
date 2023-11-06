@@ -35,8 +35,8 @@ pub struct GameOptions {
     secret_objectives: Vec<SecretObjectiveResponse>,
 }
 
-impl GameOptions {
-    pub fn new() -> Self {
+impl Default for GameOptions {
+    fn default() -> Self {
         Self {
             player_counts: (MIN_PLAYER_COUNT..=MAX_PLAYER_COUNT).collect::<Vec<u32>>(),
             min_score: MIN_SCORE,

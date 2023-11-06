@@ -22,7 +22,7 @@ pub enum WsMessageOut {
 
 impl WsMessageOut {
     pub fn game_options() -> Self {
-        Self::GameOptions(GameOptions::new())
+        Self::GameOptions(GameOptions::default())
     }
 
     pub fn game_state(state: GameState) -> Self {

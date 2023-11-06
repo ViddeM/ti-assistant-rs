@@ -38,7 +38,7 @@ impl Player {
 
     pub fn take_tech(&mut self, tech: Technology) -> Result<(), GameError> {
         ensure!(
-            self.technologies.contains(&tech) == false,
+            !self.technologies.contains(&tech),
             "Player {self:?} already has tech {tech:?}"
         );
         self.technologies.insert(tech);

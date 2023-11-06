@@ -147,7 +147,6 @@ impl GameState {
 
         let num_players = self.players.len();
         self.turn_order = (0..num_players)
-            .into_iter()
             .map(|pos| {
                 let index = (pos + speaker_index) % num_players;
                 self.table_order[index].clone()
