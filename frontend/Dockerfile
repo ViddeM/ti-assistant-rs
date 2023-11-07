@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:alpine as BUILD_IMAGE
+FROM node:alpine as BUILD_IMAGE
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN yarn build
 # remove dev dependencies
 RUN npm prune --production
 
-FROM node:alpine
+FROM --platform=linux/amd64 node:alpine
 
 WORKDIR /app
 
