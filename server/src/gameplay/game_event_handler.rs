@@ -69,6 +69,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 );
             }
             game_state.calculate_action_turn_order()?;
+            game_state.current_player = game_state.turn_order.first().cloned();
             game_state.phase = Phase::Action;
         }
         Event::TacticalActionBegin { player } => {
