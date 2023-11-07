@@ -5,9 +5,9 @@
 use std::{net::SocketAddr, sync::Arc};
 
 use clap::Parser;
+use db::DbPool;
 use diesel::{insert_into, ExpressionMethods, QueryDsl};
-use diesel_async::pooled_connection::{deadpool::Pool, AsyncDieselConnectionManager};
-use diesel_async::{AsyncPgConnection, RunQueryDsl};
+use diesel_async::RunQueryDsl;
 use eyre::{bail, Context};
 use lobby::GameId;
 use tokio::{
@@ -46,6 +46,10 @@ pub struct Opt {
     #[clap(long = "db", env = "DATABASE_URL")]
     database_url: Option<String>,
 
+    /// Automatically run database migrations, if needed.
+    #[clap(short, long, env = "MIGRATE_DB", requires("database_url"))]
+    migrate: bool,
+
     /// Cron string that defines when to unload inactive games from memory.
     ///
     /// Format: "sec min hour day_of_month month day_of_week year"
@@ -62,7 +66,7 @@ pub struct Shared {
     pub lobbies: Lobbies,
 
     /// Database pool (if any)
-    pub db_pool: Option<Pool<AsyncPgConnection>>,
+    pub db_pool: Option<DbPool>,
 }
 
 #[tokio::main]
@@ -77,11 +81,14 @@ pub async fn main() -> eyre::Result<()> {
     let mut db_pool = None;
 
     if let Some(db_url) = &opt.database_url {
-        let config = AsyncDieselConnectionManager::<diesel_async::AsyncPgConnection>::new(db_url);
+        if opt.migrate {
+            db::run_migrations(db_url).wrap_err("failed to run migrations")?;
+        }
+
         db_pool = Some(
-            Pool::builder(config)
-                .build()
-                .wrap_err("create connection pool")?,
+            db::setup_pool(db_url)
+                .await
+                .wrap_err("failed to set up database pool")?,
         );
     }
 
