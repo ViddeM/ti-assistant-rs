@@ -24,7 +24,7 @@ export default function Game({ params }: { params: { gameId: string } }) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
 
-  const backendUrl = process.env.NEXT_PUBLIC_SERVER_WS_URI || "/api";
+  const backendUrl = "wss://" + document.location.host + "/api";
   console.log("Trying to connect to websocket at: ", backendUrl);
   const { sendMessage, lastMessage, readyState } = useWebSocket(backendUrl);
 
