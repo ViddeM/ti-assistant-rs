@@ -6,18 +6,19 @@ use cron::Schedule;
 use eyre::Context;
 use tokio::{spawn, time::sleep};
 
-use crate::{lobby::Lobbies, Opt};
+use crate::Shared;
 
-pub fn setup_game_gc(opt: &Opt, lobbies: &Arc<Lobbies>) -> eyre::Result<()> {
-    if let Some(mem_gc_cron) = &opt.mem_gc_cron {
-        if opt.database_url.is_none() {
+pub fn setup_game_gc(shared: &Arc<Shared>) -> eyre::Result<()> {
+    if let Some(mem_gc_cron) = &shared.opt.mem_gc_cron {
+        if shared.db_pool.is_none() {
             log::warn!("you have specified mem_gc_cron without specifying database_url");
             log::warn!("beware: this means games will be deleted when the cron job fires");
         }
 
         let schedule =
             Schedule::from_str(mem_gc_cron).wrap_err("failed to parse mem_gc_cron string")?;
-        spawn(unload_inactive_games(schedule, Arc::clone(lobbies)));
+
+        spawn(unload_inactive_games(schedule, Arc::clone(shared)));
     }
 
     Ok(())
@@ -25,8 +26,10 @@ pub fn setup_game_gc(opt: &Opt, lobbies: &Arc<Lobbies>) -> eyre::Result<()> {
 
 /// Background tasks that periodically goes through all games in memory and unloads the ones with
 /// no clients.
-async fn unload_inactive_games(cron: Schedule, lobbies: Arc<Lobbies>) {
+async fn unload_inactive_games(cron: Schedule, shared: Arc<Shared>) {
     log::info!("scheduling inactive games gc task");
+
+    let lobbies = &shared.lobbies;
 
     loop {
         let Some(next_gc) = cron.upcoming(Local).next() else {

@@ -6,7 +6,8 @@ use std::{net::SocketAddr, sync::Arc};
 
 use clap::Parser;
 use diesel::{insert_into, ExpressionMethods, QueryDsl};
-use diesel_async::{AsyncConnection, AsyncPgConnection, RunQueryDsl};
+use diesel_async::pooled_connection::{deadpool::Pool, AsyncDieselConnectionManager};
+use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use eyre::{bail, Context};
 use lobby::GameId;
 use tokio::{
@@ -52,18 +53,47 @@ pub struct Opt {
     mem_gc_cron: Option<String>,
 }
 
+/// Global shared state
+pub struct Shared {
+    /// Program arguments
+    pub opt: Opt,
+
+    /// Index of running and loaded games
+    pub lobbies: Lobbies,
+
+    /// Database pool (if any)
+    pub db_pool: Option<Pool<AsyncPgConnection>>,
+}
+
 #[tokio::main]
 pub async fn main() -> eyre::Result<()> {
     dotenvy::dotenv().ok();
-    let opt = Arc::new(Opt::parse());
+    let opt = Opt::parse();
 
     color_eyre::install()?;
     pretty_env_logger::init();
 
-    let lobbies = Arc::new(Lobbies::default());
+    let lobbies = Lobbies::default();
+    let mut db_pool = None;
 
-    gc::setup_game_gc(&opt, &lobbies)?;
+    if let Some(db_url) = &opt.database_url {
+        let config = AsyncDieselConnectionManager::<diesel_async::AsyncPgConnection>::new(db_url);
+        db_pool = Some(
+            Pool::builder(config)
+                .build()
+                .wrap_err("create connection pool")?,
+        );
+    }
 
+    let shared = Arc::new(Shared {
+        opt,
+        lobbies,
+        db_pool,
+    });
+
+    gc::setup_game_gc(&shared)?;
+
+    let opt = &shared.opt;
     let server = TcpListener::bind((opt.host.as_str(), opt.port))
         .await
         .wrap_err_with(|| format!("Failed to listen on {}:{}", opt.host, opt.port))?;
@@ -72,27 +102,16 @@ pub async fn main() -> eyre::Result<()> {
     loop {
         // TODO: figure out if this error should really be fatal
         let (stream, from) = server.accept().await.wrap_err("Failed to accept client")?;
-        spawn(handle_client(
-            Arc::clone(&opt),
-            stream,
-            from,
-            Arc::clone(&lobbies),
-        ));
+        spawn(handle_client(Arc::clone(&shared), stream, from));
     }
 }
 
-pub async fn handle_client(
-    opt: Arc<Opt>,
-    stream: TcpStream,
-    from: SocketAddr,
-    lobbies: Arc<Lobbies>,
-) {
-    async fn inner(
-        opt: &Opt,
-        stream: TcpStream,
-        from: SocketAddr,
-        lobbies: Arc<Lobbies>,
-    ) -> eyre::Result<()> {
+pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketAddr) {
+    async fn inner(shared: &Shared, stream: TcpStream, from: SocketAddr) -> eyre::Result<()> {
+        let Shared {
+            lobbies, db_pool, ..
+        } = shared;
+
         let mut ws_client = WsClient::accept(stream).await;
 
         let message = ws_client.receive_message::<WsMessageIn>().await?;
@@ -102,11 +121,10 @@ pub async fn handle_client(
                 let id = GameId::random();
                 let name = generate_game_name(id);
 
-                if let Some(database_uri) = &opt.database_url {
+                if let Some(db_pool) = &db_pool {
                     log::info!("persisting new game {id:?} in database");
 
-                    // TODO: use a connection pool
-                    let mut db = AsyncPgConnection::establish(database_uri).await?;
+                    let mut db = db_pool.get().await?;
 
                     use schema::game::dsl::game;
                     insert_into(game)
@@ -128,13 +146,12 @@ pub async fn handle_client(
                 (id, lobby)
             }
             WsMessageIn::JoinGame(id) => {
-                let mut list = lobbies.list.write().await;
+                let mut list = shared.lobbies.list.write().await;
 
                 if let Some(lobby) = list.get(&id) {
                     (id, Arc::clone(lobby))
-                } else if let Some(database_uri) = &opt.database_url {
-                    // TODO: use a connection pool
-                    let mut db = AsyncPgConnection::establish(database_uri).await?;
+                } else if let Some(db_pool) = &db_pool {
+                    let mut db = db_pool.get().await?;
 
                     log::info!("loading game {id:?} from db");
                     use schema::game::dsl;
@@ -202,9 +219,8 @@ pub async fn handle_client(
                     // TODO: propagate errors back over the socket?
                     lobby.game.apply(event.clone());
 
-                    if let Some(database_uri) = &opt.database_url {
-                        // TODO: use a connection pool
-                        let mut db = AsyncPgConnection::establish(database_uri).await?;
+                    if let Some(db_pool) = &db_pool {
+                        let mut db = db_pool.get().await?;
 
                         log::info!("persisting event for game {id:?}");
                         use schema::game_event::dsl::{game_event};
@@ -224,7 +240,7 @@ pub async fn handle_client(
         }
     }
 
-    if let Err(e) = inner(&opt, stream, from, lobbies).await {
+    if let Err(e) = inner(&shared, stream, from).await {
         log::warn!("disconnecting {from} because of error: {e:#}");
     } else {
         log::info!("{from} disconnected");
