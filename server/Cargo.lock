@@ -107,31 +107,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-name = "backend"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "chrono",
- "clap",
- "color-eyre",
- "cron",
- "diesel",
- "diesel-async",
- "dotenvy",
- "eyre",
- "futures",
- "log",
- "pretty_env_logger",
- "rand",
- "serde",
- "serde_json",
- "strum",
- "strum_macros",
- "tokio",
- "tokio-tungstenite",
-]
-
-[[package]]
 name = "backtrace"
 version = "0.3.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1247,6 +1222,31 @@ checksum = "3fdd6f064ccff2d6567adcb3873ca630700f00b5ad3f060c25b5dcfd9a4ce152"
 dependencies = [
  "cfg-if",
  "once_cell",
+]
+
+[[package]]
+name = "ti-assistant"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "chrono",
+ "clap",
+ "color-eyre",
+ "cron",
+ "diesel",
+ "diesel-async",
+ "dotenvy",
+ "eyre",
+ "futures",
+ "log",
+ "pretty_env_logger",
+ "rand",
+ "serde",
+ "serde_json",
+ "strum",
+ "strum_macros",
+ "tokio",
+ "tokio-tungstenite",
 ]
 
 [[package]]
