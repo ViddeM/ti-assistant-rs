@@ -85,7 +85,7 @@ const StrategyCardPrimary = ({
 function isPrimaryDone(gameState: GameState): boolean {
   const strategic = gameState.actionProgress?.Strategic!!;
 
-  if (strategic.card === "Technology") {
+  if (strategic.card === "Technology" || strategic.card === "Politics") {
     return strategic.primary !== null;
   }
 
