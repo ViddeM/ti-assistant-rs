@@ -145,13 +145,9 @@ impl GameState {
             .position(|p| p == speaker)
             .ok_or(eyre!("No speaker index?"))?;
 
-        let num_players = self.players.len();
-        self.turn_order = (0..num_players)
-            .map(|pos| {
-                let index = (pos + speaker_index) % num_players;
-                self.table_order[index].clone()
-            })
-            .collect::<Vec<Arc<str>>>();
+        let mut tmp = self.table_order.clone();
+        tmp.rotate_left(speaker_index);
+        self.turn_order = tmp;
 
         Ok(())
     }
