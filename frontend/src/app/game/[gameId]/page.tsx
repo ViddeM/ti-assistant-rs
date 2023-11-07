@@ -6,7 +6,7 @@ import {
 } from "@/components/views/players_sidebar/PlayersSidebar";
 import { SelectStrategyCardView } from "@/components/views/strategy_card_select/SelectStrategyCard";
 import { StrategyCard } from "@/resources/types/strategyCards";
-import { GameState, PlayerId } from "@/api/Game";
+import { GameState } from "@/api/Game";
 import { ActionPhaseView } from "@/components/views/action_phase_View/ActionPhaseView";
 import { useEffect, useRef, useState } from "react";
 import { GameOptions } from "@/api/GameOptions";
@@ -50,7 +50,7 @@ export default function Game({ params }: { params: { gameId: string } }) {
         setGameState(gs as GameState);
       }
     }
-  }, [lastMessage, gameOptions]);
+  }, [lastMessage, gameOptions, gameId]);
 
   const sendMsg = (data: any) => sendMessage(JSON.stringify(data));
   const sendEvent = (data: any) => sendMsg({ Event: data });
@@ -68,7 +68,7 @@ export default function Game({ params }: { params: { gameId: string } }) {
         );
       }
     }
-  }, [params]);
+  }, [params, sendMessage]);
 
   return (
     <>
