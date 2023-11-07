@@ -169,7 +169,7 @@ function getPlayersFromGame(
   gameState: GameState,
   gameOptions: GameOptions
 ): Player[] {
-  return getPlayerOrder(gameState).map((id) => {
+  return gameState.turnOrder.map((id) => {
     const p = gameState.players[id];
     return {
       name: p.name,
@@ -204,19 +204,6 @@ function getPlayersFromGame(
       isSpeaker: gameState.speaker === p.name,
     };
   });
-}
-
-// TODO: Look over these
-function getPlayerOrder(gameState: GameState): PlayerId[] {
-  const phase = gameState.phase;
-  switch (phase) {
-    case "Setup":
-      return Object.keys(gameState.players);
-    case "Strategy":
-      return gameState.tableOrder;
-    default:
-      return gameState.turnOrder;
-  }
 }
 
 function getExpectedStrategyCards(noPlayers: number): number {
