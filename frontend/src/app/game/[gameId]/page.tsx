@@ -24,9 +24,8 @@ export default function Game({ params }: { params: { gameId: string } }) {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [gameId, setGameId] = useState<string | null>(null);
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(
-    "ws://localhost:5555"
-  );
+  const backendUrl = process.env.NEXT_PUBLIC_SERVER_WS_URI!!;
+  const { sendMessage, lastMessage, readyState } = useWebSocket(backendUrl);
 
   const initialized = useRef(false);
 
