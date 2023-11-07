@@ -225,18 +225,23 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
         }
         Event::StrategicActionCommit => {
             game_state.assert_phase(Phase::StrategicAction)?;
-            ensure!(
-                game_state.action_progress.is_some(),
-                "not currently performing an action",
+
+            let Some(ActionPhaseProgress::Strategic(progress)) = &game_state.action_progress else {
+                bail!("not currently performing a strategic action");
+            };
+
+            let has_primary = matches!(
+                progress.card,
+                StrategyCard::Politics | StrategyCard::Technology
             );
-            ensure!(
-                game_state
-                    .action_progress
-                    .as_ref()
-                    .unwrap()
-                    .is_strategy_card(),
-                "not currently performing a strategic action"
-            );
+
+            if has_primary {
+                ensure!(
+                    progress.primary.is_some(),
+                    "has not performed strategy card primary"
+                );
+            }
+
             game_state.phase = Phase::Action;
             game_state.action_progress = None;
             game_state.advance_turn()?;
