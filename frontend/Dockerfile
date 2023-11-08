@@ -9,11 +9,14 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+# Prevent telemetry
+RUN yarn next telemetry disable
+
 # build
 RUN yarn build
 
 # remove dev dependencies
-RUN npm prune --production
+RUN npm prune --omit=dev
 
 FROM --platform=linux/amd64 node:alpine
 
