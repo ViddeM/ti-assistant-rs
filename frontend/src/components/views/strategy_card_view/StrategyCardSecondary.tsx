@@ -1,10 +1,9 @@
-import { GameState } from "@/api/Game";
 import { GameOptions } from "@/api/GameOptions";
 import { StrategyTechnologySecondaryView } from "./secondary_views/TechSecondary";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./StrategyCardView.module.scss";
 import { Button } from "@/components/elements/button/Button";
-import { StrategyCard } from "@/resources/types/strategyCards";
+import { GameState } from "@/api/GameState";
 
 export interface StrategyCardSecondaryProps {
   gameState: GameState;

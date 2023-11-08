@@ -1,6 +1,5 @@
 "use client";
 
-import { GameState, Player } from "@/api/Game";
 import { Color, FactionResponse, GameOptions } from "@/api/GameOptions";
 import { Button } from "@/components/elements/button/Button";
 import styles from "./SetupPhase.module.scss";
@@ -8,6 +7,7 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import { Faction } from "@/resources/types/factions";
+import { GameState, Player } from "@/api/GameState";
 
 export interface SetupPhaseProps {
   gameOptions: GameOptions;

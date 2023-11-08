@@ -1,9 +1,10 @@
 "use client";
 
-import { GameState, System } from "@/api/Game";
 import { Button } from "@/components/elements/button/Button";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./ActionPhaseView.module.scss";
+import { GameState } from "@/api/GameState";
+import { System } from "@/api/System";
 
 export interface ActionPhaseViewProps {
   gameState: GameState;

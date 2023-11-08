@@ -1,6 +1,6 @@
 import { Faction } from "@/resources/types/factions";
-import { System } from "./Game";
 import { GamePhase } from "@/resources/types/gamePhase";
+import { System } from "./System";
 
 export interface GameOptions {
   playerCounts: number[];

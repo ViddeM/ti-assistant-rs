@@ -1,10 +1,10 @@
-import { GameState } from "@/api/Game";
 import { Button } from "@/components/elements/button/Button";
 import styles from "./StrategyCardView.module.scss";
 import { GameOptions } from "@/api/GameOptions";
 import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { StrategyCardSecondary } from "./StrategyCardSecondary";
 import { PoliticsPrimaryView } from "./primary_views/PoliticsPrimaryView";
+import { GameState } from "@/api/GameState";
 
 export interface StrategyCardViewProps {
   gameState: GameState;

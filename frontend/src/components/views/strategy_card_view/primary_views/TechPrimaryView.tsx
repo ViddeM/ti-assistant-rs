@@ -1,8 +1,8 @@
 import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../common_views/SelectTechView";
 import { useState } from "react";
-import { GameState } from "@/api/Game";
 import { GameOptions } from "@/api/GameOptions";
+import { GameState } from "@/api/GameState";
 
 interface TechnologyPrimaryViewProps {
   gameState: GameState;

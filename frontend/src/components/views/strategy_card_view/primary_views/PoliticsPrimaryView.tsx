@@ -1,4 +1,4 @@
-import { GameState } from "@/api/Game";
+import { GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";

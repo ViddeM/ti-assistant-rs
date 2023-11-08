@@ -1,4 +1,4 @@
-import { GameState } from "@/api/Game";
+import { GameState } from "@/api/GameState";
 import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { GameOptions } from "@/api/GameOptions";
 

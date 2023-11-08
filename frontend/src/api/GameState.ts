@@ -5,18 +5,6 @@ import { Color } from "./GameOptions";
 
 export type PlayerId = string;
 
-export interface Game {
-  gameState: GameState;
-  systems: System[];
-}
-
-export interface System {
-  id: string;
-  systemType: object;
-  planets: string[];
-  wormholes: object[];
-}
-
 export interface GameState {
   phase: GamePhase;
   speaker: PlayerId | null;

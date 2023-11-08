@@ -1,9 +1,9 @@
-import { GameState } from "@/api/Game";
 import { GameOptions } from "@/api/GameOptions";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./TacticalView.module.scss";
+import { GameState } from "@/api/GameState";
 
 export interface TacticalViewProps {
   gameState: GameState;

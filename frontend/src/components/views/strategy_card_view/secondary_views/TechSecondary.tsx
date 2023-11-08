@@ -1,8 +1,8 @@
-import { GameState } from "@/api/Game";
 import { GameOptions } from "@/api/GameOptions";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { SelectTechView } from "../common_views/SelectTechView";
 import { Button } from "@/components/elements/button/Button";
+import { GameState } from "@/api/GameState";
 
 interface StrategyTechnologySecondaryViewProps {
   gameState: GameState;

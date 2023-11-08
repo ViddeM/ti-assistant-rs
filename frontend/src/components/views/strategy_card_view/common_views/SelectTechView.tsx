@@ -1,5 +1,5 @@
-import { GameState } from "@/api/Game";
 import { GameOptions, TechCategory, TechInfo } from "@/api/GameOptions";
+import { GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { Faction } from "@/resources/types/factions";

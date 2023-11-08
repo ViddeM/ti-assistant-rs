@@ -4,7 +4,7 @@ import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
 import { Color, PlanetInfo, TechCategory, TechInfo } from "@/api/GameOptions";
 import { Icon } from "@/components/elements/icon/Icon";
 
-export interface Player {
+export interface SidebarPlayer {
   name: string;
   faction: {
     faction: Faction;
@@ -29,7 +29,7 @@ export interface PlayerPlanetInfo {
   info: PlanetInfo;
 }
 
-export const PlayerSidebar = ({ players }: { players: Player[] }) => {
+export const PlayerSidebar = ({ players }: { players: SidebarPlayer[] }) => {
   return (
     <div className={`${styles.playerSideBarCard} card`}>
       {players.map((p) => (
@@ -39,7 +39,7 @@ export const PlayerSidebar = ({ players }: { players: Player[] }) => {
   );
 };
 
-const PlayerBox = ({ player }: { player: Player }) => {
+const PlayerBox = ({ player }: { player: SidebarPlayer }) => {
   const numPlanets = player.planets.length;
   const resources = player.planets.reduce(
     (acc, curr) => acc + curr.info.resources,
