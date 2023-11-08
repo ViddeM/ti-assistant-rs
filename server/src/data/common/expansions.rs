@@ -1,4 +1,4 @@
-pub enum Expansions {
+pub enum Expansion {
     Base,
     ProphecyOfKings,
     Codex,
@@ -6,14 +6,14 @@ pub enum Expansions {
     CodexIII,
 }
 
-impl Expansions {
+impl Expansion {
     pub fn name(&self) -> String {
         String::from(match self {
-            Expansions::Base => "Base",
-            Expansions::ProphecyOfKings => "Prophecy Of Kings",
-            Expansions::Codex => "Codex",
-            Expansions::CodexII => "Codex II",
-            Expansions::CodexIII => "Codex III",
+            Expansion::Base => "Base",
+            Expansion::ProphecyOfKings => "Prophecy Of Kings",
+            Expansion::Codex => "Codex",
+            Expansion::CodexII => "Codex II",
+            Expansion::CodexIII => "Codex III",
         })
     }
 }

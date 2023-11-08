@@ -9,7 +9,7 @@ use crate::data::components::{
     tech::Technology,
 };
 
-use super::expansions::Expansions;
+use super::expansions::Expansion;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter)]
 pub enum Faction {
@@ -44,33 +44,33 @@ pub enum Faction {
 }
 
 impl Faction {
-    pub fn expansion(&self) -> Expansions {
+    pub fn expansion(&self) -> Expansion {
         match self {
-            Faction::Arborec => Expansions::Base,
-            Faction::BaronyOfLetnev => Expansions::Base,
-            Faction::ClanOfSaar => Expansions::Base,
-            Faction::EmbersOfMuaat => Expansions::Base,
-            Faction::EmiratesOfHacan => Expansions::Base,
-            Faction::FederationOfSol => Expansions::Base,
-            Faction::GhostsOfCreuss => Expansions::Base,
-            Faction::L1Z1XMindnet => Expansions::Base,
-            Faction::MentakCoalition => Expansions::Base,
-            Faction::NaaluCollective => Expansions::Base,
-            Faction::NekroVirus => Expansions::Base,
-            Faction::SardakkNorr => Expansions::Base,
-            Faction::UniversitiesOfJolNar => Expansions::Base,
-            Faction::Winnu => Expansions::Base,
-            Faction::XxchaKingdom => Expansions::Base,
-            Faction::YinBrotherhood => Expansions::Base,
-            Faction::YssarilTribes => Expansions::Base,
-            Faction::ArgentFlight => Expansions::ProphecyOfKings,
-            Faction::Empyrean => Expansions::ProphecyOfKings,
-            Faction::MahactGeneSorcerers => Expansions::ProphecyOfKings,
-            Faction::NaazRokhaAlliance => Expansions::ProphecyOfKings,
-            Faction::Nomad => Expansions::ProphecyOfKings,
-            Faction::TitansOfUl => Expansions::ProphecyOfKings,
-            Faction::VuilRaithCabal => Expansions::ProphecyOfKings,
-            Faction::CouncilKeleres => Expansions::Codex,
+            Faction::Arborec => Expansion::Base,
+            Faction::BaronyOfLetnev => Expansion::Base,
+            Faction::ClanOfSaar => Expansion::Base,
+            Faction::EmbersOfMuaat => Expansion::Base,
+            Faction::EmiratesOfHacan => Expansion::Base,
+            Faction::FederationOfSol => Expansion::Base,
+            Faction::GhostsOfCreuss => Expansion::Base,
+            Faction::L1Z1XMindnet => Expansion::Base,
+            Faction::MentakCoalition => Expansion::Base,
+            Faction::NaaluCollective => Expansion::Base,
+            Faction::NekroVirus => Expansion::Base,
+            Faction::SardakkNorr => Expansion::Base,
+            Faction::UniversitiesOfJolNar => Expansion::Base,
+            Faction::Winnu => Expansion::Base,
+            Faction::XxchaKingdom => Expansion::Base,
+            Faction::YinBrotherhood => Expansion::Base,
+            Faction::YssarilTribes => Expansion::Base,
+            Faction::ArgentFlight => Expansion::ProphecyOfKings,
+            Faction::Empyrean => Expansion::ProphecyOfKings,
+            Faction::MahactGeneSorcerers => Expansion::ProphecyOfKings,
+            Faction::NaazRokhaAlliance => Expansion::ProphecyOfKings,
+            Faction::Nomad => Expansion::ProphecyOfKings,
+            Faction::TitansOfUl => Expansion::ProphecyOfKings,
+            Faction::VuilRaithCabal => Expansion::ProphecyOfKings,
+            Faction::CouncilKeleres => Expansion::Codex,
         }
     }
 
