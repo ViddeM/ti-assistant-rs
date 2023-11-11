@@ -1,10 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+use crate::data::components::objectives::{secret::SecretObjective, Objective};
 use crate::data::components::{
-    objectives::{secret::SecretObjective, Objective},
-    planet::Planet,
-    strategy_card::StrategyCard,
-    tech::Technology,
+    action_card::ActionCard, planet::Planet, strategy_card::StrategyCard, tech::Technology,
 };
 
 use super::{
@@ -60,9 +58,18 @@ pub enum Event {
 
     StrategicActionCommit,
 
-    ComponentAction {
+    ActionCardActionBegin {
         player: PlayerId,
-        component: (), // TODO
+        card: ActionCard,
+    },
+
+    ActionCardActionPerform {
+        player: PlayerId,
+        data: ActionCardInfo,
+    },
+
+    ActionCardActionCommit {
+        player: PlayerId,
     },
 
     PassAction {
@@ -142,6 +149,21 @@ impl From<StrategicSecondaryAction> for StrategicSecondaryProgress {
             StrategicSecondaryAction::Warfare => Self::Warfare,
             StrategicSecondaryAction::Technology { tech } => Self::Technology { tech },
             StrategicSecondaryAction::Imperial => Self::Imperial,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum ActionCardInfo {
+    FocusedResearch { tech: Technology },
+}
+
+impl ActionCardInfo {
+    pub fn is_for_card(&self, card: &ActionCard) -> bool {
+        #[allow(clippy::match_like_matches_macro)]
+        match (self, card) {
+            (ActionCardInfo::FocusedResearch { .. }, ActionCard::FocusedResearch) => true,
+            _ => false,
         }
     }
 }

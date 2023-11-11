@@ -4,7 +4,8 @@ use eyre::{bail, eyre};
 use serde::{Deserialize, Serialize};
 
 use crate::data::components::{
-    phase::Phase, planet::Planet, strategy_card::StrategyCard, system::SystemId, tech::Technology,
+    action_card::ActionCard, phase::Phase, planet::Planet, strategy_card::StrategyCard,
+    system::SystemId, tech::Technology,
 };
 
 use super::{
@@ -51,9 +52,9 @@ pub struct GameState {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ActionPhaseProgress {
-    #[serde(rename_all = "camelCase")]
     Strategic(StrategicProgress),
     Tactical(TacticalProgress),
+    ActionCard(ActionCardProgress),
 }
 
 impl ActionPhaseProgress {
@@ -119,6 +120,18 @@ impl TacticalProgress {
 pub struct StrategyCardProgress {
     pub card: StrategyCard,
     pub other_players: HashMap<PlayerId, bool>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ActionCardProgress {
+    pub card: ActionCard,
+    pub state: Option<ActionCardState>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum ActionCardState {
+    FocusedResearch { tech: Technology },
 }
 
 impl GameState {

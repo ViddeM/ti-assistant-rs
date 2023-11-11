@@ -1,8 +1,10 @@
+use serde::{Deserialize, Serialize};
+
 use crate::data::common::expansions::Expansion;
 
 use super::phase::Phase;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ActionCard {
     /* Base */
     AncientBurialSites,
@@ -102,6 +104,7 @@ pub enum ActionCard {
     Waylay,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ActionCardPlay {
     StartOfPhase(Phase),
     Agenda(AgendaStagePlay),
@@ -112,6 +115,7 @@ pub enum ActionCardPlay {
     NotImplemented,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum AgendaStagePlay {
     WhenReveal,
     AfterReveal,
@@ -121,14 +125,15 @@ pub enum AgendaStagePlay {
     WhenOutcomeResolve,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ActionCardInfo {
-    card: ActionCard,
-    expansion: Expansion,
-    num_in_deck: usize,
-    play_text: String,
-    play: ActionCardPlay,
-    effect: String,
-    flavor_text: String,
+    pub card: ActionCard,
+    pub expansion: Expansion,
+    pub num_in_deck: usize,
+    pub play_text: String,
+    pub play: ActionCardPlay,
+    pub effect: String,
+    pub flavor_text: String,
 }
 
 macro_rules! ai {

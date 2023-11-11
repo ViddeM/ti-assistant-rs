@@ -3,18 +3,26 @@ use std::collections::{HashMap, HashSet};
 use eyre::{bail, ensure};
 
 use crate::{
-    data::components::{phase::Phase, planet::Planet, strategy_card::StrategyCard, system::System},
+    data::components::{
+        action_card::{ActionCard, ActionCardPlay},
+        phase::Phase,
+        planet::Planet,
+        strategy_card::StrategyCard,
+        system::System,
+    },
     gameplay::{
         event::{StrategicPrimaryAction, StrategicSecondaryAction},
-        game_state::{ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress},
+        game_state::{
+            ActionCardProgress, ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
+        },
         player::PlayerId,
     },
 };
 
 use super::{
     error::GameError,
-    event::Event,
-    game_state::{GameState, TacticalProgress},
+    event::{ActionCardInfo, Event},
+    game_state::{ActionCardState, GameState, TacticalProgress},
 };
 
 const MIN_PLAYER_COUNT: usize = 3;
@@ -215,9 +223,6 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             };
 
             match action_progress {
-                ActionPhaseProgress::Tactical { .. } => {
-                    bail!("cannot perform strategic actions during a tactical action")
-                }
                 ActionPhaseProgress::Strategic(progress) => {
                     ensure!(
                         action.is_for_card(progress.card),
@@ -237,6 +242,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                         _ => {}
                     }
                 }
+                _ => bail!("cannot perform strategic actions during non-strategy actions"),
             };
         }
         Event::StrategicActionCommit => {
@@ -262,15 +268,82 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.action_progress = None;
             game_state.advance_turn()?;
         }
-        Event::ComponentAction {
-            player,
-            component: _,
-        } => {
+        Event::ActionCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
+
+            let card_info = card.info();
+            ensure!(
+                card_info.play == ActionCardPlay::Action,
+                "card cannot be played as an action"
+            );
+
+            game_state.action_progress =
+                Some(ActionPhaseProgress::ActionCard(ActionCardProgress {
+                    card,
+                    state: None,
+                }));
+        }
+        Event::ActionCardActionPerform { player, data } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+
+            if let Some(ActionPhaseProgress::ActionCard(progress)) = &game_state.action_progress {
+                ensure!(
+                    progress.state.is_none(),
+                    "Action has already been performed"
+                );
+
+                ensure!(
+                    data.is_for_card(&progress.card),
+                    "Trying to perform action that does not match the current action card being played"
+                );
+            } else {
+                bail!("Not currently performing an action card action");
+            }
+
+            let new_state = match data {
+                ActionCardInfo::FocusedResearch { tech } => {
+                    let current_player = game_state.get_current_player()?;
+                    current_player.take_tech(tech.clone())?;
+                    ActionCardState::FocusedResearch { tech: tech.clone() }
+                }
+            };
+
+            let Some(ActionPhaseProgress::ActionCard(progress)) = &mut game_state.action_progress
+            else {
+                bail!("Illegal state, no progress even though it existed a moment ago?");
+            };
+            progress.state = Some(new_state);
+        }
+        Event::ActionCardActionCommit { player } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+
+            let Some(ActionPhaseProgress::ActionCard(progress)) = &game_state.action_progress
+            else {
+                bail!("Not currently performing an action card action");
+            };
+
+            match progress.card {
+                ActionCard::FocusedResearch => {
+                    let Some(p) = &progress.state else {
+                        bail!("Can't commit action before having performed the action");
+                    };
+
+                    ensure!(
+                        matches!(p, ActionCardState::FocusedResearch { .. }),
+                        "Illegal state: Invalid action performed for card?"
+                    );
+                }
+                _ => { /* Action isn't tracked by us */ }
+            }
+
+            game_state.action_progress = None;
             game_state.advance_turn()?;
         }
         Event::PassAction { player } => {
+            game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
 
             let has_used_strategy_cards = game_state
