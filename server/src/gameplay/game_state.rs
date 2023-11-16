@@ -131,7 +131,13 @@ pub struct ActionCardProgress {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ActionCardState {
-    FocusedResearch { tech: Technology },
+    FocusedResearch {
+        tech: Technology,
+    },
+    DivertFunding {
+        removed: Technology,
+        gained: Technology,
+    },
 }
 
 impl GameState {

@@ -155,7 +155,14 @@ impl From<StrategicSecondaryAction> for StrategicSecondaryProgress {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ActionCardInfo {
-    FocusedResearch { tech: Technology },
+    FocusedResearch {
+        tech: Technology,
+    },
+    #[serde(rename_all="camelCase")]
+    DivertFunding {
+        remove_tech: Technology,
+        take_tech: Technology,
+    },
 }
 
 impl ActionCardInfo {
@@ -163,6 +170,7 @@ impl ActionCardInfo {
         #[allow(clippy::match_like_matches_macro)]
         match (self, card) {
             (ActionCardInfo::FocusedResearch { .. }, ActionCard::FocusedResearch) => true,
+            (ActionCardInfo::DivertFunding { .. }, ActionCard::DivertFunding) => true,
             _ => false,
         }
     }

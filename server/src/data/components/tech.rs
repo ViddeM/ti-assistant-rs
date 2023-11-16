@@ -123,9 +123,9 @@ pub enum Technology {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct TechInfo {
-    tech_type: TechType,
-    origin: TechOrigin,
-    requirements: HashMap<TechCategory, u32>,
+    pub tech_type: TechType,
+    pub origin: TechOrigin,
+    pub requirements: HashMap<TechCategory, u32>,
 }
 
 macro_rules! t {

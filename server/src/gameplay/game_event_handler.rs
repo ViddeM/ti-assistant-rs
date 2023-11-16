@@ -9,6 +9,7 @@ use crate::{
         planet::Planet,
         strategy_card::StrategyCard,
         system::System,
+        tech::{TechOrigin, TechType},
     },
     gameplay::{
         event::{StrategicPrimaryAction, StrategicSecondaryAction},
@@ -237,7 +238,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                     match action {
                         StrategicSecondaryAction::Technology { tech } => {
                             let player = game_state.players.get_mut(&player).unwrap();
-                            player.technologies.insert(tech);
+                            player.take_tech(tech)?;
                         }
                         _ => {}
                     }
@@ -289,6 +290,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.assert_phase(Phase::ActionCardAction)?;
             game_state.assert_player_turn(&player)?;
 
+            // TODO: Implement Plagiarize and DivertFunding
             if let Some(ActionPhaseProgress::ActionCard(progress)) = &game_state.action_progress {
                 ensure!(
                     progress.state.is_none(),
@@ -308,6 +310,36 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                     let current_player = game_state.get_current_player()?;
                     current_player.take_tech(tech.clone())?;
                     ActionCardState::FocusedResearch { tech: tech.clone() }
+                }
+                ActionCardInfo::DivertFunding {
+                    remove_tech,
+                    take_tech,
+                } => {
+                    let current_player = game_state.get_current_player()?;
+                    ensure!(
+                        current_player.has_tech(&remove_tech),
+                        "Player doesn't have technology {remove_tech:?}"
+                    );
+                    ensure!(
+                        !(current_player.has_tech(&take_tech) && take_tech != remove_tech),
+                        "Player already has technology {take_tech:?}"
+                    );
+                    let remove_tech_info = remove_tech.info();
+                    ensure!(
+                        !matches!(remove_tech_info.origin, TechOrigin::Faction(..)),
+                        "Cannot remove faction technology"
+                    );
+                    ensure!(
+                        !matches!(remove_tech_info.tech_type, TechType::UnitUpgrade),
+                        "Cannot remove unit upgrade technologies"
+                    );
+                    current_player.technologies.remove(&remove_tech);
+                    current_player.take_tech(take_tech.clone())?;
+
+                    ActionCardState::DivertFunding {
+                        removed: remove_tech,
+                        gained: take_tech,
+                    }
                 }
             };
 
