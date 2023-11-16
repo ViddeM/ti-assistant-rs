@@ -6,10 +6,8 @@ use strum::IntoEnumIterator;
 use crate::data::{
     common::{color::Color, faction::Faction},
     components::{
-        phase::Phase,
+        objectives::{public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo},
         planet::{Planet, PlanetInfo},
-        public_objectives::PublicObjectives,
-        secret_objectives::SecretObjectives,
         system::{systems, System},
         tech::{TechInfo, Technology},
     },
@@ -31,8 +29,7 @@ pub struct GameOptions {
     systems: Vec<System>,
     technologies: HashMap<Technology, TechInfo>,
     planet_infos: HashMap<Planet, PlanetInfo>,
-    public_objectives: Vec<PublicObjectiveResponse>,
-    secret_objectives: Vec<SecretObjectiveResponse>,
+    objectives: HashMap<Objective, ObjectiveInfo>,
 }
 
 impl Default for GameOptions {
@@ -52,26 +49,12 @@ impl Default for GameOptions {
             planet_infos: Planet::iter()
                 .map(|p| (p.clone(), p.planet_info()))
                 .collect(),
-            public_objectives: PublicObjectives::iter()
+            objectives: PublicObjective::iter()
+                .map(Objective::from)
+                .chain(SecretObjective::iter().map(Objective::from))
                 .map(|o| {
                     let info = o.get_objective_info();
-                    PublicObjectiveResponse {
-                        id: o,
-                        points: info.points,
-                        name: info.name,
-                        condition: info.condition,
-                    }
-                })
-                .collect(),
-            secret_objectives: SecretObjectives::iter()
-                .map(|o| {
-                    let info = o.get_objective_info();
-                    SecretObjectiveResponse {
-                        id: o,
-                        phase: info.phase,
-                        name: info.name,
-                        condition: info.condition,
-                    }
+                    (o, info)
                 })
                 .collect(),
             technologies: Technology::iter().map(|t| (t.clone(), t.info())).collect(),
@@ -84,22 +67,4 @@ impl Default for GameOptions {
 pub struct FactionResponse {
     faction: Faction,
     name: String,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct PublicObjectiveResponse {
-    id: PublicObjectives,
-    points: u8,
-    name: String,
-    condition: String,
-}
-
-#[derive(Debug, Clone, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SecretObjectiveResponse {
-    id: SecretObjectives,
-    phase: Phase,
-    name: String,
-    condition: String,
 }

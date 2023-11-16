@@ -1,6 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::data::components::{planet::Planet, strategy_card::StrategyCard, tech::Technology};
+use crate::data::components::{
+    objectives::{secret::SecretObjective, Objective},
+    planet::Planet,
+    strategy_card::StrategyCard,
+    tech::Technology,
+};
 
 use super::{
     game_state::StrategicSecondaryProgress,
@@ -65,9 +70,21 @@ pub enum Event {
     },
 
     /* -- STATUS PHASE EVENTS -- */
+    ScorePublicObjective {
+        player: PlayerId,
+        objective: Objective,
+    },
+
+    ScoreSecretObjective {
+        player: PlayerId,
+        objective: SecretObjective,
+    },
+
     // TODO: Score objectives & Reveal objectives
     CompleteStatusPhase,
     // TODO: Agenda phase
+
+    /* -- ANY PHASE EVENTS -- */
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
