@@ -2,7 +2,8 @@
 
 diesel::table! {
     game (id) {
-        id -> Int4,
+        #[max_length = 8]
+        id -> Bpchar,
         #[max_length = 128]
         name -> Varchar,
     }
@@ -11,7 +12,8 @@ diesel::table! {
 diesel::table! {
     game_event (id) {
         id -> Int4,
-        game_id -> Int4,
+        #[max_length = 8]
+        game_id -> Bpchar,
         event -> Jsonb,
     }
 }
