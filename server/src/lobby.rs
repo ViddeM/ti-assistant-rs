@@ -20,7 +20,7 @@ pub struct Lobby {
     pub game: Game,
 
     /// Broadcaster to send GameState updates to all websocket clients.
-    pub state_updates: broadcast::Sender<GameState>,
+    pub state_updates: broadcast::Sender<Arc<GameState>>,
 }
 
 impl GameId {
