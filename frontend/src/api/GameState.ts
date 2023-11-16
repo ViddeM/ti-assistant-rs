@@ -21,6 +21,7 @@ export interface GameState {
 export interface ActionProgress {
   Strategic?: StrategyCardProgress;
   Tactical?: TacticalProgress;
+  ActionCard?: ActionCardProgress;
 }
 
 export interface StrategyCardProgress {
@@ -38,6 +39,17 @@ export interface StrategicPrimaryProgress {
     newSpeaker: string;
   };
 }
+
+export interface ActionCardProgress {
+  card: string;
+  state: ActionCardState | null;
+}
+
+export type ActionCardState = {
+  FocusedResearch: {
+    tech: string;
+  };
+};
 
 export type StrategicSecondaryProgress =
   | "Leadership"

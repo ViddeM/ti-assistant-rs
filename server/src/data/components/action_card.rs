@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumIter;
 
 use crate::data::common::expansions::Expansion;
 
 use super::phase::Phase;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 pub enum ActionCard {
     /* Base */
     AncientBurialSites,

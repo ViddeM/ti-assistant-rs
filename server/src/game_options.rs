@@ -6,6 +6,7 @@ use strum::IntoEnumIterator;
 use crate::data::{
     common::{color::Color, faction::Faction},
     components::{
+        action_card::{ActionCard, ActionCardInfo},
         objectives::{public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo},
         planet::{Planet, PlanetInfo},
         system::{systems, System},
@@ -30,6 +31,7 @@ pub struct GameOptions {
     technologies: HashMap<Technology, TechInfo>,
     planet_infos: HashMap<Planet, PlanetInfo>,
     objectives: HashMap<Objective, ObjectiveInfo>,
+    action_cards: HashMap<ActionCard, ActionCardInfo>,
 }
 
 impl Default for GameOptions {
@@ -58,6 +60,9 @@ impl Default for GameOptions {
                 })
                 .collect(),
             technologies: Technology::iter().map(|t| (t.clone(), t.info())).collect(),
+            action_cards: ActionCard::iter()
+                .map(|card| (card.clone(), card.info()))
+                .collect(),
         }
     }
 }

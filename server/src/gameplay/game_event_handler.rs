@@ -283,9 +283,10 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                     card,
                     state: None,
                 }));
+            game_state.phase = Phase::ActionCardAction;
         }
         Event::ActionCardActionPerform { player, data } => {
-            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_phase(Phase::ActionCardAction)?;
             game_state.assert_player_turn(&player)?;
 
             if let Some(ActionPhaseProgress::ActionCard(progress)) = &game_state.action_progress {
@@ -317,7 +318,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             progress.state = Some(new_state);
         }
         Event::ActionCardActionCommit { player } => {
-            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_phase(Phase::ActionCardAction)?;
             game_state.assert_player_turn(&player)?;
 
             let Some(ActionPhaseProgress::ActionCard(progress)) = &game_state.action_progress
@@ -340,6 +341,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             }
 
             game_state.action_progress = None;
+            game_state.phase = Phase::Action;
             game_state.advance_turn()?;
         }
         Event::PassAction { player } => {
