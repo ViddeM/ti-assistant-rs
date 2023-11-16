@@ -7,6 +7,7 @@ import { ActionPhaseView } from "../views/action_phase_View/ActionPhaseView";
 import { StrategyCardView } from "../views/strategy_card_view/StrategyCardView";
 import { TacticalView } from "../views/tactical_view/TacticalView";
 import { StatusPhaseView } from "../views/status_phase_view/StatusPhaseView";
+import { ActionCardView } from "../views/action_card_view/ActionCardView";
 
 export const PhaseView = ({
   gameState,
@@ -55,6 +56,7 @@ export const PhaseView = ({
       return (
         <ActionPhaseView
           gameState={gameState}
+          gameOptions={gameOptions}
           systems={gameOptions.systems}
           sendMessage={sendMessage}
         />
@@ -70,6 +72,14 @@ export const PhaseView = ({
     case "TacticalAction":
       return (
         <TacticalView
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendMessage={sendMessage}
+        />
+      );
+    case "ActionCardAction":
+      return (
+        <ActionCardView
           gameState={gameState}
           gameOptions={gameOptions}
           sendMessage={sendMessage}

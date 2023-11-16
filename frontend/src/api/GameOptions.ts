@@ -13,6 +13,7 @@ export interface GameOptions {
   secretObjectives: SecretObjectiveInfo[];
   publicObjectives: PublicObjectiveInfo[];
   technologies: { [key: string]: TechInfo };
+  actionCards: { [key: string]: ActionCardInfo };
 }
 
 export interface PlanetInfo {
@@ -73,3 +74,33 @@ export type Color =
   | "Purple"
   | "Orange"
   | "Pink";
+
+export type ActionCardPlay =
+  | "StatusPhaseReturnStrategyCards"
+  | "Action"
+  | "AfterActionCardIsPlayed"
+  | "AfterStrategyCardIsPlayed"
+  | "NotImplemented"
+  | {
+      Agenda: AgendaStagePlay;
+    }
+  | {
+      StartOfPhase: GamePhase;
+    };
+
+export type AgendaStagePlay =
+  | "WhenReveal"
+  | "AfterReveal"
+  | "AfterYouCastVotes"
+  | "AfterSpeakerVotes"
+  | "AfterElected"
+  | "WhenOutcomeResolve";
+
+export interface ActionCardInfo {
+  card: string;
+  expansion: string; // TODO
+  play_text: string;
+  play: ActionCardPlay;
+  effect: string;
+  flavor_text: string;
+}

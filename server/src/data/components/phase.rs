@@ -18,6 +18,9 @@ pub enum Phase {
     /// Performing a tactical action
     TacticalAction,
 
+    /// Performing an action card action
+    ActionCardAction,
+
     /// The Status phase.
     Status,
 
