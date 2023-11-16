@@ -49,6 +49,10 @@ export type ActionCardState = {
   FocusedResearch: {
     tech: string;
   };
+  DivertFunding: {
+    removed: string;
+    gained: string;
+  };
 };
 
 export type StrategicSecondaryProgress =
