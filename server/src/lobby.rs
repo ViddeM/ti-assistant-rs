@@ -4,6 +4,7 @@ use serde::{de::Error, Deserialize, Serialize};
 use std::{
     collections::HashMap,
     fmt::Debug,
+    io::Write,
     ops::Deref,
     str::{self, FromStr},
     sync::Arc,
@@ -18,8 +19,8 @@ use crate::gameplay::{game::Game, game_state::GameState};
 ///
 /// # Invariant
 ///
-/// The inner `[u8; 8]` must always be a valid 8-character hexadecimal string.
-/// This is enforced through the FromStr impl, which is the only valid way to create a GameId.
+/// The inner `[u8; 8]` must always be a valid 8-character hexadecimal string. This is enforced
+/// through the `From<u32>`, and the [FromStr] impls, which are the only valid ways to make GameIds.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, AsExpression, FromSqlRow)]
 #[diesel(sql_type = diesel::sql_types::Text)]
 pub struct GameId([u8; 8]);
@@ -39,7 +40,8 @@ pub struct Lobby {
 
 impl GameId {
     pub fn random() -> Self {
-        GameId(random())
+        let id: u32 = random();
+        id.into()
     }
 }
 
@@ -68,6 +70,14 @@ impl FromStr for GameId {
             .map_err(|_| "failed to parse game id, expected hex string of length 8")?;
 
         Ok(GameId(*id))
+    }
+}
+
+impl From<u32> for GameId {
+    fn from(id: u32) -> Self {
+        let mut buf = [0u8; 8];
+        write!(&mut &mut buf[..], "{id:08x}").expect("the buf is big enough");
+        GameId(buf)
     }
 }
 
