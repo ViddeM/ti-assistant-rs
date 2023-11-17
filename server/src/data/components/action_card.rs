@@ -129,6 +129,7 @@ pub enum AgendaStagePlay {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ActionCardInfo {
     pub card: ActionCard,
+    pub name: String,
     pub expansion: Expansion,
     pub num_in_deck: usize,
     pub play_text: String,
@@ -138,9 +139,10 @@ pub struct ActionCardInfo {
 }
 
 macro_rules! ai {
-    ($card:expr, $exp:expr, $num:literal, $play_text:literal, $effect:literal, $flavor:literal) => {
+    ($card:expr, $name:literal, $exp:expr, $num:literal, $play_text:literal, $effect:literal, $flavor:literal) => {
         ai!(
             $card,
+            $name,
             $exp,
             $num,
             $play_text,
@@ -150,9 +152,10 @@ macro_rules! ai {
         )
     };
 
-    ($card:expr, $exp:expr, $num:literal, $play_text:literal, $play:expr, $effect:literal, $flavor:literal) => {
+    ($card:expr, $name:literal, $exp:expr, $num:literal, $play_text:literal, $play:expr, $effect:literal, $flavor:literal) => {
         ActionCardInfo {
             card: $card,
+            name: $name.into(),
             expansion: $exp,
             num_in_deck: $num,
             play_text: $play_text.into(),
@@ -168,6 +171,7 @@ impl ActionCard {
         match self {
             ActionCard::AncientBurialSites => ai!(
                 ActionCard::AncientBurialSites,
+                "Ancient Burial Sites",
                 Expansion::Base,
                 1,
                 r#"At the start of the agenda phase"#,
@@ -177,6 +181,7 @@ impl ActionCard {
             ),
             ActionCard::AssassinateRepresentative => ai!(
                 ActionCard::AssassinateRepresentative,
+                "Assassinate Representative",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
@@ -186,6 +191,7 @@ impl ActionCard {
             ),
             ActionCard::Bribery => ai!(
                 ActionCard::Bribery,
+                "Bribery",
                 Expansion::Base,
                 1,
                 r#"After the speaker votes on an agenda"#,
@@ -195,64 +201,65 @@ impl ActionCard {
             ),
             ActionCard::Bunker => ai!(
                 ActionCard::Bunker,
+                "Bunker",
                 Expansion::Base,
                 1,
                 r#"At the start of an invasion"#,
-                r#"During this invasion, apply -4 to the result of each Bombardment roll against planets you control.
-        "#,
+                r#"During this invasion, apply -4 to the result of each Bombardment roll against planets you control."#,
                 r#"Elder Junn crossed his arms and steadied his breathing. The bombs could not reach them, not this far down. At least, that is what the soldiers had told him."#
             ),
             ActionCard::ConfusingLegalText => ai!(
                 ActionCard::ConfusingLegalText,
+                "Confusing Legal Text",
                 Expansion::Base,
                 1,
                 r#"When you are elected as the outcome of an agenda"#,
                 ActionCardPlay::Agenda(AgendaStagePlay::AfterElected),
-                r#"Choose 1 player. That player is the elected player instead.
-        "#,
+                r#"Choose 1 player. That player is the elected player instead."#,
                 r#"Somehow, even after the Council had adjourned, none of them were any closer to understanding the strange and confusing events of the day."#
             ),
             ActionCard::ConstructionRider => ai!(
                 ActionCard::ConstructionRider,
+                "Construction Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
                 ActionCardPlay::Agenda(AgendaStagePlay::AfterReveal),
-                r#"You cannot vote on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, place 1 space dock from your reinforcements on a planet you control.
-        "#,
+                r#"You cannot vote on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, place 1 space dock from your reinforcements on a planet you control."#,
                 r#"The vote was nearly unanimous. The council would provide funding for the restoration. Ciel was furious."#
             ),
             ActionCard::CourageousToTheEnd => ai!(
                 ActionCard::CourageousToTheEnd,
+                "Courageous to the End",
                 Expansion::Base,
                 1,
                 r#"After 1 of your ships is destroyed during a space combat"#,
-                r#"Roll 2 dice. For each result equal to or greater than that ship's combat value, your opponent must choose and destroy 1 of their ships.
-        "#,
+                r#"Roll 2 dice. For each result equal to or greater than that ship's combat value, your opponent must choose and destroy 1 of their ships."#,
                 r#"Coughing up blood and covered in burns, Havvat collapsed against the rapidly overheating ship core. She smiled. She would be remembered."#
             ),
             ActionCard::CrippleDefenses => ai!(
                 ActionCard::CrippleDefenses,
+                "Cripple Defenses",
                 Expansion::Base,
                 1,
                 r#"Action: Choose 1 planet."#,
                 ActionCardPlay::Action,
-                r#"Destroy each PDS on that planet.
-        "#,
+                r#"Destroy each PDS on that planet."#,
                 r#"Titanic vines burst forth from the ground, wrapping themselves around the system's primary firing cylinder, breaking it free from its moorings, and bringing it crashing down upon the installation below."#
             ),
             ActionCard::DiplomacyRider => ai!(
                 ActionCard::DiplomacyRider,
+                "Diplomacy Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
                 ActionCardPlay::Agenda(AgendaStagePlay::AfterReveal),
-                r#"You cannot vote on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, choose 1 system that contains a planet you control. Each other player places a command token from their reinforcements in that system.
-        "#,
+                r#"You cannot vote on this agenda. Predict aloud an outcome of this agenda. If your prediction is correct, choose 1 system that contains a planet you control. Each other player places a command token from their reinforcements in that system."#,
                 r#"Ciel evaluated the other senators. Weak, all of them. This was his game to win."#
             ),
             ActionCard::DirectHit => ai!(
                 ActionCard::DirectHit,
+                "Direct Hit",
                 Expansion::Base,
                 4,
                 r#"After another player's ship uses Sustain Damage to cancel a hit produced by your units or abilities"#,
@@ -261,15 +268,16 @@ impl ActionCard {
             ),
             ActionCard::Disable => ai!(
                 ActionCard::Disable,
+                "Disable",
                 Expansion::Base,
                 1,
                 r#"At the start of an invasion in a system that contains 1 or more of your opponents' PDS units"#,
-                r#"Your opponents' PDS units lose Planetary Shield and Space Cannon during this invasion.
-        "#,
+                r#"Your opponents' PDS units lose Planetary Shield and Space Cannon during this invasion."#,
                 r#""Ssruu has met their systems and fixed them." Ssruu dropped a handful of ripped wires and broken circuitry on the pedestal before Q'uesh Sish. "He will await his next task aboard his ship.""#
             ),
             ActionCard::DistinguishedCouncilor => ai!(
                 ActionCard::DistinguishedCouncilor,
+                "Distinguished Councilor",
                 Expansion::Base,
                 1,
                 r#"After you cast votes on an outcome of an agenda"#,
@@ -279,6 +287,7 @@ impl ActionCard {
             ),
             ActionCard::EconomicInitiative => ai!(
                 ActionCard::EconomicInitiative,
+                "Economic Initiative",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -288,6 +297,7 @@ impl ActionCard {
             ),
             ActionCard::EmergencyRepairs => ai!(
                 ActionCard::EmergencyRepairs,
+                "Emergency Repairs",
                 Expansion::Base,
                 1,
                 r#"At the start or end of a combat round"#,
@@ -296,6 +306,7 @@ impl ActionCard {
             ),
             ActionCard::ExperimentalBattlestation => ai!(
                 ActionCard::ExperimentalBattlestation,
+                "Experimental Battlestation",
                 Expansion::Base,
                 1,
                 r#"After another player moves ships into a system during a tactical action"#,
@@ -304,6 +315,7 @@ impl ActionCard {
             ),
             ActionCard::FighterPrototype => ai!(
                 ActionCard::FighterPrototype,
+                "Fighter Prototype",
                 Expansion::Base,
                 1,
                 r#"At the start of the first round of a space combat"#,
@@ -312,6 +324,7 @@ impl ActionCard {
             ),
             ActionCard::FireTeam => ai!(
                 ActionCard::FireTeam,
+                "Fire Team",
                 Expansion::Base,
                 1,
                 r#"After your ground forces make combat rolls during a round of ground combat"#,
@@ -320,6 +333,7 @@ impl ActionCard {
             ),
             ActionCard::FlankSpeed => ai!(
                 ActionCard::FlankSpeed,
+                "Flank Speed",
                 Expansion::Base,
                 4,
                 r#"After you activate a system"#,
@@ -328,6 +342,7 @@ impl ActionCard {
             ),
             ActionCard::FocusedResearch => ai!(
                 ActionCard::FocusedResearch,
+                "Focused Research",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -337,6 +352,7 @@ impl ActionCard {
             ),
             ActionCard::FrontlineDeployment => ai!(
                 ActionCard::FrontlineDeployment,
+                "Frontline Deployment",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -346,6 +362,7 @@ impl ActionCard {
             ),
             ActionCard::GhostShip => ai!(
                 ActionCard::GhostShip,
+                "Ghost Ship",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -355,6 +372,7 @@ impl ActionCard {
             ),
             ActionCard::ImperialRider => ai!(
                 ActionCard::ImperialRider,
+                "Imperial Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
@@ -364,6 +382,7 @@ impl ActionCard {
             ),
             ActionCard::InTheSilenceOfSpace => ai!(
                 ActionCard::InTheSilenceOfSpace,
+                "In The Silence Of Space",
                 Expansion::Base,
                 1,
                 r#"After you activate a system"#,
@@ -372,6 +391,7 @@ impl ActionCard {
             ),
             ActionCard::IndustrialInitiative => ai!(
                 ActionCard::IndustrialInitiative,
+                "Industrial Initiative",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -381,6 +401,7 @@ impl ActionCard {
             ),
             ActionCard::Infiltrate => ai!(
                 ActionCard::Infiltrate,
+                "Infiltrate",
                 Expansion::Base,
                 1,
                 r#"When you gain control of a planet"#,
@@ -389,6 +410,7 @@ impl ActionCard {
             ),
             ActionCard::Insubordination => ai!(
                 ActionCard::Insubordination,
+                "Insubordination&nbsp;&nbsp;",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -398,6 +420,7 @@ impl ActionCard {
             ),
             ActionCard::Intercept => ai!(
                 ActionCard::Intercept,
+                "Intercept",
                 Expansion::Base,
                 1,
                 r#"After your opponent declares a retreat during a space combat"#,
@@ -406,6 +429,7 @@ impl ActionCard {
             ),
             ActionCard::LeadershipRider => ai!(
                 ActionCard::LeadershipRider,
+                "Leadership Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
@@ -415,6 +439,7 @@ impl ActionCard {
             ),
             ActionCard::LostStarChart => ai!(
                 ActionCard::LostStarChart,
+                "Lost Star Chart",
                 Expansion::Base,
                 1,
                 r#"After you activate a system"#,
@@ -423,6 +448,7 @@ impl ActionCard {
             ),
             ActionCard::LuckyShot => ai!(
                 ActionCard::LuckyShot,
+                "Lucky Shot",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -432,6 +458,7 @@ impl ActionCard {
             ),
             ActionCard::ManeuveringJets => ai!(
                 ActionCard::ManeuveringJets,
+                "Maneuvering Jets",
                 Expansion::Base,
                 4,
                 r#"Before you assign hits produced by another player's Space Cannon roll"#,
@@ -440,6 +467,7 @@ impl ActionCard {
             ),
             ActionCard::MiningInitiative => ai!(
                 ActionCard::MiningInitiative,
+                "Mining Initiative&nbsp;",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -449,6 +477,7 @@ impl ActionCard {
             ),
             ActionCard::MoraleBoost => ai!(
                 ActionCard::MoraleBoost,
+                "Morale Boost",
                 Expansion::Base,
                 4,
                 r#"At the start of a combat round"#,
@@ -457,6 +486,7 @@ impl ActionCard {
             ),
             ActionCard::Parley => ai!(
                 ActionCard::Parley,
+                "Parley",
                 Expansion::Base,
                 1,
                 r#"After another player commits units to land on a planet you control"#,
@@ -465,6 +495,7 @@ impl ActionCard {
             ),
             ActionCard::Plague => ai!(
                 ActionCard::Plague,
+                "Plague",
                 Expansion::Base,
                 1,
                 r#"Action: Choose 1 planet that is controlled by another player."#,
@@ -474,6 +505,7 @@ impl ActionCard {
             ),
             ActionCard::PoliticalStability => ai!(
                 ActionCard::PoliticalStability,
+                "Political Stability",
                 Expansion::Base,
                 1,
                 r#"When you would return your strategy card(s) during the status phase"#,
@@ -483,6 +515,7 @@ impl ActionCard {
             ),
             ActionCard::PoliticsRider => ai!(
                 ActionCard::PoliticsRider,
+                "Politics Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
@@ -492,6 +525,7 @@ impl ActionCard {
             ),
             ActionCard::PublicDisgrace => ai!(
                 ActionCard::PublicDisgrace,
+                "Public Disgrace",
                 Expansion::Base,
                 1,
                 r#"When another player chooses a strategy card during the strategy phase"#,
@@ -500,6 +534,7 @@ impl ActionCard {
             ),
             ActionCard::ReactorMeltdown => ai!(
                 ActionCard::ReactorMeltdown,
+                "Reactor Meltdown",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -509,6 +544,7 @@ impl ActionCard {
             ),
             ActionCard::Reparations => ai!(
                 ActionCard::Reparations,
+                "Reparations",
                 Expansion::Base,
                 1,
                 r#"After another player gains control of a planet you control"#,
@@ -517,6 +553,7 @@ impl ActionCard {
             ),
             ActionCard::RepealLaw => ai!(
                 ActionCard::RepealLaw,
+                "Repeal Law",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -526,6 +563,7 @@ impl ActionCard {
             ),
             ActionCard::RiseOfAMessiah => ai!(
                 ActionCard::RiseOfAMessiah,
+                "Rise of a Messiah",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -535,19 +573,17 @@ impl ActionCard {
             ),
             ActionCard::Sabotage => ai!(
                 ActionCard::Sabotage,
+                "Sabotage",
                 Expansion::Base,
                 4,
                 r#"When another player plays an action card other than "Sabotage""#,
                 ActionCardPlay::AfterActionCardIsPlayed,
                 r#"Cancel that action card."#,
-                r#"(1) Q'uesh Sish tapped her claws impatiently. "You were sssaying?" But the confused Jol-Nar envoy stood silent. It was as if the words had escaped his thoughts entirely.
-        (2) trjn.desgn.ALIZARIN introduced itself to each data nodes, incorporating them into its platform, expunging any data it deemed a threat to the Virus.
-        (3) unit.desgn.BEELZEBUL followed the group of men through the winding hallways until they stopped at an intersection. Investigators would later find its cracked oculus at the center of a smoking crater, singed, but still functional.
-        (4) Unlenn smashed a clenched fist into the bulkhead, green eyes ablaze with rage. The entire plan had been turned on its head. Such incompetence was unfathomable.
-        "#
+                r#"(1) Q'uesh Sish tapped her claws impatiently. "You were sssaying?" But the confused Jol-Nar envoy stood silent. It was as if the words had escaped his thoughts entirely.        (2) trjn.desgn.ALIZARIN introduced itself to each data nodes, incorporating them into its platform, expunging any data it deemed a threat to the Virus.        (3) unit.desgn.BEELZEBUL followed the group of men through the winding hallways until they stopped at an intersection. Investigators would later find its cracked oculus at the center of a smoking crater, singed, but still functional.        (4) Unlenn smashed a clenched fist into the bulkhead, green eyes ablaze with rage. The entire plan had been turned on its head. Such incompetence was unfathomable."#
             ),
             ActionCard::Salvage => ai!(
                 ActionCard::Salvage,
+                "Salvage",
                 Expansion::Base,
                 1,
                 r#"After you win a space combat"#,
@@ -556,6 +592,7 @@ impl ActionCard {
             ),
             ActionCard::ShieldsHolding => ai!(
                 ActionCard::ShieldsHolding,
+                "Shields Holding",
                 Expansion::Base,
                 4,
                 r#"Before you assign hits to your ships during a space combat"#,
@@ -564,6 +601,7 @@ impl ActionCard {
             ),
             ActionCard::SignalJamming => ai!(
                 ActionCard::SignalJamming,
+                "Signal Jamming",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -573,18 +611,16 @@ impl ActionCard {
             ),
             ActionCard::SkilledRetreat => ai!(
                 ActionCard::SkilledRetreat,
+                "Skilled Retreat",
                 Expansion::Base,
                 4,
                 r#"At the start of a combat round"#,
                 r#"Move all of your ships from the active system into an adjacent system that does not contain another player's ships; the space combat ends in a draw. Then, place a command token from your reinforcements in that system."#,
-                r#"(1) In an instant, the Sol fleet vanished from the Barony's scanners.
-        (2) The Creuss fleet was gone. No trace remained of their passage.
-        (3) T'ro gave the order, and the entire fleet withdrew without question.
-        (4) "We have no choice, captain." Ciel looked nervous."We must retreat."
-        "#
+                r#"(1) In an instant, the Sol fleet vanished from the Barony's scanners.        (2) The Creuss fleet was gone. No trace remained of their passage.        (3) T'ro gave the order, and the entire fleet withdrew without question.        (4) "We have no choice, captain." Ciel looked nervous."We must retreat.""#
             ),
             ActionCard::Spy => ai!(
                 ActionCard::Spy,
+                "Spy",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -594,6 +630,7 @@ impl ActionCard {
             ),
             ActionCard::Summit => ai!(
                 ActionCard::Summit,
+                "Summit",
                 Expansion::Base,
                 1,
                 r#"At the start of the strategy phase"#,
@@ -603,6 +640,7 @@ impl ActionCard {
             ),
             ActionCard::TacticalBombardment => ai!(
                 ActionCard::TacticalBombardment,
+                "Tactical Bombardment",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -612,6 +650,7 @@ impl ActionCard {
             ),
             ActionCard::TechnologyRider => ai!(
                 ActionCard::TechnologyRider,
+                "Technology Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
@@ -621,6 +660,7 @@ impl ActionCard {
             ),
             ActionCard::TradeRider => ai!(
                 ActionCard::TradeRider,
+                "Trade Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
@@ -630,6 +670,7 @@ impl ActionCard {
             ),
             ActionCard::UnexpectedAction => ai!(
                 ActionCard::UnexpectedAction,
+                "Unexpected Action",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -639,6 +680,7 @@ impl ActionCard {
             ),
             ActionCard::UnstablePlanet => ai!(
                 ActionCard::UnstablePlanet,
+                "Unstable Planet",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -648,6 +690,7 @@ impl ActionCard {
             ),
             ActionCard::Upgrade => ai!(
                 ActionCard::Upgrade,
+                "Upgrade",
                 Expansion::Base,
                 1,
                 r#"After you activate a system that contains 1 or more of your ships"#,
@@ -656,6 +699,7 @@ impl ActionCard {
             ),
             ActionCard::Uprising => ai!(
                 ActionCard::Uprising,
+                "Uprising",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -665,6 +709,7 @@ impl ActionCard {
             ),
             ActionCard::Veto => ai!(
                 ActionCard::Veto,
+                "Veto",
                 Expansion::Base,
                 1,
                 r#"When an agenda is revealed"#,
@@ -674,6 +719,7 @@ impl ActionCard {
             ),
             ActionCard::WarEffort => ai!(
                 ActionCard::WarEffort,
+                "War Effort",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -683,6 +729,7 @@ impl ActionCard {
             ),
             ActionCard::WarfareRider => ai!(
                 ActionCard::WarfareRider,
+                "Warfare Rider",
                 Expansion::Base,
                 1,
                 r#"After an agenda is revealed"#,
@@ -693,6 +740,7 @@ impl ActionCard {
             /* Codex */
             ActionCard::Blitz => ai!(
                 ActionCard::Blitz,
+                "Blitz",
                 Expansion::Codex,
                 1,
                 r#"At the start of an invasion:"#,
@@ -701,6 +749,7 @@ impl ActionCard {
             ),
             ActionCard::Counterstroke => ai!(
                 ActionCard::Counterstroke,
+                "Counterstroke",
                 Expansion::Codex,
                 1,
                 r#"After a player activates a system that contains 1 of your command tokens:"#,
@@ -709,6 +758,7 @@ impl ActionCard {
             ),
             ActionCard::FighterConscription => ai!(
                 ActionCard::FighterConscription,
+                "Fighter Conscription",
                 Expansion::Codex,
                 1,
                 r#"As an Action:"#,
@@ -718,6 +768,7 @@ impl ActionCard {
             ),
             ActionCard::ForwardSupplyBase => ai!(
                 ActionCard::ForwardSupplyBase,
+                "Forward Supply Base",
                 Expansion::Codex,
                 1,
                 r#"After another player activates a system that contains your units:"#,
@@ -726,6 +777,7 @@ impl ActionCard {
             ),
             ActionCard::GhostSquad => ai!(
                 ActionCard::GhostSquad,
+                "Ghost Squad",
                 Expansion::Codex,
                 1,
                 r#"After a player commits units to land on a planet you control:"#,
@@ -734,6 +786,7 @@ impl ActionCard {
             ),
             ActionCard::HackElection => ai!(
                 ActionCard::HackElection,
+                "Hack Election",
                 Expansion::Codex,
                 1,
                 r#"After an agenda is revealed:"#,
@@ -743,6 +796,7 @@ impl ActionCard {
             ),
             ActionCard::HarnessEnergy => ai!(
                 ActionCard::HarnessEnergy,
+                "Harness Energy",
                 Expansion::Codex,
                 1,
                 r#"After you activate an anomaly:"#,
@@ -751,6 +805,7 @@ impl ActionCard {
             ),
             ActionCard::Impersonation => ai!(
                 ActionCard::Impersonation,
+                "Impersonation",
                 Expansion::Codex,
                 1,
                 r#"As an Action:"#,
@@ -760,6 +815,7 @@ impl ActionCard {
             ),
             ActionCard::InsiderInformation => ai!(
                 ActionCard::InsiderInformation,
+                "Insider Information",
                 Expansion::Codex,
                 1,
                 r#"After an agenda is revealed:"#,
@@ -769,6 +825,7 @@ impl ActionCard {
             ),
             ActionCard::MasterPlan => ai!(
                 ActionCard::MasterPlan,
+                "Master Plan",
                 Expansion::Codex,
                 1,
                 r#"After you perform an action:"#,
@@ -778,6 +835,7 @@ impl ActionCard {
             ),
             ActionCard::Plagiarize => ai!(
                 ActionCard::Plagiarize,
+                "Plagiarize",
                 Expansion::Codex,
                 1,
                 r#"As an Action:"#,
@@ -787,6 +845,7 @@ impl ActionCard {
             ),
             ActionCard::Rally => ai!(
                 ActionCard::Rally,
+                "Rally",
                 Expansion::Codex,
                 1,
                 r#"After you activate a system that contains another player's ships:"#,
@@ -795,6 +854,7 @@ impl ActionCard {
             ),
             ActionCard::ReflectiveShielding => ai!(
                 ActionCard::ReflectiveShielding,
+                "Reflective Shielding",
                 Expansion::Codex,
                 1,
                 r#"When one of your ships uses SUSTAIN DAMAGE during combat:"#,
@@ -803,6 +863,7 @@ impl ActionCard {
             ),
             ActionCard::Sanction => ai!(
                 ActionCard::Sanction,
+                "Sanction",
                 Expansion::Codex,
                 1,
                 r#"After an agenda is revealed:"#,
@@ -812,6 +873,7 @@ impl ActionCard {
             ),
             ActionCard::ScrambleFrequency => ai!(
                 ActionCard::ScrambleFrequency,
+                "Scramble Frequency",
                 Expansion::Codex,
                 1,
                 r#"After another player makes a BOMBARDMENT, SPACE CANNON, or ANTI-FIGHTER BARRAGE roll:"#,
@@ -820,6 +882,7 @@ impl ActionCard {
             ),
             ActionCard::SolarFlare => ai!(
                 ActionCard::SolarFlare,
+                "Solar Flare",
                 Expansion::Codex,
                 1,
                 r#"After you activate a system:"#,
@@ -828,6 +891,7 @@ impl ActionCard {
             ),
             ActionCard::WarMachine => ai!(
                 ActionCard::WarMachine,
+                "War Machine",
                 Expansion::Codex,
                 4,
                 r#"When 1 or more of your units use PRODUCTION:"#,
@@ -837,6 +901,7 @@ impl ActionCard {
             /* Prophecy of Kings */
             ActionCard::ArchaeologicalExpedition => ai!(
                 ActionCard::ArchaeologicalExpedition,
+                "Archaeological Expedition",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"As an Action:"#,
@@ -846,6 +911,7 @@ impl ActionCard {
             ),
             ActionCard::ConfoundingLegalText => ai!(
                 ActionCard::ConfoundingLegalText,
+                "Confounding Legal Text",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"When another player is elected as the outcome of an agenda:"#,
@@ -855,6 +921,7 @@ impl ActionCard {
             ),
             ActionCard::CoupDetat => ai!(
                 ActionCard::CoupDetat,
+                "Coup d'Etat",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"When another player would perform a strategic action:"#,
@@ -864,17 +931,17 @@ impl ActionCard {
             ),
             ActionCard::DeadlyPlot => ai!(
                 ActionCard::DeadlyPlot,
+                "Deadly Plot",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"During the agenda phase, when an outcome would be resolved:"#,
                 ActionCardPlay::Agenda(AgendaStagePlay::WhenOutcomeResolve),
-                r#"If you voted for or predicted another outcome, discard the agenda instead; the agenda is resolved with no effect and it is not replaced.
-Then, exhaust all of your planets.
-"#,
+                r#"If you voted for or predicted another outcome, discard the agenda instead; the agenda is resolved with no effect and it is not replaced.Then, exhaust all of your planets."#,
                 r#"The hooded envoy erupted into a nightmare of black metal, lunging at the shocked diplomats."#
             ),
             ActionCard::DecoyOperation => ai!(
                 ActionCard::DecoyOperation,
+                "Decoy Operation",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"After another player activates a system that contains 1 or more of your structures:"#,
@@ -883,6 +950,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::DiplomaticPressure => ai!(
                 ActionCard::DiplomaticPressure,
+                "Diplomatic Pressure",
                 Expansion::ProphecyOfKings,
                 4,
                 r#"When an agenda is revealed:"#,
@@ -892,6 +960,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::DivertFunding => ai!(
                 ActionCard::DivertFunding,
+                "Divert Funding",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"As an Action:"#,
@@ -901,6 +970,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::ExplorationProbe => ai!(
                 ActionCard::ExplorationProbe,
+                "Exploration Probe",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"As an Action:"#,
@@ -910,6 +980,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::ManipulateInvestments => ai!(
                 ActionCard::ManipulateInvestments,
+                "Manipulate Investments",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"At the start of the Strategy Phase:"#,
@@ -919,6 +990,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::NavSuite => ai!(
                 ActionCard::NavSuite,
+                "Nav Suite",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"After you activate a system:"#,
@@ -927,6 +999,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::RefitTroops => ai!(
                 ActionCard::RefitTroops,
+                "Refit Troops",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"As an Action:"#,
@@ -936,6 +1009,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::RevealPrototype => ai!(
                 ActionCard::RevealPrototype,
+                "Reveal Prototype",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"At the start of a combat:"#,
@@ -944,6 +1018,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::ReverseEngineer => ai!(
                 ActionCard::ReverseEngineer,
+                "Reverse Engineer",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"When another player discards an action card that has a component action:"#,
@@ -952,6 +1027,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::Rout => ai!(
                 ActionCard::Rout,
+                "Rout",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"At the start of the "Announce Retreats" step of space combat, if you are the defender:"#,
@@ -960,6 +1036,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::Scuttle => ai!(
                 ActionCard::Scuttle,
+                "Scuttle",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"As an Action:"#,
@@ -969,6 +1046,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::SeizeArtifact => ai!(
                 ActionCard::SeizeArtifact,
+                "Seize Artifact",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"As an Action:"#,
@@ -978,6 +1056,7 @@ Then, exhaust all of your planets.
             ),
             ActionCard::Waylay => ai!(
                 ActionCard::Waylay,
+                "Waylay",
                 Expansion::ProphecyOfKings,
                 1,
                 r#"Before you roll dice for ANTI-FIGHTER BARRAGE:"#,
