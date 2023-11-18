@@ -4,12 +4,12 @@ use eyre::{bail, ensure};
 
 use crate::{
     data::components::{
-        action_card::ActionCardPlay,
+        action_card::{ActionCard, ActionCardPlay},
         phase::Phase,
         planet::Planet,
         strategy_card::StrategyCard,
         system::System,
-        tech::{TechOrigin, TechType},
+        tech::{TechOrigin, TechType, Technology},
     },
     gameplay::{
         event::{action_matches_action_card, StrategicPrimaryAction, StrategicSecondaryAction},
@@ -279,6 +279,16 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "card cannot be played as an action"
             );
 
+            match card {
+                ActionCard::Plagiarize => {
+                    ensure!(
+                        !get_plagiarize_available_techs(&game_state)?.is_empty(),
+                        "There are no techs available for the player to steal."
+                    )
+                }
+                _ => {}
+            }
+
             game_state.action_progress =
                 Some(ActionPhaseProgress::ActionCard(ActionCardProgress { card }));
             game_state.phase = Phase::ActionCardAction;
@@ -326,6 +336,16 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                         );
                         current_player.technologies.remove(&remove_tech);
                         current_player.take_tech(take_tech.clone())?;
+                    }
+                    ActionCardInfo::Plagiarize { tech } => {
+                        let available_techs = get_plagiarize_available_techs(&game_state)?;
+                        ensure!(
+                            available_techs.contains(&tech),
+                            "Unable to take tech {tech:?} for this action card"
+                        );
+
+                        let current_player = game_state.get_current_player()?;
+                        current_player.take_tech(tech)?;
                     }
                 }
             }
@@ -399,4 +419,25 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
         .score
         .update_player_points(&game_state.table_order);
     Ok(())
+}
+
+fn get_plagiarize_available_techs(
+    game_state: &GameState,
+) -> Result<HashSet<&Technology>, GameError> {
+    let current_player_id = game_state.current_player()?;
+    let current_player = game_state
+        .players
+        .get(current_player_id)
+        .ok_or_else(|| eyre::eyre!("Invalid game state, current player not in players map"))?;
+
+    let available_techs = game_state
+        .players
+        .iter()
+        .filter(|&(id, _)| id != current_player_id)
+        .flat_map(|(_, player)| player.technologies.iter())
+        .filter(|tech| !matches!(tech.info().origin, TechOrigin::Faction(..)))
+        .filter(|tech| !current_player.has_tech(tech))
+        .collect::<HashSet<&Technology>>();
+
+    Ok(available_techs)
 }

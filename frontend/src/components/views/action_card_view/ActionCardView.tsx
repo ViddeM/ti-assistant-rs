@@ -1,5 +1,5 @@
 import { GameOptions } from "@/api/GameOptions";
-import { ActionCardProgress, GameState } from "@/api/GameState";
+import { ActionCardProgress, GameState, Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../strategy_card_view/common_views/SelectTechView";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
@@ -74,6 +74,14 @@ const ActionCardProgressView = ({
   } else if (cardProgress.card === "DivertFunding") {
     return (
       <DivertFundingView
+        gameState={gameState}
+        gameOptions={gameOptions}
+        sendCommitMessage={sendCommitMessage}
+      />
+    );
+  } else if (cardProgress.card === "Plagiarize") {
+    return (
+      <PlagiarizeView
         gameState={gameState}
         gameOptions={gameOptions}
         sendCommitMessage={sendCommitMessage}
@@ -172,5 +180,124 @@ const DivertFundingView = ({
         Commit
       </Button>
     </div>
+  );
+};
+
+interface PlagiarizeViewProps {
+  gameState: GameState;
+  gameOptions: GameOptions;
+  sendCommitMessage: (data: any) => void;
+}
+
+const PlagiarizeView = ({
+  gameState,
+  gameOptions,
+  sendCommitMessage,
+}: PlagiarizeViewProps) => {
+  const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
+  const [selectedTech, setSelectedTech] = useState<string | null>(null);
+
+  return (
+    <table className={styles.plagiarizeTable}>
+      <thead>
+        <tr>
+          <th colSpan={2}>Select neighbours tech</th>
+        </tr>
+        <tr>
+          <td align="center">Player</td>
+          <td align="center">Tech</td>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.keys(gameState.players)
+          .filter((p) => p !== gameState.currentPlayer)
+          .map((player) => (
+            <PlagiarizePlayerRow
+              player={player}
+              selectedPlayer={selectedPlayer}
+              selectedTech={selectedTech}
+              setSelectedTech={setSelectedTech}
+              setSelectedPlayer={setSelectedPlayer}
+              gameOptions={gameOptions}
+              gameState={gameState}
+            />
+          ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th colSpan={2}>
+            <Button
+              disabled={!selectedPlayer || !selectedTech}
+              onClick={() =>
+                sendCommitMessage({
+                  Plagiarize: {
+                    tech: selectedTech,
+                  },
+                })
+              }
+            >
+              Plagiarize Tech
+            </Button>
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+  );
+};
+
+interface PlagiarizePlayerRowProps {
+  player: string;
+  selectedPlayer: string | null;
+  selectedTech: string | null;
+  setSelectedPlayer: (player: string | null) => void;
+  setSelectedTech: (tech: string | null) => void;
+  gameOptions: GameOptions;
+  gameState: GameState;
+}
+
+const PlagiarizePlayerRow = ({
+  player,
+  selectedPlayer,
+  selectedTech,
+  setSelectedPlayer,
+  setSelectedTech,
+  gameOptions,
+  gameState,
+}: PlagiarizePlayerRowProps) => {
+  const availablePlayerTechs = gameState.players[player].technologies
+    .filter((tech) => gameOptions.technologies[tech].origin === "Base")
+    .filter(
+      (tech) =>
+        !gameState.players[gameState.currentPlayer!!].technologies.includes(
+          tech
+        )
+    );
+
+  return (
+    <tr key={player}>
+      <td align="right">{player}: </td>
+      <td align="left">
+        <Dropdown
+          disabled={availablePlayerTechs.length === 0}
+          value={selectedPlayer === player ? selectedTech ?? "" : ""}
+          onChange={(e) => {
+            setSelectedPlayer(player);
+            let val = e.target.value;
+            if (val === "") {
+              setSelectedTech(null);
+            } else {
+              setSelectedTech(val);
+            }
+          }}
+        >
+          <option value="">--Select a tech--</option>
+          {availablePlayerTechs.map((tech) => (
+            <option key={tech} value={tech}>
+              {tech}
+            </option>
+          ))}
+        </Dropdown>
+      </td>
+    </tr>
   );
 };
