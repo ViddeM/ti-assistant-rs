@@ -159,6 +159,9 @@ pub enum ActionCardInfo {
         remove_tech: Technology,
         take_tech: Technology,
     },
+    Plagiarize {
+        tech: Technology,
+    },
 }
 
 pub fn action_matches_action_card(action: &Option<ActionCardInfo>, card: &ActionCard) -> bool {
@@ -168,6 +171,9 @@ pub fn action_matches_action_card(action: &Option<ActionCardInfo>, card: &Action
         }
         ActionCard::DivertFunding => {
             matches!(action, Some(ActionCardInfo::DivertFunding { .. }))
+        }
+        ActionCard::Plagiarize => {
+            matches!(action, Some(ActionCardInfo::Plagiarize { .. }))
         }
         _ => action.is_none(),
     }
