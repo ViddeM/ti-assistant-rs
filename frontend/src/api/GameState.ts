@@ -42,18 +42,7 @@ export interface StrategicPrimaryProgress {
 
 export interface ActionCardProgress {
   card: string;
-  state: ActionCardState | null;
 }
-
-export type ActionCardState = {
-  FocusedResearch: {
-    tech: string;
-  };
-  DivertFunding: {
-    removed: string;
-    gained: string;
-  };
-};
 
 export type StrategicSecondaryProgress =
   | "Leadership"

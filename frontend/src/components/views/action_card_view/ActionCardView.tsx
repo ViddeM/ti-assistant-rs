@@ -4,6 +4,7 @@ import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../strategy_card_view/common_views/SelectTechView";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
+import styles from "./ActionCardView.module.scss";
 
 export interface ActionCardViewProps {
   gameState: GameState;
@@ -20,24 +21,13 @@ export const ActionCardView = ({
   const card = gameOptions.actionCards[progress.card];
   return (
     <div className="card">
-      <h2>{card.card}</h2>
+      <h2>{card.name}</h2>
       <ActionCardProgressView
         gameState={gameState}
         gameOptions={gameOptions}
         cardProgress={progress}
         sendMessage={sendMessage}
       />
-      <Button
-        onClick={() =>
-          sendMessage({
-            ActionCardActionCommit: {
-              player: gameState.currentPlayer,
-            },
-          })
-        }
-      >
-        Commit
-      </Button>
     </div>
   );
 };
@@ -55,9 +45,9 @@ const ActionCardProgressView = ({
   cardProgress,
   sendMessage,
 }: ActionCardProgressViewProps) => {
-  const sendPerformMessage = (data: any) => {
+  const sendCommitMessage = (data: any) => {
     sendMessage({
-      ActionCardActionPerform: {
+      ActionCardActionCommit: {
         player: gameState.currentPlayer,
         data: data,
       },
@@ -65,10 +55,6 @@ const ActionCardProgressView = ({
   };
 
   if (cardProgress.card === "FocusedResearch") {
-    if (cardProgress.state !== null) {
-      return <div>{cardProgress.state!!.FocusedResearch.tech}</div>;
-    }
-
     return (
       <div>
         <SelectTechView
@@ -76,7 +62,7 @@ const ActionCardProgressView = ({
           gameOptions={gameOptions}
           playerId={gameState.currentPlayer!!}
           onSelect={(tech) =>
-            sendPerformMessage({
+            sendCommitMessage({
               FocusedResearch: {
                 tech: tech,
               },
@@ -86,42 +72,37 @@ const ActionCardProgressView = ({
       </div>
     );
   } else if (cardProgress.card === "DivertFunding") {
-    if (cardProgress.state !== null) {
-      return (
-        <div>
-          {cardProgress.state!!.DivertFunding.removed} {" -> "}
-          {cardProgress.state.DivertFunding.gained}
-        </div>
-      );
-    }
-
     return (
       <DivertFundingView
         gameState={gameState}
         gameOptions={gameOptions}
-        sendPerformMessage={sendPerformMessage}
+        sendCommitMessage={sendCommitMessage}
       />
     );
   }
 
-  return <div />;
+  return (
+    <div className={styles.commitButtonRow}>
+      <Button onClick={() => sendCommitMessage(null)}>Commit</Button>
+    </div>
+  );
 };
 
 interface DivertFundingViewProps {
   gameState: GameState;
   gameOptions: GameOptions;
-  sendPerformMessage: (data: any) => void;
+  sendCommitMessage: (data: any) => void;
 }
 
 const DivertFundingView = ({
   gameState,
   gameOptions,
-  sendPerformMessage,
+  sendCommitMessage,
 }: DivertFundingViewProps) => {
   const [removeTech, setRemoveTech] = useState<string | null>(null);
   const [gainTech, setGainTech] = useState<string | null>(null);
 
-  const deleteableTechs = gameState.players[
+  const deletableTechs = gameState.players[
     gameState.currentPlayer!!
   ].technologies.filter((tech) => {
     const techInfo = gameOptions.technologies[tech];
@@ -136,38 +117,51 @@ const DivertFundingView = ({
 
   return (
     <div>
-      <Dropdown
-        value={removeTech ?? ""}
-        onChange={(e) => {
-          const v = e.target.value;
-          if (v === "") {
-            setRemoveTech(null);
-          } else {
-            setRemoveTech(v);
-          }
-        }}
-      >
-        <option value={""}>
-          {deleteableTechs.length === 0
-            ? "No available techs to remove"
-            : "--Select tech to remove--"}
-        </option>
-        {deleteableTechs.map((tech) => (
-          <option key={tech} value={tech}>
-            {tech}
+      <fieldset className={styles.techChangeContainer}>
+        <legend>Remove tech</legend>
+        <Dropdown
+          id="delete_tech_dropdown"
+          value={removeTech ?? ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === "") {
+              setRemoveTech(null);
+            } else {
+              setRemoveTech(v);
+            }
+          }}
+        >
+          <option value={""}>
+            {deletableTechs.length === 0
+              ? "No available techs to remove"
+              : "--Select tech to remove--"}
           </option>
-        ))}
-      </Dropdown>
-      <SelectTechView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        playerId={gameState.currentPlayer!!}
-        onSelect={(tech) => setGainTech(tech)}
-      />
+          {deletableTechs.map((tech) => (
+            <option key={tech} value={tech}>
+              {tech}
+            </option>
+          ))}
+        </Dropdown>
+      </fieldset>
+
+      <fieldset className={styles.techChangeContainer}>
+        <legend>Gain tech</legend>
+        {gainTech === null ? (
+          <SelectTechView
+            gameState={gameState}
+            gameOptions={gameOptions}
+            playerId={gameState.currentPlayer!!}
+            onSelect={(tech) => setGainTech(tech)}
+          />
+        ) : (
+          <p>{gainTech}</p>
+        )}
+      </fieldset>
+
       <Button
         disabled={!removeTech || !gainTech}
         onClick={() =>
-          sendPerformMessage({
+          sendCommitMessage({
             DivertFunding: {
               removeTech: removeTech,
               takeTech: gainTech,

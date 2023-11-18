@@ -98,6 +98,7 @@ export type AgendaStagePlay =
 
 export interface ActionCardInfo {
   card: string;
+  name: string;
   expansion: string; // TODO
   play_text: string;
   play: ActionCardPlay;

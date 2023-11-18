@@ -63,13 +63,9 @@ pub enum Event {
         card: ActionCard,
     },
 
-    ActionCardActionPerform {
-        player: PlayerId,
-        data: ActionCardInfo,
-    },
-
     ActionCardActionCommit {
         player: PlayerId,
+        data: Option<ActionCardInfo>,
     },
 
     PassAction {
@@ -158,20 +154,21 @@ pub enum ActionCardInfo {
     FocusedResearch {
         tech: Technology,
     },
-    #[serde(rename_all="camelCase")]
+    #[serde(rename_all = "camelCase")]
     DivertFunding {
         remove_tech: Technology,
         take_tech: Technology,
     },
 }
 
-impl ActionCardInfo {
-    pub fn is_for_card(&self, card: &ActionCard) -> bool {
-        #[allow(clippy::match_like_matches_macro)]
-        match (self, card) {
-            (ActionCardInfo::FocusedResearch { .. }, ActionCard::FocusedResearch) => true,
-            (ActionCardInfo::DivertFunding { .. }, ActionCard::DivertFunding) => true,
-            _ => false,
+pub fn action_matches_action_card(action: &Option<ActionCardInfo>, card: &ActionCard) -> bool {
+    match card {
+        ActionCard::FocusedResearch => {
+            matches!(action, Some(ActionCardInfo::FocusedResearch { .. }))
         }
+        ActionCard::DivertFunding => {
+            matches!(action, Some(ActionCardInfo::DivertFunding { .. }))
+        }
+        _ => action.is_none(),
     }
 }
