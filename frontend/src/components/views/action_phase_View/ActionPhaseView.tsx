@@ -149,19 +149,19 @@ const ActionCardSelectView = ({
 
   useEffect(() => setCard(""), [gameState]);
 
-  const playableActionCards = Object.keys(gameOptions.actionCards).filter(
-    (card) => {
-      return gameOptions.actionCards[card].play === "Action";
-    }
-  );
+  const playableActionCards = Object.keys(gameOptions.actionCards)
+    .map((card) => gameOptions.actionCards[card])
+    .filter((card) => {
+      return card.play === "Action";
+    });
 
   return (
     <div>
       <Dropdown value={card} onChange={(e) => setCard(e.target.value)}>
         <option value={""}>--Select an Action Card--</option>
         {playableActionCards.map((card) => (
-          <option key={card} value={card}>
-            {card}
+          <option key={card.card} value={card.card}>
+            {card.name}
           </option>
         ))}
       </Dropdown>

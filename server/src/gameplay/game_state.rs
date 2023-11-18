@@ -126,18 +126,6 @@ pub struct StrategyCardProgress {
 #[serde(rename_all = "camelCase")]
 pub struct ActionCardProgress {
     pub card: ActionCard,
-    pub state: Option<ActionCardState>,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub enum ActionCardState {
-    FocusedResearch {
-        tech: Technology,
-    },
-    DivertFunding {
-        removed: Technology,
-        gained: Technology,
-    },
 }
 
 impl GameState {

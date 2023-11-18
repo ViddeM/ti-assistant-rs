@@ -4,7 +4,7 @@ use eyre::{bail, ensure};
 
 use crate::{
     data::components::{
-        action_card::{ActionCard, ActionCardPlay},
+        action_card::ActionCardPlay,
         phase::Phase,
         planet::Planet,
         strategy_card::StrategyCard,
@@ -12,7 +12,7 @@ use crate::{
         tech::{TechOrigin, TechType},
     },
     gameplay::{
-        event::{StrategicPrimaryAction, StrategicSecondaryAction},
+        event::{action_matches_action_card, StrategicPrimaryAction, StrategicSecondaryAction},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
         },
@@ -23,7 +23,7 @@ use crate::{
 use super::{
     error::GameError,
     event::{ActionCardInfo, Event},
-    game_state::{ActionCardState, GameState, TacticalProgress},
+    game_state::{GameState, TacticalProgress},
 };
 
 const MIN_PLAYER_COUNT: usize = 3;
@@ -280,96 +280,54 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             );
 
             game_state.action_progress =
-                Some(ActionPhaseProgress::ActionCard(ActionCardProgress {
-                    card,
-                    state: None,
-                }));
+                Some(ActionPhaseProgress::ActionCard(ActionCardProgress { card }));
             game_state.phase = Phase::ActionCardAction;
         }
-        Event::ActionCardActionPerform { player, data } => {
+        Event::ActionCardActionCommit { player, data } => {
             game_state.assert_phase(Phase::ActionCardAction)?;
             game_state.assert_player_turn(&player)?;
 
-            // TODO: Implement Plagiarize and DivertFunding
             if let Some(ActionPhaseProgress::ActionCard(progress)) = &game_state.action_progress {
                 ensure!(
-                    progress.state.is_none(),
-                    "Action has already been performed"
-                );
-
-                ensure!(
-                    data.is_for_card(&progress.card),
-                    "Trying to perform action that does not match the current action card being played"
+                    action_matches_action_card(&data, &progress.card),
+                    "Trying to perform an action that does not match the selected action card."
                 );
             } else {
                 bail!("Not currently performing an action card action");
-            }
+            };
 
-            let new_state = match data {
-                ActionCardInfo::FocusedResearch { tech } => {
-                    let current_player = game_state.get_current_player()?;
-                    current_player.take_tech(tech.clone())?;
-                    ActionCardState::FocusedResearch { tech: tech.clone() }
-                }
-                ActionCardInfo::DivertFunding {
-                    remove_tech,
-                    take_tech,
-                } => {
-                    let current_player = game_state.get_current_player()?;
-                    ensure!(
-                        current_player.has_tech(&remove_tech),
-                        "Player doesn't have technology {remove_tech:?}"
-                    );
-                    ensure!(
-                        !(current_player.has_tech(&take_tech) && take_tech != remove_tech),
-                        "Player already has technology {take_tech:?}"
-                    );
-                    let remove_tech_info = remove_tech.info();
-                    ensure!(
-                        !matches!(remove_tech_info.origin, TechOrigin::Faction(..)),
-                        "Cannot remove faction technology"
-                    );
-                    ensure!(
-                        !matches!(remove_tech_info.tech_type, TechType::UnitUpgrade),
-                        "Cannot remove unit upgrade technologies"
-                    );
-                    current_player.technologies.remove(&remove_tech);
-                    current_player.take_tech(take_tech.clone())?;
-
-                    ActionCardState::DivertFunding {
-                        removed: remove_tech,
-                        gained: take_tech,
+            if let Some(data) = data {
+                match data {
+                    ActionCardInfo::FocusedResearch { tech } => {
+                        let current_player = game_state.get_current_player()?;
+                        current_player.take_tech(tech.clone())?;
+                    }
+                    ActionCardInfo::DivertFunding {
+                        remove_tech,
+                        take_tech,
+                    } => {
+                        let current_player = game_state.get_current_player()?;
+                        ensure!(
+                            current_player.has_tech(&remove_tech),
+                            "Player doesn't have technology {remove_tech:?}"
+                        );
+                        ensure!(
+                            !(current_player.has_tech(&take_tech) && take_tech != remove_tech),
+                            "Player already has technology {take_tech:?}"
+                        );
+                        let remove_tech_info = remove_tech.info();
+                        ensure!(
+                            !matches!(remove_tech_info.origin, TechOrigin::Faction(..)),
+                            "Cannot remove faction technology"
+                        );
+                        ensure!(
+                            !matches!(remove_tech_info.tech_type, TechType::UnitUpgrade),
+                            "Cannot remove unit upgrade technologies"
+                        );
+                        current_player.technologies.remove(&remove_tech);
+                        current_player.take_tech(take_tech.clone())?;
                     }
                 }
-            };
-
-            let Some(ActionPhaseProgress::ActionCard(progress)) = &mut game_state.action_progress
-            else {
-                bail!("Illegal state, no progress even though it existed a moment ago?");
-            };
-            progress.state = Some(new_state);
-        }
-        Event::ActionCardActionCommit { player } => {
-            game_state.assert_phase(Phase::ActionCardAction)?;
-            game_state.assert_player_turn(&player)?;
-
-            let Some(ActionPhaseProgress::ActionCard(progress)) = &game_state.action_progress
-            else {
-                bail!("Not currently performing an action card action");
-            };
-
-            match progress.card {
-                ActionCard::FocusedResearch => {
-                    let Some(p) = &progress.state else {
-                        bail!("Can't commit action before having performed the action");
-                    };
-
-                    ensure!(
-                        matches!(p, ActionCardState::FocusedResearch { .. }),
-                        "Illegal state: Invalid action performed for card?"
-                    );
-                }
-                _ => { /* Action isn't tracked by us */ }
             }
 
             game_state.action_progress = None;

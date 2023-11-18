@@ -410,7 +410,7 @@ impl ActionCard {
             ),
             ActionCard::Insubordination => ai!(
                 ActionCard::Insubordination,
-                "Insubordination&nbsp;&nbsp;",
+                "Insubordination",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -467,7 +467,7 @@ impl ActionCard {
             ),
             ActionCard::MiningInitiative => ai!(
                 ActionCard::MiningInitiative,
-                "Mining Initiative&nbsp;",
+                "Mining Initiative",
                 Expansion::Base,
                 1,
                 r#"As an Action"#,
@@ -792,7 +792,7 @@ impl ActionCard {
                 r#"After an agenda is revealed:"#,
                 ActionCardPlay::Agenda(AgendaStagePlay::AfterReveal),
                 r#"During this agenda, voting begins with the player to the right of the speaker and continues counterclockwise."#,
-                r#"YOUR [NULL ID] STATELY GAME WILL BE FOR NAUGHT&lt;&lt; [VAR:42687] ORDER WILL ARISE FROM [VAR:89001] CHAOS&lt;&lt; IT IS OUR HAND THAT CONTROLS THE OUTCOME"#
+                r#"YOUR [NULL ID] STATELY GAME WILL BE FOR NAUGHT<<[VAR:42687] ORDER WILL ARISE FROM [VAR:89001] CHAOS<< IT IS OUR HAND THAT CONTROLS THE OUTCOME"#
             ),
             ActionCard::HarnessEnergy => ai!(
                 ActionCard::HarnessEnergy,
