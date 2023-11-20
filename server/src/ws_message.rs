@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -15,17 +17,17 @@ pub enum WsMessageIn {
 
 #[derive(Debug, Clone, Serialize)]
 pub enum WsMessageOut {
-    GameOptions(GameOptions),
-    GameState(GameState),
+    GameOptions(Arc<GameOptions>),
+    GameState(Arc<GameState>),
     JoinedGame(GameId),
 }
 
 impl WsMessageOut {
     pub fn game_options() -> Self {
-        Self::GameOptions(GameOptions::default())
+        Self::GameOptions(Default::default())
     }
 
-    pub fn game_state(state: GameState) -> Self {
+    pub fn game_state(state: Arc<GameState>) -> Self {
         Self::GameState(state)
     }
 

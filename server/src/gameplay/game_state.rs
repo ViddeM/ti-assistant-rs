@@ -10,6 +10,7 @@ use crate::data::components::{
 use super::{
     error::GameError,
     player::{Player, PlayerId},
+    score::Score,
 };
 
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
@@ -44,6 +45,8 @@ pub struct GameState {
 
     /// Tracks progress of a strategy card action.
     pub action_progress: Option<ActionPhaseProgress>,
+
+    pub score: Score,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

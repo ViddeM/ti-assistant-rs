@@ -1,26 +1,23 @@
+use super::{ObjectiveInfo, ObjectiveKind};
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct PublicObjectiveInfo {
-    pub points: u8,
-    pub name: String,
-    pub condition: String,
-}
-
 macro_rules! o {
-    ($points:literal, $name:literal, $condition: literal) => {
-        PublicObjectiveInfo {
-            points: $points,
+    ($stage:ident, $name:literal, $condition: literal) => {
+        ObjectiveInfo {
             name: $name.into(),
             condition: $condition.into(),
+            kind: ObjectiveKind::$stage,
+            points: match ObjectiveKind::$stage {
+                ObjectiveKind::StageII => 2,
+                _ => 1,
+            },
         }
     };
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter)]
-pub enum PublicObjectives {
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+pub enum PublicObjective {
     // Base 1 point objectives
     CornerTheMarket,
     DevelopWeaponry,
@@ -70,190 +67,190 @@ pub enum PublicObjectives {
     RuleDistantLands,
 }
 
-impl PublicObjectives {
-    pub fn get_objective_info(&self) -> PublicObjectiveInfo {
+impl PublicObjective {
+    pub fn get_objective_info(&self) -> ObjectiveInfo {
         match self {
-            PublicObjectives::CornerTheMarket => o!(
-                1,
+            PublicObjective::CornerTheMarket => o!(
+                StageI,
                 "Corner the Market",
                 "Control 4 planets that each have the same planet trait."
             ),
-            PublicObjectives::DevelopWeaponry => {
-                o!(1, "Develop Weaponry", "Own 2 unit upgrade technologies.")
+            PublicObjective::DevelopWeaponry => {
+                o!(StageI, "Develop Weaponry", "Own 2 unit upgrade technologies.")
             }
-            PublicObjectives::DiversifyResearch => {
+            PublicObjective::DiversifyResearch => {
                 o!(
-                    1,
+                    StageI,
                     "Diversify Research",
                     "Own 2 technologies in each of 2 colors."
                 )
             }
-            PublicObjectives::ErectAMonument => {
-                o!(1, "Erect a Monument", "Spend 8 resources.")
+            PublicObjective::ErectAMonument => {
+                o!(StageI, "Erect a Monument", "Spend 8 resources.")
             }
-            PublicObjectives::ExpandBorders => {
+            PublicObjective::ExpandBorders => {
                 o!(
-                    1,
+                    StageI,
                     "Expand Borders",
                     "Control 6 planets in non-home systems."
                 )
             }
-            PublicObjectives::FoundResearchOutposts => o!(
-                1,
+            PublicObjective::FoundResearchOutposts => o!(
+                StageI,
                 "Found Research Outposts",
                 "Control 3 planets that have technology specialties."
             ),
-            PublicObjectives::IntimidateCouncil => {
+            PublicObjective::IntimidateCouncil => {
                 o!(
-                    1,
+                    StageI,
                     "Intimidate Council",
                     "Have 1 or more ships in 2 systems that are adjacent to Mectrol Rex's System."
                 )
             }
-            PublicObjectives::LeadFromTheFront => o!(
-                1,
+            PublicObjective::LeadFromTheFront => o!(
+                StageI,
                 "Lead from the Front",
                 "Spend a total of 3 tokens from your tactic and/or strategy pools."
             ),
-            PublicObjectives::NegotiateTradeRoutes => {
-                o!(1, "Negotiate Trade Routes", "Spend 5 trade goods.")
+            PublicObjective::NegotiateTradeRoutes => {
+                o!(StageI, "Negotiate Trade Routes", "Spend 5 trade goods.")
             }
-            PublicObjectives::SwayTheCouncil => o!(1, "Sway the Council", "Spend 8 influence."),
-            PublicObjectives::AmassWealth => o!(
-                1,
+            PublicObjective::SwayTheCouncil => o!(StageI, "Sway the Council", "Spend 8 influence."),
+            PublicObjective::AmassWealth => o!(
+                StageI,
                 "Amass wealth",
                 "Spend 3 influence, 3 resources, and 3 trade goods."
             ),
-            PublicObjectives::BuildDefenses => {
-                o!(1, "Build Defenses", "Have 4 or more structures.")
+            PublicObjective::BuildDefenses => {
+                o!(StageI, "Build Defenses", "Have 4 or more structures.")
             }
-            PublicObjectives::DiscoverLostOutposts => o!(
-                1,
+            PublicObjective::DiscoverLostOutposts => o!(
+                StageI,
                 "Discover Lost Outposts",
                 "Control 2 planets that have attachments."
             ),
-            PublicObjectives::EngineerAMarvel => o!(
-                1,
+            PublicObjective::EngineerAMarvel => o!(
+                StageI,
                 "Engineer a Marvel",
                 "Have your flagship or a war sun on the game board."
             ),
-            PublicObjectives::ExploreDeepSpace => o!(
-                1,
+            PublicObjective::ExploreDeepSpace => o!(
+                StageI,
                 "Explore Deep Space",
                 "Have units in 3 systems that do not contain planets."
             ),
-            PublicObjectives::ImproveInfrastructure => o!(
-                1,
+            PublicObjective::ImproveInfrastructure => o!(
+                StageI,
                 "Improve Infrastructure",
                 "Have structures on 3 planets outside of your home system."
             ),
-            PublicObjectives::MakeHistory => o!(
-                1, "Make History",
+            PublicObjective::MakeHistory => o!(
+                StageI, "Make History",
                 "Have units in 2 systems that contain legendary planets, Mecatol Rex, or anomalies."
             ),
-            PublicObjectives::PopulateTheOuterRim => o!(
-                1,
+            PublicObjective::PopulateTheOuterRim => o!(
+                StageI,
                 "Populate the Outer Rim",
                 "Have units in 3 systems on the edge of the game board other than your home system."
             ),
-            PublicObjectives::PushBoundaries => o!(
-                1,
+            PublicObjective::PushBoundaries => o!(
+                StageI,
                 "Push Boundaries",
                 "Control more planets than each of 2 of your neighbors."
             ),
-            PublicObjectives::RaiseAFleet => o!(
-                1,
+            PublicObjective::RaiseAFleet => o!(
+                StageI,
                 "Raise a Fleet",
                 "Have 5 or more non-fighter ships in 1 system."
             ),
-            PublicObjectives::CentralizeGalacticTrade => {
-                o!(2, "Centralize Galactic Trade", "Spend 10 trade goods.")
+            PublicObjective::CentralizeGalacticTrade => {
+                o!(StageII, "Centralize Galactic Trade", "Spend 10 trade goods.")
             }
-            PublicObjectives::ConquerTheWeak => o!(
-                2,
+            PublicObjective::ConquerTheWeak => o!(
+                StageII,
                 "Conquer the Weak",
                 "Control 1 planet that is in another player's home system."
             ),
-            PublicObjectives::FormGalacticBrainTrust => o!(
-                2,
+            PublicObjective::FormGalacticBrainTrust => o!(
+                StageII,
                 "Form Galactic Brain Trust",
                 "Control 5 planets that have technology specialties."
             ),
-            PublicObjectives::FoundAGoldenAge => o!(2, "Found a Golden Age", "Spend 16 resources."),
-            PublicObjectives::GalvanizeThePeople => o!(
-                2,
+            PublicObjective::FoundAGoldenAge => o!(StageII, "Found a Golden Age", "Spend 16 resources."),
+            PublicObjective::GalvanizeThePeople => o!(
+                StageII,
                 "Galvanize the People",
                 "Spend a total of 6 tokens from your tactic and/or strategy pools."
             ),
-            PublicObjectives::ManipulateGalacticLaw => {
-                o!(2, "Manipulate Galactic Law", "Spend 16 influence")
+            PublicObjective::ManipulateGalacticLaw => {
+                o!(StageII, "Manipulate Galactic Law", "Spend 16 influence")
             }
-            PublicObjectives::MasterTheSciences => o!(
-                2,
+            PublicObjective::MasterTheSciences => o!(
+                StageII,
                 "Master the Sciences",
                 "Own 2 technologies in each of 4 colors."
             ),
-            PublicObjectives::RevolutionizeWarfare => o!(
-                2,
+            PublicObjective::RevolutionizeWarfare => o!(
+                StageII,
                 "Revolutionize Warfare",
                 "Own 3 unit upgrade technologies."
             ),
-            PublicObjectives::SubdueTheGalaxy => o!(
-                2,
+            PublicObjective::SubdueTheGalaxy => o!(
+                StageII,
                 "Subdue the Galaxy",
                 "Control 11 planets in non-home systems."
             ),
-            PublicObjectives::UnifyTheColonies => o!(
-                2,
+            PublicObjective::UnifyTheColonies => o!(
+                StageII,
                 "Unify the Colonies",
                 "Control 6 planets that each have the same planet trait."
             ),
-            PublicObjectives::AchieveSupremacy => o!(
-                2,
+            PublicObjective::AchieveSupremacy => o!(
+                StageII,
                 "Achieve Supremacy",
                 "Have your flagship or a war sun in another player's home system or the Mecatol Rex system."
             ),
-            PublicObjectives::BecomeALegend => o!(
-                2,
+            PublicObjective::BecomeALegend => o!(
+                StageII,
                 "Become a Legend",
                 "Have units in 4 systems that contain legendary planets, Mecatol Rex, or anomalies."
             ),
-            PublicObjectives::CommandAnArmada => o!(
-                2,
+            PublicObjective::CommandAnArmada => o!(
+                StageII,
                 "Command an Armada", "Have 8 or more non-fighter ships in 1 system."
             ),
-            PublicObjectives::ConstructMassiveCities => o!(
-                2,
+            PublicObjective::ConstructMassiveCities => o!(
+                StageII,
                 "Construct Massive Cities",
                 "Have 7 or more structures."
             ),
-            PublicObjectives::ControlTheBorderlands => o!(
-                2,
+            PublicObjective::ControlTheBorderlands => o!(
+                StageII,
                 "Control the Borderlands",
                 "Have units in 5 systems on the edge of the game board other than your home system."
             ),
-            PublicObjectives::HoldVastReserves => o!(
-                2,
+            PublicObjective::HoldVastReserves => o!(
+                StageII,
                 "Hold Vast Reserves",
                 "Spend 6 influence, 6 resources, and 6 trade goods."
             ),
-            PublicObjectives::PatrolVastTerritories => o!(
-                2,
+            PublicObjective::PatrolVastTerritories => o!(
+                StageII,
                 "Patrol Vast Territories",
                 "Have units in 5 systems that do not contain planets."
             ),
-            PublicObjectives::ProtectTheBorder => o!(
-                2,
+            PublicObjective::ProtectTheBorder => o!(
+                StageII,
                 "Protect the Border",
                 "Have structures on 5 planets outside of your home system."
             ),
-            PublicObjectives::ReclaimAncientMonuments => o!(
-                2,
+            PublicObjective::ReclaimAncientMonuments => o!(
+                StageII,
                 "Reclaim Ancient Monuments",
                 "Control 3 planets that have attachments."
             ),
-            PublicObjectives::RuleDistantLands => o!(
-                2,
+            PublicObjective::RuleDistantLands => o!(
+                StageII,
                 "Rule Distant Lands",
                 "Control 2 planets that are each in or adjacent to a different, other player's home system."
             ),

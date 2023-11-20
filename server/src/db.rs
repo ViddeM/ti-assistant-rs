@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use std::thread;
 
 use diesel::{
@@ -5,7 +6,7 @@ use diesel::{
     deserialize::FromSql,
     prelude::{Insertable, Queryable},
     serialize::{self, Output, ToSql},
-    sql_types::Integer,
+    sql_types::Text,
     Connection, Selectable,
 };
 use diesel_async::AsyncPgConnection;
@@ -45,23 +46,30 @@ pub struct NewGameEvent {
     pub event: serde_json::Value,
 }
 
-impl<DB: Backend> FromSql<Integer, DB> for GameId
+impl<DB: Backend> FromSql<Text, DB> for GameId
 where
-    i32: FromSql<Integer, DB>,
+    String: FromSql<Text, DB>,
+    //*const str: FromSql<Text, DB>,
 {
     fn from_sql(bytes: DB::RawValue<'_>) -> diesel::deserialize::Result<Self> {
-        <i32 as FromSql<Integer, DB>>::from_sql(bytes).map(|n| GameId(n as u32))
+        // having to allocate a string here brings me great sadness
+        let s = <String as FromSql<Text, DB>>::from_sql(bytes)?;
+
+        // This is the alternative, diesel-endored way of getting around allocations:
+        //let p = <*const str as FromSql<Text, DB>>::from_sql(bytes)?;
+        //let s = unsafe { p.as_ref() }.expect("string can't be null");
+
+        Ok(s.parse()?)
     }
 }
 
-impl<DB> ToSql<Integer, DB> for GameId
+impl<DB> ToSql<Text, DB> for GameId
 where
     DB: Backend,
-    i32: ToSql<Integer, DB>,
+    str: ToSql<Text, DB>,
 {
     fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, DB>) -> serialize::Result {
-        let GameId(id) = self;
-        <i32 as ToSql<Integer, DB>>::to_sql(bytemuck::cast_ref(id), out)
+        <str as ToSql<Text, DB>>::to_sql(self.deref(), out)
     }
 }
 

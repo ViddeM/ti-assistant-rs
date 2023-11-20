@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use eyre::{bail, ensure};
 
 use crate::{
-    data::components::{phase::Phase, strategy_card::StrategyCard, system::System},
+    data::components::{phase::Phase, planet::Planet, strategy_card::StrategyCard, system::System},
     gameplay::{
         event::{StrategicPrimaryAction, StrategicSecondaryAction},
         game_state::{ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress},
@@ -89,26 +89,42 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "Must have action progress to perform take planet action."
             );
 
+            let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
+            else {
+                bail!(
+                    "Invalid game state, expected tactical action, got {:?}",
+                    game_state.action_progress
+                );
+            };
+
+            let Some(current_player_id) = &game_state.current_player else {
+                bail!("no current player");
+            };
+
+            let Some(current_player) = game_state.players.get_mut(current_player_id) else {
+                bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
+            };
+
             let planet_system = System::for_planet(&planet)?;
+
+            current_player.planets.insert(planet.clone());
 
             // In case someone else currently owns the planet, remove it from them.
             game_state
                 .players
-                .values_mut()
-                .for_each(|p| p.remove_planet(&planet));
+                .iter_mut()
+                .filter(|&(id, _)| id != current_player_id)
+                .for_each(|(_, p)| p.remove_planet(&planet));
 
-            let current_player = game_state.get_current_player()?;
-            current_player.planets.insert(planet.clone());
+            // Give the current player Custodians if he is the first to take Mecatol Rex
+            if let Planet::MecatolRex = planet {
+                if game_state.score.custodians.is_none() {
+                    game_state.score.custodians = Some(current_player_id.clone());
+                }
+            }
 
-            match game_state.action_progress.as_mut() {
-                Some(ActionPhaseProgress::Tactical(tactical)) => {
-                    tactical.activated_system = Some(planet_system.id);
-                    tactical.taken_planets.push(planet);
-                }
-                other => {
-                    bail!("Invalid game state, expected tactical action, got {other:?}")
-                }
-            };
+            tactical.activated_system = Some(planet_system.id);
+            tactical.taken_planets.push(planet);
         }
         Event::TacticalActionCommit { player } => {
             game_state.assert_phase(Phase::TacticalAction)?;
@@ -271,6 +287,33 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.passed_players.insert(player);
             game_state.advance_turn()?;
         }
+        Event::ScorePublicObjective { player, objective } => {
+            // TODO: consider restricting to the correct phase, etc
+
+            let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
+                bail!("can't score an unrevealed public objective");
+            };
+
+            if !scorers.insert(player) {
+                bail!("can't score a public objective twice");
+            }
+        }
+        Event::ScoreSecretObjective { player, objective } => {
+            // TODO: consider restricting to the correct phase, etc
+
+            for scored in game_state.score.secret_objectives.values() {
+                if scored.contains(&objective) {
+                    bail!("secred objective has already been scored");
+                }
+            }
+
+            game_state
+                .score
+                .secret_objectives
+                .entry(player)
+                .or_default()
+                .insert(objective);
+        }
         Event::CompleteStatusPhase => {
             // TODO: Require objectives scored & revealed
 
@@ -285,5 +328,10 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.spent_strategy_cards = HashSet::new();
         }
     }
+
+    // TODO: maybe not recalculate this all the time?
+    game_state
+        .score
+        .update_player_points(&game_state.table_order);
     Ok(())
 }
