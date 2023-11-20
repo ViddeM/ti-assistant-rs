@@ -1,13 +1,13 @@
 import { GameOptions } from "@/api/GameOptions";
 import { GameState } from "@/api/GameState";
-import { SetupPhase } from "../views/setup/SetupPhase";
-import { SelectStrategyCardView } from "../views/strategy_card_select/SelectStrategyCard";
+import { SetupPhase } from "../setup/SetupPhase";
+import { SelectStrategyCardView } from "../strategy_card_select/SelectStrategyCard";
 import { StrategyCard } from "@/resources/types/strategyCards";
-import { ActionPhaseView } from "../views/action_phase_View/ActionPhaseView";
-import { StrategyCardView } from "../views/strategy_card_view/StrategyCardView";
-import { TacticalView } from "../views/tactical_view/TacticalView";
-import { StatusPhaseView } from "../views/status_phase_view/StatusPhaseView";
-import { ActionCardView } from "../views/action_card_view/ActionCardView";
+import { ActionPhaseView } from "../action_phase_View/ActionPhaseView";
+import { StrategyCardView } from "../strategy_card_view/StrategyCardView";
+import { TacticalView } from "../tactical_view/TacticalView";
+import { StatusPhaseView } from "../status_phase_view/StatusPhaseView";
+import { ActionCardView } from "../action_card_view/ActionCardView";
 
 export const PhaseView = ({
   gameState,
