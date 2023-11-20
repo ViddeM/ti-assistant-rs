@@ -29,5 +29,6 @@
  - [ ] Go over all action cards and see if we have missed any interactions
  - [ ] Go over all objective cards and see if we have missed any interactions
  - [ ] Go over all planets and see if we have missed any interactions
+ - [ ] Go over all factions and see if we have missed anything
  - [ ] Test play with both this and OG ti-assistant
  
