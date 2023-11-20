@@ -1,10 +1,9 @@
 import { Button } from "@/components/elements/button/Button";
 import styles from "./StrategyCardView.module.scss";
 import { GameOptions } from "@/api/GameOptions";
-import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { StrategyCardSecondary } from "./StrategyCardSecondary";
-import { PoliticsPrimaryView } from "./primary_views/PoliticsPrimaryView";
 import { GameState } from "@/api/GameState";
+import { StrategyCardPrimary } from "./StrategyCardPrimary";
 
 export interface StrategyCardViewProps {
   gameState: GameState;
@@ -49,37 +48,6 @@ export const StrategyCardView = ({
       </Button>
     </div>
   );
-};
-
-interface StrategyCardPrimaryProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
-
-const StrategyCardPrimary = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: StrategyCardPrimaryProps) => {
-  const strategyProgress = gameState.actionProgress?.Strategic!!;
-
-  switch (strategyProgress.card) {
-    case "Technology":
-      return (
-        <TechnologyPrimaryView
-          gameOptions={gameOptions}
-          gameState={gameState}
-          sendMessage={sendMessage}
-        />
-      );
-    case "Politics":
-      return (
-        <PoliticsPrimaryView gameState={gameState} sendMessage={sendMessage} />
-      );
-    default:
-      return <p>No primary</p>;
-  }
 };
 
 function isPrimaryDone(gameState: GameState): boolean {

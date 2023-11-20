@@ -1,0 +1,11 @@
+@import "../../../../resources/styles/vars.scss";
+
+.selectPrimaryContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.marginTop {
+    margin-top: $marginLarge;
+}

@@ -1,6 +1,7 @@
-import { GameState } from "@/api/GameState";
-import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { GameOptions } from "@/api/GameOptions";
+import { PoliticsPrimaryView } from "./primary_views/PoliticsPrimaryView";
+import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
+import { GameState } from "@/api/GameState";
 
 export interface StrategyCardPrimaryProps {
   gameState: GameState;
@@ -23,6 +24,10 @@ export const StrategyCardPrimary = ({
           gameState={gameState}
           sendMessage={sendMessage}
         />
+      );
+    case "Politics":
+      return (
+        <PoliticsPrimaryView gameState={gameState} sendMessage={sendMessage} />
       );
     default:
       return <p>No primary</p>;

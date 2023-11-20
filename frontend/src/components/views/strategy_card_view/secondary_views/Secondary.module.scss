@@ -1,0 +1,42 @@
+@import "../../../../resources/styles/vars.scss";
+
+.performed {
+    color: darkgreen;
+}
+
+.skipped {
+    color: darkred;
+}
+
+.buttonGroup {
+    > button {
+        border-radius: 0;
+
+        &:first-child {
+            border-top-left-radius: $border-radius;
+            border-bottom-left-radius: $border-radius;
+        }
+
+        &:not(:last-child) {
+            border-right: none;
+        }
+
+        &:last-child {
+            border-top-right-radius: $border-radius;
+            border-bottom-right-radius: $border-radius;
+        }
+    }
+}
+
+.genericSecondaryContainer {
+    width: 100%;
+}
+
+.alignedLegend {
+    display: flex;
+    flex-direction: row;
+}
+
+.horizontalPadding {
+    padding: 0 $paddingLarge;
+}
