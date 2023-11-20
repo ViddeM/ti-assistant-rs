@@ -83,8 +83,6 @@ pub enum Event {
     // TODO: Score objectives & Reveal objectives
     CompleteStatusPhase,
     // TODO: Agenda phase
-
-    /* -- ANY PHASE EVENTS -- */
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
