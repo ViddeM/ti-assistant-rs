@@ -8,10 +8,10 @@ import {
   PlayerSidebar,
   SidebarPlayer,
 } from "../players_sidebar/PlayersSidebar";
-import { PhaseView } from "@/components/PhaseView/PhaseView";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./GameView.module.scss";
 import { useRouter } from "next/navigation";
+import { PhaseView } from "../phase_view/PhaseView";
 
 const NEW_GAME_ID = "new";
 

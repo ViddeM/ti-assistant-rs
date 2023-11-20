@@ -32,25 +32,32 @@ export const TechnologyPrimaryView = ({
   return (
     <div>
       {firstTech === null ? (
-        <SelectTechView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          playerId={gameState.currentPlayer!!}
-          onSelect={setFirstTech}
-        />
+        <fieldset>
+          <legend>
+            <h6>Pick a tech</h6>
+          </legend>
+          <SelectTechView
+            gameState={gameState}
+            gameOptions={gameOptions}
+            playerId={gameState.currentPlayer!!}
+            onSelect={setFirstTech}
+          />
+        </fieldset>
       ) : (
         <>
           <p>{firstTech}</p>
           {secondTech === null ? (
-            <>
-              <h6>Take another?</h6>
+            <fieldset>
+              <legend>
+                <h6>Take another?</h6>
+              </legend>
               <SelectTechView
                 gameState={gameState}
                 gameOptions={gameOptions}
                 playerId={gameState.currentPlayer!!}
                 onSelect={setSecondTech}
               />
-            </>
+            </fieldset>
           ) : (
             <p>{secondTech}</p>
           )}

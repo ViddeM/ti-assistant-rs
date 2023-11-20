@@ -3,6 +3,7 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { SelectTechView } from "../common_views/SelectTechView";
 import { Button } from "@/components/elements/button/Button";
 import { GameState } from "@/api/GameState";
+import styles from "./Secondary.module.scss";
 
 interface StrategyTechnologySecondaryViewProps {
   gameState: GameState;
@@ -39,7 +40,6 @@ export const StrategyTechnologySecondaryView = ({
                     tech: string;
                   };
                 };
-            console.log("Choice", choice);
             return (
               <div key={p}>
                 {player.name} <FactionIcon faction={player.faction} />
@@ -52,8 +52,11 @@ export const StrategyTechnologySecondaryView = ({
             );
           } else {
             return (
-              <div key={p}>
-                {player.name} <FactionIcon faction={player.faction} />
+              <fieldset key={p}>
+                <legend className={styles.alignedLegend}>
+                  <h6 className={styles.horizontalPadding}>{player.name}</h6>{" "}
+                  <FactionIcon faction={player.faction} />
+                </legend>
                 <SelectTechView
                   gameState={gameState}
                   gameOptions={gameOptions}
@@ -69,7 +72,7 @@ export const StrategyTechnologySecondaryView = ({
                 >
                   Skip
                 </Button>
-              </div>
+              </fieldset>
             );
           }
         })}
