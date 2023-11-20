@@ -1,60 +1,28 @@
 -- Game with 3 players just starting their first action phase
 -- Game ID: c561033b
+BEGIN;
+
 INSERT INTO
     game(id, "name")
 VALUES
     (
-        -983497925,
+        'c561033b',
         'Three player action phase start'
     );
 
 INSERT INTO
-    game_event(id, game_id, "event")
+    game_event(game_id, "event")
 VALUES
-(
-        1,
-        -983497925,
-        '{"AddPlayer": {"player": {"name": "Vidde", "color": "Blue", "faction": "BaronyOfLetnev"}}}'
-    ),
-    (
-        2,
-        -983497925,
-        '{"AddPlayer": {"player": {"name": "Pelle", "color": "Black", "faction": "YinBrotherhood"}}}'
-    ),
-    (
-        3,
-        -983497925,
-        '{"AddPlayer": {"player": {"name": "Tux", "color": "Yellow", "faction": "ArgentFlight"}}}'
-    ),
-    (4, -983497925, '"StartGame"'),
-    (
-        5,
-        -983497925,
-        '{"TakeStrategyCard": {"card": "Leadership", "player": "Vidde"}}'
-    ),
-    (
-        6,
-        -983497925,
-        '{"TakeStrategyCard": {"card": "Construction", "player": "Pelle"}}'
-    ),
-    (
-        7,
-        -983497925,
-        '{"TakeStrategyCard": {"card": "Trade", "player": "Tux"}}'
-    ),
-    (
-        8,
-        -983497925,
-        '{"TakeStrategyCard": {"card": "Technology", "player": "Vidde"}}'
-    ),
-    (
-        9,
-        -983497925,
-        '{"TakeStrategyCard": {"card": "Imperial", "player": "Pelle"}}'
-    ),
-    (
-        10,
-        -983497925,
-        '{"TakeStrategyCard": {"card": "Diplomacy", "player": "Tux"}}'
-    ),
-    (11, -983497925, '"CompleteStrategyPhase"');
+    ('c561033b', '{"AddPlayer": {"player": {"name": "Vidde", "color": "Blue", "faction": "BaronyOfLetnev"}}}'),
+    ('c561033b', '{"AddPlayer": {"player": {"name": "Pelle", "color": "Black", "faction": "YinBrotherhood"}}}'),
+    ('c561033b', '{"AddPlayer": {"player": {"name": "Tux", "color": "Yellow", "faction": "ArgentFlight"}}}'),
+    ('c561033b', '"StartGame"'),
+    ('c561033b', '{"TakeStrategyCard": {"card": "Leadership", "player": "Vidde"}}'),
+    ('c561033b', '{"TakeStrategyCard": {"card": "Construction", "player": "Pelle"}}'),
+    ('c561033b', '{"TakeStrategyCard": {"card": "Trade", "player": "Tux"}}'),
+    ('c561033b', '{"TakeStrategyCard": {"card": "Technology", "player": "Vidde"}}'),
+    ('c561033b', '{"TakeStrategyCard": {"card": "Imperial", "player": "Pelle"}}'),
+    ('c561033b', '{"TakeStrategyCard": {"card": "Diplomacy", "player": "Tux"}}'),
+    ('c561033b', '"CompleteStrategyPhase"');
+
+COMMIT;
