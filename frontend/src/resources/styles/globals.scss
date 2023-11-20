@@ -56,6 +56,12 @@ a {
   }
 }
 
+fieldset {
+  border-radius: $border-radius;
+  margin: $marginLarge 0;
+  padding: $paddingLarge;
+}
+
 .card {
   background-color: $backgroundColor;
   padding: $padding;

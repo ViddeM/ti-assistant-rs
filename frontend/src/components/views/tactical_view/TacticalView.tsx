@@ -50,8 +50,8 @@ export const TacticalView = ({
             ))}
           </div>
           {availablePlanetsInSystem.length > 0 && (
-            <div>
-              <h6>Take another planet</h6>
+            <fieldset>
+              <legend>Take another planet</legend>
               <div className={styles.selectAnotherPlanetContainer}>
                 {availablePlanetsInSystem.map((p) => (
                   <Button key={p} onClick={() => takePlanet(p)}>
@@ -59,7 +59,7 @@ export const TacticalView = ({
                   </Button>
                 ))}
               </div>
-            </div>
+            </fieldset>
           )}
         </div>
       ) : (
