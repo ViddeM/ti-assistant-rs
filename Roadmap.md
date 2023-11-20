@@ -15,6 +15,8 @@
    - [ ] Manually adding score
    - [ ] Weird scoring times
  - [ ] Action cards
+   - [x] Actions
+   - [ ] Other relevant ones
  - [ ] Time spent / player
  - [ ] Relics
  - [ ] Separation between base/PoK/codexes
