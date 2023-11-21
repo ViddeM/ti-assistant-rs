@@ -11,6 +11,7 @@ use super::player::PlayerId;
 
 /// Everything game state that to player points.
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Score {
     /// The amount of points required to win the game.
     pub max_points: i8,

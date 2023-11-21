@@ -7,8 +7,8 @@ export type PlayerId = string;
 
 export interface GameState {
   phase: GamePhase;
-  speaker: PlayerId | null;
   players: { [key: PlayerId]: Player };
+  speaker: PlayerId | null;
   tableOrder: PlayerId[];
   turnOrder: PlayerId[];
   strategyCardHolders: { [key: string]: PlayerId };
@@ -16,6 +16,7 @@ export interface GameState {
   spentStrategyCards: StrategyCard[];
   passedPlayers: PlayerId[];
   actionProgress: ActionProgress | null;
+  score: Score;
 }
 
 export interface ActionProgress {
@@ -68,4 +69,14 @@ export interface Player {
   color: Color;
   planets: string[];
   technologies: string[];
+}
+
+export interface Score {
+  maxPoints: number;
+  playerPoints: { [player: string]: number };
+  revealedObjectives: { [objective: string]: string };
+  secretObjectives: { [player: string]: string[] };
+  custodians: string | null;
+  supportForTheThrone: { [player: string]: string };
+  extraPoints: { [player: string]: number };
 }

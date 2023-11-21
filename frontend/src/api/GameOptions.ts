@@ -10,8 +10,7 @@ export interface GameOptions {
   colors: Color[];
   systems: System[];
   planetInfos: { [key: string]: PlanetInfo };
-  secretObjectives: SecretObjectiveInfo[];
-  publicObjectives: PublicObjectiveInfo[];
+  objectives: { [key: string]: ObjectiveInfo };
   technologies: { [key: string]: TechInfo };
   actionCards: { [key: string]: ActionCardInfo };
 }
@@ -51,19 +50,19 @@ export interface FactionResponse {
   name: string;
 }
 
-export interface SecretObjectiveInfo {
-  id: string;
-  phase: GamePhase;
+export interface ObjectiveInfo {
   name: string;
   condition: string;
+  kind: ObjectiveKind;
+  points: number;
 }
 
-export interface PublicObjectiveInfo {
-  id: string;
-  points: number;
-  name: string;
-  condition: string;
-}
+export type ObjectiveKind =
+  | "StageI"
+  | "StageII"
+  | {
+      phase: GamePhase;
+    };
 
 export type Color =
   | "Blue"
