@@ -162,7 +162,7 @@ impl GameState {
     /// Advance to the next players turn, if all players have passed, advance to the next phase.
     pub fn advance_turn(&mut self) -> Result<(), GameError> {
         let current_player = self.current_player()?;
-        let next_player = self.next_player_after(current_player)?;
+        let next_player = self.next_player_after(&current_player)?;
 
         // everyone has passed, i guess. what do?
         if next_player.is_none() {
@@ -194,10 +194,8 @@ impl GameState {
         Ok(next_player)
     }
 
-    pub fn current_player(&self) -> Result<&PlayerId, GameError> {
-        self.current_player
-            .as_ref()
-            .ok_or(eyre!("no active player"))
+    pub fn current_player(&self) -> Result<PlayerId, GameError> {
+        self.current_player.clone().ok_or(eyre!("no active player"))
     }
 
     pub fn speaker(&self) -> Result<&PlayerId, GameError> {
@@ -206,7 +204,7 @@ impl GameState {
 
     pub fn assert_player_turn(&self, player: &PlayerId) -> Result<(), GameError> {
         let current_player = self.current_player()?;
-        if current_player != player {
+        if &current_player != player {
             bail!("wrong players turn, expected {player:?}, got {current_player:?}");
         }
 

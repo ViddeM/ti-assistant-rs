@@ -15,6 +15,7 @@
    - [ ] Manually adding score
    - [ ] Secret Objectives (normally up to 3)
    - [ ] Support for the Throne
+   - [ ] Imperial
    - [ ] Agendas
      - [ ] Mutiny (Multiple players, add or remove VPs)
      - [ ] Incentive Programs (Draws new objective cards)

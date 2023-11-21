@@ -86,6 +86,25 @@ pub enum Event {
     // TODO: Score objectives & Reveal objectives
     CompleteStatusPhase,
     // TODO: Agenda phase
+
+    /* -- ANY PHASE EVENTS -- */
+    /// Give `giver` players Support for the Throne to `receiver`.
+    GiveSupportForTheThrone {
+        giver: PlayerId,
+        receiver: PlayerId,
+    },
+
+    /// Set the `extra_points` value for a player to the given value.
+    SetExtraPoints {
+        player: PlayerId,
+        value: i8,
+    },
+
+    /// Increment the `extra_points` value for a player with the given value.
+    AddExtraPoints {
+        player: PlayerId,
+        value: i8,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -94,8 +113,12 @@ pub enum StrategicPrimaryAction {
         tech: Technology,
         extra: Option<Technology>,
     },
+
     #[serde(rename_all = "camelCase")]
     Politics { new_speaker: PlayerId },
+
+    #[serde(rename_all = "camelCase")]
+    Imperial { score_objective: Objective },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
