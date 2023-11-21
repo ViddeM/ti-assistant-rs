@@ -39,7 +39,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
 
       const joinedGameId = data["JoinedGame"];
       if (joinedGameId && gameId !== joinedGameId) {
-        router.push(`/game/${joinedGameId}`);
+        router.replace(`/game/${joinedGameId}`);
       }
 
       const msgOpts = data["GameOptions"];
