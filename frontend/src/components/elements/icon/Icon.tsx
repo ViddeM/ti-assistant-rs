@@ -14,7 +14,8 @@ export type IconType =
   | "legendary_planet"
   | "propulsion"
   | "resource"
-  | "warfare";
+  | "warfare"
+  | "custodians";
 
 export type IconProps = {
   name: IconType;

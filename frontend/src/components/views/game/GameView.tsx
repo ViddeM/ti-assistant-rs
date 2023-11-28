@@ -80,7 +80,11 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
       </div>
       {gameOptions && gameState && (
         <div className={styles.gamePageContainer}>
-          <PlayerSidebar players={getPlayersFromGame(gameState, gameOptions)} />
+          <PlayerSidebar
+            players={getPlayersFromGame(gameState, gameOptions)}
+            score={gameState.score}
+            gameOptions={gameOptions}
+          />
           <PhaseView
             gameState={gameState}
             gameOptions={gameOptions}
