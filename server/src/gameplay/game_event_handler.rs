@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
-use eyre::{bail, ensure};
+use eyre::{bail, ensure, eyre};
 
 use crate::{
     data::components::{
@@ -206,6 +206,31 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
                     game_state.speaker = Some(new_speaker);
                 }
+                (StrategyCard::Imperial, StrategicPrimaryAction::Imperial { score_objective }) => {
+                    let player_id = game_state.current_player()?;
+                    let player = game_state
+                        .players
+                        .get(&player_id)
+                        .ok_or(eyre!("no player state"))?;
+
+                    let Some(players) = game_state
+                        .score
+                        .revealed_objectives
+                        .get_mut(&score_objective)
+                    else {
+                        bail!("objective {score_objective:?} has not been revealed");
+                    };
+
+                    if !players.insert(player_id.clone()) {
+                        bail!("player {player_id:?} has already scored {score_objective:?}");
+                    }
+
+                    if player.planets.contains(&Planet::MecatolRex) {
+                        let imperial_points =
+                            game_state.score.imperial.entry(player_id).or_default();
+                        *imperial_points = imperial_points.saturating_add(1);
+                    }
+                }
                 (card, action) => {
                     bail!("Mismatch between progress card {card:?} and action {action:?}")
                 }
@@ -215,7 +240,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.assert_phase(Phase::StrategicAction)?;
             let current_player = game_state.current_player()?;
             ensure!(
-                &player != current_player,
+                player != current_player,
                 "current player can't perform the secondary on a strategy card",
             );
 
@@ -255,7 +280,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
             let has_primary = matches!(
                 progress.card,
-                StrategyCard::Politics | StrategyCard::Technology
+                StrategyCard::Politics | StrategyCard::Technology | StrategyCard::Imperial
             );
 
             if has_primary {
@@ -282,7 +307,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             match card {
                 ActionCard::Plagiarize => {
                     ensure!(
-                        !get_plagiarize_available_techs(&game_state)?.is_empty(),
+                        !get_plagiarize_available_techs(game_state)?.is_empty(),
                         "There are no techs available for the player to steal."
                     )
                 }
@@ -338,7 +363,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                         current_player.take_tech(take_tech.clone())?;
                     }
                     ActionCardInfo::Plagiarize { tech } => {
-                        let available_techs = get_plagiarize_available_techs(&game_state)?;
+                        let available_techs = get_plagiarize_available_techs(game_state)?;
                         ensure!(
                             available_techs.contains(&tech),
                             "Unable to take tech {tech:?} for this action card"
@@ -412,6 +437,21 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.passed_players = HashSet::new();
             game_state.spent_strategy_cards = HashSet::new();
         }
+        Event::GiveSupportForTheThrone { giver, receiver } => {
+            let score = &mut game_state.score;
+
+            // If another player has `givers` support, remove it.
+            score.support_for_the_throne.retain(|_, p| p != &giver);
+
+            score.support_for_the_throne.insert(receiver, giver);
+        }
+        Event::SetExtraPoints { player, value } => {
+            game_state.score.extra_points.insert(player, value);
+        }
+        Event::AddExtraPoints { player, value } => {
+            let extra = game_state.score.extra_points.entry(player).or_default();
+            *extra = extra.saturating_add(value);
+        }
     }
 
     // TODO: maybe not recalculate this all the time?
@@ -427,13 +467,13 @@ fn get_plagiarize_available_techs(
     let current_player_id = game_state.current_player()?;
     let current_player = game_state
         .players
-        .get(current_player_id)
+        .get(&current_player_id)
         .ok_or_else(|| eyre::eyre!("Invalid game state, current player not in players map"))?;
 
     let available_techs = game_state
         .players
         .iter()
-        .filter(|&(id, _)| id != current_player_id)
+        .filter(|&(id, _)| id != &current_player_id)
         .flat_map(|(_, player)| player.technologies.iter())
         .filter(|tech| !matches!(tech.info().origin, TechOrigin::Faction(..)))
         .filter(|tech| !current_player.has_tech(tech))

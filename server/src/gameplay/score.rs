@@ -25,14 +25,17 @@ pub struct Score {
     /// Completed secret objectives, by player.
     pub secret_objectives: HashMap<PlayerId, HashSet<SecretObjective>>,
 
-    /// The player who took the custodian token from Mecatol Rex.
-    pub custodians: Option<PlayerId>,
-
     /// Map from receiver to giver of Support for the Throne.
     pub support_for_the_throne: HashMap<PlayerId, PlayerId>,
 
     /// Manually assigned points
     pub extra_points: HashMap<PlayerId, i8>,
+
+    /// Points gained by playing the Imperial strategy card action while holding Mecatol Rex.
+    pub imperial: HashMap<PlayerId, i8>,
+
+    /// The player who took the custodians token from Mecatol Rex.
+    pub custodians: Option<PlayerId>,
 }
 
 impl Score {
@@ -43,7 +46,7 @@ impl Score {
         for player in all_players {
             let mut player_points = 0;
 
-            // Check players revealed objectives
+            // Check players completed public objectives
             player_points += self
                 .revealed_objectives
                 .iter()
@@ -52,28 +55,28 @@ impl Score {
                 .next()
                 .unwrap_or(0);
 
+            // Check players completed secret objectives
             player_points += self
                 .secret_objectives
                 .get(player)
                 .map(|scored| scored.len())
                 .unwrap_or(0) as i8;
 
-            // Check if player has the custodians
-            player_points += self
-                .custodians
-                .as_ref()
-                .filter(|&owner| owner == player)
-                .map(|_| 1)
-                .unwrap_or(0);
-
-            // count the number of Support for the Thrones the player has
+            // Count the number of Support for the Thrones the player has
             player_points += self
                 .support_for_the_throne
                 .keys()
                 .filter(|&owner| owner == player)
                 .count() as i8;
 
+            // Manually assigned points modifier
             player_points += self.extra_points.get(player).unwrap_or(&0);
+
+            // Points gained from playing Imperial
+            player_points += self.imperial.get(player).unwrap_or(&0);
+
+            // Check if player has the custodians
+            player_points += i8::from(self.custodians.as_ref() == Some(player));
 
             self.player_points.insert(Arc::clone(player), player_points);
         }
