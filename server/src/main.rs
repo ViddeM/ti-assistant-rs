@@ -7,13 +7,15 @@ use std::{net::SocketAddr, sync::Arc};
 
 use clap::Parser;
 use db::DbPool;
-use diesel::{insert_into, ExpressionMethods, QueryDsl};
-use diesel_async::RunQueryDsl;
+use diesel::{delete, insert_into, ExpressionMethods, OptionalExtension, QueryDsl};
+use diesel_async::{AsyncConnection, RunQueryDsl};
 use eyre::{bail, Context};
+use gameplay::event::Event;
 use lobby::GameId;
 use tokio::{
     net::{TcpListener, TcpStream},
     select, spawn,
+    sync::RwLock,
 };
 use ws_message::WsMessageOut;
 
@@ -217,32 +219,14 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
                 }
                 message = ws_client.receive_message::<WsMessageIn>() => {
                     let message = message?;
-                    let WsMessageIn::Event(event) = message else {
-                        bail!("got unexpected event: {message:?}");
+
+                    match message {
+                        WsMessageIn::Undo => handle_undo(shared, id, &lobby).await?,
+                        WsMessageIn::Event(event) => handle_event(shared, id, &lobby, event).await?,
+
+                        _ => bail!("got unexpected event: {message:?}"),
                     };
 
-                    let mut lobby = lobby.write().await;
-
-                    log::debug!("applying event {event:?}");
-                    // TODO: propagate errors back over the socket?
-                    lobby.game.apply(event.clone());
-
-                    if let Some(db_pool) = &db_pool {
-                        let mut db = db_pool.get().await?;
-
-                        log::info!("persisting event for game {id:?}");
-                        use schema::game_event::dsl::{game_event};
-                        insert_into(game_event)
-                            .values(&db::NewGameEvent {
-                                game_id: id,
-                                event: serde_json::to_value(&event)?,
-                            })
-                            .execute(&mut db)
-                            .await
-                            .wrap_err_with(|| format!("error querying game events ({id:?})"))?;
-                    }
-
-                    lobby.state_updates.send(lobby.game.current.clone())?;
                 }
             }
         }
@@ -253,4 +237,80 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
     } else {
         log::info!("{from} disconnected");
     }
+}
+
+async fn handle_event(
+    shared: &Shared,
+    id: GameId,
+    lobby: &RwLock<Lobby>,
+    event: Event,
+) -> eyre::Result<()> {
+    log::debug!("applying event {event:?}");
+
+    let mut lobby = lobby.write().await;
+
+    // TODO: propagate errors back over the socket?
+    lobby.game.apply(event.clone());
+
+    if let Some(db_pool) = &shared.db_pool {
+        let mut db = db_pool.get().await?;
+        use schema::game_event::dsl::game_event;
+
+        insert_into(game_event)
+            .values(&db::NewGameEvent {
+                game_id: id,
+                event: serde_json::to_value(&event)?,
+            })
+            .execute(&mut db)
+            .await
+            .wrap_err_with(|| format!("error querying game events ({id:?})"))?;
+
+        log::info!("persisting event for game {id:?}");
+    }
+
+    lobby.state_updates.send(lobby.game.current.clone())?;
+
+    Ok(())
+}
+
+async fn handle_undo(shared: &Shared, id: GameId, lobby: &RwLock<Lobby>) -> eyre::Result<()> {
+    let mut lobby = lobby.write().await;
+
+    if let Some(db_pool) = &shared.db_pool {
+        log::info!("undoing last event for game {id:?}");
+
+        let mut db = db_pool.get().await?;
+        db.transaction(|db| {
+            Box::pin(async move {
+                use schema::game_event::dsl::{self, game_event, game_id, seq};
+
+                // query the last event for this game
+                let last_event_id: Option<i32> = game_event
+                    .filter(game_id.eq(id))
+                    .order_by(seq.desc())
+                    .select(dsl::id)
+                    .first(db)
+                    .await
+                    .optional()?;
+
+                let Some(last_event_id) = last_event_id else {
+                    return Ok(());
+                };
+
+                delete(game_event)
+                    .filter(dsl::id.eq(last_event_id))
+                    .execute(db)
+                    .await
+                    .wrap_err_with(|| format!("error querying game events ({id:?})"))
+                    // sanity check that we deleted exactly one event
+                    .map(|count| debug_assert_eq!(count, 1))
+            })
+        })
+        .await?;
+    }
+
+    lobby.game.undo();
+    lobby.state_updates.send(lobby.game.current.clone())?;
+
+    Ok(())
 }
