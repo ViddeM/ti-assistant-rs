@@ -1,10 +1,14 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    borrow::BorrowMut,
+    collections::{HashMap, HashSet},
+};
 
 use eyre::{bail, ensure, eyre};
 
 use crate::{
     data::components::{
         action_card::{ActionCard, ActionCardPlay},
+        objectives::Objective,
         phase::Phase,
         planet::Planet,
         strategy_card::StrategyCard,
@@ -424,7 +428,20 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 .or_default()
                 .insert(objective);
         }
+        Event::RevealPublicObjective { objective } => {
+            let pub_obj = Objective::Public(objective);
+            ensure!(
+                !game_state.score.revealed_objectives.contains_key(&pub_obj),
+                "Objective has already been revealed!"
+            );
+
+            game_state
+                .score
+                .revealed_objectives
+                .insert(pub_obj, HashSet::new());
+        }
         Event::CompleteStatusPhase => {
+            game_state.assert_phase(Phase::Status)?;
             // TODO: Require objectives scored & revealed
 
             // TODO: Agenda phase

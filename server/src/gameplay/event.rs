@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use crate::data::components::objectives::public::PublicObjective;
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
 use crate::data::components::{
     action_card::ActionCard, planet::Planet, strategy_card::StrategyCard, tech::Technology,
@@ -83,8 +84,13 @@ pub enum Event {
         objective: SecretObjective,
     },
 
-    // TODO: Score objectives & Reveal objectives
+    RevealPublicObjective {
+        objective: PublicObjective,
+    },
+
+    // TODO: Score objectives
     CompleteStatusPhase,
+
     // TODO: Agenda phase
 
     /* -- ANY PHASE EVENTS -- */
