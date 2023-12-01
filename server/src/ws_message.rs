@@ -13,6 +13,7 @@ pub enum WsMessageIn {
     JoinGame(GameId),
     NewGame,
     Event(Event),
+    Undo,
 }
 
 #[derive(Debug, Clone, Serialize)]

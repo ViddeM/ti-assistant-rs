@@ -35,6 +35,7 @@ pub struct Game {
 pub struct GameEvent {
     pub id: i32,
     pub game_id: GameId,
+    pub seq: i32,
     pub event: serde_json::Value,
 }
 
