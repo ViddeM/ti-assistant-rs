@@ -5,7 +5,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import styles from "./ScoreViewMode.module.scss";
 import { useState } from "react";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
-import { Faction } from "@/resources/types/factions";
+import { RevealObjectiveForm } from "./RevealObjectiveForm";
 
 export interface ScoreViewModeProps {
   gameState: GameState;
@@ -18,26 +18,6 @@ export const ScoreViewMode = ({
   gameOptions,
   sendEvent,
 }: ScoreViewModeProps) => {
-  const [selectedStageI, setSelectedStageI] = useState<string>("");
-  const [selectedStageII, setSelectedStageII] = useState<string>("");
-
-  const stageOneObjectives = Object.keys(gameOptions.objectives)
-    .map((o) => {
-      return {
-        id: o,
-        ...gameOptions.objectives[o],
-      };
-    })
-    .filter((o) => o.kind === "StageI");
-  const stageTwoObjectives = Object.keys(gameOptions.objectives)
-    .map((o) => {
-      return {
-        id: o,
-        ...gameOptions.objectives[o],
-      };
-    })
-    .filter((o) => o.kind === "StageII");
-
   const revealedStageOneObjectives = Object.keys(
     gameState.score.revealedObjectives
   )
@@ -60,87 +40,52 @@ export const ScoreViewMode = ({
     })
     .filter((obj) => obj.kind === "StageII");
 
-  const playerCount = Object.keys(gameState.players).length;
+  const players = Object.keys(gameState.players).map((p) => {
+    return {
+      id: p,
+      ...gameState.players[p],
+    };
+  });
+
+  const playerCount = players.length;
   return (
     <div>
-      <div className="card" style={{ marginBottom: "1rem" }}>
-        <label>Reveal stage I</label>
-        <Dropdown
-          value={selectedStageI}
-          onChange={(e) => setSelectedStageI(e.target.value)}
-        >
-          <option value="">--Select objective--</option>
-          {stageOneObjectives
-            .filter(
-              (o) => !revealedStageOneObjectives.map((o) => o.id).includes(o.id)
-            )
-            .map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-        </Dropdown>
-        <Button
-          disabled={selectedStageI === ""}
-          onClick={() => {
-            setSelectedStageI("");
-            sendEvent({
-              RevealPublicObjective: {
-                objective: selectedStageI,
-              },
-            });
-          }}
-        >
-          Reveal
-        </Button>
-
-        <div className={styles.revealObjectiveColumn}>
-          <label>Reveal stage II</label>
-          <Dropdown
-            value={selectedStageII}
-            onChange={(e) => setSelectedStageII(e.target.value)}
-          >
-            <option value="">--Select objective--</option>
-            {stageTwoObjectives
-              .filter(
-                (o) =>
-                  !revealedStageTwoObjectives.map((o) => o.id).includes(o.id)
-              )
-              .map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-          </Dropdown>
-          <Button
-            disabled={selectedStageII === ""}
-            onClick={() => {
-              setSelectedStageII("");
-              sendEvent({
-                RevealPublicObjective: {
-                  objective: selectedStageII,
-                },
-              });
-            }}
-          >
-            Reveal
-          </Button>
-        </div>
-      </div>
+      <RevealObjectiveForm
+        gameState={gameState}
+        gameOptions={gameOptions}
+        sendEvent={sendEvent}
+      />
 
       <table className={`card ${styles.scoreViewTable}`}>
         <thead>
           <tr>
-            {Object.keys(gameState.players).map((p) => (
-              <th key={p} className={styles.scoreViewTableHeader}>
-                <FactionIcon faction={gameState.players[p].faction} />
+            {players.map((p) => (
+              <th key={p.id} className={styles.scoreViewTableHeader}>
+                <FactionIcon faction={p.faction} />
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th colSpan={playerCount}>---Stage I---</th>
+            {players.map((p) => (
+              <td align="center">{gameState.score.playerPoints[p.id]}p</td>
+            ))}
+          </tr>
+          <tr>
+            <th colSpan={playerCount}>
+              <div className={styles.stageContainer}>
+                <div
+                  className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
+                />
+                <h2 className={`${styles.stageOneColor} ${styles.stageText}`}>
+                  Stage I
+                </h2>
+                <div
+                  className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
+                />
+              </div>
+            </th>
           </tr>
           {revealedStageOneObjectives.map((obj) => (
             <>
@@ -153,31 +98,30 @@ export const ScoreViewMode = ({
                 </th>
               </tr>
               <tr>
-                {Object.keys(gameState.players).map((p) => (
-                  <td key={p}>
-                    <input type="checkbox" />
+                {players.map((p) => (
+                  <td key={p.id}>
+                    <FactionIcon
+                      className={styles.unselected}
+                      faction={p.faction}
+                    />
                   </td>
                 ))}
               </tr>
             </>
           ))}
           <tr>
-            <th
-              colSpan={playerCount}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <div
-                className={`${styles.stageTwoBackgroundColor} ${styles.horizontalLine}`}
-              />
-              <h2 className={styles.stageTwoColor}>Stage II</h2>
-              <div
-                className={`${styles.stageTwoBackgroundColor} ${styles.horizontalLine}`}
-              />
+            <th colSpan={playerCount}>
+              <div className={styles.stageContainer}>
+                <div
+                  className={`${styles.stageTwoBackgroundColor} ${styles.horizontalLine}`}
+                />
+                <h2 className={`${styles.stageTwoColor} ${styles.stageText}`}>
+                  Stage II
+                </h2>
+                <div
+                  className={`${styles.stageTwoBackgroundColor} ${styles.horizontalLine}`}
+                />
+              </div>
             </th>
           </tr>
           {revealedStageTwoObjectives.map((obj) => (
@@ -186,14 +130,32 @@ export const ScoreViewMode = ({
                 <th colSpan={playerCount}>{obj.name}</th>
               </tr>
               <tr>
-                {Object.keys(gameState.players).map((p) => (
-                  <td key={p}>
-                    <input type="checkbox" />
+                {players.map((p) => (
+                  <td key={p.id}>
+                    <FactionIcon
+                      className={styles.unselected}
+                      faction={p.faction}
+                    />
                   </td>
                 ))}
               </tr>
             </>
           ))}
+          <tr>
+            <th colSpan={playerCount}>
+              <div className={styles.stageContainer}>
+                <div
+                  className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
+                />
+                <h2 className={`${styles.secretColor} ${styles.stageText}`}>
+                  Secrets
+                </h2>
+                <div
+                  className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
+                />
+              </div>
+            </th>
+          </tr>
         </tbody>
       </table>
     </div>
