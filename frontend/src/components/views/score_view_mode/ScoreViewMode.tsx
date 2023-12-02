@@ -1,9 +1,6 @@
 import { GameOptions } from "@/api/GameOptions";
 import { GameState } from "@/api/GameState";
-import { Button } from "@/components/elements/button/Button";
-import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import styles from "./ScoreViewMode.module.scss";
-import { useState } from "react";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { RevealObjectiveForm } from "./RevealObjectiveForm";
 
