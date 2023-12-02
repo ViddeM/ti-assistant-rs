@@ -1,5 +1,29 @@
 @import "../../../resources/styles/vars.scss";
 
+.revealObjectiveForm {
+    margin-bottom: $marginLarge;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.revealObjectiveRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    
+    &:not(:last-child) {
+        margin-bottom: $marginLarge;
+    }
+
+    > :first-child {
+        flex: 1;
+        margin-right: $marginLarge;
+    }
+}
+
 .scoreViewTableWrapper {
     max-width: 100%;
     overflow-x: scroll;
@@ -22,22 +46,53 @@
     padding: 4px;
 }
 
-.horizontalLine {
-    height: 2px;
+.stageContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
 }
 
+.horizontalLine {
+    height: 4px;
+    flex: 1;
+}
+
+.stageText {
+    flex: 1;
+    border-width: 4px;
+    border-style: solid;
+    border-radius: $border-radius;
+}
+
+$stage-one-color: orange;
+$stage-two-color: rgb(30, 30, 220);
+$secret-color: red;
+
 .stageOneBackgroundColor {
-    background-color: orange;
+    background-color: $stage-one-color;
 }
 
 .stageOneColor {
-    color: orange;
+    color: $stage-one-color;
 }
 
 .stageTwoColor {
-    color: rgb(73, 73, 237);
+    color: $stage-two-color;
 }
 
 .stageTwoBackgroundColor {
-    background-color: rgb(73, 73, 237);
+    background-color: $stage-two-color;
+}
+
+.secretColor {
+    color: $secret-color;
+}
+
+.secretBackgroundColor {
+    background-color: $secret-color;
+}
+
+.unselected {
+    filter:brightness(0.3) contrast(0.5);
 }
