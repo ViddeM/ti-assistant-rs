@@ -12,6 +12,8 @@ import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./GameView.module.scss";
 import { useRouter } from "next/navigation";
 import { PhaseView } from "../phase_view/PhaseView";
+import { Button } from "@/components/elements/button/Button";
+import { ScoreViewMode } from "../score_view_mode/ScoreViewMode";
 
 const NEW_GAME_ID = "new";
 
@@ -20,13 +22,15 @@ interface GameViewProps {
   gameId: string;
 }
 
+type View = "Game" | "Score" | "Planets" | "Techs";
+
 export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
+  const [currentViewMode, setCurrentViewMode] = useState<View>("Game");
 
   const router = useRouter();
 
-  console.log("Connecting to server on: ", wsUri);
   const { sendMessage, lastMessage, readyState } = useWebSocket(wsUri);
 
   const initialized = useRef(false);
@@ -75,10 +79,63 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
 
   return (
     <>
-      <div className="card">
+      <div className={`card ${styles.gameInfoCard}`}>
         <h4>Game: {gameId}</h4>
+        <div className={styles.viewModeButtonGroup}>
+          <Button
+            onClick={() => setCurrentViewMode("Game")}
+            disabled={currentViewMode === "Game"}
+          >
+            Game
+          </Button>
+          <Button
+            onClick={() => setCurrentViewMode("Score")}
+            disabled={currentViewMode === "Score"}
+          >
+            Score
+          </Button>
+          <Button
+            onClick={() => setCurrentViewMode("Techs")}
+            disabled={currentViewMode === "Techs"}
+          >
+            Techs
+          </Button>
+          <Button
+            onClick={() => setCurrentViewMode("Planets")}
+            disabled={currentViewMode === "Planets"}
+          >
+            Planets
+          </Button>
+        </div>
       </div>
       {gameOptions && gameState && (
+        <DisplayViewMode
+          viewMode={currentViewMode}
+          gameOptions={gameOptions}
+          gameState={gameState}
+          sendEvent={sendEvent}
+        />
+      )}
+    </>
+  );
+};
+
+interface DisplayViewModeProps {
+  viewMode: View;
+  gameState: GameState;
+  gameOptions: GameOptions;
+  sendEvent: (data: any) => void;
+}
+
+const DisplayViewMode = ({
+  viewMode,
+  gameOptions,
+  gameState,
+  sendEvent,
+}: DisplayViewModeProps) => {
+  switch (viewMode) {
+    case "Game":
+      return (
         <div className={styles.gamePageContainer}>
           <PlayerSidebar
             players={getPlayersFromGame(gameState, gameOptions)}
@@ -91,9 +148,24 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
             sendMessage={sendEvent}
           />
         </div>
-      )}
-    </>
-  );
+      );
+    case "Score":
+      return (
+        <ScoreViewMode
+          gameOptions={gameOptions}
+          gameState={gameState}
+          sendEvent={sendEvent}
+        />
+      );
+    default:
+      return (
+        <p>
+          Go away, I don't want you {"view mode ("}
+          {viewMode}
+          {")???"}
+        </p>
+      );
+  }
 };
 
 function getPlayersFromGame(
