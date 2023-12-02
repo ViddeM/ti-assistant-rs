@@ -1,0 +1,43 @@
+@import "../../../resources/styles/vars.scss";
+
+.scoreViewTableWrapper {
+    max-width: 100%;
+    overflow-x: scroll;
+}
+
+.scoreViewTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.revealObjectiveColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+.scoreViewTableHeader {
+    border-bottom: 2px solid black;
+    padding: 4px;
+}
+
+.horizontalLine {
+    height: 2px;
+}
+
+.stageOneBackgroundColor {
+    background-color: orange;
+}
+
+.stageOneColor {
+    color: orange;
+}
+
+.stageTwoColor {
+    color: rgb(73, 73, 237);
+}
+
+.stageTwoBackgroundColor {
+    background-color: rgb(73, 73, 237);
+}
