@@ -1,5 +1,9 @@
 @import "../../../resources/styles/vars.scss";
 
+.scoreViewContainer {
+    width: 100%;
+}
+
 .revealObjectiveForm {
     margin-bottom: $marginLarge;
     display: flex;
@@ -22,6 +26,15 @@
         flex: 1;
         margin-right: $marginLarge;
     }
+}
+
+.borderTop {
+    border-top: 1px solid black; 
+    padding: $padding;
+}
+
+.borderBottom {
+    border-bottom: 1px solid black;
 }
 
 .scoreViewTableWrapper {
