@@ -3,6 +3,7 @@ import { GameState } from "@/api/GameState";
 import styles from "./ScoreViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { RevealObjectiveForm } from "./RevealObjectiveForm";
+import React from "react";
 
 export interface ScoreViewModeProps {
   gameState: GameState;
@@ -46,7 +47,7 @@ export const ScoreViewMode = ({
 
   const playerCount = players.length;
   return (
-    <div>
+    <div className={styles.scoreViewContainer}>
       <RevealObjectiveForm
         gameState={gameState}
         gameOptions={gameOptions}
@@ -66,7 +67,9 @@ export const ScoreViewMode = ({
         <tbody>
           <tr>
             {players.map((p) => (
-              <td align="center">{gameState.score.playerPoints[p.id]}p</td>
+              <td key={p.id} align="center">
+                {gameState.score.playerPoints[p.id]}p
+              </td>
             ))}
           </tr>
           <tr>
@@ -85,18 +88,15 @@ export const ScoreViewMode = ({
             </th>
           </tr>
           {revealedStageOneObjectives.map((obj) => (
-            <>
+            <React.Fragment key={obj.id}>
               <tr key={obj.id}>
-                <th
-                  colSpan={playerCount}
-                  style={{ borderTop: "1px solid black" }}
-                >
+                <th colSpan={playerCount} className={styles.borderTop}>
                   {obj.name}
                 </th>
               </tr>
               <tr>
                 {players.map((p) => (
-                  <td key={p.id}>
+                  <td key={p.id} align="center">
                     <FactionIcon
                       className={styles.unselected}
                       faction={p.faction}
@@ -104,10 +104,10 @@ export const ScoreViewMode = ({
                   </td>
                 ))}
               </tr>
-            </>
+            </React.Fragment>
           ))}
           <tr>
-            <th colSpan={playerCount}>
+            <th colSpan={playerCount} className={styles.borderTop}>
               <div className={styles.stageContainer}>
                 <div
                   className={`${styles.stageTwoBackgroundColor} ${styles.horizontalLine}`}
@@ -122,13 +122,15 @@ export const ScoreViewMode = ({
             </th>
           </tr>
           {revealedStageTwoObjectives.map((obj) => (
-            <>
+            <React.Fragment key={obj.id}>
               <tr key={obj.id}>
-                <th colSpan={playerCount}>{obj.name}</th>
+                <th colSpan={playerCount} className={styles.borderTop}>
+                  {obj.name}
+                </th>
               </tr>
               <tr>
                 {players.map((p) => (
-                  <td key={p.id}>
+                  <td key={p.id} align="center">
                     <FactionIcon
                       className={styles.unselected}
                       faction={p.faction}
@@ -136,10 +138,10 @@ export const ScoreViewMode = ({
                   </td>
                 ))}
               </tr>
-            </>
+            </React.Fragment>
           ))}
           <tr>
-            <th colSpan={playerCount}>
+            <th colSpan={playerCount} className={styles.borderTop}>
               <div className={styles.stageContainer}>
                 <div
                   className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
@@ -153,8 +155,36 @@ export const ScoreViewMode = ({
               </div>
             </th>
           </tr>
+          <tr>
+            {players.map((p) => (
+              <td key={p.id} align="center">
+                <PlayerSecretObjectivesScore
+                  playerId={p.id}
+                  gameState={gameState}
+                />
+              </td>
+            ))}
+          </tr>
         </tbody>
       </table>
     </div>
   );
+};
+
+interface PlayerSecretObjectivesScore {
+  playerId: string;
+  gameState: GameState;
+}
+
+const PlayerSecretObjectivesScore = ({
+  playerId,
+  gameState,
+}: PlayerSecretObjectivesScore) => {
+  const playerSecrets = gameState.score.secretObjectives[playerId];
+
+  if (!playerSecrets) {
+    return <p>0</p>;
+  }
+
+  return <p>{playerSecrets.length}</p>;
 };

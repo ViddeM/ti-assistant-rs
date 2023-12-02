@@ -71,11 +71,14 @@ fieldset {
 .main {
   display: flex;
   flex-direction: column;
-  // justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 1rem;
   width: 100vw;
   height: 100vh;
+
+  @media (min-width: $widthSmall) {
+    padding: 1rem 0.5rem;
+  }
 
   @media (min-width: $widthMedium) {
     padding: 3rem;
