@@ -108,8 +108,24 @@ $secret-color: rgb(240, 50, 50);
     background-color: $secret-color;
 }
 
-.unselected {
-    filter:brightness(0.3) contrast(0.5);
+.factionButton {
+    filter: brightness(0.3) contrast(0.5);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.2);
+    }
+}
+
+.factionButtonSelected {
+    filter: brightness(1) contrast(1);
+    transform: scale(1.3);
+
+    &:hover {
+        transform: scale(1.2);
+    }
 }
 
 .playerSecretTitleRow {
