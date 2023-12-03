@@ -5,6 +5,7 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { RevealObjectiveForm } from "./RevealObjectiveForm";
 import React from "react";
 import { SecretObjectivesView } from "./SecretObjectivesView";
+import { Faction } from "@/resources/types/factions";
 
 export interface ScoreViewModeProps {
   gameState: GameState;
@@ -98,9 +99,16 @@ export const ScoreViewMode = ({
               <tr>
                 {players.map((p) => (
                   <td key={p.id} align="center">
-                    <FactionIcon
-                      className={styles.unselected}
+                    <FactionButton
                       faction={p.faction}
+                      playerId={p.id}
+                      objective={obj.id}
+                      selected={
+                        gameState.score.revealedObjectives[obj.id]?.includes(
+                          p.id
+                        ) ?? false
+                      }
+                      sendEvent={sendEvent}
                     />
                   </td>
                 ))}
@@ -194,4 +202,38 @@ const PlayerSecretObjectivesScore = ({
   }
 
   return <p>{playerSecrets.length}</p>;
+};
+
+interface FactionButtonProps {
+  playerId: string;
+  faction: Faction;
+  selected: boolean;
+  objective: string;
+  sendEvent: (data: any) => void;
+}
+
+const FactionButton = ({
+  faction,
+  playerId,
+  selected,
+  objective,
+  sendEvent,
+}: FactionButtonProps) => {
+  return (
+    <button
+      className={`${selected ? styles.factionButtonSelected : ""} ${
+        styles.factionButton
+      }`}
+      onClick={() =>
+        sendEvent({
+          ScorePublicObjective: {
+            player: playerId,
+            objective: objective,
+          },
+        })
+      }
+    >
+      <FactionIcon faction={faction} />
+    </button>
+  );
 };
