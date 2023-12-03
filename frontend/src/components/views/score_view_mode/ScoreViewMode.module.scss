@@ -2,6 +2,7 @@
 
 .scoreViewContainer {
     width: 100%;
+    max-width: 800px;
 }
 
 .revealObjectiveForm {
@@ -45,6 +46,7 @@
 .scoreViewTable {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: $marginLarge;
 }
 
 .revealObjectiveColumn {
@@ -79,8 +81,8 @@
 }
 
 $stage-one-color: orange;
-$stage-two-color: rgb(30, 30, 220);
-$secret-color: red;
+$stage-two-color: rgb(110, 110, 255);
+$secret-color: rgb(240, 50, 50);
 
 .stageOneBackgroundColor {
     background-color: $stage-one-color;
@@ -108,4 +110,21 @@ $secret-color: red;
 
 .unselected {
     filter:brightness(0.3) contrast(0.5);
+}
+
+.playerSecretTitleRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+    & > h6 {
+        margin-left: $marginLarge;
+        margin-right: $marginLarge;
+    }
+
+    & > :last-child {
+        flex: 1;
+        background-color: $primaryTextColor;
+        height: 2px;
+    }
 }

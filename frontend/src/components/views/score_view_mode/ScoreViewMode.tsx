@@ -4,6 +4,7 @@ import styles from "./ScoreViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { RevealObjectiveForm } from "./RevealObjectiveForm";
 import React from "react";
+import { SecretObjectivesView } from "./SecretObjectivesView";
 
 export interface ScoreViewModeProps {
   gameState: GameState;
@@ -167,6 +168,12 @@ export const ScoreViewMode = ({
           </tr>
         </tbody>
       </table>
+
+      <SecretObjectivesView
+        gameState={gameState}
+        gameOptions={gameOptions}
+        sendEvent={sendEvent}
+      />
     </div>
   );
 };
