@@ -5,6 +5,7 @@ import { RevealObjectiveForm } from "./RevealObjectiveForm";
 import React from "react";
 import { SecretObjectivesView } from "./SecretObjectivesView";
 import { PublicObjectiveTable } from "./PublicObjectiveTable";
+import { MiscScoreView } from "./MiscScoreView";
 
 export interface ScoreViewModeProps {
   gameState: GameState;
@@ -19,6 +20,12 @@ export const ScoreViewMode = ({
 }: ScoreViewModeProps) => {
   return (
     <div className={styles.scoreViewContainer}>
+      <MiscScoreView
+        gameState={gameState}
+        gameOptions={gameOptions}
+        sendEvent={sendEvent}
+      />
+
       <RevealObjectiveForm
         gameState={gameState}
         gameOptions={gameOptions}
