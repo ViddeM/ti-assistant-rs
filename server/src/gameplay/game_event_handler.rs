@@ -473,10 +473,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
         Event::GiveSupportForTheThrone { giver, receiver } => {
             let score = &mut game_state.score;
 
-            // If another player has `givers` support, remove it.
-            score.support_for_the_throne.retain(|_, p| p != &giver);
-
-            score.support_for_the_throne.insert(receiver, giver);
+            score.support_for_the_throne.insert(giver, receiver);
         }
         Event::SetExtraPoints { player, value } => {
             game_state.score.extra_points.insert(player, value);
