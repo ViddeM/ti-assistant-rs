@@ -25,7 +25,7 @@ pub struct Score {
     /// Completed secret objectives, by player.
     pub secret_objectives: HashMap<PlayerId, HashSet<SecretObjective>>,
 
-    /// Map from receiver to giver of Support for the Throne.
+    /// Map from giver to receiver of Support for the Throne.
     pub support_for_the_throne: HashMap<PlayerId, PlayerId>,
 
     /// Manually assigned points
@@ -50,10 +50,9 @@ impl Score {
             player_points += self
                 .revealed_objectives
                 .iter()
-                .filter(|(_objectiv, has_scored)| has_scored.contains(player))
+                .filter(|(_objective, has_scored)| has_scored.contains(player))
                 .map(|(objective, _)| objective.get_objective_info().points)
-                .next()
-                .unwrap_or(0);
+                .sum::<i8>();
 
             // Check players completed secret objectives
             player_points += self
@@ -65,7 +64,7 @@ impl Score {
             // Count the number of Support for the Thrones the player has
             player_points += self
                 .support_for_the_throne
-                .keys()
+                .values()
                 .filter(|&owner| owner == player)
                 .count() as i8;
 
