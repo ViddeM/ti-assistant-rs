@@ -131,9 +131,16 @@ export const PublicObjectiveTable = ({
             <tr>
               {players.map((p) => (
                 <td key={p.id} align="center">
-                  <FactionIcon
-                    className={styles.unselected}
+                  <FactionButton
                     faction={p.faction}
+                    playerId={p.id}
+                    objective={obj.id}
+                    selected={
+                      gameState.score.revealedObjectives[obj.id]?.includes(
+                        p.id
+                      ) ?? false
+                    }
+                    sendEvent={sendEvent}
                   />
                 </td>
               ))}

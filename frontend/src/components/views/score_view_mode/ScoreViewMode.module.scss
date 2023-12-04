@@ -144,3 +144,54 @@ $secret-color: rgb(240, 50, 50);
         height: 2px;
     }
 }
+
+.supportForTheThroneTable {
+    width: 100%;
+
+    & tr {
+        td:nth-child(1) {
+            width: 35px;
+        }
+
+        td:nth-child(2) {            
+            > * {
+                width: 100%;
+            }
+        }
+
+        td:nth-child(3) {
+            width: 1.5rem;
+        }
+
+        td:nth-child(4) {
+            > * {
+                width: 100%;
+            }
+        }
+
+        td:nth-child(5) {
+            width: 50px;
+
+            > * {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.imperialTable { 
+    
+}
+
+.spftttImperialContainer {
+
+
+    @media (min-width: $widthMedium) {
+        display: flex;
+        flex-direction: row;
+
+        & > :nth-child(2) {
+            margin-left: 2rem;
+        }
+    }
+}

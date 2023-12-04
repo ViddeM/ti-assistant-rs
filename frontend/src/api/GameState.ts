@@ -76,7 +76,8 @@ export interface Score {
   playerPoints: { [player: string]: number };
   revealedObjectives: { [objective: string]: string };
   secretObjectives: { [player: string]: string[] };
-  custodians: string | null;
   supportForTheThrone: { [player: string]: string };
   extraPoints: { [player: string]: number };
+  imperial: { [player: string]: number };
+  custodians: string | null;
 }
