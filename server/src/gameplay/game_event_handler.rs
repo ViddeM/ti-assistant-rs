@@ -1,7 +1,4 @@
-use std::{
-    borrow::BorrowMut,
-    collections::{HashMap, HashSet},
-};
+use std::collections::{HashMap, HashSet};
 
 use eyre::{bail, ensure, eyre};
 
@@ -444,15 +441,34 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.assert_phase(Phase::Status)?;
             // TODO: Require objectives scored & revealed
 
-            // TODO: Agenda phase
-
             // Reset state
-            game_state.phase = Phase::Strategy;
-            game_state.calculate_turn_order_from_speaker()?;
-            game_state.current_player = Some(game_state.speaker()?.clone());
             game_state.strategy_card_holders = HashMap::new();
             game_state.passed_players = HashSet::new();
             game_state.spent_strategy_cards = HashSet::new();
+            game_state.calculate_turn_order_from_speaker()?;
+            game_state.current_player = Some(game_state.speaker()?.clone());
+
+            // TODO: Agenda phase
+            game_state.phase = Phase::Strategy;
+            //if game_state.score.custodians.is_some() {
+            //    game_state.phase = Phase::Agenda;
+            //} else {
+            //    game_state.phase = Phase::Strategy;
+            //}
+        }
+        Event::RevealAgenda { agenda: _ } => {
+            todo!("implement RevealAgenda")
+        }
+        Event::ResolveAgenda { outcome: _ } => {
+            todo!("implement ResolveAgenda")
+        }
+        Event::CompleteAgendaPhase => {
+            game_state.assert_phase(Phase::Status)?;
+            // TODO: Require 2 agendas to have been resolved
+
+            game_state.calculate_turn_order_from_speaker()?;
+            game_state.current_player = Some(game_state.speaker()?.clone());
+            game_state.phase = Phase::Strategy;
         }
         Event::GiveSupportForTheThrone { giver, receiver } => {
             let score = &mut game_state.score;

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use crate::data::components::agenda::{Agenda, AgendaElect};
 use crate::data::components::objectives::public::PublicObjective;
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
 use crate::data::components::{
@@ -91,7 +92,16 @@ pub enum Event {
     // TODO: Score objectives
     CompleteStatusPhase,
 
-    // TODO: Agenda phase
+    /* -- ACTION PHASE EVENTS -- */
+    RevealAgenda {
+        agenda: Agenda,
+    },
+
+    ResolveAgenda {
+        outcome: AgendaElect,
+    },
+
+    CompleteAgendaPhase,
 
     /* -- ANY PHASE EVENTS -- */
     /// Give `giver` players Support for the Throne to `receiver`.

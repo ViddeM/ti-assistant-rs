@@ -7,6 +7,7 @@ use crate::data::{
     common::{color::Color, faction::Faction},
     components::{
         action_card::{ActionCard, ActionCardInfo},
+        agenda::{Agenda, AgendaInfo},
         objectives::{public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo},
         planet::{Planet, PlanetInfo},
         system::{systems, System},
@@ -32,6 +33,7 @@ pub struct GameOptions {
     planet_infos: HashMap<Planet, PlanetInfo>,
     objectives: HashMap<Objective, ObjectiveInfo>,
     action_cards: HashMap<ActionCard, ActionCardInfo>,
+    agendas: HashMap<Agenda, AgendaInfo>,
 }
 
 impl Default for GameOptions {
@@ -62,6 +64,9 @@ impl Default for GameOptions {
             technologies: Technology::iter().map(|t| (t.clone(), t.info())).collect(),
             action_cards: ActionCard::iter()
                 .map(|card| (card.clone(), card.info()))
+                .collect(),
+            agendas: Agenda::iter()
+                .map(|agenda| (agenda, agenda.info()))
                 .collect(),
         }
     }
