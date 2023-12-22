@@ -48,8 +48,13 @@ export const MiscScoreView = ({
           </option>
         ))}
       </Dropdown>
-      {/* TODO: Implement custodians event in BE */}
-      <Button>Set custodians</Button>
+      <Button onClick={() => {
+        sendEvent({
+          SetCustodians: {
+            player: custodians
+          }
+        })
+      }}>Set custodians</Button>
 
       <div className={styles.spftttImperialContainer}>
         <table className={styles.supportForTheThroneTable}>

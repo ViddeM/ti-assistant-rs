@@ -121,6 +121,11 @@ pub enum Event {
         player: PlayerId,
         value: i8,
     },
+
+    /// Set the current custodians, usually set to the first player to take mecatol rex.
+    SetCustodians {
+        player: Option<PlayerId>,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
