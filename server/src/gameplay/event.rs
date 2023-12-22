@@ -126,6 +126,12 @@ pub enum Event {
     SetCustodians {
         player: Option<PlayerId>,
     },
+
+    /// Set the number of points received from the imperial strategy card for a player.
+    SetImperial {
+        player: PlayerId,
+        value: i8,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

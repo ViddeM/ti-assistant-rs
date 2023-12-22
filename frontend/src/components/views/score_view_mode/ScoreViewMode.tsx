@@ -4,8 +4,8 @@ import styles from "./ScoreViewMode.module.scss";
 import { RevealObjectiveForm } from "./RevealObjectiveForm";
 import React from "react";
 import { SecretObjectivesView } from "./SecretObjectivesView";
-import { PublicObjectiveTable } from "./PublicObjectiveTable";
-import { MiscScoreView } from "./MiscScoreView";
+import { ScoreTableView } from "./ScoreTableView";
+import { SupportForTheThroneView } from "./SupportForTheThroneView";
 
 export interface ScoreViewModeProps {
   gameState: GameState;
@@ -20,7 +20,7 @@ export const ScoreViewMode = ({
 }: ScoreViewModeProps) => {
   return (
     <div className={styles.scoreViewContainer}>
-      <MiscScoreView
+      <ScoreTableView
         gameState={gameState}
         gameOptions={gameOptions}
         sendEvent={sendEvent}
@@ -32,17 +32,13 @@ export const ScoreViewMode = ({
         sendEvent={sendEvent}
       />
 
-      <PublicObjectiveTable
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendEvent={sendEvent}
-      />
-
       <SecretObjectivesView
         gameState={gameState}
         gameOptions={gameOptions}
         sendEvent={sendEvent}
       />
+
+      <SupportForTheThroneView gameState={gameState} sendEvent={sendEvent} />
     </div>
   );
 };

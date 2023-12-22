@@ -4,18 +4,19 @@ import { GameOptions } from "@/api/GameOptions";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Faction } from "@/resources/types/factions";
 import React from "react";
+import { Button } from "@/components/elements/button/Button";
 
-interface PublicObjectiveTableProps {
+interface ScoreTableViewProps {
   gameState: GameState;
   gameOptions: GameOptions;
   sendEvent: (data: any) => void;
 }
 
-export const PublicObjectiveTable = ({
+export const ScoreTableView = ({
   gameState,
   gameOptions,
   sendEvent,
-}: PublicObjectiveTableProps) => {
+}: ScoreTableViewProps) => {
   const revealedStageOneObjectives = Object.keys(
     gameState.score.revealedObjectives
   )
@@ -59,12 +60,14 @@ export const PublicObjectiveTable = ({
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
-              {gameState.score.playerPoints[p.id]}p
+              <Button onClick={() => sendEvent()}>-</Button>
+              {gameState.score.playerPoints[p.id]}p<Button>+</Button>
             </td>
           ))}
         </tr>
       </thead>
       <tbody>
+        {/* CUSTODIANS */}
         <tr>
           <th colSpan={playerCount}>
             <div className={styles.stageContainer}>
@@ -83,22 +86,22 @@ export const PublicObjectiveTable = ({
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
-              <FactionButton 
-                faction={p.faction} 
+              <FactionButton
+                faction={p.faction}
                 selected={gameState.score.custodians === p.id}
                 onClick={() => {
                   sendEvent({
                     SetCustodians: {
-                      player: gameState.score.custodians === p.id ? null : p.id
-                    }
-                  })
+                      player: gameState.score.custodians === p.id ? null : p.id,
+                    },
+                  });
                 }}
               />
             </td>
           ))}
         </tr>
 
-        {/* Public Objectives */}
+        {/* STAGE I Public Objectives */}
         <tr>
           <th colSpan={playerCount}>
             <div className={styles.stageContainer}>
@@ -137,7 +140,7 @@ export const PublicObjectiveTable = ({
                           player: p.id,
                           objective: obj.id,
                         },
-                      })
+                      });
                     }}
                   />
                 </td>
@@ -145,6 +148,8 @@ export const PublicObjectiveTable = ({
             </tr>
           </React.Fragment>
         ))}
+
+        {/* STAGE II Public Objectives */}
         <tr>
           <th colSpan={playerCount} className={styles.borderTop}>
             <div className={styles.stageContainer}>
@@ -183,7 +188,7 @@ export const PublicObjectiveTable = ({
                           player: p.id,
                           objective: obj.id,
                         },
-                      })
+                      });
                     }}
                   />
                 </td>
@@ -191,6 +196,8 @@ export const PublicObjectiveTable = ({
             </tr>
           </React.Fragment>
         ))}
+
+        {/* SECRET OBJECTIVES */}
         <tr>
           <th colSpan={playerCount} className={styles.borderTop}>
             <div className={styles.stageContainer}>
@@ -216,6 +223,84 @@ export const PublicObjectiveTable = ({
             </td>
           ))}
         </tr>
+
+        {/* IMPERIAL */}
+        <tr>
+          <th colSpan={playerCount} className={styles.borderTop}>
+            <div className={styles.stageContainer}>
+              <div
+                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
+              />
+              <h2 className={`${styles.secretColor} ${styles.stageText}`}>
+                Imperial
+              </h2>
+              <div
+                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
+              />
+            </div>
+          </th>
+        </tr>
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              <Button
+                onClick={() => {
+                  let curr = gameState.score.imperial[p.id] ?? 0;
+                  sendEvent({
+                    SetImperial: {
+                      player: p.id,
+                      value: curr > 0 ? curr - 1 : 0,
+                    },
+                  });
+                }}
+              >
+                -
+              </Button>
+              {gameState.score.imperial[p.id] ?? 0}
+              <Button
+                onClick={() => {
+                  let curr = gameState.score.imperial[p.id] ?? 0;
+                  sendEvent({
+                    SetImperial: {
+                      player: p.id,
+                      value: curr + 1,
+                    },
+                  });
+                }}
+              >
+                +
+              </Button>
+            </td>
+          ))}
+        </tr>
+
+        {/* Support for the Throne */}
+        <tr>
+          <th colSpan={playerCount} className={styles.borderTop}>
+            <div className={styles.stageContainer}>
+              <div
+                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
+              />
+              <h2 className={`${styles.secretColor} ${styles.stageText}`}>
+                Support for the Throne
+              </h2>
+              <div
+                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
+              />
+            </div>
+          </th>
+        </tr>
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              {
+                Object.values(gameState.score.supportForTheThrone).filter(
+                  (rec) => rec == p.id
+                ).length
+              }
+            </td>
+          ))}
+        </tr>
       </tbody>
     </table>
   );
@@ -227,11 +312,7 @@ interface FactionButtonProps {
   onClick: () => void;
 }
 
-const FactionButton = ({
-  faction,
-  selected,
-  onClick
-}: FactionButtonProps) => {
+const FactionButton = ({ faction, selected, onClick }: FactionButtonProps) => {
   return (
     <button
       className={`${selected ? styles.factionButtonSelected : ""} ${
