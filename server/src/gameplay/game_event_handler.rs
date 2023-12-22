@@ -482,6 +482,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             let extra = game_state.score.extra_points.entry(player).or_default();
             *extra = extra.saturating_add(value);
         }
+        Event::SetCustodians { player } => game_state.score.custodians = player,
     }
 
     // TODO: maybe not recalculate this all the time?
