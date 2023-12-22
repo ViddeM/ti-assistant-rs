@@ -1,4 +1,3 @@
-import { GameOptions } from "@/api/GameOptions";
 import { GameState, Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
@@ -6,25 +5,21 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { useState } from "react";
 import styles from "./ScoreViewMode.module.scss";
 
-export interface MiscScoreViewProps {
+export interface SupportForTheThroneViewProps {
   gameState: GameState;
-  gameOptions: GameOptions;
   sendEvent: (data: any) => void;
 }
 
-export const MiscScoreView = ({
+export const SupportForTheThroneView = ({
   gameState,
-  gameOptions,
   sendEvent,
-}: MiscScoreViewProps) => {
+}: SupportForTheThroneViewProps) => {
   const players = Object.keys(gameState.players).map((p) => {
     return {
       ...gameState.players[p],
       id: p,
     };
   });
-
-  const currentCustodians = getCustodians(gameState, gameOptions);
 
   return (
     <div className="card" style={{ marginBottom: "1rem" }}>
@@ -49,43 +44,10 @@ export const MiscScoreView = ({
             ))}
           </tbody>
         </table>
-
-        <table className={styles.imperialTable}>
-          <thead>
-            <tr>
-              <th colSpan={5}>
-                <h2>Imperial</h2>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {players.map((p) => (
-              <PlayerImperialView
-                key={p.id}
-                gameState={gameState}
-                player={p}
-                sendEvent={sendEvent}
-              />
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   );
 };
-
-function getCustodians(gameState: GameState, gameOptions: GameOptions): string {
-  const scoreCust = gameState.score.custodians;
-  if (!scoreCust) {
-    return "None";
-  }
-
-  const custPlayer = gameState.players[scoreCust];
-  const faction = gameOptions.factions.filter(
-    (f) => f.faction === custPlayer.faction
-  )[0];
-  return `${faction.name} - ${custPlayer.name}`;
-}
 
 interface PlayerSupportForTheThroneViewProps {
   gameState: GameState;
@@ -144,38 +106,6 @@ const PlayerSupportForTheThroneView = ({
         >
           Give
         </Button>
-      </td>
-    </tr>
-  );
-};
-
-interface PlayerImperialViewProps {
-  gameState: GameState;
-  sendEvent: (data: any) => void;
-  player: Player & {
-    id: string;
-  };
-}
-
-const PlayerImperialView = ({
-  gameState,
-  sendEvent,
-  player,
-}: PlayerImperialViewProps) => {
-  return (
-    <tr>
-      <td>
-        <FactionIcon faction={player.faction} />
-      </td>
-      <td>{player.name}</td>
-      <td>
-        <Button>-</Button>
-      </td>
-      <td>
-        <p>{gameState.score.imperial[player.id] ?? 0}</p>
-      </td>
-      <td>
-        <Button>+</Button>
       </td>
     </tr>
   );
