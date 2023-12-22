@@ -17,10 +17,6 @@ export const MiscScoreView = ({
   gameOptions,
   sendEvent,
 }: MiscScoreViewProps) => {
-  const [custodians, setCustodians] = useState<string>(
-    gameState.score.custodians ?? ""
-  );
-
   const players = Object.keys(gameState.players).map((p) => {
     return {
       ...gameState.players[p],
@@ -32,30 +28,6 @@ export const MiscScoreView = ({
 
   return (
     <div className="card" style={{ marginBottom: "1rem" }}>
-      <h2>Custodians: {currentCustodians}</h2>
-      <Dropdown
-        value={custodians}
-        onChange={(e) => setCustodians(e.target.value)}
-      >
-        <option value="">--No Custodians--</option>
-        {players.map((p) => (
-          <option value={p.id} key={p.id}>
-            {
-              gameOptions.factions.filter((f) => f.faction === p.faction)[0]
-                .name
-            }
-            - {p.name}
-          </option>
-        ))}
-      </Dropdown>
-      <Button onClick={() => {
-        sendEvent({
-          SetCustodians: {
-            player: custodians
-          }
-        })
-      }}>Set custodians</Button>
-
       <div className={styles.spftttImperialContainer}>
         <table className={styles.supportForTheThroneTable}>
           <thead>
