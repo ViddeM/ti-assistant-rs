@@ -56,8 +56,6 @@ export const PublicObjectiveTable = ({
             </th>
           ))}
         </tr>
-      </thead>
-      <tbody>
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
@@ -65,6 +63,42 @@ export const PublicObjectiveTable = ({
             </td>
           ))}
         </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th colSpan={playerCount}>
+            <div className={styles.stageContainer}>
+              <div
+                className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
+              />
+              <h2 className={`${styles.stageOneColor} ${styles.stageText}`}>
+                Custodians
+              </h2>
+              <div
+                className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
+              />
+            </div>
+          </th>
+        </tr>
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              <FactionButton 
+                faction={p.faction} 
+                selected={gameState.score.custodians === p.id}
+                onClick={() => {
+                  sendEvent({
+                    SetCustodians: {
+                      player: gameState.score.custodians === p.id ? null : p.id
+                    }
+                  })
+                }}
+              />
+            </td>
+          ))}
+        </tr>
+
+        {/* Public Objectives */}
         <tr>
           <th colSpan={playerCount}>
             <div className={styles.stageContainer}>
@@ -92,14 +126,19 @@ export const PublicObjectiveTable = ({
                 <td key={p.id} align="center">
                   <FactionButton
                     faction={p.faction}
-                    playerId={p.id}
-                    objective={obj.id}
                     selected={
                       gameState.score.revealedObjectives[obj.id]?.includes(
                         p.id
                       ) ?? false
                     }
-                    sendEvent={sendEvent}
+                    onClick={() => {
+                      sendEvent({
+                        ScorePublicObjective: {
+                          player: p.id,
+                          objective: obj.id,
+                        },
+                      })
+                    }}
                   />
                 </td>
               ))}
@@ -133,14 +172,19 @@ export const PublicObjectiveTable = ({
                 <td key={p.id} align="center">
                   <FactionButton
                     faction={p.faction}
-                    playerId={p.id}
-                    objective={obj.id}
                     selected={
                       gameState.score.revealedObjectives[obj.id]?.includes(
                         p.id
                       ) ?? false
                     }
-                    sendEvent={sendEvent}
+                    onClick={() => {
+                      sendEvent({
+                        ScorePublicObjective: {
+                          player: p.id,
+                          objective: obj.id,
+                        },
+                      })
+                    }}
                   />
                 </td>
               ))}
@@ -178,33 +222,22 @@ export const PublicObjectiveTable = ({
 };
 
 interface FactionButtonProps {
-  playerId: string;
   faction: Faction;
   selected: boolean;
-  objective: string;
-  sendEvent: (data: any) => void;
+  onClick: () => void;
 }
 
 const FactionButton = ({
   faction,
-  playerId,
   selected,
-  objective,
-  sendEvent,
+  onClick
 }: FactionButtonProps) => {
   return (
     <button
       className={`${selected ? styles.factionButtonSelected : ""} ${
         styles.factionButton
       }`}
-      onClick={() =>
-        sendEvent({
-          ScorePublicObjective: {
-            player: playerId,
-            objective: objective,
-          },
-        })
-      }
+      onClick={onClick}
     >
       <FactionIcon faction={faction} />
     </button>
