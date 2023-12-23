@@ -344,6 +344,7 @@ checksum = "2268a214a6f118fce1838edba3d1561cf0e78d8de785475957a580a7f8c69d33"
 dependencies = [
  "bitflags 2.4.1",
  "byteorder",
+ "chrono",
  "diesel_derives",
  "itoa",
  "serde_json",

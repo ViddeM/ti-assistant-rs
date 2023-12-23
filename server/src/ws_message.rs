@@ -14,6 +14,9 @@ pub enum WsMessageIn {
     NewGame,
     Event(Event),
     Undo,
+
+    /// Pause/unpause per-player time tracking.
+    TrackTime(bool),
 }
 
 #[derive(Debug, Clone, Serialize)]

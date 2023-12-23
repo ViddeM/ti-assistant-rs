@@ -5,6 +5,7 @@
 
 use std::{net::SocketAddr, sync::Arc};
 
+use chrono::Utc;
 use clap::Parser;
 use db::DbPool;
 use diesel::{delete, insert_into, ExpressionMethods, OptionalExtension, QueryDsl};
@@ -177,9 +178,9 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
 
                     log::info!("replaying {} events for game {id:?}", events.len());
                     let mut game = Game::default();
-                    for event in events {
-                        let event = serde_json::from_value(event.event)?;
-                        game.apply(event);
+                    for record in events {
+                        let event = serde_json::from_value(record.event)?;
+                        game.apply(event, record.timestamp);
                     }
 
                     log::info!("loaded game {id:?}");
@@ -249,8 +250,10 @@ async fn handle_event(
 
     let mut lobby = lobby.write().await;
 
+    let now = Utc::now();
+
     // TODO: propagate errors back over the socket?
-    lobby.game.apply(event.clone());
+    lobby.game.apply(event.clone(), now);
 
     if let Some(db_pool) = &shared.db_pool {
         let mut db = db_pool.get().await?;
@@ -260,6 +263,7 @@ async fn handle_event(
             .values(&db::NewGameEvent {
                 game_id: id,
                 event: serde_json::to_value(&event)?,
+                timestamp: now,
             })
             .execute(&mut db)
             .await

@@ -11,6 +11,8 @@ CREATE TABLE game_event (
 	-- sequence number of this event, events for a game are ordered by this value
 	seq INTEGER NOT NULL DEFAULT -1,
 
+    timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+
 	event JSONB NOT NULL,
 
 	CONSTRAINT game_event_pkey PRIMARY KEY (id),
@@ -27,7 +29,7 @@ CREATE FUNCTION next_game_event_seq() RETURNS TRIGGER LANGUAGE plpgsql AS $$
   DECLARE new_seq INTEGER;
   BEGIN
     SELECT COUNT(seq) into new_seq FROM game_event WHERE game_id = new.game_id;
-    RETURN (new.id, new.game_id, new_seq, new.event);
+    RETURN (new.id, new.game_id, new_seq, new.timestamp, new.event);
   END
 $$;
 

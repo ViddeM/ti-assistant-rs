@@ -156,6 +156,11 @@ pub enum Event {
         player: PlayerId,
         tech: Technology,
     },
+
+    /// Pause/unpause time-tracking.
+    TrackTime {
+        paused: bool,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
