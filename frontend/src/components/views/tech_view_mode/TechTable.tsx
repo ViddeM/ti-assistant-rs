@@ -252,9 +252,23 @@ const TableSectionHeading = ({
         <div className={styles.stageContainer}>
           <div className={`${background} ${styles.horizontalLine}`} />
           <h2 className={`${color} ${styles.techGroupText}`}>
-            {icon && <Icon name={icon} width={ICON_SIZE} height={ICON_SIZE} />}
+            {icon && (
+              <Icon
+                name={icon}
+                isFilled={true}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
+            )}
             {title}
-            {icon && <Icon name={icon} width={ICON_SIZE} height={ICON_SIZE} />}
+            {icon && (
+              <Icon
+                name={icon}
+                isFilled={true}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
+            )}
           </h2>
           <div className={`${background} ${styles.horizontalLine}`} />
         </div>
