@@ -483,8 +483,9 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             *extra = extra.saturating_add(value);
         }
         Event::SetCustodians { player } => game_state.score.custodians = player,
-        Event::SetImperial { player, value } => {
-            game_state.score.imperial.insert(player, value);
+        Event::AddImperial { player, value } => {
+            let imperial = game_state.score.imperial.entry(player).or_default();
+            *imperial = imperial.saturating_add(value);
         }
     }
 

@@ -53,36 +53,25 @@ export const ScoreTableView = ({
         <tr>
           {players.map((p) => (
             <th key={p.id} className={styles.scoreViewTableHeader}>
-              <FactionIcon faction={p.faction} />
+              <FactionIcon faction={p.faction} width={32} height={32} />
             </th>
           ))}
         </tr>
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
-              <Button onClick={() => sendEvent()}>-</Button>
-              {gameState.score.playerPoints[p.id]}p<Button>+</Button>
+              {gameState.score.playerPoints[p.id]}p
             </td>
           ))}
         </tr>
       </thead>
       <tbody>
         {/* CUSTODIANS */}
-        <tr>
-          <th colSpan={playerCount}>
-            <div className={styles.stageContainer}>
-              <div
-                className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
-              />
-              <h2 className={`${styles.stageOneColor} ${styles.stageText}`}>
-                Custodians
-              </h2>
-              <div
-                className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
-              />
-            </div>
-          </th>
-        </tr>
+        <TableSectionHeading
+          playerCount={playerCount}
+          title={"Custodians"}
+          stylingPrefix={"custodians"}
+        />
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
@@ -102,25 +91,18 @@ export const ScoreTableView = ({
         </tr>
 
         {/* STAGE I Public Objectives */}
-        <tr>
-          <th colSpan={playerCount}>
-            <div className={styles.stageContainer}>
-              <div
-                className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
-              />
-              <h2 className={`${styles.stageOneColor} ${styles.stageText}`}>
-                Stage I
-              </h2>
-              <div
-                className={`${styles.stageOneBackgroundColor} ${styles.horizontalLine}`}
-              />
-            </div>
-          </th>
-        </tr>
-        {revealedStageOneObjectives.map((obj) => (
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="Stage I"
+          stylingPrefix="stageOne"
+        />
+        {revealedStageOneObjectives.map((obj, index) => (
           <React.Fragment key={obj.id}>
             <tr key={obj.id}>
-              <th colSpan={playerCount} className={styles.borderTop}>
+              <th
+                colSpan={playerCount}
+                className={index === 0 ? "" : styles.borderTop}
+              >
                 {obj.name}
               </th>
             </tr>
@@ -150,25 +132,18 @@ export const ScoreTableView = ({
         ))}
 
         {/* STAGE II Public Objectives */}
-        <tr>
-          <th colSpan={playerCount} className={styles.borderTop}>
-            <div className={styles.stageContainer}>
-              <div
-                className={`${styles.stageTwoBackgroundColor} ${styles.horizontalLine}`}
-              />
-              <h2 className={`${styles.stageTwoColor} ${styles.stageText}`}>
-                Stage II
-              </h2>
-              <div
-                className={`${styles.stageTwoBackgroundColor} ${styles.horizontalLine}`}
-              />
-            </div>
-          </th>
-        </tr>
-        {revealedStageTwoObjectives.map((obj) => (
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="Stage II"
+          stylingPrefix="stageTwo"
+        />
+        {revealedStageTwoObjectives.map((obj, index) => (
           <React.Fragment key={obj.id}>
             <tr key={obj.id}>
-              <th colSpan={playerCount} className={styles.borderTop}>
+              <th
+                colSpan={playerCount}
+                className={index === 0 ? "" : styles.borderTop}
+              >
                 {obj.name}
               </th>
             </tr>
@@ -198,21 +173,11 @@ export const ScoreTableView = ({
         ))}
 
         {/* SECRET OBJECTIVES */}
-        <tr>
-          <th colSpan={playerCount} className={styles.borderTop}>
-            <div className={styles.stageContainer}>
-              <div
-                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
-              />
-              <h2 className={`${styles.secretColor} ${styles.stageText}`}>
-                Secrets
-              </h2>
-              <div
-                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
-              />
-            </div>
-          </th>
-        </tr>
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="Secrets"
+          stylingPrefix="secret"
+        />
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
@@ -224,72 +189,12 @@ export const ScoreTableView = ({
           ))}
         </tr>
 
-        {/* IMPERIAL */}
-        <tr>
-          <th colSpan={playerCount} className={styles.borderTop}>
-            <div className={styles.stageContainer}>
-              <div
-                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
-              />
-              <h2 className={`${styles.secretColor} ${styles.stageText}`}>
-                Imperial
-              </h2>
-              <div
-                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
-              />
-            </div>
-          </th>
-        </tr>
-        <tr>
-          {players.map((p) => (
-            <td key={p.id} align="center">
-              <Button
-                onClick={() => {
-                  let curr = gameState.score.imperial[p.id] ?? 0;
-                  sendEvent({
-                    SetImperial: {
-                      player: p.id,
-                      value: curr > 0 ? curr - 1 : 0,
-                    },
-                  });
-                }}
-              >
-                -
-              </Button>
-              {gameState.score.imperial[p.id] ?? 0}
-              <Button
-                onClick={() => {
-                  let curr = gameState.score.imperial[p.id] ?? 0;
-                  sendEvent({
-                    SetImperial: {
-                      player: p.id,
-                      value: curr + 1,
-                    },
-                  });
-                }}
-              >
-                +
-              </Button>
-            </td>
-          ))}
-        </tr>
-
         {/* Support for the Throne */}
-        <tr>
-          <th colSpan={playerCount} className={styles.borderTop}>
-            <div className={styles.stageContainer}>
-              <div
-                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
-              />
-              <h2 className={`${styles.secretColor} ${styles.stageText}`}>
-                Support for the Throne
-              </h2>
-              <div
-                className={`${styles.secretBackgroundColor} ${styles.horizontalLine}`}
-              />
-            </div>
-          </th>
-        </tr>
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="Support for the Throne"
+          stylingPrefix="spftt"
+        />
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
@@ -298,6 +203,55 @@ export const ScoreTableView = ({
                   (rec) => rec == p.id
                 ).length
               }
+            </td>
+          ))}
+        </tr>
+
+        {/* IMPERIAL */}
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="Imperial"
+          stylingPrefix="imperial"
+        />
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              <IncDecView
+                points={gameState.score.imperial[p.id] ?? 0}
+                changePoints={(newPoints) =>
+                  sendEvent({
+                    AddImperial: {
+                      player: p.id,
+                      value: newPoints - (gameState.score.imperial[p.id] ?? 0),
+                    },
+                  })
+                }
+              />
+            </td>
+          ))}
+        </tr>
+
+        {/* Extra points (manual modifications) */}
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="Extra Points"
+          stylingPrefix="extra"
+        />
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              <IncDecView
+                points={gameState.score.extraPoints[p.id] ?? 0}
+                changePoints={(newPoints) =>
+                  sendEvent({
+                    AddExtraPoints: {
+                      player: p.id,
+                      value:
+                        newPoints - (gameState.score.extraPoints[p.id] ?? 0),
+                    },
+                  })
+                }
+              />
             </td>
           ))}
         </tr>
@@ -320,7 +274,7 @@ const FactionButton = ({ faction, selected, onClick }: FactionButtonProps) => {
       }`}
       onClick={onClick}
     >
-      <FactionIcon faction={faction} />
+      <FactionIcon faction={faction} width={32} height={32} />
     </button>
   );
 };
@@ -341,4 +295,64 @@ const PlayerSecretObjectivesScore = ({
   }
 
   return <p>{playerSecrets.length}</p>;
+};
+
+interface TableSectionHeadingProps {
+  playerCount: number;
+  title: string;
+  stylingPrefix:
+    | "stageOne"
+    | "stageTwo"
+    | "secret"
+    | "custodians"
+    | "imperial"
+    | "spftt"
+    | "extra";
+}
+
+const TableSectionHeading = ({
+  playerCount,
+  title,
+  stylingPrefix,
+}: TableSectionHeadingProps) => {
+  let background = styles[`${stylingPrefix}BackgroundColor`];
+  let color = styles[`${stylingPrefix}Color`];
+
+  return (
+    <tr>
+      <th colSpan={playerCount}>
+        <div className={styles.stageContainer}>
+          <div className={`${background} ${styles.horizontalLine}`} />
+          <h2 className={`${color} ${styles.stageText}`}>{title}</h2>
+          <div className={`${background} ${styles.horizontalLine}`} />
+        </div>
+      </th>
+    </tr>
+  );
+};
+
+interface IncDecViewProps {
+  points: number;
+  changePoints: (newPoints: number) => void;
+}
+
+const IncDecView = ({ points, changePoints }: IncDecViewProps) => {
+  return (
+    <>
+      <Button
+        onClick={() => changePoints(points + 1)}
+        className={styles.incDecButton}
+      >
+        ^
+      </Button>
+      <p>{points}</p>
+      <Button
+        onClick={() => changePoints(points - 1)}
+        className={styles.incDecButton}
+        disabled={points == 0}
+      >
+        v
+      </Button>
+    </>
+  );
 };

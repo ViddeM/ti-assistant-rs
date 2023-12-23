@@ -116,19 +116,19 @@ pub enum Event {
         value: i8,
     },
 
+    /// Set the current custodians, usually set to the first player to take mecatol rex.
+    SetCustodians {
+        player: Option<PlayerId>,
+    },
+
     /// Increment the `extra_points` value for a player with the given value.
     AddExtraPoints {
         player: PlayerId,
         value: i8,
     },
 
-    /// Set the current custodians, usually set to the first player to take mecatol rex.
-    SetCustodians {
-        player: Option<PlayerId>,
-    },
-
-    /// Set the number of points received from the imperial strategy card for a player.
-    SetImperial {
+    /// Increment the number of points received from the imperial strategy card for a player with the given value.
+    AddImperial {
         player: PlayerId,
         value: i8,
     },
