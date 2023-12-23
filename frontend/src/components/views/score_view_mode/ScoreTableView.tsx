@@ -117,12 +117,26 @@ export const ScoreTableView = ({
                       ) ?? false
                     }
                     onClick={() => {
-                      sendEvent({
-                        ScorePublicObjective: {
-                          player: p.id,
-                          objective: obj.id,
-                        },
-                      });
+                      if (
+                        gameState.score.revealedObjectives[obj.id]?.includes(
+                          p.id
+                        ) ??
+                        false
+                      ) {
+                        sendEvent({
+                          UnscoreObjective: {
+                            player: p.id,
+                            objective: obj.id,
+                          },
+                        });
+                      } else {
+                        sendEvent({
+                          ScorePublicObjective: {
+                            player: p.id,
+                            objective: obj.id,
+                          },
+                        });
+                      }
                     }}
                   />
                 </td>
@@ -158,12 +172,26 @@ export const ScoreTableView = ({
                       ) ?? false
                     }
                     onClick={() => {
-                      sendEvent({
-                        ScorePublicObjective: {
-                          player: p.id,
-                          objective: obj.id,
-                        },
-                      });
+                      if (
+                        gameState.score.revealedObjectives[obj.id]?.includes(
+                          p.id
+                        ) ??
+                        false
+                      ) {
+                        sendEvent({
+                          UnscoreObjective: {
+                            player: p.id,
+                            objective: obj.id,
+                          },
+                        });
+                      } else {
+                        sendEvent({
+                          ScorePublicObjective: {
+                            player: p.id,
+                            objective: obj.id,
+                          },
+                        });
+                      }
                     }}
                   />
                 </td>

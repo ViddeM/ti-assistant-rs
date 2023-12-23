@@ -487,6 +487,13 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             let imperial = game_state.score.imperial.entry(player).or_default();
             *imperial = imperial.saturating_add(value);
         }
+        Event::UnscoreObjective { player, objective } => {
+            let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
+                bail!("Cannot un-score objective that hasn't been revealed");
+            };
+
+            scorers.remove(&player);
+        }
     }
 
     // TODO: maybe not recalculate this all the time?
