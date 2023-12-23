@@ -31,7 +31,7 @@
 
 .borderTop {
     border-top: 1px solid black; 
-    padding: $padding;
+    padding: $padding 0;
 }
 
 .borderBottom {
@@ -57,7 +57,6 @@
 }
 
 .scoreViewTableHeader {
-    border-bottom: 2px solid black;
     padding: 4px;
 }
 
@@ -74,7 +73,7 @@
 }
 
 .stageText {
-    flex: 1;
+    min-width: 300px;
     border-width: 4px;
     border-style: solid;
     border-radius: $border-radius;
@@ -83,10 +82,10 @@
 $stage-one-color: orange;
 $stage-two-color: rgb(110, 110, 255);
 $secret-color: rgb(240, 50, 50);
-
-.stageOneBackgroundColor {
-    background-color: $stage-one-color;
-}
+$custodians-color: rgb(0, 0, 0);
+$imperial-color: rgb(181, 0, 181);
+$spftt-color:  #a74551;
+$extra-color: green;
 
 .stageOneColor {
     color: $stage-one-color;
@@ -96,16 +95,52 @@ $secret-color: rgb(240, 50, 50);
     color: $stage-two-color;
 }
 
-.stageTwoBackgroundColor {
-    background-color: $stage-two-color;
-}
-
 .secretColor {
     color: $secret-color;
 }
 
+.custodiansColor {
+    color: $custodians-color;
+}
+
+.imperialColor {
+    color: $imperial-color;
+}
+
+.spfttColor {
+    color: $spftt-color;
+}
+
+.extraColor {
+    color: $extra-color;
+}
+
+.stageOneBackgroundColor {
+    background-color: $stage-one-color;
+}
+
+.stageTwoBackgroundColor {
+    background-color: $stage-two-color;
+}
+
 .secretBackgroundColor {
     background-color: $secret-color;
+}
+
+.custodiansBackgroundColor {
+    background-color: $custodians-color;
+}
+
+.imperialBackgroundColor {
+    background-color: $imperial-color;
+}
+
+.spfttBackgroundColor {
+    background-color: $spftt-color;
+}
+
+.extraBackgroundColor {
+    background-color: $extra-color;
 }
 
 .factionButton {
@@ -113,18 +148,18 @@ $secret-color: rgb(240, 50, 50);
     background: none;
     border: none;
     cursor: pointer;
+    border-radius: 50%;
+    padding: 0;
 
     &:hover {
-        transform: scale(1.2);
+        filter: brightness(0.6) contrast(0.85);
     }
 }
 
 .factionButtonSelected {
     filter: brightness(1) contrast(1);
-    transform: scale(1.3);
-
     &:hover {
-        transform: scale(1.2);
+        filter: brightness(0.9) contrast(0.8);
     }
 }
 
@@ -179,19 +214,19 @@ $secret-color: rgb(240, 50, 50);
     }
 }
 
-.imperialTable { 
-    
-}
+.incDecButton {
+    border: none;
+    background-color: inherit;
+    font-size: 1.2rem;
+    padding: 0;
+    margin: 0;
 
-.spftttImperialContainer {
+    &:disabled {
+        background-color: inherit;
+        filter: brightness(0.3);
 
-
-    @media (min-width: $widthMedium) {
-        display: flex;
-        flex-direction: row;
-
-        & > :nth-child(2) {
-            margin-left: 2rem;
+        &:hover {
+           filter: brightness(0.3);
         }
     }
 }
