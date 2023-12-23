@@ -472,7 +472,6 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
         }
         Event::GiveSupportForTheThrone { giver, receiver } => {
             let score = &mut game_state.score;
-
             score.support_for_the_throne.insert(giver, receiver);
         }
         Event::SetExtraPoints { player, value } => {
