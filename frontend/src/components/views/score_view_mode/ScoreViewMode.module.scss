@@ -230,3 +230,16 @@ $extra-color: green;
         }
     }
 }
+
+.secretObjectiveRow {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.deleteSecretObjectiveButton {
+    background-color: inherit;
+    border: none;
+    color: white;
+    margin-left: 0.5rem;
+}

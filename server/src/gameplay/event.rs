@@ -133,10 +133,16 @@ pub enum Event {
         value: i8,
     },
 
-    /// Unscore a public objective
+    /// Unscore a revealed objective
     UnscoreObjective {
         player: PlayerId,
         objective: Objective,
+    },
+
+    /// Unscore a secret objective
+    UnscoreSecretObjective {
+        player: PlayerId,
+        objective: SecretObjective,
     },
 }
 

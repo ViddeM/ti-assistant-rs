@@ -5,6 +5,8 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { Button } from "@/components/elements/button/Button";
 import { useState } from "react";
 import { GameOptions } from "@/api/GameOptions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export interface SecretObjectivesViewProps {
   gameState: GameState;
@@ -93,7 +95,22 @@ const PlayerSecretView = ({
         <div />
       </div>
       {playerSecrets.map((secret) => (
-        <p key={secret}>{secret}</p>
+        <div key={secret} className={styles.secretObjectiveRow}>
+          <p>{secret}</p>
+          <Button
+            className={styles.deleteSecretObjectiveButton}
+            onClick={() =>
+              sendEvent({
+                UnscoreSecretObjective: {
+                  player: playerId,
+                  objective: secret,
+                },
+              })
+            }
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+        </div>
       ))}
       <Dropdown value={secret} onChange={(e) => setSecret(e.target.value)}>
         <option value="">--Select secret objective--</option>
