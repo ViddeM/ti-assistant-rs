@@ -1,0 +1,141 @@
+@import "../../../resources/styles/vars.scss";
+
+.techViewContainer {
+    width: 100%;
+    max-width: 800px;
+
+    & > :first-child {
+        margin-bottom: $marginLarge;
+    }
+}
+
+.techLedgerList {
+    & > li > a {
+        margin-left: $padding;
+    }
+}
+
+.techViewTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: $marginLarge;
+}
+
+.techViewTableHeader {
+    padding: 4px;
+}
+
+.borderTop {
+    border-top: 1px solid black; 
+    padding: $padding 0;
+}
+
+.stageContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+}
+
+.horizontalLine {
+    height: 4px;
+    flex: 1;
+}
+
+.techGroupText {
+    min-width: 300px;
+    border-width: 4px;
+    border-style: solid;
+    border-radius: $border-radius;
+}
+
+$unit-upgrade-color: lightgray;
+$warfare-color: red;
+$propulsion-color: lightblue;
+$cybernetic-color: yellow;
+$biotic-color: limegreen;
+
+.unitUpgradeColor {
+    color: $unit-upgrade-color;
+}
+.warfareColor {
+    color: $warfare-color;
+}
+.propulsionColor {
+    color: $propulsion-color;
+}
+.cyberneticColor {
+    color: $cybernetic-color;
+}
+.bioticColor {
+    color: $biotic-color;
+}
+
+.playerBlackColor {
+    background-color: white;
+    color: $playerColorBlack;
+}
+.playerBlueColor {
+    background-color: white;
+    color: $playerColorBlue;
+}
+.playerGreenColor {
+    color: $playerColorGreen;
+}
+.playerRedColor {
+    color: $playerColorRed;
+}
+.playerYellowColor {
+    color: $playerColorYellow;
+}
+.playerPurpleColor {
+    background-color: white;
+    color: $playerColorPurple;
+}
+.playerOrangeColor {
+    color: $playerColorOrange;
+}
+.playerPinkColor {
+    color: $playerColorPink;
+}
+
+.unitUpgradeBackgroundColor {
+    background-color: $unit-upgrade-color;
+}
+.warfareBackgroundColor {
+    background-color: $warfare-color;
+}
+.propulsionBackgroundColor {
+    background-color: $propulsion-color;
+}
+.cyberneticBackgroundColor {
+    background-color: $cybernetic-color;
+}
+.bioticBackgroundColor {
+    background-color: $biotic-color;
+}
+
+.playerBlackBackgroundColor {
+    background-color: $playerColorBlack;
+}
+.playerBlueBackgroundColor {
+    background-color: $playerColorBlue;
+}
+.playerGreenBackgroundColor {
+    background-color: $playerColorGreen;
+}
+.playerRedBackgroundColor {
+    background-color: $playerColorRed;
+}
+.playerYellowBackgroundColor {
+    background-color: $playerColorYellow;
+}
+.playerPurpleBackgroundColor {
+    background-color: $playerColorPurple;
+}
+.playerOrangeBackgroundColor {
+    background-color: $playerColorOrange;
+}
+.playerPinkBackgroundColor {
+    background-color: $playerColorPink;
+}
