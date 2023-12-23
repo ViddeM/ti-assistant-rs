@@ -5,6 +5,7 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Faction } from "@/resources/types/factions";
 import React from "react";
 import { Button } from "@/components/elements/button/Button";
+import { FactionButton } from "@/components/elements/factionButton/FactionButton";
 
 interface ScoreTableViewProps {
   gameState: GameState;
@@ -285,25 +286,6 @@ export const ScoreTableView = ({
         </tr>
       </tbody>
     </table>
-  );
-};
-
-interface FactionButtonProps {
-  faction: Faction;
-  selected: boolean;
-  onClick: () => void;
-}
-
-const FactionButton = ({ faction, selected, onClick }: FactionButtonProps) => {
-  return (
-    <button
-      className={`${selected ? styles.factionButtonSelected : ""} ${
-        styles.factionButton
-      }`}
-      onClick={onClick}
-    >
-      <FactionIcon faction={faction} width={32} height={32} />
-    </button>
   );
 };
 

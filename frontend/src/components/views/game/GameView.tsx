@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { PhaseView } from "../phase_view/PhaseView";
 import { Button } from "@/components/elements/button/Button";
 import { ScoreViewMode } from "../score_view_mode/ScoreViewMode";
+import { TechViewMode } from "../tech_view_mode/TechViewMode";
 
 const NEW_GAME_ID = "new";
 
@@ -152,6 +153,14 @@ const DisplayViewMode = ({
     case "Score":
       return (
         <ScoreViewMode
+          gameOptions={gameOptions}
+          gameState={gameState}
+          sendEvent={sendEvent}
+        />
+      );
+    case "Techs":
+      return (
+        <TechViewMode
           gameOptions={gameOptions}
           gameState={gameState}
           sendEvent={sendEvent}

@@ -133,16 +133,28 @@ pub enum Event {
         value: i8,
     },
 
-    /// Unscore a revealed objective
+    /// Unscore a revealed objective.
     UnscoreObjective {
         player: PlayerId,
         objective: Objective,
     },
 
-    /// Unscore a secret objective
+    /// Unscore a secret objective.
     UnscoreSecretObjective {
         player: PlayerId,
         objective: SecretObjective,
+    },
+
+    /// Add the tech to the players list of techs.
+    AddTechToPlayer {
+        player: PlayerId,
+        tech: Technology,
+    },
+
+    /// Remove the tech from the players list of techs.
+    RemoveTechFromPlayer {
+        player: PlayerId,
+        tech: Technology,
     },
 }
 

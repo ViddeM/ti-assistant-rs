@@ -500,6 +500,20 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
             objectives.remove(&objective);
         }
+        Event::AddTechToPlayer { player, tech } => {
+            let Some(p) = game_state.players.get_mut(&player) else {
+                bail!("Player does not exist?");
+            };
+
+            p.technologies.insert(tech);
+        }
+        Event::RemoveTechFromPlayer { player, tech } => {
+            let Some(p) = game_state.players.get_mut(&player) else {
+                bail!("Player does not exist?");
+            };
+
+            p.technologies.remove(&tech);
+        }
     }
 
     // TODO: maybe not recalculate this all the time?
