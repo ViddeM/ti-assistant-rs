@@ -132,6 +132,12 @@ pub enum Event {
         player: PlayerId,
         value: i8,
     },
+
+    /// Unscore a public objective
+    UnscoreObjective {
+        player: PlayerId,
+        objective: Objective,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
