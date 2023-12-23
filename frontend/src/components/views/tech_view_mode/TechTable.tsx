@@ -4,6 +4,7 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./TechViewMode.module.scss";
 import React from "react";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
+import { Icon } from "@/components/elements/icon/Icon";
 
 export interface TechTableProps {
   gameState: GameState;
@@ -137,6 +138,7 @@ export const TechTable = ({
           playerCount={playerCount}
           title={"Warfare"}
           stylingPrefix="warfare"
+          icon={"warfare"}
         />
         <TechRows
           techs={warfare}
@@ -150,6 +152,7 @@ export const TechTable = ({
           playerCount={playerCount}
           title={"Propulsion"}
           stylingPrefix="propulsion"
+          icon={"propulsion"}
         />
         <TechRows
           techs={propulsion}
@@ -163,6 +166,7 @@ export const TechTable = ({
           playerCount={playerCount}
           title={"Cybernetic"}
           stylingPrefix="cybernetic"
+          icon={"cybernetic"}
         />
         <TechRows
           techs={cybernetic}
@@ -176,6 +180,7 @@ export const TechTable = ({
           playerCount={playerCount}
           title={"Biotic"}
           stylingPrefix="biotic"
+          icon={"biotic"}
         />
         <TechRows
           techs={biotic}
@@ -226,13 +231,17 @@ interface TableSectionHeadingProps {
     | "playerPurple"
     | "playerOrange"
     | "playerPink";
+  icon?: "warfare" | "propulsion" | "biotic" | "cybernetic";
 }
+
+const ICON_SIZE = 22;
 
 const TableSectionHeading = ({
   id,
   playerCount,
   title,
   stylingPrefix,
+  icon,
 }: TableSectionHeadingProps) => {
   let background = styles[`${stylingPrefix}BackgroundColor`];
   let color = styles[`${stylingPrefix}Color`];
@@ -242,7 +251,11 @@ const TableSectionHeading = ({
       <th colSpan={playerCount}>
         <div className={styles.stageContainer}>
           <div className={`${background} ${styles.horizontalLine}`} />
-          <h2 className={`${color} ${styles.techGroupText}`}>{title}</h2>
+          <h2 className={`${color} ${styles.techGroupText}`}>
+            {icon && <Icon name={icon} width={ICON_SIZE} height={ICON_SIZE} />}
+            {title}
+            {icon && <Icon name={icon} width={ICON_SIZE} height={ICON_SIZE} />}
+          </h2>
           <div className={`${background} ${styles.horizontalLine}`} />
         </div>
       </th>
