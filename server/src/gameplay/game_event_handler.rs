@@ -494,6 +494,13 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
             scorers.remove(&player);
         }
+        Event::UnscoreSecretObjective { player, objective } => {
+            let Some(objectives) = game_state.score.secret_objectives.get_mut(&player) else {
+                bail!("Player not in secret objectives map?");
+            };
+
+            objectives.remove(&objective);
+        }
     }
 
     // TODO: maybe not recalculate this all the time?
