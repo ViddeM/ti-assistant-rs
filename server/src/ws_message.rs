@@ -13,16 +13,23 @@ pub enum WsMessageIn {
     JoinGame(GameId),
     NewGame,
     Event(Event),
-    Undo,
 
-    /// Pause/unpause per-player time tracking.
-    TrackTime(bool),
+    /// Undo the most recent [Event].
+    Undo,
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub enum WsMessageOut {
+    /// Initial message sent by the server that contains all general info about game components
+    /// that the frontend will need.
     GameOptions(Arc<GameOptions>),
+
+    /// An update of the current game state.
     GameState(Arc<GameState>),
+
+    /// Response of [WsMessageIn::JoinGame] or a [WsMessageIn::NewGame] with the game id.
+    ///
+    /// Will be followed by a [WsMessageOut::GameState] message with the latest state of the game.
     JoinedGame(GameId),
 }
 

@@ -30,23 +30,33 @@ impl WsClient {
     pub async fn receive_message<ResponseMessage: DeserializeOwned>(
         &mut self,
     ) -> eyre::Result<ResponseMessage> {
-        let response = match self.conn.next().await {
-            Some(Ok(r)) => r,
-            Some(Err(e)) => {
-                bail!("Failed to read message, error {e}");
-            }
-            None => {
-                bail!("EOF")
-            }
-        };
+        // loop to handle ping/pong messages
+        loop {
+            let message = match self.conn.next().await {
+                Some(Ok(r)) => r,
+                Some(Err(e)) => bail!("Failed to read message, error: {e}"),
+                None => bail!("EOF"),
+            };
 
-        let text_response = response
-            .to_text()
-            .wrap_err("Failed to read text from response")?;
+            let text_message = match message {
+                Message::Ping(data) => {
+                    self.conn
+                        .send(Message::Pong(data))
+                        .await
+                        .wrap_err("failed to send pong to client")?;
+                    continue;
+                }
+                Message::Pong(..) => continue,
+                Message::Frame(..) => bail!("got raw websocket frame"),
+                Message::Close(..) => bail!("client closed connection"),
+                Message::Binary(..) => bail!("client sent us binary data"),
+                Message::Text(text) => text,
+            };
 
-        log::debug!("got message ¿{text_response}?");
+            log::debug!("got message ¿{text_message}?");
 
-        serde_json::from_str(text_response)
-            .wrap_err_with(|| format!("Failed to parse message {text_response:?}"))
+            break serde_json::from_str(&text_message)
+                .wrap_err_with(|| format!("Failed to parse message {text_message:?}"));
+        }
     }
 }
