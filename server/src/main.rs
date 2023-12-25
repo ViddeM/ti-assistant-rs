@@ -123,7 +123,7 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
             lobbies, db_pool, ..
         } = shared;
 
-        let mut ws_client = WsClient::accept(stream).await;
+        let mut ws_client = WsClient::accept(stream).await?;
 
         let message = ws_client.receive_message::<WsMessageIn>().await?;
 

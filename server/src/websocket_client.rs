@@ -12,11 +12,12 @@ pub struct WsClient {
 }
 
 impl WsClient {
-    pub async fn accept(stream: TcpStream) -> Self {
+    pub async fn accept(stream: TcpStream) -> eyre::Result<Self> {
         let ws = tokio_tungstenite::accept_async(stream)
             .await
-            .expect("Failed to initiate websocket");
-        Self { conn: ws }
+            .wrap_err("Failed to initiate websocket")?;
+
+        Ok(Self { conn: ws })
     }
 
     pub async fn send_message(&mut self, message: &WsMessageOut) -> eyre::Result<()> {
