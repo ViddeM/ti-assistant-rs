@@ -1,7 +1,7 @@
 #![recursion_limit = "256"]
 #![forbid(unsafe_code)]
-#![allow(dead_code)]
-#![allow(clippy::single_match)]
+#![warn(clippy::large_futures)]
+#![allow(dead_code, clippy::single_match)]
 
 use std::{net::SocketAddr, sync::Arc};
 
