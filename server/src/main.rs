@@ -113,6 +113,7 @@ pub async fn main() -> eyre::Result<()> {
     loop {
         // TODO: figure out if this error should really be fatal
         let (stream, from) = server.accept().await.wrap_err("Failed to accept client")?;
+        log::debug!("new connection from {from}");
         spawn(handle_client(Arc::clone(&shared), stream, from));
     }
 }
