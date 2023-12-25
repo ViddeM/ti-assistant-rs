@@ -2,6 +2,7 @@ import { GameOptions } from "@/api/GameOptions";
 import { PoliticsPrimaryView } from "./primary_views/PoliticsPrimaryView";
 import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { GameState } from "@/api/GameState";
+import { ImperialPrimaryView } from "./primary_views/ImperialPrimaryView";
 
 export interface StrategyCardPrimaryProps {
   gameState: GameState;
@@ -28,6 +29,14 @@ export const StrategyCardPrimary = ({
     case "Politics":
       return (
         <PoliticsPrimaryView gameState={gameState} sendMessage={sendMessage} />
+      );
+    case "Imperial":
+      return (
+        <ImperialPrimaryView
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendMessage={sendMessage}
+        />
       );
     default:
       return <p>No primary</p>;
