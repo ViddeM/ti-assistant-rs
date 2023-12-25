@@ -174,7 +174,7 @@ pub enum StrategicPrimaryAction {
     Politics { new_speaker: PlayerId },
 
     #[serde(rename_all = "camelCase")]
-    Imperial { score_objective: Objective },
+    Imperial { score_objective: Option<Objective> },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

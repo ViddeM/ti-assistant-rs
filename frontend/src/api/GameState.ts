@@ -39,6 +39,9 @@ export interface StrategicPrimaryProgress {
   Politics?: {
     newSpeaker: string;
   };
+  Imperial?: {
+    objective: string | null;
+  };
 }
 
 export interface ActionCardProgress {

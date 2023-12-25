@@ -8,8 +8,8 @@ use eyre::{bail, eyre, Context};
 use serde::{Deserialize, Serialize};
 
 use crate::data::components::{
-    action_card::ActionCard, phase::Phase, planet::Planet, strategy_card::StrategyCard,
-    system::SystemId, tech::Technology,
+    action_card::ActionCard, objectives::Objective, phase::Phase, planet::Planet,
+    strategy_card::StrategyCard, system::SystemId, tech::Technology,
 };
 
 use super::{
@@ -96,7 +96,12 @@ pub enum StrategicPrimaryProgress {
         extra: Option<Technology>,
     },
     #[serde(rename_all = "camelCase")]
-    Politics { new_speaker: PlayerId },
+    Politics {
+        new_speaker: PlayerId,
+    },
+    Imperial {
+        objective: Option<Objective>,
+    },
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

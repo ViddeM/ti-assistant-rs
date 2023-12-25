@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use chrono::{DateTime, Utc};
-use eyre::{bail, ensure, eyre};
+use eyre::{bail, ensure};
 
 use crate::{
     data::components::{
@@ -207,27 +207,25 @@ pub fn update_game_state(
                     game_state.speaker = Some(new_speaker);
                 }
                 (StrategyCard::Imperial, StrategicPrimaryAction::Imperial { score_objective }) => {
-                    let player_id = game_state.current_player()?;
-                    let player = game_state
-                        .players
-                        .get(&player_id)
-                        .ok_or(eyre!("no player state"))?;
+                    if let Some(objective) = score_objective.clone() {
+                        let Some(players) =
+                            game_state.score.revealed_objectives.get_mut(&objective)
+                        else {
+                            bail!("objective {objective:?} has not been revealed");
+                        };
 
-                    let Some(players) = game_state
-                        .score
-                        .revealed_objectives
-                        .get_mut(&score_objective)
-                    else {
-                        bail!("objective {score_objective:?} has not been revealed");
-                    };
-
-                    if !players.insert(player_id.clone()) {
-                        bail!("player {player_id:?} has already scored {score_objective:?}");
+                        if !players.insert(player.clone()) {
+                            bail!("player {player:?} has already scored {objective:?}");
+                        }
                     }
 
-                    if player.planets.contains(&Planet::MecatolRex) {
-                        let imperial_points =
-                            game_state.score.imperial.entry(player_id).or_default();
+                    progress.primary = Some(StrategicPrimaryProgress::Imperial {
+                        objective: score_objective,
+                    });
+
+                    let current_player = game_state.get_current_player()?;
+                    if current_player.planets.contains(&Planet::MecatolRex) {
+                        let imperial_points = game_state.score.imperial.entry(player).or_default();
                         *imperial_points = imperial_points.saturating_add(1);
                     }
                 }
