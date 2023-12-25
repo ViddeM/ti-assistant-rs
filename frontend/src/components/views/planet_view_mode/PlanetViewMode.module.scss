@@ -1,0 +1,60 @@
+@import "../../../resources/styles/vars.scss";
+
+.planetViewContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > :first-child {
+    margin-bottom: $marginLarge;
+  }
+}
+
+.playerPlanetCardsContainer {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (min-width: 700px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-around;
+  }
+}
+
+.playerPlanetsTableContainer {
+  padding: $padding;
+  padding-top: 0;
+  margin: $marginLarge;
+}
+
+.playerPlanetsTable {
+  width: 320px;
+  border-collapse: collapse;
+}
+
+.playerNameRow {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.borderBottomRow {
+  border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+}
+
+.unclaimPlanetButton {
+  border: none;
+  background-color: inherit;
+  color: black;
+
+  :hover {
+    color: #500000;
+  }
+}

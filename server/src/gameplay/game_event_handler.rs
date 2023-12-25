@@ -518,6 +518,20 @@ pub fn update_game_state(
                 game_state.current_turn_start_time = Some(timestamp);
             }
         }
+        Event::SetPlanetOwner { player, planet } => {
+            // Remove the planet from any player that owns it.
+            game_state.players.values_mut().for_each(|p| {
+                p.planets.remove(&planet);
+            });
+
+            if let Some(p) = player {
+                let Some(p) = game_state.players.get_mut(&p) else {
+                    bail!("Player does not exist?");
+                };
+
+                p.planets.insert(planet);
+            }
+        }
     }
 
     // TODO: maybe not recalculate this all the time?

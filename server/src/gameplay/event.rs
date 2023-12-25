@@ -161,6 +161,13 @@ pub enum Event {
     TrackTime {
         paused: bool,
     },
+
+    /// Give the planet to a specific player, removing it from the current player that owns it (if any).
+    /// If `playerId` is None, instead removes the planet from any player that owns it without giving it to anyone else.
+    SetPlanetOwner {
+        player: Option<PlayerId>,
+        planet: Planet,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
