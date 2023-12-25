@@ -15,6 +15,7 @@ import { PhaseView } from "../phase_view/PhaseView";
 import { Button } from "@/components/elements/button/Button";
 import { ScoreViewMode } from "../score_view_mode/ScoreViewMode";
 import { TechViewMode } from "../tech_view_mode/TechViewMode";
+import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
 
 const NEW_GAME_ID = "new";
 
@@ -166,14 +167,16 @@ const DisplayViewMode = ({
           sendEvent={sendEvent}
         />
       );
-    default:
+    case "Planets":
       return (
-        <p>
-          Go away, I don't want you {"view mode ("}
-          {viewMode}
-          {")???"}
-        </p>
+        <PlanetViewMode
+          gameOptions={gameOptions}
+          gameState={gameState}
+          sendEvent={sendEvent}
+        />
       );
+    default:
+      return <p>Unknown view mode ({viewMode})?</p>;
   }
 };
 
