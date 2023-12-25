@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use chrono::{DateTime, Utc};
 use eyre::{bail, ensure, eyre};
 
 use crate::{
@@ -30,7 +31,11 @@ use super::{
 const MIN_PLAYER_COUNT: usize = 3;
 const MAX_PLAYER_COUNT: usize = 8;
 
-pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(), GameError> {
+pub fn update_game_state(
+    game_state: &mut GameState,
+    event: Event,
+    timestamp: DateTime<Utc>,
+) -> Result<(), GameError> {
     match event {
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Setup)?;
@@ -49,14 +54,10 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "can't have less than {MIN_PLAYER_COUNT} players"
             );
 
+            // pick speaker at random.
             // TODO: in the future we should set this in the frontend.
-            game_state.speaker = game_state
-                .players
-                .iter()
-                .fold(None, |_, (id, _)| Some(id.clone()));
-            game_state.current_player = game_state.speaker.clone();
-            game_state.calculate_turn_order_from_speaker()?;
-            game_state.phase = Phase::Strategy;
+            game_state.speaker = game_state.players.keys().next().cloned();
+            game_state.change_phase(Phase::Strategy, timestamp)?;
         }
         Event::TakeStrategyCard { player, card } => {
             game_state.assert_phase(Phase::Strategy)?;
@@ -65,7 +66,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                 "strategy card can't be picked twice"
             );
             game_state.strategy_card_holders.insert(card, player);
-            game_state.advance_turn()?;
+            game_state.advance_turn(timestamp)?;
         }
         Event::CompleteStrategyPhase => {
             let how_many_card_must_pick = match game_state.players.len() {
@@ -78,9 +79,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
                     "can't complete strategy phase, all players have not selected strategy cards"
                 );
             }
-            game_state.calculate_action_turn_order()?;
-            game_state.current_player = game_state.turn_order.first().cloned();
-            game_state.phase = Phase::Action;
+            game_state.change_phase(Phase::Action, timestamp)?;
         }
         Event::TacticalActionBegin { player } => {
             game_state.assert_phase(Phase::Action)?;
@@ -141,7 +140,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.assert_player_turn(&player)?;
             game_state.action_progress = None;
             game_state.phase = Phase::Action;
-            game_state.advance_turn()?;
+            game_state.advance_turn(timestamp)?;
         }
         Event::StrategicActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
@@ -293,7 +292,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
             game_state.phase = Phase::Action;
             game_state.action_progress = None;
-            game_state.advance_turn()?;
+            game_state.advance_turn(timestamp)?;
         }
         Event::ActionCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
@@ -378,7 +377,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
             game_state.action_progress = None;
             game_state.phase = Phase::Action;
-            game_state.advance_turn()?;
+            game_state.advance_turn(timestamp)?;
         }
         Event::PassAction { player } => {
             game_state.assert_phase(Phase::Action)?;
@@ -396,7 +395,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             );
 
             game_state.passed_players.insert(player);
-            game_state.advance_turn()?;
+            game_state.advance_turn(timestamp)?;
         }
         Event::ScorePublicObjective { player, objective } => {
             // TODO: consider restricting to the correct phase, etc
@@ -445,14 +444,15 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.strategy_card_holders = HashMap::new();
             game_state.passed_players = HashSet::new();
             game_state.spent_strategy_cards = HashSet::new();
-            game_state.calculate_turn_order_from_speaker()?;
-            game_state.current_player = Some(game_state.speaker()?.clone());
 
             // TODO: Agenda phase
-            game_state.phase = Phase::Strategy;
+            game_state.change_phase(Phase::Strategy, timestamp)?;
+
             //if game_state.score.custodians.is_some() {
+            //    game_state.current_turn_start_time = None;
             //    game_state.phase = Phase::Agenda;
             //} else {
+            //    game_state.current_turn_start_time = Some(timestamp);
             //    game_state.phase = Phase::Strategy;
             //}
         }
@@ -466,9 +466,7 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
             game_state.assert_phase(Phase::Status)?;
             // TODO: Require 2 agendas to have been resolved
 
-            game_state.calculate_turn_order_from_speaker()?;
-            game_state.current_player = Some(game_state.speaker()?.clone());
-            game_state.phase = Phase::Strategy;
+            game_state.change_phase(Phase::Strategy, timestamp)?;
         }
         Event::GiveSupportForTheThrone { giver, receiver } => {
             let score = &mut game_state.score;
@@ -514,6 +512,14 @@ pub fn update_game_state(game_state: &mut GameState, event: Event) -> Result<(),
 
             p.technologies.remove(&tech);
         }
+        Event::TrackTime { paused } => {
+            game_state.time_tracking_paused = paused;
+            if paused {
+                game_state.commit_turn_time(timestamp)?;
+            } else if should_track_time_in(game_state.phase) {
+                game_state.current_turn_start_time = Some(timestamp);
+            }
+        }
     }
 
     // TODO: maybe not recalculate this all the time?
@@ -542,4 +548,17 @@ fn get_plagiarize_available_techs(
         .collect::<HashSet<&Technology>>();
 
     Ok(available_techs)
+}
+
+/// Returns false if we should never track time in the provided phase, true otherwise.
+fn should_track_time_in(phase: Phase) -> bool {
+    match phase {
+        Phase::Strategy
+        | Phase::Action
+        | Phase::StrategicAction
+        | Phase::TacticalAction
+        | Phase::ActionCardAction => true,
+
+        Phase::Setup | Phase::Status | Phase::Agenda => false,
+    }
 }

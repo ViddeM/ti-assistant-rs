@@ -1,3 +1,5 @@
+use chrono::Utc;
+
 use crate::{
     data::{
         common::{color::Color, faction::Faction},
@@ -109,7 +111,7 @@ pub fn play_example_game() -> Game {
     ];
 
     for event in events {
-        game.apply(event);
+        game.apply(event, Utc::now());
     }
 
     game

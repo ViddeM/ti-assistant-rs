@@ -1,6 +1,10 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    collections::{HashMap, HashSet},
+    time::Duration,
+};
 
-use eyre::{bail, eyre};
+use chrono::{DateTime, Utc};
+use eyre::{bail, eyre, Context};
 use serde::{Deserialize, Serialize};
 
 use crate::data::components::{
@@ -48,6 +52,16 @@ pub struct GameState {
     pub action_progress: Option<ActionPhaseProgress>,
 
     pub score: Score,
+
+    pub time_tracking_paused: bool,
+
+    /// Time taken by each player to complete their rounds during the action phase.
+    ///
+    /// This does not include the time taken for the current round, that will be calculated and
+    /// included when the current player ends their turn.
+    pub players_play_time: HashMap<PlayerId, Duration>,
+
+    pub current_turn_start_time: Option<DateTime<Utc>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -159,10 +173,31 @@ impl GameState {
         Ok(())
     }
 
+    /// If we're tracking turn time, save the result for the current player and return true.
+    /// Otherwise return false.
+    pub fn commit_turn_time(&mut self, timestamp: DateTime<Utc>) -> Result<bool, GameError> {
+        let current_turn_start_time = self.current_turn_start_time.take();
+
+        if let Some(turn_start_time) = current_turn_start_time {
+            let current_player = self.current_player()?;
+            let turn_time_elapsed = timestamp - turn_start_time;
+            let turn_time_elapsed = turn_time_elapsed
+                .to_std()
+                .wrap_err("turn time out of range")?;
+            *self.players_play_time.entry(current_player).or_default() += turn_time_elapsed;
+        }
+
+        Ok(current_turn_start_time.is_some())
+    }
+
     /// Advance to the next players turn, if all players have passed, advance to the next phase.
-    pub fn advance_turn(&mut self) -> Result<(), GameError> {
+    pub fn advance_turn(&mut self, timestamp: DateTime<Utc>) -> Result<(), GameError> {
         let current_player = self.current_player()?;
         let next_player = self.next_player_after(&current_player)?;
+
+        if self.commit_turn_time(timestamp)? {
+            self.current_turn_start_time = Some(timestamp);
+        }
 
         // everyone has passed, i guess. what do?
         if next_player.is_none() {
@@ -171,12 +206,48 @@ impl GameState {
                     self.calculate_action_turn_order()?;
                     self.passed_players.clear();
                     self.phase = Phase::Status;
+                    self.current_turn_start_time = None;
                 }
                 _ => bail!("wtf"),
             }
         } else {
             self.current_player = next_player;
         }
+
+        Ok(())
+    }
+
+    pub fn change_phase(
+        &mut self,
+        phase: Phase,
+        timestamp: DateTime<Utc>,
+    ) -> Result<(), GameError> {
+        self.phase = phase;
+        match phase {
+            Phase::Strategy => {
+                self.calculate_turn_order_from_speaker()?;
+            }
+            Phase::Action => {
+                self.calculate_action_turn_order()?;
+            }
+            Phase::Status => {
+                self.calculate_action_turn_order()?;
+            }
+            Phase::Agenda => {
+                self.calculate_turn_order_from_speaker()?;
+            }
+            _ => bail!(
+                "reset turn order called in unexpected phase: {:?}",
+                self.phase
+            ),
+        }
+
+        self.commit_turn_time(timestamp)?;
+        if !self.time_tracking_paused {
+            self.current_turn_start_time = Some(timestamp);
+        }
+
+        self.current_player = self.turn_order.first().cloned();
 
         Ok(())
     }

@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::gameplay::game_event_handler::update_game_state;
@@ -11,24 +12,24 @@ use super::{event::Event, game_state::GameState, player::Player};
 pub struct Game {
     pub players: Vec<Player>,
     pub current: Arc<GameState>,
-    pub history: Vec<Event>,
+    pub history: Vec<(Event, DateTime<Utc>)>,
 }
 
 impl Game {
     /// Apply an event and update the game state.
     ///
     /// If the event is not valid for the current state it is rejected.
-    pub fn apply(&mut self, event: Event) {
+    pub fn apply(&mut self, event: Event, timestamp: DateTime<Utc>) {
         log::debug!("{event:?}");
         let state = Arc::make_mut(&mut self.current);
-        if let Err(e) = update_game_state(state, event.clone()) {
+        if let Err(e) = update_game_state(state, event.clone(), timestamp) {
             log::warn!("event not valid for current state");
             log::warn!("{e}");
             return;
         }
 
         log::info!("{:#?}", self.current);
-        self.history.push(event);
+        self.history.push((event, timestamp));
     }
 
     /// Undo the last event
@@ -36,8 +37,9 @@ impl Game {
         self.history.pop();
 
         let mut state = GameState::default();
-        for event in &self.history {
-            update_game_state(&mut state, event.clone()).expect("wait... this worked before??");
+        for (event, timestamp) in &self.history {
+            update_game_state(&mut state, event.clone(), *timestamp)
+                .expect("wait... this worked before??");
         }
         self.current = Arc::new(state);
     }

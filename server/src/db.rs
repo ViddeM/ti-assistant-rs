@@ -1,6 +1,7 @@
 use std::ops::Deref;
 use std::thread;
 
+use chrono::{DateTime, Utc};
 use diesel::{
     backend::Backend,
     deserialize::FromSql,
@@ -36,6 +37,7 @@ pub struct GameEvent {
     pub id: i32,
     pub game_id: GameId,
     pub seq: i32,
+    pub timestamp: DateTime<Utc>,
     pub event: serde_json::Value,
 }
 
@@ -45,6 +47,7 @@ pub struct GameEvent {
 pub struct NewGameEvent {
     pub game_id: GameId,
     pub event: serde_json::Value,
+    pub timestamp: DateTime<Utc>,
 }
 
 impl<DB: Backend> FromSql<Text, DB> for GameId

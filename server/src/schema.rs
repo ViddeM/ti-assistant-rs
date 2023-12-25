@@ -15,6 +15,7 @@ diesel::table! {
         #[max_length = 8]
         game_id -> Bpchar,
         seq -> Int4,
+        timestamp -> Timestamptz,
         event -> Jsonb,
     }
 }
