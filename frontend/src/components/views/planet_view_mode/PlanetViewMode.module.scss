@@ -58,3 +58,13 @@
     color: #500000;
   }
 }
+
+.planetFilter {
+  width: 100%;
+  border-radius: $border-radius;
+  padding: 0 $padding;
+}
+
+.unclaimedPlanetsContainer {
+  min-height: 100vh; /* To prevent from scrolling up whenever we filter the planets list */
+}

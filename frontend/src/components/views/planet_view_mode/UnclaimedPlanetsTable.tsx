@@ -1,7 +1,8 @@
 import { GameOptions } from "@/api/GameOptions";
 import { GameState } from "@/api/GameState";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
-import React from "react";
+import React, { useState } from "react";
+import styles from "./PlanetViewMode.module.scss";
 
 export interface UnclaimedPlanetsTable {
   gameState: GameState;
@@ -14,6 +15,9 @@ export const UnclaimedPlanetsTable = ({
   gameOptions,
   sendEvent,
 }: UnclaimedPlanetsTable) => {
+  const [planetFilter, setPlanetFilter] = useState<string>("");
+  const filter = planetFilter.toLowerCase();
+
   const players = Object.keys(gameState.players).map((p) => {
     return {
       id: p,
@@ -30,47 +34,58 @@ export const UnclaimedPlanetsTable = ({
         id: p,
         ...gameOptions.planetInfos[p],
       };
-    });
+    })
+    .filter((p) => p.id.toLowerCase().includes(filter));
 
   return (
-    <div className="card">
-      <table>
-        <thead>
-          <tr>
-            <th colSpan={playerCount}>
-              <h2>Unclaimed planets</h2>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {unclaimedPlanets.map((planet) => (
-            <React.Fragment key={planet.id}>
-              <tr>
-                <th>
-                  <h4>{planet.id}</h4>
-                </th>
-              </tr>
-              <tr>
-                {players.map((player) => (
-                  <FactionButton
-                    key={player.faction}
-                    faction={player.faction}
-                    selected={false}
-                    onClick={() => {
-                      sendEvent({
-                        SetPlanetOwner: {
-                          player: player.id,
-                          planet: planet.id,
-                        },
-                      });
-                    }}
-                  />
-                ))}
-              </tr>
-            </React.Fragment>
-          ))}
-        </tbody>
-      </table>
+    <div className={styles.unclaimedPlanetsContainer}>
+      <div className="card">
+        <table>
+          <thead>
+            <tr>
+              <th colSpan={playerCount}>
+                <h2>Unclaimed planets</h2>
+              </th>
+            </tr>
+            <tr>
+              <input
+                placeholder="Filter planets"
+                value={planetFilter}
+                onChange={(e) => setPlanetFilter(e.target.value)}
+                className={styles.planetFilter}
+              />
+            </tr>
+          </thead>
+          <tbody>
+            {unclaimedPlanets.map((planet) => (
+              <React.Fragment key={planet.id}>
+                <tr>
+                  <th>
+                    <h4>{planet.id}</h4>
+                  </th>
+                </tr>
+                <tr>
+                  {players.map((player) => (
+                    <FactionButton
+                      key={player.faction}
+                      faction={player.faction}
+                      selected={false}
+                      onClick={() => {
+                        sendEvent({
+                          SetPlanetOwner: {
+                            player: player.id,
+                            planet: planet.id,
+                          },
+                        });
+                      }}
+                    />
+                  ))}
+                </tr>
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
