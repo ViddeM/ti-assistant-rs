@@ -20,33 +20,47 @@ use eyre::{eyre, Context};
 
 use crate::game_id::GameId;
 
+/// A database pool.
 pub type DbPool = Pool<AsyncPgConnection>;
 
+/// The root table for a game.
 #[derive(Queryable, Selectable, Insertable)]
 #[diesel(table_name = crate::schema::game)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Game {
+    /// A unique ID for the game.
     pub id: GameId,
+    /// The name of the game.
     pub name: String,
 }
 
+/// An event that occured in a game.
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = crate::schema::game_event)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct GameEvent {
+    /// A unique ID for the event.
     pub id: i32,
+    /// The game that this event occurred in.
     pub game_id: GameId,
+    /// When this event occurred for that game (must be unique for a particular game).
     pub seq: i32,
+    /// At what timestamp the event was taken.
     pub timestamp: DateTime<Utc>,
+    /// The event information in json format.
     pub event: serde_json::Value,
 }
 
+/// The values required to insert a new [GameEvent].
 #[derive(Insertable)]
 #[diesel(table_name = crate::schema::game_event)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct NewGameEvent {
+    /// The ID this event belongs to.
     pub game_id: GameId,
+    /// The event information in json format.
     pub event: serde_json::Value,
+    /// The timestamp at which the event occurred.
     pub timestamp: DateTime<Utc>,
 }
 
