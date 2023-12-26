@@ -5,31 +5,44 @@ use crate::{data::common::expansions::Expansion, gameplay::player::PlayerId};
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
+/// All informatioin concerning an agenda.
 #[derive(Clone, Copy, Debug, Serialize)]
 pub struct AgendaInfo {
+    /// The name of the agenda card.
     pub name: &'static str,
+    /// A description of what the agenda is about.
     pub description: &'static str,
+    /// What type of agenda this is.
     pub kind: AgendaKind,
+    /// What is to be elected for this agenda.
     pub elect: AgendaElectKind,
+    /// What expansion this agenda belongs to.
     pub origin: Expansion,
 }
 
+/// The type of agenda this is.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum AgendaKind {
+    /// A law that will either be enacted or denied.
     Law,
+    /// A directive for an action to be taken.
     Directive,
 }
 
+/// A vote type where players can either vote For or Against.
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[allow(missing_docs)]
 pub enum ForOrAgainst {
     For,
     Against,
 }
 
+/// What is to be elected for an agenda.
 #[derive(Clone, Debug, Serialize, Deserialize, EnumDiscriminants)]
 #[strum_discriminants(name(AgendaElectKind))]
 #[strum_discriminants(derive(PartialOrd, Ord, Hash, Serialize, Deserialize))]
 pub enum AgendaElect {
+    /// Select either a for or against alternative.
     ForOrAgainst(ForOrAgainst),
 
     /// Elect a player.
@@ -60,9 +73,11 @@ pub enum AgendaElect {
     IndustrialPlanet(Planet),
 }
 
+/// An agenda in the game.
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumIter,
 )]
+#[allow(missing_docs)]
 pub enum Agenda {
     // Base-game laws
     AntiIntellectualRevolution,
@@ -137,6 +152,7 @@ pub enum Agenda {
 }
 
 impl Agenda {
+    /// Get the agenda info for this agenda.
     pub fn info(&self) -> AgendaInfo {
         macro_rules! info {
             ($ident:ident, $name:literal, $kind:ident, $elect:ident, $origin:ident) => {

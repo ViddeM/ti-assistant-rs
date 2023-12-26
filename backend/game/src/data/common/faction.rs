@@ -11,7 +11,9 @@ use crate::data::components::{
 
 use super::expansions::Expansion;
 
+/// A playable faction in the game.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter)]
+#[allow(missing_docs)]
 pub enum Faction {
     // Vanilla
     Arborec,
@@ -44,6 +46,7 @@ pub enum Faction {
 }
 
 impl Faction {
+    /// Returns which expansion the faction belongs to.
     pub fn expansion(&self) -> Expansion {
         match self {
             Faction::Arborec => Expansion::Base,
@@ -74,6 +77,7 @@ impl Faction {
         }
     }
 
+    /// Returns the name of the faction in 'pretty' format.
     pub fn name(&self) -> String {
         String::from(match self {
             Faction::Arborec => "The Arborec",
@@ -104,6 +108,7 @@ impl Faction {
         })
     }
 
+    /// Returns a set of the planets the faction starts with.
     pub fn get_starting_planets(&self) -> HashSet<Planet> {
         // TODO: Handle Council Keleres (they get to chose one from the Mentak/XXcha/Argent Flights starting systems)
         systems()
@@ -117,6 +122,7 @@ impl Faction {
             .collect()
     }
 
+    /// Returns a set of the technologies the faction starts with.
     pub fn get_starting_techs(&self) -> HashSet<Technology> {
         match self {
             Faction::Arborec => vec![Technology::MagenDefenceGrid],

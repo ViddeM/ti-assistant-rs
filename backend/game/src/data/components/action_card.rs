@@ -5,7 +5,9 @@ use crate::data::common::expansions::Expansion;
 
 use super::phase::Phase;
 
+/// An action card.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[allow(missing_docs)]
 pub enum ActionCard {
     /* Base */
     AncientBurialSites,
@@ -105,7 +107,9 @@ pub enum ActionCard {
     Waylay,
 }
 
+/// When an action card can be played.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[allow(missing_docs)]
 pub enum ActionCardPlay {
     StartOfPhase(Phase),
     Agenda(AgendaStagePlay),
@@ -116,7 +120,9 @@ pub enum ActionCardPlay {
     NotImplemented,
 }
 
+/// When, during the agenda phase, an action card can be played.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[allow(missing_docs)]
 pub enum AgendaStagePlay {
     WhenReveal,
     AfterReveal,
@@ -126,15 +132,24 @@ pub enum AgendaStagePlay {
     WhenOutcomeResolve,
 }
 
+/// All relevant information for an action card.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ActionCardInfo {
+    /// Which action card this is in regards to.
     pub card: ActionCard,
+    /// The 'pretty' name of the action card.
     pub name: String,
+    /// Which expansion the action card came from.
     pub expansion: Expansion,
+    /// How many copies of the action card that exists in the action card deck.
     pub num_in_deck: usize,
+    /// Human readable text for when the action card can be played.
     pub play_text: String,
+    /// When the action card can be played.
     pub play: ActionCardPlay,
+    /// What effect happens when the action card can be played in human readable format.
     pub effect: String,
+    /// The flavor text of the action card.
     pub flavor_text: String,
 }
 
@@ -167,6 +182,7 @@ macro_rules! ai {
 }
 
 impl ActionCard {
+    /// Returns the [ActionCardInfo] for the action card.
     pub fn info(&self) -> ActionCardInfo {
         match self {
             ActionCard::AncientBurialSites => ai!(

@@ -1,4 +1,6 @@
+/// Public objectives.
 pub mod public;
+/// Secret objectives.
 pub mod secret;
 
 use serde::{Deserialize, Serialize};
@@ -7,13 +9,17 @@ use self::{public::PublicObjective, secret::SecretObjective};
 
 use super::phase::Phase;
 
+/// An objective in the game.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
 #[serde(untagged)] // crimes
 pub enum Objective {
+    /// A public objective.
     Public(PublicObjective),
+    /// A secret objective.
     Secret(SecretObjective),
 }
 
+/// All relevant information about an objective.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ObjectiveInfo {
@@ -23,24 +29,30 @@ pub struct ObjectiveInfo {
     /// Requirements to achieve the objective.
     pub condition: String,
 
-    //// Is this a stage I, II, or secret objective?
+    /// Is this a stage I, II, or secret objective?
     pub kind: ObjectiveKind,
 
-    //// How many points are given by this objective
+    /// How many points are given by this objective.
     pub points: i8,
 }
 
+/// What type of objective this is.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ObjectiveKind {
+    /// A stage I objective.
     StageI,
+    /// A stage II objective.
     StageII,
+    /// A secret objective.
     #[serde(rename_all = "camelCase")]
     Secret {
+        /// The [Phase] that this secret can be played in.
         phase: Phase,
     },
 }
 
 impl Objective {
+    /// Get the [ObjectiveInfo] for this objective.
     pub fn get_objective_info(&self) -> ObjectiveInfo {
         match self {
             Objective::Public(o) => o.get_objective_info(),

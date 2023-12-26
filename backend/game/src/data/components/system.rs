@@ -7,7 +7,9 @@ use crate::data::common::faction::Faction;
 
 use super::planet::Planet;
 
+/// What type of wormhole this is.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(missing_docs)]
 pub enum WormHoleType {
     Alpha,
     Beta,
@@ -15,7 +17,9 @@ pub enum WormHoleType {
     Delta,
 }
 
+/// A type of system.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(missing_docs)]
 pub enum SystemType {
     Anomaly(AnomalyType),
     Hyperlane,
@@ -23,7 +27,9 @@ pub enum SystemType {
     HomeSystem(Faction),
 }
 
+/// A type of anomaly.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[allow(missing_docs)]
 pub enum AnomalyType {
     AsteroidField,
     Nebula,
@@ -32,18 +38,25 @@ pub enum AnomalyType {
     GravityRift,
 }
 
+/// The ID for a system.
 pub type SystemId = String;
 
+/// A system.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct System {
+    /// A unique id for the system.
     pub id: SystemId,
+    /// What type of system this is.
     pub system_type: SystemType,
+    /// Which planets exist in this system.
     pub planets: Vec<Planet>,
+    /// What wormhole types exists in this system.
     pub wormholes: Vec<WormHoleType>,
 }
 
 impl System {
+    /// Returns the system that the provide planet belongs to.
     pub fn for_planet(planet: &Planet) -> Result<Self, eyre::Error> {
         let systems = systems()
             .values()
@@ -96,6 +109,7 @@ macro_rules! s {
     };
 }
 
+/// Returns a map of from System ID to System for all the systems in the game.
 pub fn systems() -> HashMap<String, System> {
     HashMap::from([
         s!(

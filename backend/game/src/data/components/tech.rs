@@ -5,7 +5,9 @@ use strum_macros::EnumIter;
 
 use crate::data::common::faction::Faction;
 
+/// What category the tech belongs to.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[allow(missing_docs)]
 pub enum TechCategory {
     Biotic,
     Propulsion,
@@ -13,19 +15,25 @@ pub enum TechCategory {
     Warfare,
 }
 
+/// What type of tech this is.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[allow(missing_docs)]
 pub enum TechType {
     Category(TechCategory),
     UnitUpgrade,
 }
 
+/// Weather the game is general or faction specific.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[allow(missing_docs)]
 pub enum TechOrigin {
     Base,
     Faction(Faction),
 }
 
+/// Technologies in the game.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[allow(missing_docs)]
 pub enum Technology {
     // Biotic
     NeuralMotivator,
@@ -120,11 +128,15 @@ pub enum Technology {
     ValkyrieParticleWeave,
 }
 
+/// All relevant information about a tech.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct TechInfo {
+    /// What type of tech this is.
     pub tech_type: TechType,
+    /// Weather the tech is general or belongs to a faction.
     pub origin: TechOrigin,
+    /// What requirements there are for the technology.
     pub requirements: HashMap<TechCategory, u32>,
 }
 
@@ -148,6 +160,7 @@ macro_rules! tr {
 }
 
 impl Technology {
+    /// Returns the [TechInfo] for this technology.
     pub fn info(&self) -> TechInfo {
         match self {
             Technology::NeuralMotivator => t!(

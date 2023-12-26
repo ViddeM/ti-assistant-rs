@@ -11,31 +11,44 @@ use crate::data::{
 use super::error::GameError;
 
 // TODO: maybe make this be not a string...
+/// A (per-game) unique ID for a player.
 pub type PlayerId = Arc<str>;
 
+/// A new player that is currently being created.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NewPlayer {
+    /// The name of the player.
     pub name: String,
+    /// Which faction the player is playing.
     pub faction: Faction,
+    /// Which color the player has.
     pub color: Color,
 }
 
+/// A player in a running game.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Player {
+    /// The name of the player.
     pub name: String,
+    /// Which faction the player is playing.
     pub faction: Faction,
+    /// Which color the player has.
     pub color: Color,
+    /// Which planets the player controls.
     pub planets: HashSet<Planet>,
+    /// Which technologies the player has.
     pub technologies: HashSet<Technology>,
 }
 
 impl Player {
+    /// Remove a planet from the players planet list.
     pub fn remove_planet(&mut self, planet: &Planet) {
         self.planets.remove(planet);
     }
 
+    /// Add a technology to the players technologie list.
     pub fn take_tech(&mut self, tech: Technology) -> Result<(), GameError> {
         ensure!(
             !self.has_tech(&tech),
@@ -45,6 +58,7 @@ impl Player {
         Ok(())
     }
 
+    /// Returns true if the player currently has the technology.
     pub fn has_tech(&self, tech: &Technology) -> bool {
         self.technologies.contains(tech)
     }

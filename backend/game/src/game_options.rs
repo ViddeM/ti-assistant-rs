@@ -20,19 +20,31 @@ const MAX_PLAYER_COUNT: u32 = 8;
 const MIN_SCORE: u32 = 4;
 const MAX_SCORE: u32 = 20;
 
+/// All information that is static for a game of TI4.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameOptions {
+    /// What numbers of players are allowed for the game.
     player_counts: Vec<u32>,
+    /// The minimum score required to win a game.
     min_score: u32,
+    /// The maximum score required to win a game.
     max_score: u32,
+    /// What colors players are allowed to have.
     colors: Vec<Color>,
+    /// What factions exist within the game.
     factions: Vec<FactionResponse>,
+    /// What systems exists in the game.
     systems: Vec<System>,
+    /// What technologies exist in the game.
     technologies: HashMap<Technology, TechInfo>,
+    /// What planets exist in the game.
     planet_infos: HashMap<Planet, PlanetInfo>,
+    /// What objectives exist in the game.
     objectives: HashMap<Objective, ObjectiveInfo>,
+    /// What action cards exist in the game.
     action_cards: HashMap<ActionCard, ActionCardInfo>,
+    /// What agendas exist in the game.
     agendas: HashMap<Agenda, AgendaInfo>,
 }
 
@@ -72,9 +84,12 @@ impl Default for GameOptions {
     }
 }
 
+/// A faction in the game.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FactionResponse {
+    /// The faction ID.
     faction: Faction,
+    /// The name of the faction in 'pretty' format.
     name: String,
 }

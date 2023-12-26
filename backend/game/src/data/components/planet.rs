@@ -3,19 +3,26 @@ use strum_macros::EnumIter;
 
 use super::tech::TechCategory;
 
+/// A planetary trait.
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[allow(missing_docs)]
 pub enum PlanetTrait {
     Cultural,
     Hazardous,
     Industrial,
 }
 
+/// All relevant information for a planet.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PlanetInfo {
+    /// Which, if any, planet trait the planet has.
     planet_trait: Option<PlanetTrait>,
+    /// Which, if any, technology bonus the planet has.
     tech_speciality: Option<TechCategory>,
+    /// How many resources the planet has.
     resources: u32,
+    /// How much influence the planet provides.
     influence: u32,
 }
 
@@ -30,7 +37,9 @@ macro_rules! p {
     };
 }
 
+/// A planet
 #[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, Hash)]
+#[allow(missing_docs)]
 pub enum Planet {
     Nestphar,
     ArcPrime,
@@ -134,6 +143,7 @@ pub enum Planet {
 }
 
 impl Planet {
+    /// Returns the [PlanetInfo] for this planet.
     pub fn planet_info(&self) -> PlanetInfo {
         match self {
             Planet::Nestphar => p!(None, None, 3, 2),
