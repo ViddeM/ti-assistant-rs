@@ -21,6 +21,7 @@ use std::{
 pub struct GameId([u8; 8]);
 
 impl GameId {
+    /// Generate a new random game ID.
     pub fn random() -> Self {
         let id: u32 = random();
         id.into()
