@@ -2,10 +2,10 @@ use std::sync::Arc;
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
+use ti_helper_db::game_id::GameId;
+use ti_helper_game::{
     game_options::GameOptions,
     gameplay::{event::Event, game_state::GameState},
-    lobby::GameId,
 };
 
 #[derive(Debug, Clone, Deserialize)]

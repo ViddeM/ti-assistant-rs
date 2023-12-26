@@ -2,16 +2,11 @@ use diesel::{deserialize::FromSqlRow, expression::AsExpression};
 use rand::random;
 use serde::{de::Error, Deserialize, Serialize};
 use std::{
-    collections::HashMap,
     fmt::Debug,
     io::Write,
     ops::Deref,
     str::{self, FromStr},
-    sync::Arc,
 };
-use tokio::sync::{broadcast, RwLock};
-
-use crate::gameplay::{game::Game, game_state::GameState};
 
 /// A game ID, which is always an 8 character hexadecimal string.
 ///
@@ -24,19 +19,6 @@ use crate::gameplay::{game::Game, game_state::GameState};
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, AsExpression, FromSqlRow)]
 #[diesel(sql_type = diesel::sql_types::Text)]
 pub struct GameId([u8; 8]);
-
-#[derive(Default)]
-pub struct Lobbies {
-    pub list: RwLock<HashMap<GameId, Arc<RwLock<Lobby>>>>,
-}
-
-pub struct Lobby {
-    /// The Game State
-    pub game: Game,
-
-    /// Broadcaster to send GameState updates to all websocket clients.
-    pub state_updates: broadcast::Sender<Arc<GameState>>,
-}
 
 impl GameId {
     pub fn random() -> Self {
@@ -81,15 +63,6 @@ impl From<u32> for GameId {
     }
 }
 
-impl Lobby {
-    pub fn new(game: Game) -> Arc<RwLock<Self>> {
-        Arc::new(RwLock::new(Self {
-            game,
-            state_updates: broadcast::channel(100).0,
-        }))
-    }
-}
-
 impl Serialize for GameId {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -113,9 +86,4 @@ impl Debug for GameId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.deref().fmt(f)
     }
-}
-
-pub fn generate_game_name(_id: GameId) -> String {
-    // TODO
-    "Funny Game".into()
 }
