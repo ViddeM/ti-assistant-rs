@@ -6,6 +6,7 @@ use eyre::{bail, ensure};
 use crate::{
     data::components::{
         action_card::{ActionCard, ActionCardPlay},
+        agenda::AgendaElectKind,
         objectives::Objective,
         phase::Phase,
         planet::Planet,
@@ -14,6 +15,7 @@ use crate::{
         tech::{TechOrigin, TechType, Technology},
     },
     gameplay::{
+        agenda::VoteState,
         event::{action_matches_action_card, StrategicPrimaryAction, StrategicSecondaryAction},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
@@ -444,26 +446,83 @@ pub fn update_game_state(
             game_state.passed_players = HashSet::new();
             game_state.spent_strategy_cards = HashSet::new();
 
-            // TODO: Agenda phase
-            game_state.change_phase(Phase::Strategy, timestamp)?;
+            if game_state.score.custodians.is_some() {
+                game_state.change_phase(Phase::Agenda, timestamp)?;
+            } else {
+                game_state.change_phase(Phase::Strategy, timestamp)?;
+            }
+        }
+        Event::RevealAgenda { agenda } => {
+            game_state.assert_phase(Phase::Agenda)?;
+            let vote = VoteState::new(agenda, game_state)?;
+            let Some(state) = &mut game_state.agenda else {
+                bail!("agenda state not initialized, this is a bug.");
+            };
+            ensure!(state.round <= 2, "there are only 2 rounds of agenda");
+            ensure!(state.vote.is_none(), "an agenda is already revealed");
 
-            //if game_state.score.custodians.is_some() {
-            //    game_state.current_turn_start_time = None;
-            //    game_state.phase = Phase::Agenda;
-            //} else {
-            //    game_state.current_turn_start_time = Some(timestamp);
-            //    game_state.phase = Phase::Strategy;
-            //}
+            state.vote = Some(vote);
         }
-        Event::RevealAgenda { agenda: _ } => {
-            todo!("implement RevealAgenda")
+        Event::VetoAgenda => {
+            game_state.assert_phase(Phase::Agenda)?;
+            let Some(state) = &mut game_state.agenda else {
+                bail!("agenda state not initialized, this is a bug.");
+            };
+            ensure!(state.vote.is_some(), "no agenda is revealed");
+            state.vote = None;
         }
-        Event::ResolveAgenda { outcome: _ } => {
-            todo!("implement ResolveAgenda")
+        Event::CastAgendaVote {
+            player,
+            outcome,
+            votes,
+        } => {
+            game_state.assert_phase(Phase::Agenda)?;
+            let Some(state) = &mut game_state.agenda else {
+                bail!("agenda state not initialized, this is a bug.");
+            };
+
+            let Some(vote) = &mut state.vote else {
+                bail!("no agenda has been revealed yet");
+            };
+
+            if let Some(outcome) = outcome {
+                let kind = AgendaElectKind::from(&outcome);
+                ensure!(
+                    kind == vote.elect,
+                    "invalid vote kind, expected {:?}",
+                    vote.elect
+                );
+
+                vote.player_votes.insert(player, (votes, outcome));
+            } else {
+                vote.player_votes.remove(&player);
+            }
+            vote.tally_votes();
+        }
+        Event::ResolveAgenda { outcome } => {
+            game_state.assert_phase(Phase::Agenda)?;
+            let Some(state) = &mut game_state.agenda else {
+                bail!("agenda state not initialized, this is a bug.");
+            };
+            let Some(_vote) = &state.vote else {
+                bail!("no agenda has been revealed yet");
+            };
+            match state.round {
+                1 | 2 => state.round += 1,
+                0 | 3.. => bail!("invalid agenda round, this is a bug"),
+            }
+
+            // TODO: log the outcome of the vote
+            // TODO: resolve any vote effects such as VPs or techs
+            let _ = state.vote.take();
+            let _ = outcome;
         }
         Event::CompleteAgendaPhase => {
             game_state.assert_phase(Phase::Status)?;
-            // TODO: Require 2 agendas to have been resolved
+            let Some(state) = &mut game_state.agenda else {
+                bail!("agenda state not initialized, this is a bug.");
+            };
+            ensure!(state.round == 3, "need to complete 2 agenda rounds first");
 
             game_state.change_phase(Phase::Strategy, timestamp)?;
         }

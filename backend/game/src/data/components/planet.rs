@@ -4,7 +4,7 @@ use strum_macros::EnumIter;
 use super::tech::TechCategory;
 
 /// A planetary trait.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[allow(missing_docs)]
 pub enum PlanetTrait {
     Cultural,
@@ -17,13 +17,13 @@ pub enum PlanetTrait {
 #[serde(rename_all = "camelCase")]
 pub struct PlanetInfo {
     /// Which, if any, planet trait the planet has.
-    planet_trait: Option<PlanetTrait>,
+    pub planet_trait: Option<PlanetTrait>,
     /// Which, if any, technology bonus the planet has.
-    tech_speciality: Option<TechCategory>,
+    pub tech_speciality: Option<TechCategory>,
     /// How many resources the planet has.
-    resources: u32,
+    pub resources: u32,
     /// How much influence the planet provides.
-    influence: u32,
+    pub influence: u32,
 }
 
 macro_rules! p {
@@ -38,7 +38,7 @@ macro_rules! p {
 }
 
 /// A planet
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[allow(missing_docs)]
 pub enum Planet {
     Nestphar,

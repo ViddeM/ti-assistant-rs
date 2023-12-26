@@ -1,7 +1,10 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::EnumIter;
 
 /// A strategy card.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(
+    Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumIter,
+)]
 #[allow(missing_docs)]
 pub enum StrategyCard {
     Leadership,
