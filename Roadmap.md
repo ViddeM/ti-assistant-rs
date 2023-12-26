@@ -9,6 +9,7 @@
 ### Gameplay
  - [x] Planets
    - [x] Resource Tracking
+   - [ ] Planet attachments (PoK)
  - [ ] Score
    - [ ] Objectives (Stage I and II)
    - [ ] Custodians (Mecatroll rex)
@@ -29,7 +30,16 @@
  - [ ] Action cards
    - [x] Actions
    - [ ] Other relevant ones
- - [ ] Time spent / player
+ - [ ] Time tracking
+   - [x] Time spent / player
+   - [ ] Time spent / phase
+ - [ ] Agenda Phase
+   - [ ] Reveal Objectives
+   - [ ] Vote on Objectives
+   - [ ] Speaker tiebreak
+   - [ ] Secret objective scoring
+   - [ ] Track laws in play
+   - [ ] VPs from laws
  - [ ] Relics
  - [ ] Separation between base/PoK/codexes
  - [x] Strategy cards (speaker handling etc)
