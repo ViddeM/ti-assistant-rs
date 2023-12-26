@@ -12,12 +12,16 @@ use tokio::sync::mpsc::{Receiver, Sender};
 use tokio::sync::{mpsc, oneshot};
 use tokio_tungstenite::tungstenite::Message;
 
+/// A connected websocket client.
 pub struct WsClient {
+    /// The stream to send information to the client.
     sender: MessageSender,
+    /// The stream to receive information from the client.
     receiver: Receiver<eyre::Result<String>>,
 }
 
 impl WsClient {
+    /// Initiate a new [WsClient] from the provided [TcpStream].
     pub async fn accept(stream: TcpStream) -> eyre::Result<Self> {
         let ws = tokio_tungstenite::accept_async(stream)
             .await
