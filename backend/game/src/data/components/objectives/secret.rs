@@ -15,7 +15,9 @@ macro_rules! s {
 }
 
 /// A secret objective.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq, PartialOrd, Ord, EnumIter,
+)]
 #[allow(missing_docs)]
 pub enum SecretObjective {
     // Action phase base cards

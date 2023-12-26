@@ -30,7 +30,7 @@ pub enum AgendaKind {
 }
 
 /// A vote type where players can either vote For or Against.
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Serialize, Deserialize)]
 #[allow(missing_docs)]
 pub enum ForOrAgainst {
     For,
@@ -38,7 +38,9 @@ pub enum ForOrAgainst {
 }
 
 /// What is to be elected for an agenda.
-#[derive(Clone, Debug, Serialize, Deserialize, EnumDiscriminants)]
+#[derive(
+    Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumDiscriminants,
+)]
 #[strum_discriminants(name(AgendaElectKind))]
 #[strum_discriminants(derive(PartialOrd, Ord, Hash, Serialize, Deserialize))]
 pub enum AgendaElect {
