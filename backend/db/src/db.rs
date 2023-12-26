@@ -18,7 +18,7 @@ use diesel_async::{
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use eyre::{eyre, Context};
 
-use crate::lobby::GameId;
+use crate::game_id::GameId;
 
 pub type DbPool = Pool<AsyncPgConnection>;
 

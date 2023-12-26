@@ -1,0 +1,33 @@
+[package]
+name = "ti-assistant-server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde = { version = "1", features = ["derive", "rc"] }
+serde_json = "1"
+chrono = { version = "0.4.31", features = ["serde"] }
+clap = { version = "4.4.7", features = ["derive", "env"] }
+diesel = { version = "2.1.3", features = ["serde_json", "chrono"] }
+diesel-async = { version = "0.4.1", features = ["postgres", "deadpool", "async-connection-wrapper"] }
+dotenvy = "0.15.7"
+eyre = "0.6.8"
+color-eyre = "0.6.2"
+tokio = { version = "1.28", features = ["full"] }
+log = "0.4.20"
+pretty_env_logger = "0.5.0"
+cron = "0.12.0"
+
+[dependencies.ti_helper_game]
+path = "../game"
+
+
+[dependencies.ti_helper_db]
+path = "../db"
+
+
+[dependencies.ti_helper_websocket]
+path = "../websocket"
+
