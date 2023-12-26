@@ -1,4 +1,8 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    borrow::Borrow,
+    collections::{HashMap, HashSet},
+    ops::Deref,
+};
 
 use chrono::{DateTime, Utc};
 use eyre::{bail, ensure};
@@ -519,18 +523,25 @@ pub fn update_game_state(
             }
         }
         Event::SetPlanetOwner { player, planet } => {
-            // Remove the planet from any player that owns it.
-            game_state.players.values_mut().for_each(|p| {
-                p.planets.remove(&planet);
-            });
-
-            if let Some(p) = player {
-                let Some(p) = game_state.players.get_mut(&p) else {
-                    bail!("Player does not exist?");
+            // Give the planet to the new owner.
+            if let Some(p) = &player {
+                let Some(player) = game_state.players.get_mut(p) else {
+                    bail!("Player does not exist?")
                 };
-
-                p.planets.insert(planet);
+                player.planets.insert(planet.clone());
             }
+
+            // Remove the planet from any player that owns it (that isn't the new owner).
+            game_state
+                .players
+                .iter_mut()
+                .filter(|(id, _)| match &player {
+                    Some(new_owner) => id != &new_owner,
+                    None => true,
+                })
+                .for_each(|(_, p)| {
+                    p.planets.remove(&planet);
+                });
         }
     }
 
