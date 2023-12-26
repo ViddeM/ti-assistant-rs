@@ -213,6 +213,7 @@ const PlagiarizeView = ({
           .filter((p) => p !== gameState.currentPlayer)
           .map((player) => (
             <PlagiarizePlayerRow
+              key={player}
               player={player}
               selectedPlayer={selectedPlayer}
               selectedTech={selectedTech}
