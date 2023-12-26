@@ -16,7 +16,9 @@ macro_rules! o {
     };
 }
 
+/// A public objective.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[allow(missing_docs)]
 pub enum PublicObjective {
     // Base 1 point objectives
     CornerTheMarket,
@@ -68,6 +70,7 @@ pub enum PublicObjective {
 }
 
 impl PublicObjective {
+    /// Get the [ObjectiveInfo] for this public objective.
     pub fn get_objective_info(&self) -> ObjectiveInfo {
         match self {
             PublicObjective::CornerTheMarket => o!(

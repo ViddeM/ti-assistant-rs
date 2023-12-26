@@ -14,7 +14,9 @@ macro_rules! s {
     };
 }
 
+/// A secret objective.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[allow(missing_docs)]
 pub enum SecretObjective {
     // Action phase base cards
     DestroyTheirGreatestShip,
@@ -65,6 +67,7 @@ pub enum SecretObjective {
 
 // TODO: Look over codex updates for these.
 impl SecretObjective {
+    /// Get the [ObjectiveInfo] for this secret objective.
     pub fn get_objective_info(&self) -> ObjectiveInfo {
         match self {
             SecretObjective::DestroyTheirGreatestShip => s!(

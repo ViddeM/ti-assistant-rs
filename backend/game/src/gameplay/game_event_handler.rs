@@ -31,6 +31,7 @@ use super::{
 const MIN_PLAYER_COUNT: usize = 3;
 const MAX_PLAYER_COUNT: usize = 8;
 
+/// Update the game_state with the provided event, using the timestamp for time-keeping purposes.
 pub fn update_game_state(
     game_state: &mut GameState,
     event: Event,
@@ -470,9 +471,6 @@ pub fn update_game_state(
             let score = &mut game_state.score;
             score.support_for_the_throne.insert(giver, receiver);
         }
-        Event::SetExtraPoints { player, value } => {
-            game_state.score.extra_points.insert(player, value);
-        }
         Event::AddExtraPoints { player, value } => {
             let extra = game_state.score.extra_points.entry(player).or_default();
             *extra = extra.saturating_add(value);
@@ -536,7 +534,7 @@ pub fn update_game_state(
                     None => true,
                 })
                 .for_each(|(_, p)| {
-                    p.planets.remove(&planet);
+                    p.remove_planet(&planet);
                 });
         }
     }

@@ -7,11 +7,15 @@ use crate::gameplay::game_event_handler::update_game_state;
 
 use super::{event::Event, game_state::GameState, player::Player};
 
+/// A game.
 #[derive(Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
+    /// The players in the game.
     pub players: Vec<Player>,
+    /// The current game state.
     pub current: Arc<GameState>,
+    /// What events have occurred and when this far in the game.
     pub history: Vec<(Event, DateTime<Utc>)>,
 }
 

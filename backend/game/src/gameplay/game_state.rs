@@ -18,6 +18,7 @@ use super::{
     score::Score,
 };
 
+/// A snapshot of the game state.
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameState {
@@ -48,11 +49,13 @@ pub struct GameState {
     /// Which players have passed this phase.
     pub passed_players: HashSet<PlayerId>,
 
-    /// Tracks progress of a strategy card action.
+    /// Tracks progress of the current action (if any) that is being taken.
     pub action_progress: Option<ActionPhaseProgress>,
 
+    /// All things that concern scoring for the game.
     pub score: Score,
 
+    /// Weather or not time should be tracked.
     pub time_tracking_paused: bool,
 
     /// Time taken by each player to complete their rounds during the action phase.
@@ -61,50 +64,71 @@ pub struct GameState {
     /// included when the current player ends their turn.
     pub players_play_time: HashMap<PlayerId, Duration>,
 
+    /// When the current player started their turn.
     pub current_turn_start_time: Option<DateTime<Utc>>,
 }
 
+/// The current progress of an action-phase action.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum ActionPhaseProgress {
+    /// The progress of a strategy card.
     Strategic(StrategicProgress),
+    /// The progress of a tactical action.
     Tactical(TacticalProgress),
+    /// The progress of an action card.
     ActionCard(ActionCardProgress),
 }
 
 impl ActionPhaseProgress {
+    /// Weather the progress is for a strategy card.
     pub fn is_strategy_card(&self) -> bool {
         matches!(self, ActionPhaseProgress::Strategic(_))
     }
 
+    /// Weather the progress is for a tactical action.
     pub fn is_tactical(&self) -> bool {
         matches!(self, ActionPhaseProgress::Tactical(_))
     }
 }
 
+/// Progress of a strategy card.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct StrategicProgress {
+    /// The strategy card being played.
     pub card: StrategyCard,
+    /// What, if any, progress has been made for the primary part of the strategy card.
     pub primary: Option<StrategicPrimaryProgress>,
+    /// What secondary actions other players have taken.
     pub other_players: HashMap<PlayerId, StrategicSecondaryProgress>,
 }
 
+/// The progress of the primary section of a strategy card.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum StrategicPrimaryProgress {
+    /// Primary progress for the technology strategy card.
     Technology {
+        /// What main technology was taken.
         tech: Technology,
+        /// What, if any, extra tech was taken (and paid for).
         extra: Option<Technology>,
     },
+    /// Primary progress for the politics strategy card.
     #[serde(rename_all = "camelCase")]
     Politics {
+        /// Who the new speaker should be.
         new_speaker: PlayerId,
     },
+    /// Primary progress for the imperial strategy card.
     Imperial {
+        /// What objective, if any, was scored.
         objective: Option<Objective>,
     },
 }
 
+/// The progress of the secondary portion of a strategy card.
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[allow(missing_docs)]
 pub enum StrategicSecondaryProgress {
     Leadership,
     Diplomacy,
@@ -112,15 +136,21 @@ pub enum StrategicSecondaryProgress {
     Construction,
     Trade,
     Warfare,
-    Technology { tech: Technology },
+    Technology {
+        /// What tech was taken.
+        tech: Technology,
+    },
     Imperial,
     Skipped,
 }
 
+/// Progress during a tactical action.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TacticalProgress {
+    /// What system was activated, if any.
     pub activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
+    /// Which planets have been taken this far.
     pub taken_planets: Vec<Planet>,
 }
 
@@ -134,20 +164,16 @@ impl TacticalProgress {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct StrategyCardProgress {
-    pub card: StrategyCard,
-    pub other_players: HashMap<PlayerId, bool>,
-}
-
+/// The progress of an action card being played.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ActionCardProgress {
+    /// Which card is being played.
     pub card: ActionCard,
 }
 
 impl GameState {
+    /// Update the turn order according to initiative order.
     pub fn calculate_action_turn_order(&mut self) -> Result<(), GameError> {
         self.turn_order = self.table_order.clone();
 
@@ -163,6 +189,7 @@ impl GameState {
         Ok(())
     }
 
+    /// Update the turn order according to table-order, starting with the speaker.
     pub fn calculate_turn_order_from_speaker(&mut self) -> Result<(), GameError> {
         let speaker = self.speaker()?;
         let speaker_index = self
@@ -222,6 +249,7 @@ impl GameState {
         Ok(())
     }
 
+    /// Set the phase to the provided `phase` and update turn order accordingly.
     pub fn change_phase(
         &mut self,
         phase: Phase,
@@ -257,6 +285,7 @@ impl GameState {
         Ok(())
     }
 
+    /// Returns the player after the provided player.
     pub fn next_player_after(&self, after: &PlayerId) -> Result<Option<PlayerId>, GameError> {
         let next_player = self
             .turn_order
@@ -270,14 +299,17 @@ impl GameState {
         Ok(next_player)
     }
 
+    /// Returns the current players [PlyerId].
     pub fn current_player(&self) -> Result<PlayerId, GameError> {
         self.current_player.clone().ok_or(eyre!("no active player"))
     }
 
+    /// Returns the current speaker.
     pub fn speaker(&self) -> Result<&PlayerId, GameError> {
         self.speaker.as_ref().ok_or(eyre!("No speaker"))
     }
 
+    /// Asserts that the provided player is the currently active player.
     pub fn assert_player_turn(&self, player: &PlayerId) -> Result<(), GameError> {
         let current_player = self.current_player()?;
         if &current_player != player {
@@ -287,6 +319,7 @@ impl GameState {
         Ok(())
     }
 
+    /// Assert that the provided phase is the current phase.
     pub fn assert_phase(&self, phase: Phase) -> Result<(), GameError> {
         if self.phase != phase {
             bail!(
@@ -297,6 +330,7 @@ impl GameState {
         Ok(())
     }
 
+    /// Get a mutable reference to the currently active player.
     pub fn get_current_player(&mut self) -> Result<&mut Player, GameError> {
         let current_player_id = match self.current_player.as_ref() {
             Some(p) => p,

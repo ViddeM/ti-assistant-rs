@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+/// A strategy card.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[allow(missing_docs)]
 pub enum StrategyCard {
     Leadership,
     Diplomacy,
@@ -13,6 +15,7 @@ pub enum StrategyCard {
 }
 
 impl StrategyCard {
+    /// What initiative this strategy card has.
     pub fn card_number(&self) -> u8 {
         match self {
             StrategyCard::Leadership => 1,
