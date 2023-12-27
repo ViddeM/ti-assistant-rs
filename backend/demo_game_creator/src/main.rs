@@ -47,6 +47,7 @@ pub async fn main() -> eyre::Result<()> {
         .await
         .wrap_err("failed to set up database pool")?;
 
+    // Check that the game exists.
     let _game = queries::get_game_by_id(&db_pool, &opt.game_id)
         .await
         .wrap_err_with(|| {

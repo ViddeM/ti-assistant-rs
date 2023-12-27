@@ -14,6 +14,7 @@ async fn main() {
     let overwrite_db_games = read_env_var_bool("OVERWRITE_DB_DEMO_GAMES");
     let database_url = read_env_var_string("DATABASE_URL");
     let demo_games_dir = read_env_var_string("DEMO_GAMES_DIR");
+    let demo_games_skip_db = read_env_var_bool("DEMO_GAMES_SKIP_DB");
 
     let dir = Path::new(&demo_games_dir);
     if !dir.exists() {
@@ -23,10 +24,6 @@ async fn main() {
     if !dir.is_dir() {
         panic!("Demo games dir must be a directory!");
     }
-
-    let db_pool = db::setup_pool(&database_url)
-        .await
-        .expect("failed to set up database pool");
 
     let games = fs::read_dir(dir)
         .expect("Failed to read demo games dir")
@@ -41,7 +38,6 @@ async fn main() {
                 }
         })
         .map(|path| {
-            println!("Reading demo game at {path:?}");
             let file_name = path
                 .file_name()
                 .expect("Failed to retrieve filename for demo game")
@@ -61,7 +57,9 @@ async fn main() {
             });
 
             let json = fs::read_to_string(path).expect("Failed to read demo game");
-            let game: Game = serde_json::from_str(&json).expect("Failed to deserialize demo game");
+            let game: Game = serde_json::from_str(&json).unwrap_or_else(|err| {
+                panic!("Failed to deserialize demo game {name} (id: {id:?}), err: {err:?}")
+            });
 
             // Verify that we can re-apply the events to a new game.
             let mut new_game = Game::default();
@@ -73,25 +71,31 @@ async fn main() {
         })
         .collect::<Vec<(String, GameId, Game)>>();
 
-    // Insert the games into the database
-    for (_, id, game) in games.into_iter() {
-        let db_game = queries::try_get_game_by_id(&db_pool, &id)
+    if !demo_games_skip_db {
+        let db_pool = db::setup_pool(&database_url)
             .await
-            .expect("Failed to retrieve game from DB");
+            .expect("failed to set up database pool");
+        // Insert the games into the database
+        for (_, id, game) in games.into_iter() {
+            let db_game = queries::try_get_game_by_id(&db_pool, &id)
+                .await
+                .expect("Failed to retrieve game from DB");
 
-        if db_game.is_none() || overwrite_db_games {
-            if db_game.is_some() && overwrite_db_games {
-                // Delete all events first.
-                queries::delete_all_events_for_game(&db_pool, &id)
-                    .await
-                    .expect("Failed to delete events for game");
-            }
+            if db_game.is_none() || overwrite_db_games {
+                if db_game.is_some() && overwrite_db_games {
+                    // Delete all events first.
+                    queries::delete_all_events_for_game(&db_pool, &id)
+                        .await
+                        .expect("Failed to delete events for game");
+                }
 
-            for (event, timestamp) in game.history.into_iter() {
-                let event_json = serde_json::to_value(event).expect("Failed to serialize event?");
-                queries::insert_game_event(&db_pool, id, event_json, timestamp)
-                    .await
-                    .expect("Failed to insert game event for game");
+                for (event, timestamp) in game.history.into_iter() {
+                    let event_json =
+                        serde_json::to_value(event).expect("Failed to serialize event?");
+                    queries::insert_game_event(&db_pool, id, event_json, timestamp)
+                        .await
+                        .expect("Failed to insert game event for game");
+                }
             }
         }
     }
