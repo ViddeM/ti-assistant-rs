@@ -74,6 +74,26 @@ impl VoteState {
     pub fn new(agenda: Agenda, game: &GameState) -> eyre::Result<Self> {
         let info = agenda.info();
 
+        // list eligible planets for the vote, given the provided trait filter
+        let planets = |trait_filter: fn(Option<PlanetTrait>) -> bool| {
+            let eligible_planets: Vec<_> = Planet::iter()
+                .filter(|planet| trait_filter(planet.planet_info().planet_trait))
+                // planet must be owned by a player
+                .filter(|planet| {
+                    game.players
+                        .values()
+                        .any(|player| player.planets.contains(planet))
+                })
+                .map(AgendaElect::Planet)
+                .collect();
+
+            if eligible_planets.is_empty() {
+                bail!("no eligible planets");
+            } else {
+                Ok(eligible_planets)
+            }
+        };
+
         let candidates = match info.elect {
             AgendaElectKind::ForOrAgainst => vec![
                 AgendaElect::ForOrAgainst(ForOrAgainst::For),
@@ -88,7 +108,6 @@ impl VoteState {
             AgendaElectKind::StrategyCard => StrategyCard::iter()
                 .map(AgendaElect::StrategyCard)
                 .collect(),
-            AgendaElectKind::Law => bail!("no laws in play"), // TODO
             AgendaElectKind::SecretObjective => {
                 let eligible_objectives: Vec<_> = game
                     .score
@@ -105,23 +124,14 @@ impl VoteState {
 
                 eligible_objectives
             }
-            AgendaElectKind::Planet => Planet::iter().map(AgendaElect::Planet).collect(),
-            AgendaElectKind::PlanetWithTrait => Planet::iter()
-                .filter(|p| p.planet_info().planet_trait.is_some())
-                .map(AgendaElect::Planet)
-                .collect(),
-            AgendaElectKind::CulturalPlanet => Planet::iter()
-                .filter(|p| p.planet_info().planet_trait == Some(PlanetTrait::Cultural))
-                .map(AgendaElect::Planet)
-                .collect(),
-            AgendaElectKind::HazardousPlanet => Planet::iter()
-                .filter(|p| p.planet_info().planet_trait == Some(PlanetTrait::Hazardous))
-                .map(AgendaElect::Planet)
-                .collect(),
-            AgendaElectKind::IndustrialPlanet => Planet::iter()
-                .filter(|p| p.planet_info().planet_trait == Some(PlanetTrait::Industrial))
-                .map(AgendaElect::Planet)
-                .collect(),
+            AgendaElectKind::Planet => planets(|_| true)?,
+            AgendaElectKind::PlanetWithTrait => planets(|t| t.is_some())?,
+            AgendaElectKind::CulturalPlanet => planets(|t| t == Some(PlanetTrait::Cultural))?,
+            AgendaElectKind::HazardousPlanet => planets(|t| t == Some(PlanetTrait::Hazardous))?,
+            AgendaElectKind::IndustrialPlanet => planets(|t| t == Some(PlanetTrait::Industrial))?,
+
+            // TODO: implement this after we implement law tracking
+            AgendaElectKind::Law => bail!("no laws in play"),
         };
 
         Ok(VoteState {
