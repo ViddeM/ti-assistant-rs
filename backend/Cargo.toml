@@ -2,4 +2,4 @@ edition = "2021"
 
 [workspace]
 resolver = "2"
-members = ["db", "game", "server", "websocket"]
+members = ["db", "demo_game_creator", "game", "server", "websocket"]
