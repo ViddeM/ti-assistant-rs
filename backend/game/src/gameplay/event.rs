@@ -143,7 +143,7 @@ pub enum Event {
 
     /// Discard the current agenda without voting.
     ///
-    /// This does not increment agenda round number, so another agend must be revealed using
+    /// This does not increment agenda round number, so another agenda must be revealed using
     /// `RevealAgenda`.
     VetoAgenda,
 
