@@ -67,6 +67,7 @@ pub async fn get_events_for_game(
     use crate::schema::game_event::dsl;
     let events: Vec<db::GameEvent> = dsl::game_event
         .filter(dsl::game_id.eq(id))
+        .order_by(dsl::seq)
         .load(&mut db)
         .await?;
 

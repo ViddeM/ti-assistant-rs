@@ -1,6 +1,7 @@
 use std::{fs, path::Path};
 
-use ti_helper_game::gameplay::game::Game;
+use chrono::{DateTime, Utc};
+use ti_helper_game::gameplay::{event::Event, game::Game};
 
 fn main() {
     dotenvy::dotenv().ok();
@@ -47,13 +48,14 @@ fn main() {
                 .expect("Failed to strip .json from filename");
 
             let json = fs::read_to_string(path.as_path()).expect("Failed to read demo game");
-            let game: Game = serde_json::from_str(&json).unwrap_or_else(|err| {
-                panic!("Failed to deserialize demo game {name} (id: {id:?}), err: {err:?}")
-            });
+            let events: Vec<(Event, DateTime<Utc>)> =
+                serde_json::from_str(&json).unwrap_or_else(|err| {
+                    panic!("Failed to deserialize demo game {name} (id: {id:?}), err: {err:?}")
+                });
 
             // Verify that we can re-apply the events to a new game.
             let mut new_game = Game::default();
-            for (event, timestamp) in game.history.into_iter() {
+            for (event, timestamp) in events.into_iter() {
                 new_game.apply_or_fail(event, timestamp);
             }
         });

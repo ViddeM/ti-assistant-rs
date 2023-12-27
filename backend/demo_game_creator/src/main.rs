@@ -1,9 +1,10 @@
 use std::{fs, io::Write, path::PathBuf};
 
+use chrono::{DateTime, Utc};
 use clap::Parser;
 use eyre::Context;
 use ti_helper_db::{db, game_id::GameId, queries};
-use ti_helper_game::gameplay::game::Game;
+use ti_helper_game::gameplay::event::Event;
 
 #[derive(Parser)]
 pub struct Opt {
@@ -64,19 +65,21 @@ pub async fn main() -> eyre::Result<()> {
                 "Failed to get events for game with id {}",
                 opt.game_id.to_string()
             )
-        })?;
+        })?
+        .into_iter()
+        .map(|game_event| {
+            let event: Event =
+                serde_json::from_value(game_event.event).wrap_err("Failed to read json value")?;
 
-    let mut game = Game::default();
-    for record in events {
-        let event = serde_json::from_value(record.event)?;
-        game.apply_or_fail(event, record.timestamp);
-    }
+            Ok((event, game_event.timestamp))
+        })
+        .collect::<eyre::Result<Vec<(Event, DateTime<Utc>)>>>()?;
 
     let mut file = fs::File::create(new_demo_game_path.clone()).wrap_err_with(|| {
         format!("Failed to create new demo game file at {new_demo_game_path:?}")
     })?;
 
-    let json = serde_json::to_string_pretty(&game).wrap_err("Failed to serialize game")?;
+    let json = serde_json::to_string_pretty(&events).wrap_err("Failed to serialize events")?;
     file.write_all(json.as_bytes())
         .wrap_err("Failed to write to demo game file")?;
 
