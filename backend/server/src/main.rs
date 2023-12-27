@@ -3,7 +3,7 @@
 #![warn(clippy::large_futures)]
 #![allow(dead_code, clippy::single_match)]
 
-use std::{net::SocketAddr, sync::Arc};
+use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
 use chrono::Utc;
 use clap::Parser;
@@ -27,6 +27,7 @@ use tokio::{
 use crate::lobby::{generate_game_name, Lobbies, Lobby};
 
 pub mod gc;
+mod insert_demo_games;
 pub mod lobby;
 
 #[derive(Parser)]
@@ -40,6 +41,18 @@ pub struct Opt {
     /// Postgres URI
     #[clap(long = "db", env = "DATABASE_URL")]
     database_url: Option<String>,
+
+    /// Weather or not the demo games should overwrite any existing games with the same ID in the DB.
+    #[clap(long, env = "OVERWRITE_DB_DEMO_GAMES")]
+    overwrite_db_games: bool,
+
+    /// Weather or not to insert demo games into the DB at startup.
+    #[clap(long, env = "INSERT_DEMO_GAMES")]
+    demo_games_skip_db: bool,
+
+    /// The directory of the demo games.
+    #[clap(long, env = "DEMO_GAMES_DIR")]
+    demo_games_dir: PathBuf,
 
     /// Automatically run database migrations, if needed.
     #[clap(short, long, env = "MIGRATE_DB", requires("database_url"))]
@@ -85,6 +98,14 @@ pub async fn main() -> eyre::Result<()> {
                 .await
                 .wrap_err("failed to set up database pool")?,
         );
+    }
+
+    if !opt.demo_games_skip_db {
+        let Some(db_pool) = &db_pool else {
+            eyre::bail!("DEMO_GAMES_SKIP_DB is not set but no DB has been configured");
+        };
+
+        insert_demo_games::insert_demo_games(&opt, &db_pool).await?;
     }
 
     let shared = Arc::new(Shared {
