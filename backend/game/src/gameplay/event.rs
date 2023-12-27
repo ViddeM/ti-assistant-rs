@@ -134,17 +134,36 @@ pub enum Event {
     /// Complete the status phase.
     CompleteStatusPhase,
 
-    /* -- ACTION PHASE EVENTS -- */
+    /* -- AGENDA PHASE EVENTS -- */
     /// Reveal a new agenda.
     RevealAgenda {
         /// The agenda being revealed.
         agenda: Agenda,
     },
 
-    /// Resolve an agenda.
+    /// Discard the current agenda without voting.
+    ///
+    /// This does not increment agenda round number, so another agenda must be revealed using
+    /// `RevealAgenda`.
+    VetoAgenda,
+
+    /// Cast votes for an outcome of the current agenda.
+    CastAgendaVote {
+        /// The player that is casting the vote.
+        player: PlayerId,
+
+        /// The outcome the player is voting for. `None` means the player is abstaining.
+        outcome: Option<AgendaElect>,
+
+        /// Number of votes cast, should be omitted in case player abstains.
+        #[serde(default)]
+        votes: u16,
+    },
+
+    /// Resolve agenda with the selected outcome.
     ResolveAgenda {
-        /// The outcome that came from the agenda.
-        outcome: AgendaElect,
+        /// The outcome to resolve. `None` means the agenda is discarded without an outcome.
+        outcome: Option<AgendaElect>,
     },
 
     /// End the agenda phase.

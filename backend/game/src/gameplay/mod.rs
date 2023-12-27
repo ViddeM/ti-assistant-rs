@@ -1,3 +1,5 @@
+/// Agenda phase state.
+pub mod agenda;
 /// Game error.
 pub mod error;
 /// Game events.

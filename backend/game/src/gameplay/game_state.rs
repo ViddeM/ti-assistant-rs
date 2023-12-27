@@ -13,6 +13,7 @@ use crate::data::components::{
 };
 
 use super::{
+    agenda::AgendaState,
     error::GameError,
     player::{Player, PlayerId},
     score::Score,
@@ -54,6 +55,9 @@ pub struct GameState {
 
     /// All things that concern scoring for the game.
     pub score: Score,
+
+    /// State for agenda phase.
+    pub agenda: Option<AgendaState>,
 
     /// Weather or not time should be tracked.
     pub time_tracking_paused: bool,
@@ -268,6 +272,7 @@ impl GameState {
             }
             Phase::Agenda => {
                 self.calculate_turn_order_from_speaker()?;
+                self.agenda = Some(AgendaState::default());
             }
             _ => bail!(
                 "reset turn order called in unexpected phase: {:?}",
