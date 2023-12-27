@@ -30,6 +30,33 @@ pub async fn get_game_by_id(db_pool: &DbPool, id: &GameId) -> eyre::Result<db::G
     Ok(game)
 }
 
+/// Try to get a game by its id, returns None if the game doesn't exist in the DB.
+pub async fn try_get_game_by_id(db_pool: &DbPool, id: &GameId) -> eyre::Result<Option<db::Game>> {
+    let mut db = db_pool.get().await?;
+
+    use crate::schema::game::dsl;
+    let game: Option<db::Game> = dsl::game
+        .filter(dsl::id.eq(id))
+        .first(&mut db)
+        .await
+        .optional()?;
+
+    Ok(game)
+}
+
+/// Deletes all games associated with the game with the provided id.
+pub async fn delete_all_events_for_game(db_pool: &DbPool, id: &GameId) -> eyre::Result<()> {
+    let mut db = db_pool.get().await?;
+
+    use crate::schema::game_event::dsl;
+    delete(dsl::game_event)
+        .filter(dsl::game_id.eq(id))
+        .execute(&mut db)
+        .await?;
+
+    Ok(())
+}
+
 /// Returns a list of all the events for the game with provided id.
 pub async fn get_events_for_game(
     db_pool: &DbPool,
@@ -73,12 +100,12 @@ pub async fn delete_latest_event_for_game(db_pool: &DbPool, id: &GameId) -> eyre
     let mut db = db_pool.get().await?;
     db.transaction(|db| {
         Box::pin(async move {
-            use crate::schema::game_event::dsl::{self, game_event, game_id, seq};
+            use crate::schema::game_event::dsl;
 
             // query the last event for this game
-            let last_event_id: Option<i32> = game_event
-                .filter(game_id.eq(id))
-                .order_by(seq.desc())
+            let last_event_id: Option<i32> = dsl::game_event
+                .filter(dsl::game_id.eq(id))
+                .order_by(dsl::seq.desc())
                 .select(dsl::id)
                 .first(db)
                 .await
@@ -88,7 +115,7 @@ pub async fn delete_latest_event_for_game(db_pool: &DbPool, id: &GameId) -> eyre
                 return Ok(());
             };
 
-            delete(game_event)
+            delete(dsl::game_event)
                 .filter(dsl::id.eq(last_event_id))
                 .execute(db)
                 .await

@@ -23,11 +23,20 @@ cron = "0.12.0"
 [dependencies.ti_helper_game]
 path = "../game"
 
-
 [dependencies.ti_helper_db]
 path = "../db"
-
 
 [dependencies.ti_helper_websocket]
 path = "../websocket"
 
+[build-dependencies]
+dotenvy = "0.15.7"
+tokio = { version = "1.28", features = ["full"] }
+serde = { version = "1", features = ["derive", "rc"] }
+serde_json = "1"
+
+[build-dependencies.ti_helper_game]
+path = "../game"
+
+[build-dependencies.ti_helper_db]
+path = "../db"
