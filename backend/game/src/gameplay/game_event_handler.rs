@@ -15,7 +15,7 @@ use crate::{
         tech::{TechOrigin, TechType, Technology},
     },
     gameplay::{
-        agenda::VoteState,
+        agenda::{AgendaRound, VoteState},
         event::{action_matches_action_card, StrategicPrimaryAction, StrategicSecondaryAction},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
@@ -458,7 +458,10 @@ pub fn update_game_state(
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
             };
-            ensure!(state.round <= 2, "there are only 2 rounds of agenda");
+            ensure!(
+                state.round < AgendaRound::Completed,
+                "there are only 2 rounds of agenda"
+            );
             ensure!(state.vote.is_none(), "an agenda is already revealed");
 
             state.vote = Some(vote);
@@ -507,10 +510,7 @@ pub fn update_game_state(
             let Some(_vote) = &state.vote else {
                 bail!("no agenda has been revealed yet");
             };
-            match state.round {
-                1 | 2 => state.round += 1,
-                0 | 3.. => bail!("invalid agenda round, this is a bug"),
-            }
+            state.round = state.round.next();
 
             // TODO: log the outcome of the vote
             // TODO: resolve any vote effects such as VPs or techs
@@ -522,9 +522,13 @@ pub fn update_game_state(
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
             };
-            ensure!(state.round == 3, "need to complete 2 agenda rounds first");
+            ensure!(
+                state.round == AgendaRound::Completed,
+                "need to complete 2 agenda rounds first"
+            );
 
             game_state.change_phase(Phase::Strategy, timestamp)?;
+            game_state.agenda = None;
         }
         Event::GiveSupportForTheThrone { giver, receiver } => {
             let score = &mut game_state.score;

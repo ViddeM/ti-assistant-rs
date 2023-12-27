@@ -272,7 +272,7 @@ impl GameState {
             }
             Phase::Agenda => {
                 self.calculate_turn_order_from_speaker()?;
-                self.agenda = Some(AgendaState::new());
+                self.agenda = Some(AgendaState::default());
             }
             _ => bail!(
                 "reset turn order called in unexpected phase: {:?}",

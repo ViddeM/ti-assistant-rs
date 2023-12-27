@@ -20,10 +20,34 @@ use super::{game_state::GameState, player::PlayerId};
 #[serde(rename_all = "camelCase")]
 pub struct AgendaState {
     /// Round number (e.g.. 1 or 2)
-    pub round: u32,
+    pub round: AgendaRound,
 
     /// State of the current agenda vote. This is `None` until an agenda is revealed.
     pub vote: Option<VoteState>,
+}
+
+/// Agenda phase rounds.
+#[derive(Clone, Copy, Default, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+pub enum AgendaRound {
+    /// First round of the Agenda phase.
+    #[default]
+    Round1,
+
+    /// Second round of the Agenda phase.
+    Round2,
+
+    /// The agenda phase is completed.
+    Completed,
+}
+
+impl AgendaRound {
+    /// Get the next [AgendaStage].
+    pub fn next(&self) -> AgendaRound {
+        match self {
+            AgendaRound::Round1 => AgendaRound::Round2,
+            _ => AgendaRound::Completed,
+        }
+    }
 }
 
 /// State of an agenda vote.
@@ -55,16 +79,6 @@ pub struct VoteState {
     /// If the expected outcome can't be determined (i.e. in case of a tie), this is `None`.
     /// Calculated by calling [VoteState::tally_votes].
     pub expected_outcome: Option<AgendaElect>,
-}
-
-impl AgendaState {
-    /// Create a new [AgendaState].
-    pub fn new() -> Self {
-        AgendaState {
-            round: 1,
-            vote: None,
-        }
-    }
 }
 
 impl VoteState {
