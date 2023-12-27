@@ -24,16 +24,27 @@ impl Game {
     ///
     /// If the event is not valid for the current state it is rejected.
     pub fn apply(&mut self, event: Event, timestamp: DateTime<Utc>) {
-        log::debug!("{event:?}");
-        let state = Arc::make_mut(&mut self.current);
-        if let Err(e) = update_game_state(state, event.clone(), timestamp) {
+        if let Err(e) = self.apply_or_err(event, timestamp) {
             log::warn!("event not valid for current state");
             log::warn!("{e}");
-            return;
         }
+    }
+
+    /// Works the same as apply but panics on failure.
+    pub fn apply_or_fail(&mut self, event: Event, timestamp: DateTime<Utc>) {
+        self.apply_or_err(event, timestamp)
+            .expect("Failed to apply event");
+    }
+
+    fn apply_or_err(&mut self, event: Event, timestamp: DateTime<Utc>) -> eyre::Result<()> {
+        log::debug!("{event:?}");
+        let state = Arc::make_mut(&mut self.current);
+        update_game_state(state, event.clone(), timestamp)?;
 
         log::info!("{:#?}", self.current);
         self.history.push((event, timestamp));
+
+        Ok(())
     }
 
     /// Undo the last event

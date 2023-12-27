@@ -331,6 +331,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "63dfa964fe2a66f3fde91fc70b267fe193d822c7e603e2a675a49a7f46ad3f49"
 
 [[package]]
+name = "demo_game_creator"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "clap",
+ "color-eyre",
+ "diesel",
+ "diesel-async",
+ "dotenvy",
+ "eyre",
+ "serde",
+ "serde_json",
+ "ti_helper_db",
+ "ti_helper_game",
+ "tokio",
+]
+
+[[package]]
 name = "diesel"
 version = "2.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
