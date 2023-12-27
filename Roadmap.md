@@ -120,7 +120,7 @@
 
 ## Prettify things
  - ❌ Make things pretty (FE)
-   - Add ways of viewing full information in FE (e.g. seing what techs, action cards etc does rather than just their names)
+   - ❌ Add ways of viewing full information in FE (e.g. seing what techs, action cards etc does rather than just their names)
  - ❌ Make things pretty (BE)
 
 ## QA
