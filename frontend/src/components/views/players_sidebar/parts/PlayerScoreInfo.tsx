@@ -37,11 +37,19 @@ export const PlayerScoreInfo = ({
 
   const playerObjectives = score.secretObjectives[player.name];
   const secretObjectivePoints = playerObjectives ? playerObjectives.length : 0;
+  const supportForTheThronePoints = Object.values(
+    score.supportForTheThrone
+  ).filter((id) => id === player.name).length;
+  const imperialPoints = score.imperial[player.name] ?? 0;
+  const extraPoints = score.extraPoints[player.name] ?? 0;
 
   const scoreTooltip = `Score ${currentScore} due to:
  - Custodians (${isCustodian ? "1" : "0"})
  - Public objectives (${publicObjectivePoints})
- - Secret objectives (${secretObjectivePoints})`;
+ - Secret objectives (${secretObjectivePoints})
+ - Support ft Throne (${supportForTheThronePoints})
+ - Imperial (${imperialPoints})
+ - Extra (${extraPoints})`;
 
   return (
     <div>
