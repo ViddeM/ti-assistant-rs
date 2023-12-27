@@ -7,13 +7,11 @@ use std::{net::SocketAddr, sync::Arc};
 
 use chrono::Utc;
 use clap::Parser;
-use diesel::{delete, insert_into, ExpressionMethods, OptionalExtension, QueryDsl};
-use diesel_async::{AsyncConnection, RunQueryDsl};
 use eyre::{bail, Context};
 use ti_helper_db::{
     db::{self, DbPool},
     game_id::GameId,
-    schema,
+    queries,
 };
 use ti_helper_game::gameplay::{event::Event, game::Game};
 use ti_helper_websocket::{
@@ -128,13 +126,7 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
 
                 if let Some(db_pool) = &db_pool {
                     log::info!("persisting new game {id:?} in database");
-
-                    let mut db = db_pool.get().await?;
-
-                    use schema::game::dsl::game;
-                    insert_into(game)
-                        .values(&db::Game { id, name })
-                        .execute(&mut db)
+                    queries::create_game(db_pool, id, name)
                         .await
                         .wrap_err_with(|| format!("insert new game {id:?} in db"))?;
                 }
@@ -156,17 +148,12 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
                 if let Some(lobby) = list.get(&id) {
                     (id, Arc::clone(lobby))
                 } else if let Some(db_pool) = &db_pool {
-                    let mut db = db_pool.get().await?;
-
                     log::info!("loading game {id:?} from db");
-                    use schema::game::dsl;
-                    let _game: db::Game =
-                        dsl::game.filter(dsl::id.eq(id)).get_result(&mut db).await?;
+                    let _game = queries::get_game_by_id(db_pool, &id)
+                        .await
+                        .wrap_err_with(|| format!("Failed to retrieve game {id:?} from DB"))?;
 
-                    use schema::game_event::dsl::{game_event, game_id};
-                    let events: Vec<db::GameEvent> = game_event
-                        .filter(game_id.eq(id))
-                        .load(&mut db)
+                    let events = queries::get_events_for_game(db_pool, &id)
                         .await
                         .wrap_err_with(|| format!("error querying game events ({id:?})"))?;
 
@@ -250,20 +237,11 @@ async fn handle_event(
     lobby.game.apply(event.clone(), now);
 
     if let Some(db_pool) = &shared.db_pool {
-        let mut db = db_pool.get().await?;
-        use schema::game_event::dsl::game_event;
+        log::info!("persisting event for game {id:?}");
 
-        insert_into(game_event)
-            .values(&db::NewGameEvent {
-                game_id: id,
-                event: serde_json::to_value(&event)?,
-                timestamp: now,
-            })
-            .execute(&mut db)
+        queries::insert_game_event(db_pool, id, serde_json::to_value(&event)?, now)
             .await
             .wrap_err_with(|| format!("error querying game events ({id:?})"))?;
-
-        log::info!("persisting event for game {id:?}");
     }
 
     lobby.state_updates.send(lobby.game.current.clone())?;
@@ -276,35 +254,7 @@ async fn handle_undo(shared: &Shared, id: GameId, lobby: &RwLock<Lobby>) -> eyre
 
     if let Some(db_pool) = &shared.db_pool {
         log::info!("undoing last event for game {id:?}");
-
-        let mut db = db_pool.get().await?;
-        db.transaction(|db| {
-            Box::pin(async move {
-                use schema::game_event::dsl::{self, game_event, game_id, seq};
-
-                // query the last event for this game
-                let last_event_id: Option<i32> = game_event
-                    .filter(game_id.eq(id))
-                    .order_by(seq.desc())
-                    .select(dsl::id)
-                    .first(db)
-                    .await
-                    .optional()?;
-
-                let Some(last_event_id) = last_event_id else {
-                    return Ok(());
-                };
-
-                delete(game_event)
-                    .filter(dsl::id.eq(last_event_id))
-                    .execute(db)
-                    .await
-                    .wrap_err_with(|| format!("error querying game events ({id:?})"))
-                    // sanity check that we deleted exactly one event
-                    .map(|count| debug_assert_eq!(count, 1))
-            })
-        })
-        .await?;
+        queries::delete_latest_event_for_game(db_pool, &id).await?;
     }
 
     lobby.game.undo();
