@@ -5,7 +5,7 @@ use crate::{data::common::expansions::Expansion, gameplay::player::PlayerId};
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
-/// All informatioin concerning an agenda.
+/// All information concerning an agenda.
 #[derive(Clone, Copy, Debug, Serialize)]
 pub struct AgendaInfo {
     /// The name of the agenda card.
