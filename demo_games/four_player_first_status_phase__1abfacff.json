@@ -1,0 +1,839 @@
+{
+  "players": [],
+  "current": {
+    "phase": "Status",
+    "players": {
+      "Palle": {
+        "name": "Palle",
+        "faction": "NekroVirus",
+        "color": "Red",
+        "planets": [
+          "MordaiII",
+          "MecatolRex"
+        ],
+        "technologies": [
+          "AssaultCannon",
+          "DacxiveAnimators"
+        ]
+      },
+      "Dalle": {
+        "name": "Dalle",
+        "faction": "EmbersOfMuaat",
+        "color": "Green",
+        "planets": [
+          "Saudor",
+          "Muaat"
+        ],
+        "technologies": [
+          "PlasmaScoring"
+        ]
+      },
+      "Pelle": {
+        "name": "Pelle",
+        "faction": "BaronyOfLetnev",
+        "color": "Blue",
+        "planets": [
+          "Lor",
+          "ArcPrime",
+          "Arnor",
+          "WrenTerra"
+        ],
+        "technologies": [
+          "PlasmaScoring",
+          "TransitDiodes",
+          "AntimassDeflectors",
+          "InfantryII"
+        ]
+      },
+      "Kalle": {
+        "name": "Kalle",
+        "faction": "NaaluCollective",
+        "color": "Yellow",
+        "planets": [
+          "Zohbat",
+          "Maaluuk",
+          "Mellon",
+          "Druaa"
+        ],
+        "technologies": [
+          "NeuralMotivator",
+          "SarweenTools"
+        ]
+      }
+    },
+    "speaker": "Kalle",
+    "tableOrder": [
+      "Pelle",
+      "Dalle",
+      "Palle",
+      "Kalle"
+    ],
+    "turnOrder": [
+      "Palle",
+      "Kalle",
+      "Pelle",
+      "Dalle"
+    ],
+    "strategyCardHolders": {
+      "Leadership": "Palle",
+      "Construction": "Dalle",
+      "Warfare": "Kalle",
+      "Politics": "Pelle",
+      "Diplomacy": "Kalle",
+      "Trade": "Palle",
+      "Technology": "Pelle",
+      "Imperial": "Dalle"
+    },
+    "currentPlayer": "Kalle",
+    "spentStrategyCards": [
+      "Imperial",
+      "Trade",
+      "Leadership",
+      "Politics",
+      "Technology",
+      "Construction",
+      "Diplomacy",
+      "Warfare"
+    ],
+    "passedPlayers": [],
+    "actionProgress": null,
+    "score": {
+      "maxPoints": 10,
+      "playerPoints": {
+        "Palle": 1,
+        "Kalle": 0,
+        "Pelle": 0,
+        "Dalle": 0
+      },
+      "revealedObjectives": {},
+      "secretObjectives": {},
+      "supportForTheThrone": {},
+      "extraPoints": {},
+      "imperial": {},
+      "custodians": "Palle"
+    },
+    "timeTrackingPaused": false,
+    "playersPlayTime": {
+      "Palle": {
+        "secs": 30,
+        "nanos": 828991000
+      },
+      "Pelle": {
+        "secs": 35,
+        "nanos": 678828000
+      },
+      "Dalle": {
+        "secs": 17,
+        "nanos": 508455000
+      },
+      "Kalle": {
+        "secs": 17,
+        "nanos": 435951000
+      }
+    },
+    "currentTurnStartTime": null
+  },
+  "history": [
+    [
+      {
+        "AddPlayer": {
+          "player": {
+            "name": "Pelle",
+            "faction": "BaronyOfLetnev",
+            "color": "Blue"
+          }
+        }
+      },
+      "2023-12-27T09:43:08.132484Z"
+    ],
+    [
+      {
+        "AddPlayer": {
+          "player": {
+            "name": "Dalle",
+            "faction": "EmbersOfMuaat",
+            "color": "Green"
+          }
+        }
+      },
+      "2023-12-27T09:43:10.838742Z"
+    ],
+    [
+      {
+        "AddPlayer": {
+          "player": {
+            "name": "Palle",
+            "faction": "NekroVirus",
+            "color": "Red"
+          }
+        }
+      },
+      "2023-12-27T09:43:18.375084Z"
+    ],
+    [
+      {
+        "AddPlayer": {
+          "player": {
+            "name": "Kalle",
+            "faction": "NaaluCollective",
+            "color": "Yellow"
+          }
+        }
+      },
+      "2023-12-27T09:43:27.114727Z"
+    ],
+    [
+      "StartGame",
+      "2023-12-27T09:43:28.154083Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Palle",
+          "card": "Leadership"
+        }
+      },
+      "2023-12-27T09:43:30.905517Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Kalle",
+          "card": "Diplomacy"
+        }
+      },
+      "2023-12-27T09:43:31.349060Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Pelle",
+          "card": "Politics"
+        }
+      },
+      "2023-12-27T09:43:31.723899Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Dalle",
+          "card": "Construction"
+        }
+      },
+      "2023-12-27T09:43:32.096765Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Palle",
+          "card": "Trade"
+        }
+      },
+      "2023-12-27T09:43:32.519267Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Kalle",
+          "card": "Warfare"
+        }
+      },
+      "2023-12-27T09:43:32.846987Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Pelle",
+          "card": "Technology"
+        }
+      },
+      "2023-12-27T09:43:33.191932Z"
+    ],
+    [
+      {
+        "TakeStrategyCard": {
+          "player": "Dalle",
+          "card": "Imperial"
+        }
+      },
+      "2023-12-27T09:43:33.493175Z"
+    ],
+    [
+      "CompleteStrategyPhase",
+      "2023-12-27T09:43:40.326465Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Palle",
+          "card": "Trade"
+        }
+      },
+      "2023-12-27T09:43:42.883643Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Pelle",
+          "action": "Trade"
+        }
+      },
+      "2023-12-27T09:43:44.721460Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Dalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:43:45.386590Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Kalle",
+          "action": "Trade"
+        }
+      },
+      "2023-12-27T09:43:46.423873Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:43:46.843662Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Kalle",
+          "card": "Warfare"
+        }
+      },
+      "2023-12-27T09:43:48.066166Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Palle",
+          "action": "Warfare"
+        }
+      },
+      "2023-12-27T09:43:48.771045Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Pelle",
+          "action": "Warfare"
+        }
+      },
+      "2023-12-27T09:43:49.196741Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Dalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:43:50.053260Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:43:50.458466Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Pelle",
+          "card": "Politics"
+        }
+      },
+      "2023-12-27T09:43:52.138759Z"
+    ],
+    [
+      {
+        "StrategicActionPrimary": {
+          "player": "Pelle",
+          "action": {
+            "Politics": {
+              "newSpeaker": "Kalle"
+            }
+          }
+        }
+      },
+      "2023-12-27T09:43:54.066511Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Palle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:43:55.063971Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Dalle",
+          "action": "Politics"
+        }
+      },
+      "2023-12-27T09:43:55.873734Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Kalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:43:56.533780Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:43:56.961203Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Dalle",
+          "card": "Imperial"
+        }
+      },
+      "2023-12-27T09:43:58.589100Z"
+    ],
+    [
+      {
+        "StrategicActionPrimary": {
+          "player": "Dalle",
+          "action": {
+            "Imperial": {
+              "scoreObjective": null
+            }
+          }
+        }
+      },
+      "2023-12-27T09:43:59.803620Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Palle",
+          "action": "Imperial"
+        }
+      },
+      "2023-12-27T09:44:00.942015Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Pelle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:01.633678Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Kalle",
+          "action": "Imperial"
+        }
+      },
+      "2023-12-27T09:44:02.181052Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:44:02.861269Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Palle",
+          "card": "Leadership"
+        }
+      },
+      "2023-12-27T09:44:03.621256Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Pelle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:04.611303Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Dalle",
+          "action": "Leadership"
+        }
+      },
+      "2023-12-27T09:44:05.511581Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Kalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:06.441199Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:44:06.890716Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Kalle",
+          "card": "Diplomacy"
+        }
+      },
+      "2023-12-27T09:44:07.768376Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Palle",
+          "action": "Diplomacy"
+        }
+      },
+      "2023-12-27T09:44:08.573741Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Pelle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:09.313838Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Dalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:10.078717Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:44:10.573144Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Pelle",
+          "card": "Technology"
+        }
+      },
+      "2023-12-27T09:44:11.473874Z"
+    ],
+    [
+      {
+        "StrategicActionPrimary": {
+          "player": "Pelle",
+          "action": {
+            "Technology": {
+              "tech": "TransitDiodes",
+              "extra": "InfantryII"
+            }
+          }
+        }
+      },
+      "2023-12-27T09:44:23.773788Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Palle",
+          "action": {
+            "Technology": {
+              "tech": "AssaultCannon"
+            }
+          }
+        }
+      },
+      "2023-12-27T09:44:27.538924Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Dalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:30.786561Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Kalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:31.906026Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:44:32.931854Z"
+    ],
+    [
+      {
+        "StrategicActionBegin": {
+          "player": "Dalle",
+          "card": "Construction"
+        }
+      },
+      "2023-12-27T09:44:34.124348Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Palle",
+          "action": "Construction"
+        }
+      },
+      "2023-12-27T09:44:35.242611Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Pelle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:36.508805Z"
+    ],
+    [
+      {
+        "StrategicActionSecondary": {
+          "player": "Kalle",
+          "action": "Skip"
+        }
+      },
+      "2023-12-27T09:44:37.574173Z"
+    ],
+    [
+      "StrategicActionCommit",
+      "2023-12-27T09:44:38.428753Z"
+    ],
+    [
+      {
+        "TacticalActionBegin": {
+          "player": "Palle"
+        }
+      },
+      "2023-12-27T09:44:39.568279Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Palle",
+          "planet": "Lor"
+        }
+      },
+      "2023-12-27T09:44:42.281772Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Palle",
+          "planet": "Arnor"
+        }
+      },
+      "2023-12-27T09:44:42.943892Z"
+    ],
+    [
+      {
+        "TacticalActionCommit": {
+          "player": "Palle"
+        }
+      },
+      "2023-12-27T09:44:43.558462Z"
+    ],
+    [
+      {
+        "TacticalActionBegin": {
+          "player": "Kalle"
+        }
+      },
+      "2023-12-27T09:44:44.619183Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Kalle",
+          "planet": "Arnor"
+        }
+      },
+      "2023-12-27T09:44:46.339469Z"
+    ],
+    [
+      {
+        "TacticalActionCommit": {
+          "player": "Kalle"
+        }
+      },
+      "2023-12-27T09:44:46.738688Z"
+    ],
+    [
+      {
+        "TacticalActionBegin": {
+          "player": "Pelle"
+        }
+      },
+      "2023-12-27T09:44:47.931135Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Pelle",
+          "planet": "Lor"
+        }
+      },
+      "2023-12-27T09:44:49.804507Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Pelle",
+          "planet": "Arnor"
+        }
+      },
+      "2023-12-27T09:44:50.389864Z"
+    ],
+    [
+      {
+        "TacticalActionCommit": {
+          "player": "Pelle"
+        }
+      },
+      "2023-12-27T09:44:51.388453Z"
+    ],
+    [
+      {
+        "TacticalActionBegin": {
+          "player": "Dalle"
+        }
+      },
+      "2023-12-27T09:44:52.348585Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Dalle",
+          "planet": "Saudor"
+        }
+      },
+      "2023-12-27T09:44:55.691719Z"
+    ],
+    [
+      {
+        "TacticalActionCommit": {
+          "player": "Dalle"
+        }
+      },
+      "2023-12-27T09:44:56.218592Z"
+    ],
+    [
+      {
+        "TacticalActionBegin": {
+          "player": "Palle"
+        }
+      },
+      "2023-12-27T09:44:57.244184Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Palle",
+          "planet": "MecatolRex"
+        }
+      },
+      "2023-12-27T09:45:00.313683Z"
+    ],
+    [
+      {
+        "TacticalActionCommit": {
+          "player": "Palle"
+        }
+      },
+      "2023-12-27T09:45:00.756255Z"
+    ],
+    [
+      {
+        "TacticalActionBegin": {
+          "player": "Kalle"
+        }
+      },
+      "2023-12-27T09:45:01.813392Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Kalle",
+          "planet": "Zohbat"
+        }
+      },
+      "2023-12-27T09:45:04.761283Z"
+    ],
+    [
+      {
+        "TacticalActionTakePlanet": {
+          "player": "Kalle",
+          "planet": "Mellon"
+        }
+      },
+      "2023-12-27T09:45:05.555808Z"
+    ],
+    [
+      {
+        "TacticalActionCommit": {
+          "player": "Kalle"
+        }
+      },
+      "2023-12-27T09:45:06.313546Z"
+    ],
+    [
+      {
+        "PassAction": {
+          "player": "Pelle"
+        }
+      },
+      "2023-12-27T09:45:07.761378Z"
+    ],
+    [
+      {
+        "PassAction": {
+          "player": "Dalle"
+        }
+      },
+      "2023-12-27T09:45:08.368620Z"
+    ],
+    [
+      {
+        "PassAction": {
+          "player": "Palle"
+        }
+      },
+      "2023-12-27T09:45:08.976369Z"
+    ],
+    [
+      {
+        "PassAction": {
+          "player": "Kalle"
+        }
+      },
+      "2023-12-27T09:45:09.606308Z"
+    ]
+  ]
+}
