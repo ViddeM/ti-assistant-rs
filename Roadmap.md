@@ -11,7 +11,7 @@
  - ✅ Persist gamestate
 
 ## Gameplay
- - ❌ Track round number
+ - 🍑 Track round number
  - ❌ Choose speaker at start of game
  - ✅ Planets
    - ✅ Resource Tracking
@@ -62,7 +62,8 @@
 
 *prio 2*:
 - ❌ Secret objective scoring
-- ❌ Track laws in play
+- 🍑 Track laws in play
+- ❌ Repeal laws
 - ❌ VPs from agenda cards (see "Score" bullet point)
 - ❌ Show available votes (soft limit)
 - ❌ Show voting order (but allow votes in any order)
