@@ -8,12 +8,18 @@ use eyre::{bail, eyre, Context};
 use serde::{Deserialize, Serialize};
 
 use crate::data::components::{
-    action_card::ActionCard, objectives::Objective, phase::Phase, planet::Planet,
-    strategy_card::StrategyCard, system::SystemId, tech::Technology,
+    action_card::ActionCard,
+    agenda::{Agenda, AgendaElect},
+    objectives::Objective,
+    phase::Phase,
+    planet::Planet,
+    strategy_card::StrategyCard,
+    system::SystemId,
+    tech::Technology,
 };
 
 use super::{
-    agenda::AgendaState,
+    agenda::{AgendaState, VoteState},
     error::GameError,
     player::{Player, PlayerId},
     score::Score,
@@ -23,6 +29,9 @@ use super::{
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameState {
+    /// The current round number of the game.
+    pub round: u32,
+
     /// The current phase of the game.
     pub phase: Phase,
 
@@ -58,6 +67,17 @@ pub struct GameState {
 
     /// State for agenda phase.
     pub agenda: Option<AgendaState>,
+
+    /// List of past things voted on in the agenda phase.
+    ///
+    /// List is a tuple of
+    /// - the round number at the time,
+    /// - the [VoteState] at the time of resolution,
+    /// - and the outcome of the vote.
+    pub agenda_vote_history: Vec<(u32, VoteState, AgendaElect)>,
+
+    /// Laws in play.
+    pub laws: HashMap<Agenda, AgendaElect>,
 
     /// Weather or not time should be tracked.
     pub time_tracking_paused: bool,
@@ -263,6 +283,7 @@ impl GameState {
         match phase {
             Phase::Strategy => {
                 self.calculate_turn_order_from_speaker()?;
+                self.round = self.round.saturating_add(1);
             }
             Phase::Action => {
                 self.calculate_action_turn_order()?;
