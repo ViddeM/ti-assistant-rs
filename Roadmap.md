@@ -50,6 +50,10 @@
  - ✅ Strategy cards (speaker handling etc)
  - ❌ Odd faction specific starting planets / tech (e.g argent)
  - ❌ Real names for things (currently we only use the ID for e.g objectives)
+ - ❌ Status phase
+   - ❌ Score objectives
+   - ❌ Reveal objectives
+   - ❌ Display number of action cards to draw & tokens to receive.
 
 ### Agenda Phase
 
