@@ -90,5 +90,5 @@ export interface StatusPhaseState {
   scoredPublicObjectives: { [player: string]: string | null };
   scoredSecretObjectives: { [player: string]: string | null };
   revealedObjective: string | null;
-  expected_objectives_before_stage_two: number;
+  expectedObjectivesBeforeStageTwo: number;
 }
