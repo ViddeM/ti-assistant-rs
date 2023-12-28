@@ -63,7 +63,7 @@ pub async fn insert_demo_games(opt: &Opt, db_pool: &DbPool) -> eyre::Result<()> 
         })
         .collect::<Vec<(String, GameId, Game)>>();
 
-    if !opt.demo_games_skip_db {
+    if !opt.insert_demo_games {
         // Insert the games into the database
         for (_, id, game) in games.into_iter() {
             let db_game = queries::try_get_game_by_id(&db_pool, &id)

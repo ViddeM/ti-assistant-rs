@@ -47,7 +47,7 @@ pub struct Opt {
     overwrite_db_games: bool,
 
     /// Weather or not to insert demo games into the DB at startup.
-    #[clap(long, env = "INSERT_DEMO_GAMES")]
+    #[clap(long, env = "DEMO_GAMES_SKIP_DB")]
     demo_games_skip_db: bool,
 
     /// The directory of the demo games.
