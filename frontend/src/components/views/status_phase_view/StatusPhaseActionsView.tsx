@@ -68,15 +68,11 @@ const ScoreObjectives = ({
     };
   });
 
-  let stageName;
-  let selectableObjectives;
-  if (revealedObjectives.length >= state.expected_objectives_before_stage_two) {
-    selectableObjectives = allObjectives.filter((o) => o.kind === "StageII");
-    stageName = "Stage II";
-  } else {
-    selectableObjectives = allObjectives.filter((o) => o.kind === "StageI");
-    stageName = "Stage I";
-  }
+  const revealStageII =
+    revealedObjectives.length >= state.expectedObjectivesBeforeStageTwo;
+  const selectableObjectives = revealStageII
+    ? allObjectives.filter((o) => o.kind === "StageII")
+    : allObjectives.filter((o) => o.kind === "StageI");
 
   return (
     <div>
@@ -90,7 +86,7 @@ const ScoreObjectives = ({
           sendMessage={sendMessage}
         />
       ))}
-      <h2>Reveal {stageName} Objective</h2>
+      <h2>Reveal Stage {revealStageII ? "II" : "I"} Objective</h2>
       {state.revealedObjective !== null ? (
         <p>{state.revealedObjective}</p>
       ) : (
@@ -100,7 +96,7 @@ const ScoreObjectives = ({
             value={revealedObjective}
             onChange={(e) => setRevealedObjective(e.target.value)}
           >
-            <option>--Select Objective to Reveal--</option>
+            <option value="">--Select Objective to Reveal--</option>
             {selectableObjectives.map((o) => (
               <option key={o.id} value={o.id}>
                 {o.name}
@@ -108,6 +104,7 @@ const ScoreObjectives = ({
             ))}
           </Dropdown>
           <Button
+            disabled={revealedObjective === ""}
             onClick={() =>
               sendMessage({
                 RevealPublicObjective: {
