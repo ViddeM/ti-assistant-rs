@@ -12,7 +12,10 @@
 
 ## Gameplay
  - 🍑 Track round number
- - ❌ Choose speaker at start of game
+ - ❌ Update setup to do all required tasks
+   - ❌ Choose speaker at start of game
+   - ❌ Reveal initial objectives
+   - ❌ Faction specific setups for planets & techs
  - ✅ Planets
    - ✅ Resource Tracking
    - ❌ Planet attachments (PoK)
