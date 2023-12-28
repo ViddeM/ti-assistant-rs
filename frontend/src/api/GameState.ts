@@ -17,6 +17,7 @@ export interface GameState {
   passedPlayers: PlayerId[];
   actionProgress: ActionProgress | null;
   score: Score;
+  statusPhaseState: StatusPhaseState | null;
 }
 
 export interface ActionProgress {
@@ -83,4 +84,10 @@ export interface Score {
   extraPoints: { [player: string]: number };
   imperial: { [player: string]: number };
   custodians: string | null;
+}
+
+export interface StatusPhaseState {
+  scoredPublicObjectives: { [player: string]: string | null };
+  scoredSecretObjectives: { [player: string]: string | null };
+  revealedObjective: string | null;
 }

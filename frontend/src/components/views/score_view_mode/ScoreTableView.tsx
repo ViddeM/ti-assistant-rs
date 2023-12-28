@@ -187,7 +187,7 @@ export const ScoreTableView = ({
                         });
                       } else {
                         sendEvent({
-                          ScorePublicObjective: {
+                          ScoreExtraPublicObjective: {
                             player: p.id,
                             objective: obj.id,
                           },

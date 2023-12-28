@@ -1,10 +1,30 @@
+@import "../../../resources/styles/vars.scss";
+
 .statusViewCard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .statusStepList {
-    margin: 0;
-    padding-left: 30px;
+  margin: 0;
+  padding-left: 30px;
+}
+
+.statusPhaseContainer {
+  display: flex;
+  flex-direction: column;
+
+  & > :first-child {
+    margin-bottom: $marginLarge;
+  }
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    & > :first-child {
+      margin-right: $marginLarge;
+    }
+  }
 }

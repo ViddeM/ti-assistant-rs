@@ -113,7 +113,7 @@ pub enum Event {
         /// The player that scores the objective.
         player: PlayerId,
         /// Which objective is being scored.
-        objective: Objective,
+        objective: Option<Objective>,
     },
 
     /// Score a secret objective.
@@ -121,7 +121,7 @@ pub enum Event {
         /// The player that scores the objective.
         player: PlayerId,
         /// The objective being scored.
-        objective: SecretObjective,
+        objective: Option<SecretObjective>,
     },
 
     /// Reveal a new public objective.
@@ -130,7 +130,6 @@ pub enum Event {
         objective: PublicObjective,
     },
 
-    // TODO: Score objectives
     /// Complete the status phase.
     CompleteStatusPhase,
 
@@ -198,6 +197,28 @@ pub enum Event {
         player: PlayerId,
         /// How many imperial points the player should gain (or lose if negative).
         value: i8,
+    },
+
+    /// Score a public objective outside of the status phase.
+    ScoreExtraPublicObjective {
+        /// The player that scores the objective.
+        player: PlayerId,
+        /// The objective that is scored
+        objective: Objective,
+    },
+
+    /// Score a secret objective outside of the status phase.
+    ScoreExtraSecretObjective {
+        /// The player that scores the secret objective.
+        player: PlayerId,
+        /// The objective that is scored.
+        objective: SecretObjective,
+    },
+
+    /// Reveal a new public objective outside of the status phase.
+    RevealExtraPublicObjective {
+        /// The objective that was revealed.
+        objective: PublicObjective,
     },
 
     /// Unscore a revealed objective.

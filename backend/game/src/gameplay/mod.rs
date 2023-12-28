@@ -14,3 +14,5 @@ pub mod game_state;
 pub mod player;
 /// Score keeping.
 pub mod score;
+/// Status phase state.
+pub mod status;
