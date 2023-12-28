@@ -177,16 +177,6 @@ pub struct TacticalProgress {
     pub taken_planets: Vec<Planet>,
 }
 
-impl TacticalProgress {
-    /// Returns true if the provided system is the currently activated system or there isn't an activated system.
-    pub fn system_is_activated_or_none(&self, system_id: &SystemId) -> bool {
-        match self.activated_system.as_ref() {
-            Some(id) => id == system_id,
-            None => true,
-        }
-    }
-}
-
 /// The progress of an action card being played.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
