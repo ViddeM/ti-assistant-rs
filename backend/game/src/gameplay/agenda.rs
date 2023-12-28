@@ -215,6 +215,7 @@ pub struct Vote {
 }
 
 impl Vote {
+    /// Returns a new vote with the provided votes and outcome.
     pub fn new(votes: u16, outcome: AgendaElect) -> Self {
         Self { votes, outcome }
     }

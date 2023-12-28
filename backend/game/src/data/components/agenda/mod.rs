@@ -43,6 +43,7 @@ pub enum ForOrAgainst {
 )]
 #[strum_discriminants(name(AgendaElectKind))]
 #[strum_discriminants(derive(PartialOrd, Ord, Hash, Serialize, Deserialize))]
+#[serde(tag = "electKind", content = "value")]
 pub enum AgendaElect {
     /// Select either a for or against alternative.
     ForOrAgainst(ForOrAgainst),
