@@ -70,8 +70,7 @@ const ScoreObjectives = ({
 
   let stageName;
   let selectableObjectives;
-  // TODO: Support special cases (e.g. Incentive Program agenda)
-  if (revealedObjectives.length >= 5) {
+  if (revealedObjectives.length >= state.expected_objectives_before_stage_two) {
     selectableObjectives = allObjectives.filter((o) => o.kind === "StageII");
     stageName = "Stage II";
   } else {
