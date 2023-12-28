@@ -15,7 +15,7 @@ use crate::{
         tech::{TechOrigin, TechType, Technology},
     },
     gameplay::{
-        agenda::{AgendaRound, VoteState},
+        agenda::{AgendaRound, Vote, VoteState},
         event::{action_matches_action_card, StrategicPrimaryAction, StrategicSecondaryAction},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
@@ -555,7 +555,7 @@ pub fn update_game_state(
                     vote.elect
                 );
 
-                vote.player_votes.insert(player, (votes, outcome));
+                vote.player_votes.insert(player, Vote::new(votes, outcome));
             } else {
                 vote.player_votes.remove(&player);
             }

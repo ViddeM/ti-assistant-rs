@@ -82,12 +82,12 @@ pub struct VoteState {
     pub candidates: Vec<AgendaElect>,
 
     /// Player-cast votes.
-    pub player_votes: HashMap<PlayerId, (u16, AgendaElect)>,
+    pub player_votes: HashMap<PlayerId, Vote>,
 
     /// Votes tallied on a per-outcome basis.
     ///
     /// Calculated by calling [VoteState::tally_votes].
-    pub outcomes_by_votes: Vec<(u16, AgendaElect)>,
+    pub outcomes_by_votes: Vec<Vote>,
 
     /// The outcome of the vote, if it were to end.
     ///
@@ -180,28 +180,42 @@ impl VoteState {
             .player_votes
             .values()
             .cloned()
-            .fold(BTreeMap::new(), |mut acc, (votes, outcome)| {
+            .fold(BTreeMap::new(), |mut acc, Vote { votes, outcome }| {
                 let entry = acc.entry(outcome).or_insert(0);
                 *entry = entry.saturating_add(votes);
                 acc
             });
 
-        let mut outcome_by_votes: Vec<(u16, AgendaElect)> = votes_by_outcome
+        let mut outcome_by_votes: Vec<Vote> = votes_by_outcome
             .into_iter()
             .filter(|(_, votes)| *votes > 0)
-            .map(|(outcome, votes)| (votes, outcome))
+            .map(|(outcome, votes)| Vote::new(votes, outcome))
             .collect();
-        outcome_by_votes.sort_by_key(|(votes, _)| Reverse(*votes));
+        outcome_by_votes.sort_by_key(|vote| Reverse(vote.votes));
 
         // TODO: take speaker tie-breaker vote into account
-        self.expected_outcome = outcome_by_votes.first().and_then(|(votes, outcome)| {
+        self.expected_outcome = outcome_by_votes.first().and_then(|vote| {
             // if the first outcome has more votes than any other outcome, it is expected to pass
-            let Some((second_number_of_votes, _)) = outcome_by_votes.get(1) else {
-                return Some(outcome.clone());
+            let Some(second_place_vote) = outcome_by_votes.get(1) else {
+                return Some(vote.outcome.clone());
             };
 
-            (votes > second_number_of_votes).then(|| outcome.clone())
+            (vote.votes > second_place_vote.votes).then(|| vote.outcome.clone())
         });
         self.outcomes_by_votes = outcome_by_votes;
+    }
+}
+
+/// Votes for an elect option.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Vote {
+    votes: u16,
+    outcome: AgendaElect,
+}
+
+impl Vote {
+    pub fn new(votes: u16, outcome: AgendaElect) -> Self {
+        Self { votes, outcome }
     }
 }
