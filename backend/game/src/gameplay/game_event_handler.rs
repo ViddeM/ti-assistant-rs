@@ -25,6 +25,7 @@ use crate::{
 };
 
 use super::{
+    agenda::AgendaRecord,
     error::GameError,
     event::{ActionCardInfo, Event},
     game_state::{GameState, TacticalProgress},
@@ -530,9 +531,11 @@ pub fn update_game_state(
                     }
                 }
 
-                game_state
-                    .agenda_vote_history
-                    .push((game_state.round, vote, outcome));
+                game_state.agenda_vote_history.push(AgendaRecord {
+                    round: game_state.round,
+                    vote,
+                    outcome,
+                });
 
                 // TODO: resolve any vote effects such as VPs or techs
             } else {

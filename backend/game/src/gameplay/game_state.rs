@@ -19,7 +19,7 @@ use crate::data::components::{
 };
 
 use super::{
-    agenda::{AgendaState, VoteState},
+    agenda::{AgendaRecord, AgendaState},
     error::GameError,
     player::{Player, PlayerId},
     score::Score,
@@ -69,12 +69,7 @@ pub struct GameState {
     pub agenda: Option<AgendaState>,
 
     /// List of past things voted on in the agenda phase.
-    ///
-    /// List is a tuple of
-    /// - the round number at the time,
-    /// - the [VoteState] at the time of resolution,
-    /// - and the outcome of the vote.
-    pub agenda_vote_history: Vec<(u32, VoteState, AgendaElect)>,
+    pub agenda_vote_history: Vec<AgendaRecord>,
 
     /// Laws in play.
     pub laws: HashMap<Agenda, AgendaElect>,
