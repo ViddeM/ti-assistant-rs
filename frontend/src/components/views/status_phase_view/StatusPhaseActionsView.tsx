@@ -138,9 +138,14 @@ const PlayerObjectives = ({
 }: PlayerObjectivesProps) => {
   const pub = gameState.statusPhaseState!!.scoredPublicObjectives[player.id];
   const sec = gameState.statusPhaseState!!.scoredSecretObjectives[player.id];
-  const availablePubs = Object.keys(gameState.score.revealedObjectives).filter(
-    (o) => !gameState.score.revealedObjectives[o].includes(player.id)
-  );
+  const availablePubs = Object.keys(gameState.score.revealedObjectives)
+    .filter((o) => !gameState.score.revealedObjectives[o].includes(player.id))
+    .map((o) => {
+      return {
+        id: o,
+        ...gameOptions.objectives[o],
+      };
+    });
 
   const playerScoredSecrets = gameState.score.secretObjectives[player.id] ?? [];
   const availableSecs = Object.keys(gameOptions.objectives)
@@ -177,7 +182,7 @@ const PlayerObjectives = ({
     <div>
       <h4>{player.name}</h4>
       {pub !== undefined ? (
-        <p>Public: {pub ? pub : "Skipped"}</p>
+        <p>Public: {pub ? gameOptions.objectives[pub].name : "Skipped"}</p>
       ) : (
         <div>
           <Dropdown
@@ -191,8 +196,8 @@ const PlayerObjectives = ({
               <>
                 <option value="">--Select public objective--</option>
                 {availablePubs.map((o) => (
-                  <option key={o} value={o}>
-                    {o}
+                  <option key={o.id} value={o.id}>
+                    {o.name}
                   </option>
                 ))}
               </>
@@ -208,7 +213,7 @@ const PlayerObjectives = ({
         </div>
       )}
       {sec !== undefined ? (
-        <p>Secret: {sec ? sec : "Skipped"}</p>
+        <p>Secret: {sec ? gameOptions.objectives[sec].name : "Skipped"}</p>
       ) : (
         <div>
           <Dropdown
