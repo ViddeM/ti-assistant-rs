@@ -521,21 +521,23 @@ pub fn update_game_state(
             let vote = state.vote.take().unwrap();
             state.round = state.round.next();
 
-            let Some(outcome) = outcome else { todo!() };
-
-            if vote.kind == AgendaKind::Law {
-                if let AgendaElect::ForOrAgainst(ForOrAgainst::Against) = &outcome {
-                    // law didn't pass, don't add it to set of active laws.
-                } else {
-                    game_state.laws.insert(vote.agenda, outcome.clone());
+            if let Some(outcome) = outcome {
+                if vote.kind == AgendaKind::Law {
+                    if let AgendaElect::ForOrAgainst(ForOrAgainst::Against) = &outcome {
+                        // law didn't pass, don't add it to set of active laws.
+                    } else {
+                        game_state.laws.insert(vote.agenda, outcome.clone());
+                    }
                 }
+
+                game_state
+                    .agenda_vote_history
+                    .push((game_state.round, vote, outcome));
+
+                // TODO: resolve any vote effects such as VPs or techs
+            } else {
+                // do nothing, i.e. discard agenda without resolving it.
             }
-
-            game_state
-                .agenda_vote_history
-                .push((game_state.round, vote, outcome));
-
-            // TODO: resolve any vote effects such as VPs or techs
         }
         Event::CompleteAgendaPhase => {
             game_state.assert_phase(Phase::Agenda)?;
