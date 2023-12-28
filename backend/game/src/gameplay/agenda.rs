@@ -50,6 +50,21 @@ impl AgendaRound {
     }
 }
 
+/// Record of a previously completed agenda vote.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AgendaRecord {
+    /// The round number at the time.
+    pub round: u32,
+
+    /// The [VoteState] at the time of resolution.
+    /// Note that if the outcome was forced, the [VoteState] will not line up with it.
+    pub vote: VoteState,
+
+    /// The outcome of the vote.
+    pub outcome: AgendaElect,
+}
+
 /// State of an agenda vote.
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]

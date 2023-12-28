@@ -6,7 +6,7 @@ use eyre::{bail, ensure};
 use crate::{
     data::components::{
         action_card::{ActionCard, ActionCardPlay},
-        agenda::AgendaElectKind,
+        agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
         objectives::Objective,
         phase::Phase,
         planet::Planet,
@@ -25,6 +25,7 @@ use crate::{
 };
 
 use super::{
+    agenda::AgendaRecord,
     error::GameError,
     event::{ActionCardInfo, Event},
     game_state::{GameState, TacticalProgress},
@@ -507,18 +508,42 @@ pub fn update_game_state(
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
             };
-            let Some(_vote) = &state.vote else {
+            let Some(vote) = &state.vote else {
                 bail!("no agenda has been revealed yet");
             };
+            if let Some(outcome) = &outcome {
+                ensure!(
+                    AgendaElectKind::from(outcome) == vote.elect,
+                    "invalid elect kind, expected {:?}",
+                    vote.elect
+                )
+            }
+
+            let vote = state.vote.take().unwrap();
             state.round = state.round.next();
 
-            // TODO: log the outcome of the vote
-            // TODO: resolve any vote effects such as VPs or techs
-            let _ = state.vote.take();
-            let _ = outcome;
+            if let Some(outcome) = outcome {
+                if vote.kind == AgendaKind::Law {
+                    if let AgendaElect::ForOrAgainst(ForOrAgainst::Against) = &outcome {
+                        // law didn't pass, don't add it to set of active laws.
+                    } else {
+                        game_state.laws.insert(vote.agenda, outcome.clone());
+                    }
+                }
+
+                game_state.agenda_vote_history.push(AgendaRecord {
+                    round: game_state.round,
+                    vote,
+                    outcome,
+                });
+
+                // TODO: resolve any vote effects such as VPs or techs
+            } else {
+                // do nothing, i.e. discard agenda without resolving it.
+            }
         }
         Event::CompleteAgendaPhase => {
-            game_state.assert_phase(Phase::Status)?;
+            game_state.assert_phase(Phase::Agenda)?;
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
             };
