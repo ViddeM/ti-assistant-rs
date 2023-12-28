@@ -61,18 +61,20 @@ const ScoreObjectives = ({
 
   const revealedObjectives = Object.keys(gameState.score.revealedObjectives);
 
-  const allObjectives = Object.keys(gameOptions.objectives).map((o) => {
-    return {
-      id: o,
-      ...gameOptions.objectives[o],
-    };
-  });
+  const unrevealedObjectives = Object.keys(gameOptions.objectives)
+    .filter((o) => gameState.score.revealedObjectives[o] === undefined)
+    .map((o) => {
+      return {
+        id: o,
+        ...gameOptions.objectives[o],
+      };
+    });
 
   const revealStageII =
     revealedObjectives.length >= state.expectedObjectivesBeforeStageTwo;
   const selectableObjectives = revealStageII
-    ? allObjectives.filter((o) => o.kind === "StageII")
-    : allObjectives.filter((o) => o.kind === "StageI");
+    ? unrevealedObjectives.filter((o) => o.kind === "StageII")
+    : unrevealedObjectives.filter((o) => o.kind === "StageI");
 
   return (
     <div>
