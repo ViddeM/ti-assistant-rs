@@ -65,7 +65,7 @@ pub async fn insert_demo_games(opt: &Opt, db_pool: &DbPool) -> eyre::Result<()> 
 
     if !opt.demo_games_skip_db {
         // Insert the games into the database
-        for (_, id, game) in games.into_iter() {
+        for (name, id, game) in games.into_iter() {
             let db_game = queries::try_get_game_by_id(&db_pool, &id)
                 .await
                 .wrap_err("Failed to retrieve game from DB")?;
@@ -76,6 +76,11 @@ pub async fn insert_demo_games(opt: &Opt, db_pool: &DbPool) -> eyre::Result<()> 
                     queries::delete_all_events_for_game(&db_pool, &id)
                         .await
                         .wrap_err("Failed to delete events for game")?;
+                } else if db_game.is_none() {
+                    // Create the game as well.
+                    queries::create_game(&db_pool, id, name)
+                        .await
+                        .wrap_err("Failed to create demo game")?;
                 }
 
                 for (event, timestamp) in game.history.into_iter() {
