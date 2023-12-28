@@ -2,7 +2,7 @@ use diesel::{deserialize::FromSqlRow, expression::AsExpression};
 use rand::random;
 use serde::{de::Error, Deserialize, Serialize};
 use std::{
-    fmt::Debug,
+    fmt::{Debug, Display},
     io::Write,
     ops::Deref,
     str::{self, FromStr},
@@ -85,6 +85,12 @@ impl<'de> Deserialize<'de> for GameId {
 
 impl Debug for GameId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        self.deref().fmt(f)
+        Debug::fmt(self.deref(), f)
+    }
+}
+
+impl Display for GameId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        Display::fmt(self.deref(), f)
     }
 }

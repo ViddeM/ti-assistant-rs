@@ -37,7 +37,7 @@ pub async fn main() -> eyre::Result<()> {
         eyre::bail!("DEMO_GAMES_DIR is not a directory")
     }
 
-    let name = format!("{}__{}", opt.demo_game_name, opt.game_id.to_string());
+    let name = format!("{}__{}", opt.demo_game_name, opt.game_id);
     let new_demo_game_path = opt.demo_games_dir.join(name.clone()).with_extension("json");
 
     if new_demo_game_path.exists() {
@@ -51,21 +51,11 @@ pub async fn main() -> eyre::Result<()> {
     // Check that the game exists.
     let _game = queries::get_game_by_id(&db_pool, &opt.game_id)
         .await
-        .wrap_err_with(|| {
-            format!(
-                "Failed to retrieve game with id {}",
-                opt.game_id.to_string()
-            )
-        })?;
+        .wrap_err_with(|| format!("Failed to retrieve game with id {}", opt.game_id))?;
 
     let events = queries::get_events_for_game(&db_pool, &opt.game_id)
         .await
-        .wrap_err_with(|| {
-            format!(
-                "Failed to get events for game with id {}",
-                opt.game_id.to_string()
-            )
-        })?
+        .wrap_err_with(|| format!("Failed to get events for game with id {}", opt.game_id))?
         .into_iter()
         .map(|game_event| {
             let event: Event =

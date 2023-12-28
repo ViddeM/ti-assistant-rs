@@ -105,7 +105,7 @@ pub async fn main() -> eyre::Result<()> {
             eyre::bail!("DEMO_GAMES_SKIP_DB is not set but no DB has been configured");
         };
 
-        insert_demo_games::insert_demo_games(&opt, &db_pool).await?;
+        insert_demo_games::insert_demo_games(&opt, db_pool).await?;
     }
 
     let shared = Arc::new(Shared {

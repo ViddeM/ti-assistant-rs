@@ -66,19 +66,19 @@ pub async fn insert_demo_games(opt: &Opt, db_pool: &DbPool) -> eyre::Result<()> 
     if !opt.demo_games_skip_db {
         // Insert the games into the database
         for (name, id, game) in games.into_iter() {
-            let db_game = queries::try_get_game_by_id(&db_pool, &id)
+            let db_game = queries::try_get_game_by_id(db_pool, &id)
                 .await
                 .wrap_err("Failed to retrieve game from DB")?;
 
             if db_game.is_none() || opt.overwrite_db_games {
                 if db_game.is_some() && opt.overwrite_db_games {
                     // Delete all events first.
-                    queries::delete_all_events_for_game(&db_pool, &id)
+                    queries::delete_all_events_for_game(db_pool, &id)
                         .await
                         .wrap_err("Failed to delete events for game")?;
                 } else if db_game.is_none() {
                     // Create the game as well.
-                    queries::create_game(&db_pool, id, name)
+                    queries::create_game(db_pool, id, name)
                         .await
                         .wrap_err("Failed to create demo game")?;
                 }
@@ -86,7 +86,7 @@ pub async fn insert_demo_games(opt: &Opt, db_pool: &DbPool) -> eyre::Result<()> 
                 for (event, timestamp) in game.history.into_iter() {
                     let event_json =
                         serde_json::to_value(event).wrap_err("Failed to serialize event?")?;
-                    queries::insert_game_event(&db_pool, id, event_json, timestamp)
+                    queries::insert_game_event(db_pool, id, event_json, timestamp)
                         .await
                         .wrap_err("Failed to insert game event for game")?;
                 }
