@@ -20,12 +20,12 @@
    - ✅ Resource Tracking
    - ❌ Planet attachments (PoK)
  - ❌ Score
-   - 🍑 Objectives (Stage I and II)
-   - 🍑 Custodians (Mecatroll rex)
-   - 🍑 Manually adding score
-   - 🍑 Secret Objectives (normally up to 3)
-   - 🍑 Support for the Throne
-   - 🍑 Imperial
+   - ✅ Objectives (Stage I and II)
+   - ✅ Custodians (Mecatroll rex)
+   - ✅ Manually adding score
+   - ✅ Secret Objectives (normally up to 3)
+   - ✅ Support for the Throne
+   - ✅ Imperial
    - ❌ Agendas
      - ❌ Mutiny (Multiple players, add or remove VPs)
      - ❌ Incentive Programs (Draws new objective cards)
@@ -40,7 +40,7 @@
    - ✅ Actions
    - ❌ Other relevant ones
  - ❌ Time tracking
-   - ✅ Time spent / player
+   - 🍑 Time spent / player
    - ❌ Time spent / phase
    - ❌ Show breakdown while playing
    - ❌ Show breakdown in post-game view
@@ -48,18 +48,17 @@
  - ❌ Relics
  - ❌ Separation between base/PoK/codexes
  - ✅ Strategy cards (speaker handling etc)
- - ❌ Odd faction specific starting planets / tech (e.g argent)
  - ❌ Real names for things (currently we only use the ID for e.g objectives)
  - ❌ Status phase
-   - ❌ Score objectives
-   - ❌ Reveal objectives
+   - ✅ Score objectives
+   - ✅ Reveal objectives
    - ❌ Display number of action cards to draw & tokens to receive.
 
 ### Agenda Phase
 
 #### Core functionality
 *prio 0*:
-- 🍑 Reveal objectives
+- 🍑 Reveal agendas
 - 🍑 Skip vote / Force outcome
       (must include ability to discard agenda with no effect, i.e. 'Deadly Plot')
 
