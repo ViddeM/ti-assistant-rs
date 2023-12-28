@@ -1,4 +1,5 @@
 import { GameOptions } from "@/api/GameOptions";
+
 import { GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
@@ -63,7 +64,7 @@ export const RevealObjectiveForm = ({
           onClick={() => {
             setSelectedStageI("");
             sendEvent({
-              RevealPublicObjective: {
+              RevealExtraPublicObjective: {
                 objective: selectedStageI,
               },
             });
@@ -91,7 +92,7 @@ export const RevealObjectiveForm = ({
           onClick={() => {
             setSelectedStageII("");
             sendEvent({
-              RevealPublicObjective: {
+              RevealExtraPublicObjective: {
                 objective: selectedStageII,
               },
             });

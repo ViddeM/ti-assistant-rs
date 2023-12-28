@@ -124,7 +124,7 @@ const PlayerSecretView = ({
         disabled={secret === ""}
         onClick={() => {
           sendEvent({
-            ScoreSecretObjective: {
+            ScoreExtraSecretObjective: {
               player: playerId,
               objective: secret,
             },

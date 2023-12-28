@@ -399,39 +399,99 @@ pub fn update_game_state(
             game_state.passed_players.insert(player);
             game_state.advance_turn(timestamp)?;
         }
+        /* Status phase events */
         Event::ScorePublicObjective { player, objective } => {
-            // TODO: consider restricting to the correct phase, etc
+            game_state.assert_phase(Phase::Status)?;
 
-            let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
-                bail!("can't score an unrevealed public objective");
+            let Some(status_state) = game_state.status_phase_state.as_mut() else {
+                bail!("No status phase state!");
             };
 
-            if !scorers.insert(player) {
-                bail!("can't score a public objective twice");
+            if status_state.scored_public_objectives.contains_key(&player) {
+                bail!("Player has already taken a public objective scoring decision");
+            }
+
+            status_state
+                .scored_public_objectives
+                .insert(player.clone(), objective.clone());
+
+            if let Some(obj) = objective {
+                let Some(scorers) = game_state.score.revealed_objectives.get_mut(&obj) else {
+                    bail!("can't score an unrevealed public objective");
+                };
+
+                if !scorers.insert(player) {
+                    bail!("can't score a public objective twice");
+                }
             }
         }
         Event::ScoreSecretObjective { player, objective } => {
-            // TODO: consider restricting to the correct phase, etc
+            game_state.assert_phase(Phase::Status)?;
 
-            for scored in game_state.score.secret_objectives.values() {
-                if scored.contains(&objective) {
-                    bail!("secred objective has already been scored");
+            let Some(status_state) = game_state.status_phase_state.as_mut() else {
+                bail!("No status phase state?")
+            };
+
+            if status_state.scored_secret_objectives.contains_key(&player) {
+                bail!("Player has already taken a secret objective scoring decision");
+            }
+
+            status_state
+                .scored_secret_objectives
+                .insert(player.clone(), objective.clone());
+
+            if let Some(obj) = objective {
+                for scored in game_state.score.secret_objectives.values() {
+                    if scored.contains(&obj) {
+                        bail!("secred objective has already been scored");
+                    }
+                }
+
+                game_state
+                    .score
+                    .secret_objectives
+                    .entry(player)
+                    .or_default()
+                    .insert(obj);
+            }
+        }
+        Event::RevealPublicObjective { objective } => {
+            game_state.assert_phase(Phase::Status)?;
+
+            // TODO: Support classified documents leak agenda && Incentive program agenda
+            let expected_stage_ones = 5;
+            let num_revealed = game_state.score.revealed_objectives.len();
+            match objective.get_objective_info().kind {
+                crate::data::components::objectives::ObjectiveKind::StageI => {
+                    if num_revealed >= expected_stage_ones {
+                        bail!("Already revealed enough stage I objective, expected stage II");
+                    }
+                }
+                crate::data::components::objectives::ObjectiveKind::StageII => {
+                    if num_revealed < expected_stage_ones {
+                        bail!("Haven't finished revealing stage I obejctives, cannot reveal stage II yet")
+                    }
+                }
+                crate::data::components::objectives::ObjectiveKind::Secret { .. } => {
+                    bail!("Cannot reveal secret objective as public objective")
                 }
             }
 
-            game_state
-                .score
-                .secret_objectives
-                .entry(player)
-                .or_default()
-                .insert(objective);
-        }
-        Event::RevealPublicObjective { objective } => {
             let pub_obj = Objective::Public(objective);
             ensure!(
                 !game_state.score.revealed_objectives.contains_key(&pub_obj),
                 "Objective has already been revealed!"
             );
+
+            let Some(status_phase_state) = game_state.status_phase_state.as_mut() else {
+                bail!("Status phase state not set!")
+            };
+
+            if !status_phase_state.can_reveal_objective(game_state.players.len()) {
+                bail!("Cannot reveal objective until all players have finished scoring their objectives");
+            }
+
+            status_phase_state.revealed_objective = Some(pub_obj.clone());
 
             game_state
                 .score
@@ -568,6 +628,29 @@ pub fn update_game_state(
             let imperial = game_state.score.imperial.entry(player).or_default();
             *imperial = imperial.saturating_add(value);
         }
+        Event::ScoreExtraPublicObjective { player, objective } => {
+            let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
+                bail!("can't score an unrevealed public objective");
+            };
+
+            if !scorers.insert(player) {
+                bail!("can't score a public objective twice");
+            }
+        }
+        Event::ScoreExtraSecretObjective { player, objective } => {
+            for scored in game_state.score.secret_objectives.values() {
+                if scored.contains(&objective) {
+                    bail!("secred objective has already been scored");
+                }
+            }
+
+            game_state
+                .score
+                .secret_objectives
+                .entry(player)
+                .or_default()
+                .insert(objective);
+        }
         Event::UnscoreObjective { player, objective } => {
             let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
                 bail!("Cannot un-score objective that hasn't been revealed");
@@ -581,6 +664,18 @@ pub fn update_game_state(
             };
 
             objectives.remove(&objective);
+        }
+        Event::RevealExtraPublicObjective { objective } => {
+            let pub_obj = Objective::Public(objective);
+            ensure!(
+                !game_state.score.revealed_objectives.contains_key(&pub_obj),
+                "Objective has already been revealed!"
+            );
+
+            game_state
+                .score
+                .revealed_objectives
+                .insert(pub_obj, HashSet::new());
         }
         Event::AddTechToPlayer { player, tech } => {
             let Some(p) = game_state.players.get_mut(&player) else {

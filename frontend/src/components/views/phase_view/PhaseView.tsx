@@ -87,7 +87,11 @@ export const PhaseView = ({
       );
     case "Status":
       return (
-        <StatusPhaseView gameOptions={gameOptions} sendMessage={sendMessage} />
+        <StatusPhaseView
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendMessage={sendMessage}
+        />
       );
     default:
       return <div>PHASE NOT YET IMPLEMENTED</div>;

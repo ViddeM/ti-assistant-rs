@@ -23,6 +23,7 @@ use super::{
     error::GameError,
     player::{Player, PlayerId},
     score::Score,
+    status::StatusPhaseState,
 };
 
 /// A snapshot of the game state.
@@ -73,6 +74,9 @@ pub struct GameState {
 
     /// Laws in play.
     pub laws: HashMap<Agenda, AgendaElect>,
+
+    /// State for the status phase.
+    pub status_phase_state: Option<StatusPhaseState>,
 
     /// Weather or not time should be tracked.
     pub time_tracking_paused: bool,
@@ -258,6 +262,8 @@ impl GameState {
                     self.passed_players.clear();
                     self.phase = Phase::Status;
                     self.current_turn_start_time = None;
+
+                    self.status_phase_state = Some(StatusPhaseState::empty())
                 }
                 _ => bail!("wtf"),
             }
