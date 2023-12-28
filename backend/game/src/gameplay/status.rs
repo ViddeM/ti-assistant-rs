@@ -16,15 +16,18 @@ pub struct StatusPhaseState {
     pub scored_secret_objectives: HashMap<PlayerId, Option<SecretObjective>>,
     /// What objective was revealed during this status phase.
     pub revealed_objective: Option<Objective>,
+    /// The number of objectives expected to have been revealed before we start revealing stage II cards.
+    pub expected_objectives_before_stage_two: usize,
 }
 
 impl StatusPhaseState {
     /// Create a new empty state for a new status phase.
-    pub fn empty() -> Self {
+    pub fn new(expected_objectives_before_stage_two: usize) -> Self {
         Self {
             scored_public_objectives: HashMap::new(),
             scored_secret_objectives: HashMap::new(),
             revealed_objective: None,
+            expected_objectives_before_stage_two,
         }
     }
 

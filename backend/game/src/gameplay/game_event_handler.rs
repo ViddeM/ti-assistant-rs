@@ -458,25 +458,6 @@ pub fn update_game_state(
         Event::RevealPublicObjective { objective } => {
             game_state.assert_phase(Phase::Status)?;
 
-            // TODO: Support classified documents leak agenda && Incentive program agenda
-            let expected_stage_ones = 5;
-            let num_revealed = game_state.score.revealed_objectives.len();
-            match objective.get_objective_info().kind {
-                crate::data::components::objectives::ObjectiveKind::StageI => {
-                    if num_revealed >= expected_stage_ones {
-                        bail!("Already revealed enough stage I objective, expected stage II");
-                    }
-                }
-                crate::data::components::objectives::ObjectiveKind::StageII => {
-                    if num_revealed < expected_stage_ones {
-                        bail!("Haven't finished revealing stage I obejctives, cannot reveal stage II yet")
-                    }
-                }
-                crate::data::components::objectives::ObjectiveKind::Secret { .. } => {
-                    bail!("Cannot reveal secret objective as public objective")
-                }
-            }
-
             let pub_obj = Objective::Public(objective);
             ensure!(
                 !game_state.score.revealed_objectives.contains_key(&pub_obj),
@@ -486,6 +467,23 @@ pub fn update_game_state(
             let Some(status_phase_state) = game_state.status_phase_state.as_mut() else {
                 bail!("Status phase state not set!")
             };
+
+            let num_revealed = game_state.score.revealed_objectives.len();
+            match pub_obj.get_objective_info().kind {
+                crate::data::components::objectives::ObjectiveKind::StageI => {
+                    if num_revealed >= status_phase_state.expected_objectives_before_stage_two {
+                        bail!("Already revealed enough stage I objective, expected stage II");
+                    }
+                }
+                crate::data::components::objectives::ObjectiveKind::StageII => {
+                    if num_revealed < status_phase_state.expected_objectives_before_stage_two {
+                        bail!("Haven't finished revealing stage I obejctives, cannot reveal stage II yet")
+                    }
+                }
+                crate::data::components::objectives::ObjectiveKind::Secret { .. } => {
+                    bail!("Cannot reveal secret objective as public objective")
+                }
+            }
 
             if !status_phase_state.can_reveal_objective(game_state.players.len()) {
                 bail!("Cannot reveal objective until all players have finished scoring their objectives");

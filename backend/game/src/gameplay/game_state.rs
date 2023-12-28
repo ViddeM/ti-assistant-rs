@@ -253,7 +253,9 @@ impl GameState {
                     self.phase = Phase::Status;
                     self.current_turn_start_time = None;
 
-                    self.status_phase_state = Some(StatusPhaseState::empty())
+                    self.status_phase_state = Some(StatusPhaseState::new(
+                        self.expected_objectives_before_stage_two(),
+                    ))
                 }
                 _ => bail!("wtf"),
             }
@@ -360,5 +362,16 @@ impl GameState {
         };
 
         Ok(current_player)
+    }
+
+    /// Returns the number of cards that is expected to have been revealed before we can start revealing stage II cards.
+    pub fn expected_objectives_before_stage_two(&self) -> usize {
+        let extras = self
+            .laws
+            .keys()
+            .filter(|l| l == &&Agenda::IncentiveProgram || l == &&Agenda::ClassifiedDocumentLeaks)
+            .count();
+
+        5 + extras
     }
 }
