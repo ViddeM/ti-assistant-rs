@@ -73,7 +73,7 @@
 - ❌ VPs from agenda cards (see "Score" bullet point)
 - ❌ Show available votes (soft limit)
 - ❌ Show voting order (but allow votes in any order)
-- 🍑 Veto (can be solved with Undo, but messes up time tracking)
+- ✅ Veto (can be solved with Undo, but messes up time tracking)
 
 #### Extras (nice to have)
 - Abilities that give extra votes (_with a soft cap on castable votes, these aren't required_)
