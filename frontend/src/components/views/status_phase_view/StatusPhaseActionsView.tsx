@@ -61,14 +61,15 @@ const ScoreObjectives = ({
 
   const revealedObjectives = Object.keys(gameState.score.revealedObjectives);
 
-  const unrevealedObjectives = Object.keys(gameOptions.objectives)
-    .filter((o) => gameState.score.revealedObjectives[o] === undefined)
-    .map((o) => {
-      return {
-        id: o,
-        ...gameOptions.objectives[o],
-      };
-    });
+  const allObjectives = Object.keys(gameOptions.objectives).map((o) => {
+    return {
+      id: o,
+      ...gameOptions.objectives[o],
+    };
+  });
+  const unrevealedObjectives = allObjectives.filter(
+    (o) => !revealedObjectives.includes(o.id)
+  );
 
   const revealStageII =
     revealedObjectives.length >= state.expectedObjectivesBeforeStageTwo;
@@ -90,7 +91,7 @@ const ScoreObjectives = ({
       ))}
       <h2>Reveal Stage {revealStageII ? "II" : "I"} Objective</h2>
       {state.revealedObjective !== null ? (
-        <p>{state.revealedObjective}</p>
+        <p>{gameOptions.objectives[state.revealedObjective].name}</p>
       ) : (
         <>
           <Dropdown
