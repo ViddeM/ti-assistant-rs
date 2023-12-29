@@ -1,0 +1,1227 @@
+[
+  [
+    {
+      "AddPlayer": {
+        "player": {
+          "name": "Bob",
+          "faction": "ClanOfSaar",
+          "color": "Yellow"
+        }
+      }
+    },
+    "2023-12-29T11:52:45.619082Z"
+  ],
+  [
+    {
+      "AddPlayer": {
+        "player": {
+          "name": "Ryker",
+          "faction": "FederationOfSol",
+          "color": "Black"
+        }
+      }
+    },
+    "2023-12-29T11:53:23.599329Z"
+  ],
+  [
+    {
+      "AddPlayer": {
+        "player": {
+          "name": "Bill",
+          "faction": "XxchaKingdom",
+          "color": "Green"
+        }
+      }
+    },
+    "2023-12-29T11:55:06.831456Z"
+  ],
+  [
+    {
+      "AddPlayer": {
+        "player": {
+          "name": "Bender",
+          "faction": "GhostsOfCreuss",
+          "color": "Blue"
+        }
+      }
+    },
+    "2023-12-29T11:55:18.635389Z"
+  ],
+  [
+    {
+      "AddPlayer": {
+        "player": {
+          "name": "Hugh",
+          "faction": "L1Z1XMindnet",
+          "color": "Purple"
+        }
+      }
+    },
+    "2023-12-29T11:59:15.059377Z"
+  ],
+  [
+    "StartGame",
+    "2023-12-29T11:59:17.119838Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Bill",
+        "card": "Construction"
+      }
+    },
+    "2023-12-29T11:59:22.878876Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Bender",
+        "card": "Warfare"
+      }
+    },
+    "2023-12-29T11:59:26.275871Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Hugh",
+        "card": "Technology"
+      }
+    },
+    "2023-12-29T11:59:28.586620Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Bob",
+        "card": "Politics"
+      }
+    },
+    "2023-12-29T11:59:32.148944Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Ryker",
+        "card": "Diplomacy"
+      }
+    },
+    "2023-12-29T11:59:38.529405Z"
+  ],
+  [
+    "CompleteStrategyPhase",
+    "2023-12-29T11:59:40.090813Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Ryker",
+        "card": "Diplomacy"
+      }
+    },
+    "2023-12-29T11:59:42.287301Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": "Diplomacy"
+      }
+    },
+    "2023-12-29T11:59:44.545234Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T11:59:45.296554Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Diplomacy"
+      }
+    },
+    "2023-12-29T11:59:45.911494Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T11:59:46.676424Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T11:59:47.313506Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Bob",
+        "card": "Politics"
+      }
+    },
+    "2023-12-29T11:59:48.431048Z"
+  ],
+  [
+    {
+      "StrategicActionPrimary": {
+        "player": "Bob",
+        "action": {
+          "Politics": {
+            "newSpeaker": "Bender"
+          }
+        }
+      }
+    },
+    "2023-12-29T11:59:56.831587Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T11:59:58.128885Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T11:59:58.961088Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Politics"
+      }
+    },
+    "2023-12-29T11:59:59.552184Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Politics"
+      }
+    },
+    "2023-12-29T12:00:00.124283Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:00:00.565050Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Bill",
+        "card": "Construction"
+      }
+    },
+    "2023-12-29T12:00:01.594225Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Construction"
+      }
+    },
+    "2023-12-29T12:00:02.636521Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:00:03.354056Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:00:04.361761Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Construction"
+      }
+    },
+    "2023-12-29T12:00:04.991064Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:00:05.629138Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Bender",
+        "card": "Warfare"
+      }
+    },
+    "2023-12-29T12:00:06.686697Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": "Warfare"
+      }
+    },
+    "2023-12-29T12:00:07.481064Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Warfare"
+      }
+    },
+    "2023-12-29T12:00:08.036609Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:00:08.914002Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:00:09.799152Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:00:10.316629Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Hugh",
+        "card": "Technology"
+      }
+    },
+    "2023-12-29T12:00:11.201363Z"
+  ],
+  [
+    {
+      "StrategicActionPrimary": {
+        "player": "Hugh",
+        "action": {
+          "Technology": {
+            "tech": "FighterII",
+            "extra": "X89BacterialWeapon"
+          }
+        }
+      }
+    },
+    "2023-12-29T12:00:23.471834Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": {
+          "Technology": {
+            "tech": "CarrierII"
+          }
+        }
+      }
+    },
+    "2023-12-29T12:00:25.984276Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:00:28.154645Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:00:29.603294Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:00:30.635366Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:00:31.797527Z"
+  ],
+  [
+    {
+      "RevealExtraPublicObjective": {
+        "objective": "ImproveInfrastructure"
+      }
+    },
+    "2023-12-29T12:00:37.955273Z"
+  ],
+  [
+    {
+      "RevealExtraPublicObjective": {
+        "objective": "PushBoundaries"
+      }
+    },
+    "2023-12-29T12:00:41.180307Z"
+  ],
+  [
+    {
+      "ActionCardActionBegin": {
+        "player": "Ryker",
+        "card": "Plague"
+      }
+    },
+    "2023-12-29T12:00:49.744401Z"
+  ],
+  [
+    {
+      "ActionCardActionCommit": {
+        "player": "Ryker",
+        "data": null
+      }
+    },
+    "2023-12-29T12:00:51.101661Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Bob"
+      }
+    },
+    "2023-12-29T12:00:53.043204Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Bill"
+      }
+    },
+    "2023-12-29T12:00:54.557177Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Bender"
+      }
+    },
+    "2023-12-29T12:00:56.416207Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:00:57.934133Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Ryker"
+      }
+    },
+    "2023-12-29T12:00:59.066949Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Bill",
+        "objective": "ImproveInfrastructure"
+      }
+    },
+    "2023-12-29T12:01:04.706798Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Bill",
+        "objective": "BraveTheVoid"
+      }
+    },
+    "2023-12-29T12:01:07.294340Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Bender",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:01:08.389279Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Bender",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:01:09.109424Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Bob",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:01:09.949380Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Bob",
+        "objective": "ThreatenEnemies"
+      }
+    },
+    "2023-12-29T12:01:12.184114Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Ryker",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:01:12.997177Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Ryker",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:01:13.616967Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Hugh",
+        "objective": "ImproveInfrastructure"
+      }
+    },
+    "2023-12-29T12:01:16.368033Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Hugh",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:01:17.036491Z"
+  ],
+  [
+    {
+      "RevealPublicObjective": {
+        "objective": "AmassWealth"
+      }
+    },
+    "2023-12-29T12:03:40.918503Z"
+  ],
+  [
+    "CompleteStatusPhase",
+    "2023-12-29T12:04:10.445394Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Bender",
+        "card": "Leadership"
+      }
+    },
+    "2023-12-29T12:05:00.910970Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Hugh",
+        "card": "Diplomacy"
+      }
+    },
+    "2023-12-29T12:05:02.645673Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Bob",
+        "card": "Politics"
+      }
+    },
+    "2023-12-29T12:05:03.230666Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Ryker",
+        "card": "Construction"
+      }
+    },
+    "2023-12-29T12:05:03.673133Z"
+  ],
+  [
+    {
+      "TakeStrategyCard": {
+        "player": "Bill",
+        "card": "Trade"
+      }
+    },
+    "2023-12-29T12:05:04.100885Z"
+  ],
+  [
+    "CompleteStrategyPhase",
+    "2023-12-29T12:05:05.305459Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Bender",
+        "card": "Leadership"
+      }
+    },
+    "2023-12-29T12:05:06.770469Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": "Leadership"
+      }
+    },
+    "2023-12-29T12:05:07.693004Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:08.285662Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Leadership"
+      }
+    },
+    "2023-12-29T12:05:08.757936Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:09.597897Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:05:09.994533Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Hugh",
+        "card": "Diplomacy"
+      }
+    },
+    "2023-12-29T12:05:10.730825Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:11.463702Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Diplomacy"
+      }
+    },
+    "2023-12-29T12:05:11.937756Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Diplomacy"
+      }
+    },
+    "2023-12-29T12:05:12.313063Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:13.220799Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:05:13.573015Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Bob",
+        "card": "Politics"
+      }
+    },
+    "2023-12-29T12:05:14.300820Z"
+  ],
+  [
+    {
+      "StrategicActionPrimary": {
+        "player": "Bob",
+        "action": {
+          "Politics": {
+            "newSpeaker": "Bob"
+          }
+        }
+      }
+    },
+    "2023-12-29T12:05:16.305735Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": "Politics"
+      }
+    },
+    "2023-12-29T12:05:17.051439Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:17.630952Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:18.351126Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Politics"
+      }
+    },
+    "2023-12-29T12:05:18.890858Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:05:19.287911Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Ryker",
+        "card": "Construction"
+      }
+    },
+    "2023-12-29T12:05:20.483162Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bill",
+        "action": "Construction"
+      }
+    },
+    "2023-12-29T12:05:21.373088Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:21.957854Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Construction"
+      }
+    },
+    "2023-12-29T12:05:22.640913Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Skip"
+      }
+    },
+    "2023-12-29T12:05:23.188393Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:05:23.607960Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Bill",
+        "card": "Trade"
+      }
+    },
+    "2023-12-29T12:05:24.415873Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bender",
+        "action": "Trade"
+      }
+    },
+    "2023-12-29T12:05:24.913179Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Bob",
+        "action": "Trade"
+      }
+    },
+    "2023-12-29T12:05:25.451307Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Ryker",
+        "action": "Trade"
+      }
+    },
+    "2023-12-29T12:05:25.903139Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Hugh",
+        "action": "Trade"
+      }
+    },
+    "2023-12-29T12:05:26.323344Z"
+  ],
+  [
+    "StrategicActionCommit",
+    "2023-12-29T12:05:26.953105Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Bender"
+      }
+    },
+    "2023-12-29T12:05:44.469323Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Bender",
+        "planet": "Thibah"
+      }
+    },
+    "2023-12-29T12:05:48.125852Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Bender"
+      }
+    },
+    "2023-12-29T12:05:48.905816Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:05:50.256475Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Hugh",
+        "planet": "Resculon"
+      }
+    },
+    "2023-12-29T12:05:52.189193Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Hugh",
+        "planet": "Coorneeq"
+      }
+    },
+    "2023-12-29T12:05:53.233323Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:05:53.825818Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Bob"
+      }
+    },
+    "2023-12-29T12:05:55.013491Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Bob",
+        "planet": "TrenLak"
+      }
+    },
+    "2023-12-29T12:05:58.100958Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Bob",
+        "planet": "Quinarra"
+      }
+    },
+    "2023-12-29T12:05:59.075261Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Bob"
+      }
+    },
+    "2023-12-29T12:05:59.495241Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Ryker"
+      }
+    },
+    "2023-12-29T12:06:00.507104Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Ryker",
+        "planet": "MecatolRex"
+      }
+    },
+    "2023-12-29T12:06:03.403275Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Ryker"
+      }
+    },
+    "2023-12-29T12:06:04.570963Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Bill"
+      }
+    },
+    "2023-12-29T12:06:05.796019Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Bill",
+        "planet": "Bakal"
+      }
+    },
+    "2023-12-29T12:06:08.615933Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Bill",
+        "planet": "AlioPrima"
+      }
+    },
+    "2023-12-29T12:06:09.283331Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Bill"
+      }
+    },
+    "2023-12-29T12:06:09.845643Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Bender"
+      }
+    },
+    "2023-12-29T12:06:10.902458Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Bender",
+        "planet": "Elysium"
+      }
+    },
+    "2023-12-29T12:06:13.947975Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Bender"
+      }
+    },
+    "2023-12-29T12:06:14.538928Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:06:15.425819Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Hugh",
+        "planet": "Bereg"
+      }
+    },
+    "2023-12-29T12:06:18.771597Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Hugh",
+        "planet": "LirtaIV"
+      }
+    },
+    "2023-12-29T12:06:19.431467Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:06:19.896382Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Bob"
+      }
+    },
+    "2023-12-29T12:06:21.473055Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Ryker"
+      }
+    },
+    "2023-12-29T12:06:21.965967Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Bill"
+      }
+    },
+    "2023-12-29T12:06:22.423484Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Bender"
+      }
+    },
+    "2023-12-29T12:06:22.865809Z"
+  ],
+  [
+    {
+      "PassAction": {
+        "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:06:23.353264Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Bill",
+        "objective": "AmassWealth"
+      }
+    },
+    "2023-12-29T12:06:28.926488Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Bill",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:06:30.026370Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Bender",
+        "objective": "PushBoundaries"
+      }
+    },
+    "2023-12-29T12:06:32.630632Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Bender",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:06:33.590752Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Bob",
+        "objective": "AmassWealth"
+      }
+    },
+    "2023-12-29T12:06:35.488137Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Bob",
+        "objective": "DefySpaceAndTime"
+      }
+    },
+    "2023-12-29T12:06:37.541198Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Ryker",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:06:39.573905Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Ryker",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:06:40.418531Z"
+  ],
+  [
+    {
+      "ScorePublicObjective": {
+        "player": "Hugh",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:06:41.639328Z"
+  ],
+  [
+    {
+      "ScoreSecretObjective": {
+        "player": "Hugh",
+        "objective": null
+      }
+    },
+    "2023-12-29T12:06:42.577956Z"
+  ],
+  [
+    {
+      "RevealPublicObjective": {
+        "objective": "CornerTheMarket"
+      }
+    },
+    "2023-12-29T12:06:55.999260Z"
+  ],
+  [
+    "CompleteStatusPhase",
+    "2023-12-29T12:06:58.055441Z"
+  ]
+]
