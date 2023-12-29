@@ -3,7 +3,7 @@ import { GameOptions } from "@/api/GameOptions";
 import { AgendaState, GameState, Player, Vote } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./AgendaPhaseView.module.scss";
 
 export interface AgendaActionsViewProps {
@@ -42,7 +42,6 @@ export const AgendaActionsView = ({
 
   const everyoneHasVoted =
     Object.keys(state.vote?.playerVotes ?? {}).length === players.length;
-  const expectedOutcome = state.vote?.expectedOutcome?.value ?? "Discard";
 
   const castVote = (
     player: string,
@@ -127,22 +126,11 @@ export const AgendaActionsView = ({
                   ))}
                 </li>
                 <li>
-                  Resolve outcome
-                  <fieldset>
-                    <legend>Resolve</legend>
-                    <Button
-                      disabled={!everyoneHasVoted}
-                      onClick={() =>
-                        sendMessage({
-                          ResolveAgenda: {
-                            outcome: state.vote?.expectedOutcome,
-                          },
-                        })
-                      }
-                    >
-                      Resolve {expectedOutcome}
-                    </Button>
-                  </fieldset>
+                  <ResolveOutcome
+                    sendMessage={sendMessage}
+                    everyoneHasVoted={everyoneHasVoted}
+                    state={state}
+                  />
                 </li>
               </ol>
             </div>
@@ -231,5 +219,64 @@ const PlayerVoteView = ({
         </div>
       )}
     </fieldset>
+  );
+};
+
+interface ResolveOutcomeProps {
+  everyoneHasVoted: boolean;
+  state: AgendaState;
+  sendMessage: (data: any) => void;
+}
+
+const ResolveOutcome = ({
+  everyoneHasVoted,
+  state,
+  sendMessage,
+}: ResolveOutcomeProps) => {
+  const expectedOutcome = state.vote?.expectedOutcome?.value ?? "Discard";
+  const [outcome, setOutcome] = useState<string>(expectedOutcome);
+
+  useEffect(() => {
+    setOutcome(expectedOutcome);
+  }, [expectedOutcome]);
+
+  return (
+    <>
+      Resolve outcome
+      <fieldset>
+        <legend>Resolve</legend>
+
+        <div className={styles.resolveOutcomeContainer}>
+          <label>Override outcome</label>
+          <Dropdown
+            value={outcome}
+            onChange={(e) => setOutcome(e.target.value)}
+          >
+            <option value="">Discard</option>
+            {state.vote?.candidates.map((candidate) => (
+              <option value={candidate.value} key={candidate.value}>
+                {candidate.value}
+              </option>
+            ))}
+          </Dropdown>
+
+          <Button
+            disabled={!everyoneHasVoted}
+            onClick={() =>
+              sendMessage({
+                ResolveAgenda: {
+                  outcome: {
+                    electKind: state.vote?.elect,
+                    value: outcome === "Discard" ? null : outcome,
+                  },
+                },
+              })
+            }
+          >
+            Resolve {outcome}
+          </Button>
+        </div>
+      </fieldset>
+    </>
   );
 };
