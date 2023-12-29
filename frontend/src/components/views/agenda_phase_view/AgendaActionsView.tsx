@@ -4,6 +4,7 @@ import { AgendaState, GameState, Player, Vote } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
+import styles from "./AgendaPhaseView.module.scss";
 
 export interface AgendaActionsViewProps {
   gameState: GameState;
@@ -66,29 +67,40 @@ export const AgendaActionsView = ({
         <>
           {state.vote === null ? (
             <div>
-              <h6>{speaker.name}: reveal an agenda</h6>
-              <Dropdown
-                value={currentAgenda}
-                onChange={(e) => setCurrentAgenda(e.target.value)}
-              >
-                <option value="">--Select Agenda--</option>
-                {availableAgendas.map((a) => (
-                  <option value={a.id} key={a.id}>
-                    {a.name}
-                  </option>
-                ))}
-              </Dropdown>
-              <Button
-                onClick={() =>
-                  sendMessage({
-                    RevealAgenda: {
-                      agenda: currentAgenda,
-                    },
-                  })
-                }
-              >
-                Reveal
-              </Button>
+              <fieldset>
+                <legend>
+                  <h2 className={styles.revealAgendaTitle}>{speaker.name}</h2>
+                </legend>
+                <div className={styles.revealAgendaBox}>
+                  <label htmlFor="select-agenda-dropdown">
+                    Reveal an agenda
+                  </label>
+                  <Dropdown
+                    id="select-agenda-dropdown"
+                    value={currentAgenda}
+                    onChange={(e) => setCurrentAgenda(e.target.value)}
+                  >
+                    <option value="">--Select Agenda--</option>
+                    {availableAgendas.map((a) => (
+                      <option value={a.id} key={a.id}>
+                        {a.name}
+                      </option>
+                    ))}
+                  </Dropdown>
+                  <Button
+                    disabled={currentAgenda === ""}
+                    onClick={() =>
+                      sendMessage({
+                        RevealAgenda: {
+                          agenda: currentAgenda,
+                        },
+                      })
+                    }
+                  >
+                    Reveal
+                  </Button>
+                </div>
+              </fieldset>
             </div>
           ) : (
             <div>

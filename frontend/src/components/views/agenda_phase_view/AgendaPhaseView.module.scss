@@ -17,3 +17,22 @@
     }
   }
 }
+
+.revealAgendaTitle {
+  margin: 0;
+}
+
+.revealAgendaBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: stretch;
+
+  > * {
+    margin-bottom: $marginLarge;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
