@@ -61,8 +61,8 @@ pub struct AgendaRecord {
     /// Note that if the outcome was forced, the [VoteState] will not line up with it.
     pub vote: VoteState,
 
-    /// The outcome of the vote.
-    pub outcome: AgendaElect,
+    /// The outcome of the vote or None if it was discarded.
+    pub outcome: Option<AgendaElect>,
 }
 
 /// State of an agenda vote.

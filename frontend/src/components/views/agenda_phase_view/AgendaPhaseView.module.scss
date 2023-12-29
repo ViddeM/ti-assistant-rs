@@ -9,11 +9,11 @@
   }
 
   @media (min-width: 800px) {
-    flex-direction: row;
+    flex-direction: row-reverse;
     justify-content: space-between;
 
     & > :first-child {
-      margin-right: $marginLarge;
+      margin-left: $marginLarge;
     }
   }
 }
@@ -32,6 +32,24 @@
     margin-bottom: $marginLarge;
 
     &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.castVoteContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > * {
+    width: 100%;
+    margin-bottom: $marginLarge;
+
+    &:last-child {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
       margin-bottom: 0;
     }
   }

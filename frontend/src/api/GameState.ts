@@ -123,5 +123,5 @@ export interface Vote {
 export interface AgendaRecord {
   round: number;
   vote: VoteState;
-  outcome: AgendaElect;
+  outcome: AgendaElect | null;
 }
