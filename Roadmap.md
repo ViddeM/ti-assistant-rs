@@ -11,7 +11,7 @@
  - ✅ Persist gamestate
 
 ## Gameplay
- - 🍑 Track round number
+ - ✅ Track round number
  - ❌ Update setup to do all required tasks
    - ❌ Choose speaker at start of game
    - ❌ Reveal initial objectives
@@ -58,12 +58,12 @@
 
 #### Core functionality
 *prio 0*:
-- 🍑 Reveal agendas
+- ✅ Reveal agendas
 - 🍑 Skip vote / Force outcome
       (must include ability to discard agenda with no effect, i.e. 'Deadly Plot')
 
 *prio 1*:
-- 🍑 Vote on objectives
+- ✅ Vote on objectives
 - ❌ Speaker tiebreak
 
 *prio 2*:
