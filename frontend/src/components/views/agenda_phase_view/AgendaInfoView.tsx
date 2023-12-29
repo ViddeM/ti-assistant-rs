@@ -26,22 +26,15 @@ export const AgendaInfoView = ({
         <legend>
           <h3>Previous agendas</h3>
         </legend>
-
-        {previousVotesThisRound.length > 0 ? (
-          <>
-            {previousVotesThisRound.map((vote) => (
-              <div key={vote.vote.agenda}>
-                <h6>{gameOptions.agendas[vote.vote.agenda].name}</h6>
-                <p>
-                  {electKindToString(vote.vote.elect)}:
-                  {vote.outcome?.value ?? "Discarded"}
-                </p>
-              </div>
-            ))}
-          </>
-        ) : (
-          <p>None</p>
-        )}
+        {previousVotesThisRound.map((vote) => (
+          <div key={vote.vote.agenda}>
+            <h6>{gameOptions.agendas[vote.vote.agenda].name}</h6>
+            <p>
+              {electKindToString(vote.vote.elect)}:
+              {vote.outcome?.value ?? "Discarded"}
+            </p>
+          </div>
+        ))}
       </fieldset>
 
       <fieldset>
