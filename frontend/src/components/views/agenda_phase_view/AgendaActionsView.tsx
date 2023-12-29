@@ -61,9 +61,12 @@ export const AgendaActionsView = ({
   return (
     <div className="card">
       {state.round === "Completed" ? (
-        <Button onClick={() => sendMessage("CompleteAgendaPhase")}>
-          Complete Agenda Phase
-        </Button>
+        <div>
+          <h3>Ready all planets!</h3>
+          <Button onClick={() => sendMessage("CompleteAgendaPhase")}>
+            Complete Agenda Phase
+          </Button>
+        </div>
       ) : (
         <>
           {state.vote === null ? (
