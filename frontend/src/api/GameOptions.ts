@@ -1,6 +1,7 @@
 import { Faction } from "@/resources/types/factions";
 import { GamePhase } from "@/resources/types/gamePhase";
 import { System } from "./System";
+import { AgendaElect, AgendaKind } from "./Agenda";
 
 export interface GameOptions {
   playerCounts: number[];
@@ -13,6 +14,7 @@ export interface GameOptions {
   objectives: { [key: string]: ObjectiveInfo };
   technologies: { [key: string]: TechInfo };
   actionCards: { [key: string]: ActionCardInfo };
+  agendas: { [key: string]: AgendaInfo };
 }
 
 export interface PlanetInfo {
@@ -103,4 +105,12 @@ export interface ActionCardInfo {
   play: ActionCardPlay;
   effect: string;
   flavor_text: string;
+}
+
+export interface AgendaInfo {
+  name: string;
+  description: string;
+  kind: AgendaKind;
+  elect: AgendaElect;
+  origin: string; // TODO
 }

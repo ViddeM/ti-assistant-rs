@@ -555,9 +555,10 @@ pub fn update_game_state(
                     vote.elect
                 );
 
-                vote.player_votes.insert(player, Vote::new(votes, outcome));
+                vote.player_votes
+                    .insert(player, Some(Vote::new(votes, outcome)));
             } else {
-                vote.player_votes.remove(&player);
+                vote.player_votes.insert(player, None);
             }
             vote.tally_votes();
         }

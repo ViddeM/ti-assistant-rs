@@ -82,7 +82,7 @@ pub struct VoteState {
     pub candidates: Vec<AgendaElect>,
 
     /// Player-cast votes.
-    pub player_votes: HashMap<PlayerId, Vote>,
+    pub player_votes: HashMap<PlayerId, Option<Vote>>,
 
     /// Votes tallied on a per-outcome basis.
     ///
@@ -180,9 +180,11 @@ impl VoteState {
             .player_votes
             .values()
             .cloned()
-            .fold(BTreeMap::new(), |mut acc, Vote { votes, outcome }| {
-                let entry = acc.entry(outcome).or_insert(0);
-                *entry = entry.saturating_add(votes);
+            .fold(BTreeMap::new(), |mut acc, vote| {
+                if let Some(Vote { votes, outcome }) = vote {
+                    let entry = acc.entry(outcome).or_insert(0);
+                    *entry = entry.saturating_add(votes);
+                }
                 acc
             });
 
