@@ -92,13 +92,14 @@ export const AgendaActionsView = ({
                   </Dropdown>
                   <Button
                     disabled={currentAgenda === ""}
-                    onClick={() =>
+                    onClick={() => {
                       sendMessage({
                         RevealAgenda: {
                           agenda: currentAgenda,
                         },
-                      })
-                    }
+                      });
+                      setCurrentAgenda("");
+                    }}
                   >
                     Reveal
                   </Button>
@@ -110,8 +111,17 @@ export const AgendaActionsView = ({
               <h6>{gameOptions.agendas[state.vote.agenda].name}</h6>
               <ol>
                 <li>{speaker.name}: Read the agenda</li>
-                <li>When... TODO</li>
-                <li>After... TODO</li>
+                <li>
+                  When agenda is revealed
+                  <br />
+                  <Button onClick={() => sendMessage("VetoAgenda")}>
+                    Veto
+                  </Button>
+                </li>
+                <li>
+                  After agenda is revealed <br />
+                  TODO
+                </li>
                 <li>
                   Vote:
                   {players.map((p) => (
