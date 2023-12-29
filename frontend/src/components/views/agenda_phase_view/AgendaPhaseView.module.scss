@@ -54,3 +54,16 @@
     }
   }
 }
+
+.resolveOutcomeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  & > * {
+    margin-bottom: $marginLarge;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

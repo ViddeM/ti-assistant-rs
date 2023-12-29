@@ -59,7 +59,7 @@
 #### Core functionality
 *prio 0*:
 - ✅ Reveal agendas
-- 🍑 Skip vote / Force outcome
+- ✅ Skip vote / Force outcome
       (must include ability to discard agenda with no effect, i.e. 'Deadly Plot')
 
 *prio 1*:
