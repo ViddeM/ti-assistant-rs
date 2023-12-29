@@ -1,0 +1,19 @@
+@import "../../../resources/styles/vars.scss";
+
+.agendaPhaseContainer {
+  display: flex;
+  flex-direction: column;
+
+  & > :first-child {
+    margin-bottom: $marginLarge;
+  }
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    & > :first-child {
+      margin-right: $marginLarge;
+    }
+  }
+}

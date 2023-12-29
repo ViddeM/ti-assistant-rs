@@ -8,6 +8,7 @@ import { StrategyCardView } from "../strategy_card_view/StrategyCardView";
 import { TacticalView } from "../tactical_view/TacticalView";
 import { StatusPhaseView } from "../status_phase_view/StatusPhaseView";
 import { ActionCardView } from "../action_card_view/ActionCardView";
+import { AgendaPhaseView } from "../agenda_phase_view/AgendaPhaseView";
 
 export const PhaseView = ({
   gameState,
@@ -93,8 +94,22 @@ export const PhaseView = ({
           sendMessage={sendMessage}
         />
       );
+    case "Agenda":
+      return (
+        <AgendaPhaseView
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendMessage={sendMessage}
+        />
+      );
     default:
-      return <div>PHASE NOT YET IMPLEMENTED</div>;
+      return (
+        <div>
+          PHASE {"'"}
+          {gameState.phase}
+          {"'"} NOT YET IMPLEMENTED
+        </div>
+      );
   }
 };
 

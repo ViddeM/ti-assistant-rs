@@ -109,6 +109,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
             Planets
           </Button>
         </div>
+        <p>Round {gameState?.round}</p>
       </div>
       {gameOptions && gameState && (
         <DisplayViewMode

@@ -2,10 +2,12 @@ import { Faction } from "@/resources/types/factions";
 import { GamePhase } from "@/resources/types/gamePhase";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import { Color } from "./GameOptions";
+import { AgendaElect, AgendaElectKind, AgendaKind } from "./Agenda";
 
 export type PlayerId = string;
 
 export interface GameState {
+  round: number;
   phase: GamePhase;
   players: { [key: PlayerId]: Player };
   speaker: PlayerId | null;
@@ -18,6 +20,9 @@ export interface GameState {
   actionProgress: ActionProgress | null;
   score: Score;
   statusPhaseState: StatusPhaseState | null;
+  agenda: AgendaState | null;
+  agendaVoteHistory: AgendaRecord[];
+  laws: { [agenda: string]: AgendaElect };
 }
 
 export interface ActionProgress {
@@ -91,4 +96,32 @@ export interface StatusPhaseState {
   scoredSecretObjectives: { [player: string]: string | null };
   revealedObjective: string | null;
   expectedObjectivesBeforeStageTwo: number;
+}
+
+export interface AgendaState {
+  round: AgendaRound;
+  vote: VoteState | null;
+}
+
+export type AgendaRound = "Round1" | "Round2" | "Completed";
+
+export interface VoteState {
+  agenda: string;
+  kind: AgendaKind;
+  elect: AgendaElectKind;
+  candidates: AgendaElect[];
+  playerVotes: { [playerId: string]: Vote | null };
+  outcomesByVotes: Vote[];
+  expectedOutcome: AgendaElect | null;
+}
+
+export interface Vote {
+  votes: number;
+  outcome: AgendaElect;
+}
+
+export interface AgendaRecord {
+  round: number;
+  vote: VoteState;
+  outcome: AgendaElect;
 }
