@@ -23,13 +23,17 @@ export const AgendaPhaseView = ({
 
   return (
     <div className={styles.agendaPhaseContainer}>
+      <AgendaInfoView
+        gameState={gameState}
+        gameOptions={gameOptions}
+        state={state}
+      />
       <AgendaActionsView
         state={state}
         sendMessage={sendMessage}
         gameState={gameState}
         gameOptions={gameOptions}
       />
-      <AgendaInfoView gameState={gameState} gameOptions={gameOptions} />
     </div>
   );
 };

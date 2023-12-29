@@ -42,6 +42,7 @@ export const AgendaActionsView = ({
 
   const everyoneHasVoted =
     Object.keys(state.vote?.playerVotes ?? {}).length === players.length;
+  const expectedOutcome = state.vote?.expectedOutcome?.value ?? "Discard";
 
   const castVote = (
     player: string,
@@ -111,7 +112,6 @@ export const AgendaActionsView = ({
                 <li>After... TODO</li>
                 <li>
                   Vote:
-                  <br />
                   {players.map((p) => (
                     <PlayerVoteView
                       key={p.id}
@@ -122,22 +122,24 @@ export const AgendaActionsView = ({
                       voteKind={state.vote!!.elect}
                     />
                   ))}
-                  <br />
-                  Expected outcome:{" "}
-                  {state.vote.expectedOutcome?.value ?? "Discard"}
-                  <Button
-                    disabled={!everyoneHasVoted}
-                    onClick={() =>
-                      sendMessage({
-                        ResolveAgenda: {
-                          outcome: state.vote?.expectedOutcome,
-                        },
-                      })
-                    }
-                  >
-                    Resolve outcome{" "}
-                    {state.vote.expectedOutcome?.value ?? "Discard"}
-                  </Button>
+                </li>
+                <li>
+                  Resolve outcome
+                  <fieldset>
+                    <legend>Resolve</legend>
+                    <Button
+                      disabled={!everyoneHasVoted}
+                      onClick={() =>
+                        sendMessage({
+                          ResolveAgenda: {
+                            outcome: state.vote?.expectedOutcome,
+                          },
+                        })
+                      }
+                    >
+                      Resolve {expectedOutcome}
+                    </Button>
+                  </fieldset>
                 </li>
               </ol>
             </div>
@@ -166,14 +168,11 @@ const PlayerVoteView = ({
   const [voteOption, setVoteOption] = useState<string>("");
   const [votes, setVotes] = useState<number>(0);
 
-  const electKind = candidates[0].electKind;
-
   return (
-    <div>
-      <p>{player.name}</p>
+    <fieldset>
+      <legend>{player.name}</legend>
       {playerVote === undefined ? (
-        <div>
-          <Button onClick={() => castVote(player.id, null)}>Abstain</Button>
+        <div className={styles.castVoteContainer}>
           <Dropdown
             value={voteOption}
             onChange={(e) => setVoteOption(e.target.value)}
@@ -198,21 +197,24 @@ const PlayerVoteView = ({
               }
             }}
           />
-          <Button
-            disabled={votes === 0 || voteOption === ""}
-            onClick={() =>
-              castVote(
-                player.id,
-                {
-                  electKind: voteKind,
-                  value: voteOption,
-                },
-                votes
-              )
-            }
-          >
-            Vote
-          </Button>
+          <div>
+            <Button onClick={() => castVote(player.id, null)}>Abstain</Button>
+            <Button
+              disabled={votes === 0 || voteOption === ""}
+              onClick={() =>
+                castVote(
+                  player.id,
+                  {
+                    electKind: voteKind,
+                    value: voteOption,
+                  },
+                  votes
+                )
+              }
+            >
+              Vote
+            </Button>
+          </div>
         </div>
       ) : (
         <div>
@@ -225,6 +227,6 @@ const PlayerVoteView = ({
           )}
         </div>
       )}
-    </div>
+    </fieldset>
   );
 };
