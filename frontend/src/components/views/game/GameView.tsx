@@ -144,6 +144,8 @@ const DisplayViewMode = ({
             players={getPlayersFromGame(gameState, gameOptions)}
             score={gameState.score}
             gameOptions={gameOptions}
+            currentTurnStartTime={gameState.currentTurnStartTime}
+            isPaused={gameState.timeTrackingPaused}
           />
           <PhaseView
             gameState={gameState}
@@ -218,6 +220,10 @@ function getPlayersFromGame(
         };
       }),
       isSpeaker: gameState.speaker === p.name,
+      playTime: {
+        secs: gameState.playersPlayTime[id]?.secs ?? 0,
+        nanos: gameState.playersPlayTime[id]?.nanos ?? 0,
+      },
     };
   });
 }

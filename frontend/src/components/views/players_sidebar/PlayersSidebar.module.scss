@@ -1,64 +1,75 @@
 @import "../../../resources/styles/vars.scss";
 
 .playerSideBarCard {
-    border-radius: 0;
-    margin-top: 1rem;
+  border-radius: 0;
+  margin-top: 1rem;
 
-    @media (min-width: $widthMedium) {
-        max-width: 400px;
-        margin-top: 0;
-        border-radius: $border-radius;
-    }
+  @media (min-width: $widthMedium) {
+    max-width: 400px;
+    margin-top: 0;
+    border-radius: $border-radius;
+  }
 }
 
 .playerBoxContainer {
-    padding: $padding;
-    border-width: 2px;
-    border-style: solid;
-    border-radius: $border-radius;
-    font-weight: bolder;
-    min-width: 200px;
+  padding: $padding;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: $border-radius;
+  font-weight: bolder;
+  min-width: 200px;
 
-    &:not(:last-child) {
-        margin-bottom: 0.5rem;
-    }
+  &:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
 }
 
 .playerBoxLegend {
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 6px;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: 6px;
 }
 
 .whiteBackground {
-    background-color: white;
+  background-color: white;
 }
 
 .grayBackground {
-    background-color: rgb(24, 24, 24);
+  background-color: rgb(24, 24, 24);
 }
 
 .activePlayer {
-    background-color: #306030;
+  background-color: #306030;
 }
 
 .passedPlayer {
-    background-color: #202020;
-    color: #606060;
+  background-color: #202020;
+  color: #606060;
 }
 
 .playerName {
-    text-overflow: ellipsis;
+  text-overflow: ellipsis;
 }
 
 .contentRow {
-    color: black;
-    font-weight: normal;
-    font-size: 1rem;
-    display: flex;
-    flex-direction: row;
+  color: white;
+  font-weight: normal;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: row;
 
-    & > :first-child {
-        margin-right: $marginLarge;
-    }
+  & > :first-child {
+    margin-right: $marginLarge;
+  }
+}
+
+.scoreTimeContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+
+  > * {
+    flex: 1;
+  }
 }

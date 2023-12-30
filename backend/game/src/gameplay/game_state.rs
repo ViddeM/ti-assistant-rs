@@ -272,6 +272,11 @@ impl GameState {
         phase: Phase,
         timestamp: DateTime<Utc>,
     ) -> Result<(), GameError> {
+        self.commit_turn_time(timestamp)?;
+        if !self.time_tracking_paused {
+            self.current_turn_start_time = Some(timestamp);
+        }
+
         self.phase = phase;
         match phase {
             Phase::Strategy => {
@@ -292,11 +297,6 @@ impl GameState {
                 "reset turn order called in unexpected phase: {:?}",
                 self.phase
             ),
-        }
-
-        self.commit_turn_time(timestamp)?;
-        if !self.time_tracking_paused {
-            self.current_turn_start_time = Some(timestamp);
         }
 
         self.current_player = self.turn_order.first().cloned();
