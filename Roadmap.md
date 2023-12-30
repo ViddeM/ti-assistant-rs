@@ -40,7 +40,7 @@
    - ✅ Actions
    - ❌ Other relevant ones
  - ❌ Time tracking
-   - 🍑 Time spent / player
+   - ✅ Time spent / player
    - ❌ Time spent / phase
    - ❌ Show breakdown while playing
    - ❌ Show breakdown in post-game view
