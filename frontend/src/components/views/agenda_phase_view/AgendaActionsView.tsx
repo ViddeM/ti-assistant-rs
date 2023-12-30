@@ -262,7 +262,7 @@ const ResolveOutcome = ({
             value={outcome}
             onChange={(e) => setOutcome(e.target.value)}
           >
-            <option value="">Discard</option>
+            <option value="Discard">Discard</option>
             {state.vote?.candidates.map((candidate) => (
               <option value={candidate.value} key={candidate.value}>
                 {candidate.value}
