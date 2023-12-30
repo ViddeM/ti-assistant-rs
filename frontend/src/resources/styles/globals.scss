@@ -1,21 +1,22 @@
 @import "vars";
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-html,body {
-    margin: 0;
-    padding: 0;
-    margin: 0;
-    padding: 0;
-    max-width: 100vw;
-    overflow-x: hidden;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  margin: 0;
+  padding: 0;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
-    color: $primaryTextColor;
-    background-color: black;
+  color: $primaryTextColor;
+  background-color: black;
 }
 
 h1,
@@ -85,37 +86,41 @@ fieldset {
   }
 }
 
+.marginTop {
+  margin-top: $marginLarge;
+}
+
 .styleLeadership {
-    color: $leadershipColor;
-    border-color: $leadershipColor;
+  color: $leadershipColor;
+  border-color: $leadershipColor;
 }
 .styleDiplomacy {
-    color: $diplomacyColor;
-    border-color: $diplomacyColor;
+  color: $diplomacyColor;
+  border-color: $diplomacyColor;
 }
 .stylePolitics {
-    color: $politicsColor;
-    border-color: $politicsColor;
+  color: $politicsColor;
+  border-color: $politicsColor;
 }
 .styleConstruction {
-    color: $constructionColor;
-    border-color: $constructionColor;
+  color: $constructionColor;
+  border-color: $constructionColor;
 }
 .styleTrade {
-    color: $tradeColor;
-    border-color: $tradeColor;
+  color: $tradeColor;
+  border-color: $tradeColor;
 }
 .styleWarfare {
-    color: $warfareColor;
-    border-color: $warfareColor;
+  color: $warfareColor;
+  border-color: $warfareColor;
 }
 .styleTechnology {
-    color: $technologyColor;
-    border-color: $technologyColor;
+  color: $technologyColor;
+  border-color: $technologyColor;
 }
 .styleImperial {
-    color: $imperialColor;
-    border-color: $imperialColor;
+  color: $imperialColor;
+  border-color: $imperialColor;
 }
 
 .playerColorBackgroundBlack {

@@ -147,11 +147,13 @@ const DisplayViewMode = ({
             currentTurnStartTime={gameState.currentTurnStartTime}
             isPaused={gameState.timeTrackingPaused}
           />
-          <PhaseView
-            gameState={gameState}
-            gameOptions={gameOptions}
-            sendMessage={sendEvent}
-          />
+          <div className={styles.phaseContainer}>
+            <PhaseView
+              gameState={gameState}
+              gameOptions={gameOptions}
+              sendMessage={sendEvent}
+            />
+          </div>
         </div>
       );
     case "Score":

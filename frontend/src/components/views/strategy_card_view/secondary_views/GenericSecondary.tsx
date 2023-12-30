@@ -35,7 +35,7 @@ export const GenericSecondary = ({
   return (
     <div className={styles.genericSecondaryContainer}>
       {otherPlayers.map((p) => (
-        <fieldset key={p.name}>
+        <fieldset key={p.name} className={styles.genericPlayerContainer}>
           <legend className={styles.alignedLegend}>
             <h6 className={styles.horizontalPadding}>{p.name}</h6>{" "}
             <FactionIcon faction={p.faction} />
@@ -51,7 +51,7 @@ export const GenericSecondary = ({
               </p>
             </div>
           ) : (
-            <div className={styles.buttonGroup}>
+            <div className={styles.buttonsContainer}>
               <Button
                 onClick={() => sendSecondaryMessage(p.name, strategyCard)}
               >

@@ -8,6 +8,18 @@
   @media (min-width: $widthMedium) {
     flex-direction: row;
     justify-content: space-between;
+
+    > :last-child {
+      flex: 1;
+    }
+  }
+}
+
+.phaseContainer {
+  @media (min-width: $widthMedium) {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
   }
 }
 

@@ -1,42 +1,43 @@
 @import "../../../../resources/styles/vars.scss";
 
 .performed {
-    color: darkgreen;
+  color: darkgreen;
 }
 
 .skipped {
-    color: darkred;
+  color: darkred;
 }
 
-.buttonGroup {
-    > button {
-        border-radius: 0;
+.buttonsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 
-        &:first-child {
-            border-top-left-radius: $border-radius;
-            border-bottom-left-radius: $border-radius;
-        }
-
-        &:not(:last-child) {
-            border-right: none;
-        }
-
-        &:last-child {
-            border-top-right-radius: $border-radius;
-            border-bottom-right-radius: $border-radius;
-        }
+  > * {
+    flex: 1;
+    &:first-child {
+      margin-right: $margin;
     }
+
+    &:last-child {
+      margin-left: $margin;
+    }
+  }
 }
 
 .genericSecondaryContainer {
-    width: 100%;
+  width: 100%;
 }
 
 .alignedLegend {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .horizontalPadding {
-    padding: 0 $paddingLarge;
+  padding: 0 $paddingLarge;
+}
+
+.genericPlayerContainer {
+  margin-top: 0;
 }

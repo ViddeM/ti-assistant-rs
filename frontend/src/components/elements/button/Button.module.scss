@@ -1,34 +1,36 @@
 .buttonBase {
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 6px;
-    padding: 4px;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 6px;
+  padding: 4px;
+  font-size: 1em;
+
+  &:hover {
+    filter: brightness(0.8);
+    cursor: pointer;
+  }
+
+  &:active {
+    filter: brightness(0.6);
+  }
+
+  &:disabled {
+    border-color: #a0a0a0;
+    color: #a0a0a0;
 
     &:hover {
-        filter: brightness(0.8);
-        cursor: pointer;
+      cursor: default;
+      filter: none;
     }
 
     &:active {
-        filter: brightness(0.6);
+      filter: none;
     }
-
-    &:disabled {
-        border-color: black;
-        background-color: #505050;
-
-        &:hover {
-            cursor: default;
-            filter: none;
-        }
-
-        &:active {
-            filter: none;
-        }
-    }
+  }
 }
 
 .button {
-    background-color: black;
-    color: white;
+  background-color: inherit;
+  color: white;
+  min-width: 60px;
 }

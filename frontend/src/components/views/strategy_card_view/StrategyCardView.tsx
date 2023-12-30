@@ -26,12 +26,16 @@ export const StrategyCardView = ({
     <div className={`card ${styles.strategyCardView}`}>
       <h2>{gameState.actionProgress?.Strategic?.card}</h2>
 
+      <div className={styles.partDivider} />
+
       <h6>Primary</h6>
       <StrategyCardPrimary
         gameState={gameState}
         gameOptions={gameOptions}
         sendMessage={sendMessage}
       />
+
+      <div className={styles.partDivider} />
 
       <h6>Secondary</h6>
       <StrategyCardSecondary
