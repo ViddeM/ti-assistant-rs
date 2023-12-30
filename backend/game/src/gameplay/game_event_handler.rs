@@ -438,7 +438,7 @@ pub fn update_game_state(
 
             status_state
                 .scored_secret_objectives
-                .insert(player.clone(), objective.clone());
+                .insert(player.clone(), objective);
 
             if let Some(obj) = objective {
                 for scored in game_state.score.secret_objectives.values() {
