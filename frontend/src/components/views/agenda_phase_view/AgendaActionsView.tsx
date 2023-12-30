@@ -275,10 +275,13 @@ const ResolveOutcome = ({
             onClick={() =>
               sendMessage({
                 ResolveAgenda: {
-                  outcome: {
-                    electKind: state.vote?.elect,
-                    value: outcome === "Discard" ? null : outcome,
-                  },
+                  outcome:
+                    outcome === "Discard"
+                      ? null
+                      : {
+                          electKind: state.vote?.elect,
+                          value: outcome,
+                        },
                 },
               })
             }
