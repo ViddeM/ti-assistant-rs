@@ -42,5 +42,9 @@
       border-top-right-radius: $border-radius;
       border-bottom-right-radius: $border-radius;
     }
+
+    &:disabled:not(:last-child) {
+      border-right: 1px solid white;
+    }
   }
 }
