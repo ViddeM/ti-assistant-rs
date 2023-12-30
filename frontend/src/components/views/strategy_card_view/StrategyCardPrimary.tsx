@@ -32,7 +32,11 @@ export const StrategyCardPrimary = ({
       );
     case "Imperial":
       return (
-        <ImperialPrimaryView gameState={gameState} sendMessage={sendMessage} />
+        <ImperialPrimaryView
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendMessage={sendMessage}
+        />
       );
     default:
       return <p>No primary</p>;

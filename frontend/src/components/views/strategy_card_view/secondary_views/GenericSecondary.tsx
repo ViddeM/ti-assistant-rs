@@ -2,6 +2,11 @@ import { GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./Secondary.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCircleCheck,
+  faCircleXmark,
+} from "@fortawesome/free-regular-svg-icons";
 
 export interface GenericSecondaryProps {
   gameState: GameState;
@@ -41,15 +46,7 @@ export const GenericSecondary = ({
             <FactionIcon faction={p.faction} />
           </legend>
           {p.action ? (
-            <div>
-              <p
-                className={
-                  p.action === "Skipped" ? styles.skipped : styles.performed
-                }
-              >
-                {p.action === "Skipped" ? "X" : "V"}
-              </p>
-            </div>
+            <RenderAction performed={p.action === "Skipped"} />
           ) : (
             <div className={styles.buttonsContainer}>
               <Button
@@ -64,6 +61,18 @@ export const GenericSecondary = ({
           )}
         </fieldset>
       ))}
+    </div>
+  );
+};
+
+const RenderAction = ({ performed }: { performed: boolean }) => {
+  return (
+    <div className={styles.actionContainer}>
+      {performed ? (
+        <FontAwesomeIcon icon={faCircleXmark} className={styles.skipped} />
+      ) : (
+        <FontAwesomeIcon icon={faCircleCheck} className={styles.performed} />
+      )}
     </div>
   );
 };

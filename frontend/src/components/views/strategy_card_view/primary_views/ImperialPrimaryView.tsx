@@ -7,23 +7,30 @@ import { Button } from "@/components/elements/button/Button";
 
 export interface ImperialPrimaryViewProps {
   gameState: GameState;
+  gameOptions: GameOptions;
   sendMessage: (data: any) => void;
 }
 
 export const ImperialPrimaryView = ({
   gameState,
+  gameOptions,
   sendMessage,
 }: ImperialPrimaryViewProps) => {
   const [objective, setObjective] = useState<string>("");
 
   const progress = gameState.actionProgress?.Strategic?.primary?.Imperial;
-  const objectives = Object.keys(gameState.score.revealedObjectives).filter(
-    (o) => {
+  const objectives = Object.keys(gameState.score.revealedObjectives)
+    .filter((o) => {
       return !gameState.score.revealedObjectives[o].includes(
         gameState.currentPlayer!!
       );
-    }
-  );
+    })
+    .map((o) => {
+      return {
+        id: o,
+        ...gameOptions.objectives[o],
+      };
+    });
 
   const performAction = (objective: string | null) => {
     sendMessage({
@@ -41,7 +48,13 @@ export const ImperialPrimaryView = ({
   return (
     <div className={styles.primaryContainer}>
       {progress ? (
-        <p>{progress.objective ? progress.objective : "No objective taken"}</p>
+        <div className={styles.primaryChoiceContainer}>
+          <p>
+            {progress.objective
+              ? gameOptions.objectives[progress.objective].name
+              : "No objective taken"}
+          </p>
+        </div>
       ) : (
         <fieldset>
           <legend>Score objective</legend>
@@ -53,12 +66,12 @@ export const ImperialPrimaryView = ({
             >
               <option value={""}>--No objective--</option>
               {objectives.map((o) => (
-                <option value={o} key={o}>
-                  {o}
+                <option value={o.id} key={o.id}>
+                  {o.name}
                 </option>
               ))}
             </Dropdown>
-            <div>
+            <div className={styles.actionButtonsContainer}>
               <Button onClick={() => performAction(null)}>Skip</Button>
               <Button
                 onClick={() => performAction(objective)}

@@ -1,11 +1,22 @@
 @import "../../../../resources/styles/vars.scss";
 
+.actionContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: -1em;
+}
+
 .performed {
-  color: darkgreen;
+  width: 2em;
+  height: 2em;
+  color: green;
 }
 
 .skipped {
-  color: darkred;
+  width: 2em;
+  height: 2em;
+  color: #c02525;
 }
 
 .buttonsContainer {

@@ -13,3 +13,17 @@
 .primaryContainer {
   width: 100%;
 }
+
+.primaryChoiceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.actionButtonsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-top: $marginLarge;
+}

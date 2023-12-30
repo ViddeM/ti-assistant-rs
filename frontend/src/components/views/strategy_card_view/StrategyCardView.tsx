@@ -57,7 +57,11 @@ export const StrategyCardView = ({
 function isPrimaryDone(gameState: GameState): boolean {
   const strategic = gameState.actionProgress?.Strategic!!;
 
-  if (strategic.card === "Technology" || strategic.card === "Politics") {
+  if (
+    strategic.card === "Technology" ||
+    strategic.card === "Politics" ||
+    strategic.card === "Imperial"
+  ) {
     return strategic.primary !== null;
   }
 
