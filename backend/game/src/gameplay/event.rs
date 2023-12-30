@@ -253,6 +253,12 @@ pub enum Event {
         tech: Technology,
     },
 
+    /// Remove a law from play.
+    RepealLaw {
+        /// Remove a law from play.
+        law: Agenda,
+    },
+
     /// Pause/unpause time-tracking.
     TrackTime {
         /// Weather time-tracking should be paused or not.

@@ -1,0 +1,15 @@
+@import "../../../resources/styles/vars.scss";
+
+.lawsTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  & th {
+    border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+  }
+}
+
+.deleteLawButton {
+  border: none;
+  background-color: inherit;
+}

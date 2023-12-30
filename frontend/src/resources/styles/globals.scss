@@ -67,6 +67,12 @@ fieldset {
   background-color: $backgroundColor;
   padding: $padding;
   border-radius: $border-radius;
+  width: 100%;
+
+  @media (min-width: 800px) {
+    width: fit-content;
+    min-width: 200px;
+  }
 }
 
 .main {
