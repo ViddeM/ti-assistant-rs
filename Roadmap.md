@@ -68,8 +68,8 @@
 
 *prio 2*:
 - ❌ Secret objective scoring
-- 🍑 Track laws in play
-- ❌ Repeal laws
+- ✅ Track laws in play
+- ✅ Repeal laws
 - ❌ VPs from agenda cards (see "Score" bullet point)
 - ❌ Show available votes (soft limit)
 - ❌ Show voting order (but allow votes in any order)
