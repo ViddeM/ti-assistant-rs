@@ -16,6 +16,7 @@ import { Button } from "@/components/elements/button/Button";
 import { ScoreViewMode } from "../score_view_mode/ScoreViewMode";
 import { TechViewMode } from "../tech_view_mode/TechViewMode";
 import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
+import { LawsViewMode } from "../laws_view_mode/LawsViewMode";
 
 const NEW_GAME_ID = "new";
 
@@ -24,7 +25,7 @@ interface GameViewProps {
   gameId: string;
 }
 
-type View = "Game" | "Score" | "Planets" | "Techs";
+type View = "Game" | "Score" | "Planets" | "Techs" | "Laws";
 
 export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
@@ -108,6 +109,12 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           >
             Planets
           </Button>
+          <Button
+            onClick={() => setCurrentViewMode("Laws")}
+            disabled={currentViewMode === "Laws"}
+          >
+            Laws
+          </Button>
         </div>
         <p>Round {gameState?.round}</p>
       </div>
@@ -171,6 +178,14 @@ const DisplayViewMode = ({
     case "Planets":
       return (
         <PlanetViewMode
+          gameOptions={gameOptions}
+          gameState={gameState}
+          sendEvent={sendEvent}
+        />
+      );
+    case "Laws":
+      return (
+        <LawsViewMode
           gameOptions={gameOptions}
           gameState={gameState}
           sendEvent={sendEvent}

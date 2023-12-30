@@ -689,6 +689,17 @@ pub fn update_game_state(
 
             p.technologies.remove(&tech);
         }
+        Event::RepealLaw { law } => {
+            if law.info().kind != AgendaKind::Law {
+                bail!("Cannot repeal non-law agenda from list of laws");
+            }
+
+            if !game_state.laws.contains_key(&law) {
+                bail!("Unable to repeal law that has not been enacted");
+            }
+
+            game_state.laws.remove(&law);
+        }
         Event::TrackTime { paused } => {
             game_state.time_tracking_paused = paused;
             if paused {
