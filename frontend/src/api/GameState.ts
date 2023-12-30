@@ -23,6 +23,9 @@ export interface GameState {
   agenda: AgendaState | null;
   agendaVoteHistory: AgendaRecord[];
   laws: { [agenda: string]: AgendaElect };
+  timeTrackingPaused: boolean;
+  playersPlayTime: { [playerId: string]: Duration };
+  currentTurnStartTime: string | null;
 }
 
 export interface ActionProgress {
@@ -124,4 +127,9 @@ export interface AgendaRecord {
   round: number;
   vote: VoteState;
   outcome: AgendaElect | null;
+}
+
+export interface Duration {
+  secs: number;
+  nanos: number;
 }

@@ -52,11 +52,16 @@ export const PlayerScoreInfo = ({
  - Extra (${extraPoints})`;
 
   return (
-    <div>
-      {isCustodian && <Icon name="custodians" width={32} height={32} />}
+    <div className={styles.scoreContainer}>
       <h3 className={styles.scoreText} title={scoreTooltip}>
         {currentScore}
       </h3>
+
+      {isCustodian && (
+        <div>
+          <Icon name="custodians" width={32} height={32} />
+        </div>
+      )}
     </div>
   );
 };

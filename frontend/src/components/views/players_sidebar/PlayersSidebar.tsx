@@ -4,7 +4,8 @@ import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
 import { Color, GameOptions, PlanetInfo, TechInfo } from "@/api/GameOptions";
 import { PlayerResources } from "./parts/PlayerResources";
 import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
-import { Score } from "@/api/GameState";
+import { Duration, Score } from "@/api/GameState";
+import { PlayerTimeInfo } from "./parts/PlayerTimeInfo";
 
 export interface SidebarPlayer {
   name: string;
@@ -19,6 +20,7 @@ export interface SidebarPlayer {
   cards: StrategicCardInfo[];
   planets: PlayerPlanetInfo[];
   technologies: Tech[];
+  playTime: Duration;
 }
 
 export interface Tech {
@@ -34,12 +36,16 @@ export interface PlayerPlanetInfo {
 export interface PlayerSidebarProps {
   players: SidebarPlayer[];
   score: Score;
+  isPaused: boolean;
+  currentTurnStartTime: string | null;
   gameOptions: GameOptions;
 }
 
 export const PlayerSidebar = ({
   players,
   score,
+  isPaused,
+  currentTurnStartTime,
   gameOptions,
 }: PlayerSidebarProps) => {
   return (
@@ -49,6 +55,8 @@ export const PlayerSidebar = ({
           key={p.name}
           player={p}
           score={score}
+          isPaused={isPaused}
+          currentTurnStartTime={currentTurnStartTime}
           gameOptions={gameOptions}
         />
       ))}
@@ -59,10 +67,18 @@ export const PlayerSidebar = ({
 interface PlayerBoxProps {
   player: SidebarPlayer;
   score: Score;
+  isPaused: boolean;
+  currentTurnStartTime: string | null;
   gameOptions: GameOptions;
 }
 
-const PlayerBox = ({ player, score, gameOptions }: PlayerBoxProps) => {
+const PlayerBox = ({
+  player,
+  score,
+  gameOptions,
+  currentTurnStartTime,
+  isPaused,
+}: PlayerBoxProps) => {
   return (
     <fieldset
       className={`playerColorBorder${player.color} ${
@@ -91,11 +107,18 @@ const PlayerBox = ({ player, score, gameOptions }: PlayerBoxProps) => {
       </legend>
       <div className={styles.contentRow}>
         <StrategyCardInfo cards={player.cards} />
-        <PlayerScoreInfo
-          player={player}
-          score={score}
-          gameOptions={gameOptions}
-        />
+        <div className={styles.scoreTimeContainer}>
+          <PlayerScoreInfo
+            player={player}
+            score={score}
+            gameOptions={gameOptions}
+          />
+          <PlayerTimeInfo
+            player={player}
+            isPaused={isPaused}
+            currentTurnStartTime={currentTurnStartTime}
+          />
+        </div>
       </div>
       <PlayerResources player={player} />
     </fieldset>
