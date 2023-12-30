@@ -1,39 +1,46 @@
 @import "../../../resources/styles/vars.scss";
 
 .gamePageContainer {
-    width: 100%;
-    display: flex;
-    flex-direction: column-reverse;
+  width: 100%;
+  display: flex;
+  flex-direction: column-reverse;
 
-    @media (min-width: $widthMedium) {
-        flex-direction: row;
-        justify-content: space-between;
-    }
+  @media (min-width: $widthMedium) {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 
 .gameInfoCard {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > :last-child {
+    margin-top: 0.5em;
+  }
 }
 
 .viewModeButtonGroup {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 
-    & > button {
-        border-radius: 0;
+  & > button {
+    border-radius: 0;
 
-        &:not(:first-child) {
-            border-left-width: 0;
-        }
-
-        &:first-child {
-            border-top-left-radius: $border-radius;
-            border-bottom-left-radius: $border-radius;
-        }
-
-        &:last-child {
-            border-top-right-radius: $border-radius;
-            border-bottom-right-radius: $border-radius;
-        }
+    &:not(:first-child) {
+      border-left-width: 0;
     }
+
+    &:first-child {
+      border-top-left-radius: $border-radius;
+      border-bottom-left-radius: $border-radius;
+    }
+
+    &:last-child {
+      border-top-right-radius: $border-radius;
+      border-bottom-right-radius: $border-radius;
+    }
+  }
 }
