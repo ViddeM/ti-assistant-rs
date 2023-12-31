@@ -293,7 +293,7 @@ const TechRows = ({ techs, players, toggleTechForPlayer }: TechRowsProps) => {
               colSpan={players.length}
               className={index === 0 ? "" : styles.borderTop}
             >
-              {t.id}
+              {t.name}
             </th>
           </tr>
           <tr>

@@ -146,7 +146,7 @@ const DivertFundingView = ({
           </option>
           {deletableTechs.map((tech) => (
             <option key={tech} value={tech}>
-              {tech}
+              {gameOptions.technologies[tech].name}
             </option>
           ))}
         </Dropdown>
@@ -162,7 +162,7 @@ const DivertFundingView = ({
             onSelect={(tech) => setGainTech(tech)}
           />
         ) : (
-          <p>{gainTech}</p>
+          <p>{gameOptions.technologies[gainTech].name}</p>
         )}
       </fieldset>
 
@@ -268,11 +268,17 @@ const PlagiarizePlayerRow = ({
   gameState,
 }: PlagiarizePlayerRowProps) => {
   const availablePlayerTechs = gameState.players[player].technologies
-    .filter((tech) => gameOptions.technologies[tech].origin === "Base")
+    .map((tech) => {
+      return {
+        id: tech,
+        ...gameOptions.technologies[tech],
+      };
+    })
+    .filter((tech) => tech.origin === "Base")
     .filter(
       (tech) =>
         !gameState.players[gameState.currentPlayer!!].technologies.includes(
-          tech
+          tech.id
         )
     );
 
@@ -295,8 +301,8 @@ const PlagiarizePlayerRow = ({
         >
           <option value="">--Select a tech--</option>
           {availablePlayerTechs.map((tech) => (
-            <option key={tech} value={tech}>
-              {tech}
+            <option key={tech.id} value={tech.id}>
+              {tech.name}
             </option>
           ))}
         </Dropdown>

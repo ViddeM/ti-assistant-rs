@@ -46,7 +46,10 @@ export const StrategyTechnologySecondaryView = ({
                 {choice === "Skipped" ? (
                   <p>--Skipped--</p>
                 ) : (
-                  <p>Tech: {choice.Technology.tech}</p>
+                  <p>
+                    Tech:{" "}
+                    {gameOptions.technologies[choice.Technology.tech].name}
+                  </p>
                 )}
               </div>
             );
@@ -54,7 +57,7 @@ export const StrategyTechnologySecondaryView = ({
             return (
               <fieldset key={p}>
                 <legend className={styles.alignedLegend}>
-                  <h6 className={styles.horizontalPadding}>{player.name}</h6>{" "}
+                  <h6 className={styles.horizontalPadding}>{player.name}</h6>
                   <FactionIcon faction={player.faction} />
                 </legend>
                 <SelectTechView

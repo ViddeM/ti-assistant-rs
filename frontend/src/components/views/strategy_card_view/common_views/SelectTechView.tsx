@@ -55,7 +55,7 @@ export const SelectTechView = ({
                 .filter((t) => t.info.techType === "UnitUpgrade")
                 .map((t) => (
                   <option key={t.tech} value={t.tech}>
-                    {t.tech}
+                    {t.info.name}
                   </option>
                 ))}
             </Dropdown>
@@ -79,7 +79,7 @@ export const SelectTechView = ({
                   .filter((t) => isOfCategory(t.info, category))
                   .map((t) => (
                     <option key={t.tech} value={t.tech}>
-                      {t.tech}
+                      {t.info.name}
                     </option>
                   ))}
               </Dropdown>

@@ -25,6 +25,7 @@ export interface PlanetInfo {
 }
 
 export interface TechInfo {
+  name: string;
   techType: TechType;
   origin: TechOrigin;
   requirements: { [key: string]: number };

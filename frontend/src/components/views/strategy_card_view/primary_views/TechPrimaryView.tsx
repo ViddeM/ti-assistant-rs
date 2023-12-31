@@ -23,7 +23,7 @@ export const TechnologyPrimaryView = ({
     const techProgress = progress!!.Technology!!;
     return (
       <div>
-        <p>{techProgress.tech}</p>
+        <p>{gameOptions.technologies[techProgress.tech].name}</p>
         {techProgress.extra && <p>{techProgress.extra}</p>}{" "}
       </div>
     );
@@ -45,7 +45,7 @@ export const TechnologyPrimaryView = ({
         </fieldset>
       ) : (
         <>
-          <p>{firstTech}</p>
+          <p>{gameOptions.technologies[firstTech].name}</p>
           {secondTech === null ? (
             <fieldset>
               <legend>
@@ -59,7 +59,7 @@ export const TechnologyPrimaryView = ({
               />
             </fieldset>
           ) : (
-            <p>{secondTech}</p>
+            <p>{gameOptions.technologies[secondTech].name}</p>
           )}
         </>
       )}
