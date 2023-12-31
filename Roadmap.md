@@ -65,6 +65,7 @@
 *prio 1*:
 - ✅ Vote on objectives
 - ❌ Speaker tiebreak
+- ❌ Error handling for invalid agendas. (Should frontend filter these away or should the BE provide a filtered list or just report the error?)
 
 *prio 2*:
 - ❌ Secret objective scoring
