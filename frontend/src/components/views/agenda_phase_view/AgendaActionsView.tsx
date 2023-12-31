@@ -167,7 +167,9 @@ const PlayerVoteView = ({
   voteKind,
 }: PlayerVoteViewProps) => {
   const [voteOption, setVoteOption] = useState<string>("");
-  const [votes, setVotes] = useState<number>(0);
+  const [votes, setVotes] = useState<string>("");
+
+  const voteCount = votes === "" ? 0 : parseInt(votes);
 
   return (
     <fieldset>
@@ -192,16 +194,17 @@ const PlayerVoteView = ({
             max={1000}
             value={votes}
             onChange={(e) => {
+              const s = e.target.value;
               const val = parseInt(e.target.value, 10);
-              if (!isNaN(val)) {
-                setVotes(val);
+              if (!isNaN(val) || s === "") {
+                setVotes(s);
               }
             }}
           />
           <div>
             <Button onClick={() => castVote(player.id, null)}>Abstain</Button>
             <Button
-              disabled={votes === 0 || voteOption === ""}
+              disabled={voteCount === 0 || voteOption === ""}
               onClick={() =>
                 castVote(
                   player.id,
@@ -209,7 +212,7 @@ const PlayerVoteView = ({
                     electKind: voteKind,
                     value: voteOption,
                   },
-                  votes
+                  voteCount
                 )
               }
             >

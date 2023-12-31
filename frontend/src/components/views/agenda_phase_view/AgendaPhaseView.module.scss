@@ -8,12 +8,22 @@
     margin-bottom: $marginLarge;
   }
 
-  @media (min-width: 800px) {
-    flex-direction: row-reverse;
-    justify-content: space-between;
+  & > * {
+    width: 100%;
+  }
 
-    & > :first-child {
-      margin-left: $marginLarge;
+  @media (min-width: 800px) {
+    width: 100%;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+
+    & > :last-child {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    & > * {
+      max-width: 400px;
     }
   }
 }
