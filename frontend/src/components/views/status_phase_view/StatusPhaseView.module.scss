@@ -28,3 +28,26 @@
     }
   }
 }
+
+.scoreObjectivesContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.scoreObjectiveButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: $marginLarge 0;
+}
+
+.revealObjectiveContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  & > :last-child {
+    margin-top: $marginLarge;
+  }
+}

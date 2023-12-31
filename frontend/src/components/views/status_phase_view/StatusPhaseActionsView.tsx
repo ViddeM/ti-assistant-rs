@@ -3,6 +3,7 @@ import { GameState, Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import React, { useState } from "react";
+import styles from "./StatusPhaseView.module.scss";
 
 export interface StatusPhaseActionsViewProps {
   gameState: GameState;
@@ -89,37 +90,41 @@ const ScoreObjectives = ({
           sendMessage={sendMessage}
         />
       ))}
-      <h2>Reveal Stage {revealStageII ? "II" : "I"} Objective</h2>
-      {state.revealedObjective !== null ? (
-        <p>{gameOptions.objectives[state.revealedObjective].name}</p>
-      ) : (
-        <>
-          <Dropdown
-            disabled={!revealUnlocked}
-            value={revealedObjective}
-            onChange={(e) => setRevealedObjective(e.target.value)}
-          >
-            <option value="">--Select Objective to Reveal--</option>
-            {selectableObjectives.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.name}
-              </option>
-            ))}
-          </Dropdown>
-          <Button
-            disabled={revealedObjective === ""}
-            onClick={() =>
-              sendMessage({
-                RevealPublicObjective: {
-                  objective: revealedObjective,
-                },
-              })
-            }
-          >
-            Reveal
-          </Button>
-        </>
-      )}
+      <fieldset className={styles.revealObjectiveContainer}>
+        <legend>
+          <h3>Reveal Stage {revealStageII ? "II" : "I"} Objective</h3>
+        </legend>
+        {state.revealedObjective !== null ? (
+          <p>{gameOptions.objectives[state.revealedObjective].name}</p>
+        ) : (
+          <>
+            <Dropdown
+              disabled={!revealUnlocked}
+              value={revealedObjective}
+              onChange={(e) => setRevealedObjective(e.target.value)}
+            >
+              <option value="">--Select Objective to Reveal--</option>
+              {selectableObjectives.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </Dropdown>
+            <Button
+              disabled={revealedObjective === ""}
+              onClick={() =>
+                sendMessage({
+                  RevealPublicObjective: {
+                    objective: revealedObjective,
+                  },
+                })
+              }
+            >
+              Reveal
+            </Button>
+          </>
+        )}
+      </fieldset>
     </div>
   );
 };
@@ -185,7 +190,7 @@ const PlayerObjectives = ({
       {pub !== undefined ? (
         <p>Public: {pub ? gameOptions.objectives[pub].name : "Skipped"}</p>
       ) : (
-        <div>
+        <div className={styles.scoreObjectivesContainer}>
           <Dropdown
             disabled={availablePubs.length === 0}
             value={selectedPub}
@@ -204,19 +209,21 @@ const PlayerObjectives = ({
               </>
             )}
           </Dropdown>
-          <Button
-            disabled={selectedPub === ""}
-            onClick={() => scorePublic(selectedPub)}
-          >
-            Score
-          </Button>
-          <Button onClick={() => scorePublic(null)}>Skip</Button>
+          <div className={styles.scoreObjectiveButtonsContainer}>
+            <Button onClick={() => scorePublic(null)}>Skip</Button>
+            <Button
+              disabled={selectedPub === ""}
+              onClick={() => scorePublic(selectedPub)}
+            >
+              Score
+            </Button>
+          </div>
         </div>
       )}
       {sec !== undefined ? (
         <p>Secret: {sec ? gameOptions.objectives[sec].name : "Skipped"}</p>
       ) : (
-        <div>
+        <div className={styles.scoreObjectivesContainer}>
           <Dropdown
             value={selectedSec}
             onChange={(e) => setSelectedSec(e.target.value)}
@@ -228,13 +235,15 @@ const PlayerObjectives = ({
               </option>
             ))}
           </Dropdown>
-          <Button
-            disabled={selectedSec === ""}
-            onClick={() => scoreSecret(selectedSec)}
-          >
-            Score
-          </Button>
-          <Button onClick={() => scoreSecret(null)}>Skip</Button>
+          <div className={styles.scoreObjectiveButtonsContainer}>
+            <Button onClick={() => scoreSecret(null)}>Skip</Button>
+            <Button
+              disabled={selectedSec === ""}
+              onClick={() => scoreSecret(selectedSec)}
+            >
+              Score
+            </Button>
+          </div>
         </div>
       )}
     </div>
