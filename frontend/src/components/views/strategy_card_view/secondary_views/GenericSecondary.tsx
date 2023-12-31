@@ -49,13 +49,13 @@ export const GenericSecondary = ({
             <RenderAction performed={p.action === "Skipped"} />
           ) : (
             <div className={styles.buttonsContainer}>
+              <Button onClick={() => sendSecondaryMessage(p.name, "Skip")}>
+                Skip
+              </Button>
               <Button
                 onClick={() => sendSecondaryMessage(p.name, strategyCard)}
               >
                 Play
-              </Button>
-              <Button onClick={() => sendSecondaryMessage(p.name, "Skip")}>
-                Skip
               </Button>
             </div>
           )}

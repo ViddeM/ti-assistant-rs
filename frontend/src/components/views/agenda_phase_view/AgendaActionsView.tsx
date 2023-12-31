@@ -60,7 +60,7 @@ export const AgendaActionsView = ({
   return (
     <div className="card">
       {state.round === "Completed" ? (
-        <div>
+        <div className={styles.agendaPhaseCompleteContainer}>
           <h3>Ready all planets!</h3>
           <Button onClick={() => sendMessage("CompleteAgendaPhase")}>
             Complete Agenda Phase
@@ -172,7 +172,7 @@ const PlayerVoteView = ({
   const voteCount = votes === "" ? 0 : parseInt(votes);
 
   return (
-    <fieldset>
+    <fieldset className={styles.agendaActionsContainer}>
       <legend>{player.name}</legend>
       {playerVote === undefined ? (
         <div className={styles.castVoteContainer}>
