@@ -119,7 +119,10 @@ const ComponentSelectRow = ({
   return (
     <>
       <div>
-        <Button onClick={() => setComponentMode("ACTION_CARD")}>
+        <Button
+          disabled={componentMode === "ACTION_CARD"}
+          onClick={() => setComponentMode("ACTION_CARD")}
+        >
           Action Card
         </Button>
       </div>
@@ -156,7 +159,8 @@ const ActionCardSelectView = ({
     });
 
   return (
-    <div>
+    <fieldset className={styles.playActionCardContainer}>
+      <legend>Play Action Card</legend>
       <Dropdown value={card} onChange={(e) => setCard(e.target.value)}>
         <option value={""}>--Select an Action Card--</option>
         {playableActionCards.map((card) => (
@@ -177,7 +181,7 @@ const ActionCardSelectView = ({
       >
         Play
       </Button>
-    </div>
+    </fieldset>
   );
 };
 

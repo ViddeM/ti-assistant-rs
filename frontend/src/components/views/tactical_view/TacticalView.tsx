@@ -40,7 +40,7 @@ export const TacticalView = ({
   };
 
   return (
-    <div className={`${styles.column} card`}>
+    <div className={`${styles.tacticalContainer} card`}>
       <h2>Tactical</h2>
       {takenPlanets?.length > 0 ? (
         <div className={styles.column}>
@@ -63,7 +63,7 @@ export const TacticalView = ({
           )}
         </div>
       ) : (
-        <div>
+        <div className={styles.takePlanetContainer}>
           <label>Take planet:</label>
           <Dropdown
             onChange={(e) => {

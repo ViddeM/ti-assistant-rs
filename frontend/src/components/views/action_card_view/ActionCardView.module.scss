@@ -1,18 +1,32 @@
 @import "../../../resources/styles/vars.scss";
 
 .commitButtonRow {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .techChangeContainer {
-    border-radius: $border-radius;
-    margin-bottom: 0.5rem;
+  border-radius: $border-radius;
+  margin-bottom: 0.5rem;
 }
 
 .plagiarizeTable {
-    & > tbody select {
-        width: 100%;
-    }
+  & > tbody select {
+    width: 100%;
+  }
+}
+
+.divertFundingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > * {
+    width: 100%;
+  }
+
+  & > :last-child {
+    margin-top: $marginLarge;
+  }
 }

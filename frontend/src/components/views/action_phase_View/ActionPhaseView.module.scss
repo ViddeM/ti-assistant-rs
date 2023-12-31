@@ -28,3 +28,13 @@
 .actionButton {
   margin: 0 0.5rem;
 }
+
+.playActionCardContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & :last-child {
+    margin-top: $marginLarge;
+  }
+}

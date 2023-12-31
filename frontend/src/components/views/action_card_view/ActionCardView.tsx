@@ -1,5 +1,5 @@
 import { GameOptions } from "@/api/GameOptions";
-import { ActionCardProgress, GameState, Player } from "@/api/GameState";
+import { ActionCardProgress, GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../strategy_card_view/common_views/SelectTechView";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
@@ -124,7 +124,7 @@ const DivertFundingView = ({
   });
 
   return (
-    <div>
+    <div className={styles.divertFundingContainer}>
       <fieldset className={styles.techChangeContainer}>
         <legend>Remove tech</legend>
         <Dropdown
@@ -201,7 +201,9 @@ const PlagiarizeView = ({
     <table className={styles.plagiarizeTable}>
       <thead>
         <tr>
-          <th colSpan={2}>Select neighbours tech</th>
+          <th colSpan={2}>
+            <h6>Select neighbours tech</h6>
+          </th>
         </tr>
         <tr>
           <td align="center">Player</td>
