@@ -7,15 +7,18 @@ use chrono::{DateTime, Utc};
 use eyre::{bail, eyre, Context};
 use serde::{Deserialize, Serialize};
 
-use crate::data::components::{
-    action_card::ActionCard,
-    agenda::{Agenda, AgendaElect},
-    objectives::Objective,
-    phase::Phase,
-    planet::Planet,
-    strategy_card::StrategyCard,
-    system::SystemId,
-    tech::Technology,
+use crate::data::{
+    common::faction::Faction,
+    components::{
+        action_card::ActionCard,
+        agenda::{Agenda, AgendaElect},
+        objectives::Objective,
+        phase::Phase,
+        planet::Planet,
+        strategy_card::StrategyCard,
+        system::SystemId,
+        tech::Technology,
+    },
 };
 
 use super::{
@@ -373,5 +376,19 @@ impl GameState {
             .count();
 
         5 + extras
+    }
+
+    /// Returns true if the player has performed any required initialization for their faction.
+    pub fn player_initialization_finished(&self, player_id: &PlayerId) -> Result<bool, GameError> {
+        let Some(player) = self.players.get(player_id) else {
+            bail!("player does not exist (this is a bug)");
+        };
+
+        Ok(match player.faction {
+            Faction::Winnu => player.technologies.len() == 1,
+            Faction::ArgentFlight => player.technologies.len() == 2,
+            Faction::CouncilKeleres => player.technologies.len() == 2 && player.planets.len() >= 1,
+            _ => true,
+        })
     }
 }

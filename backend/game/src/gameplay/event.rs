@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use crate::data::common::faction::Faction;
 use crate::data::components::agenda::{Agenda, AgendaElect};
 use crate::data::components::objectives::public::PublicObjective;
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
@@ -21,6 +22,26 @@ pub enum Event {
         /// The new player that joined the game.
         player: NewPlayer,
     },
+
+    /// Creation phase is done.
+    CreationDone,
+
+    /// Faction specific setup for council keleres ability 'The Tribunii' (note that this does not include tech).
+    SetupTheTribunii {
+        /// The player who selects the system.
+        player: PlayerId,
+        /// The faction to replicate.
+        faction: Faction,
+    },
+
+    /// Faction-specific technology selection for a player.
+    SetupPlayerTechs {
+        /// The player who selects the technologies.
+        player: PlayerId,
+        /// The selected technologies.
+        technologies: Vec<Technology>,
+    },
+
     /// Start the game.
     StartGame,
 
