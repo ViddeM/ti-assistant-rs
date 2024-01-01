@@ -92,13 +92,7 @@ const PlayerBox = ({
       }`}
     >
       <legend
-        className={`${styles.playerBoxLegend} playerColorBorder${
-          player.color
-        } ${
-          player.color === "Black"
-            ? styles.whiteBackground
-            : styles.grayBackground
-        }`}
+        className={`${styles.playerBoxLegend} playerColorBorder${player.color}`}
       >
         <h6 className={styles.playerName}>
           {player.name}
