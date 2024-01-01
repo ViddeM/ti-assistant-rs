@@ -17,6 +17,9 @@
    - ❌ Choose speaker at start of game
    - ❌ Reveal initial objectives
    - ❌ Faction specific setups for planets & techs
+     - ❌ planets
+     - ❌ agents
+     - ❌ techs
  - ✅ Planets
    - ✅ Resource Tracking
    - ❌ Planet attachments (PoK)

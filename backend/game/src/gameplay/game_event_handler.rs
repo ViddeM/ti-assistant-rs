@@ -4,15 +4,18 @@ use chrono::{DateTime, Utc};
 use eyre::{bail, ensure};
 
 use crate::{
-    data::components::{
-        action_card::{ActionCard, ActionCardPlay},
-        agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
-        objectives::Objective,
-        phase::Phase,
-        planet::Planet,
-        strategy_card::StrategyCard,
-        system::System,
-        tech::{TechOrigin, TechType, Technology},
+    data::{
+        common::faction::Faction,
+        components::{
+            action_card::{ActionCard, ActionCardPlay},
+            agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
+            objectives::Objective,
+            phase::Phase,
+            planet::Planet,
+            strategy_card::StrategyCard,
+            system::{systems, System, SystemType},
+            tech::{TechOrigin, TechType, Technology},
+        },
     },
     gameplay::{
         agenda::{AgendaRound, Vote, VoteState},
@@ -42,7 +45,7 @@ pub fn update_game_state(
 ) -> Result<(), GameError> {
     match event {
         Event::AddPlayer { player } => {
-            game_state.assert_phase(Phase::Setup)?;
+            game_state.assert_phase(Phase::Creation)?;
             ensure!(
                 game_state.players.len() <= MAX_PLAYER_COUNT,
                 "can't have more than {MAX_PLAYER_COUNT} players"
@@ -51,13 +54,55 @@ pub fn update_game_state(
             game_state.table_order.push(id.clone());
             game_state.players.insert(id, player.into());
         }
-        Event::StartGame => {
-            game_state.assert_phase(Phase::Setup)?;
+        Event::CreationDone => {
+            game_state.assert_phase(Phase::Creation)?;
             ensure!(
                 game_state.players.len() >= MIN_PLAYER_COUNT,
                 "can't have less than {MIN_PLAYER_COUNT} players"
             );
 
+            game_state.change_phase(Phase::Setup, timestamp)?;
+        }
+        Event::SetupTheTribunii { player, faction } => {
+            game_state.assert_phase(Phase::Setup)?;
+            let Some(player) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist!")
+            };
+
+            ensure!(
+                player.planets.is_empty(),
+                "Player already has planets selected!"
+            );
+
+            ensure!(
+                player.faction == Faction::CouncilKeleres,
+                "The Tribunii can only be performed by The Council Keleres"
+            );
+
+            let available_factions = [
+                Faction::MentakCoalition,
+                Faction::XxchaKingdom,
+                Faction::ArgentFlight,
+            ];
+
+            ensure!(
+                available_factions.contains(&faction),
+                "Selected faction must be one of [{available_factions:?}]"
+            );
+
+            // TODO: Also give the player the correct agent
+            for planet in faction.get_starting_planets().into_iter() {
+                player.planets.insert(planet);
+            }
+        }
+        Event::SetupPlayerTechs {
+            player,
+            technologies,
+        } => {
+            todo!("Not implemented")
+        }
+        Event::StartGame => {
+            game_state.assert_phase(Phase::Setup)?;
             // pick speaker at random.
             // TODO: in the future we should set this in the frontend.
             game_state.speaker = game_state.players.keys().next().cloned();
