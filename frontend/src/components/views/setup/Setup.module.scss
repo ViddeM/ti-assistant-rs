@@ -1,0 +1,25 @@
+@import "../../../resources/styles/vars.scss";
+
+.setupContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    > :last-child {
+        margin: $marginLarge 0;
+    }
+}
+
+.playersSetupContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    > fieldset {
+        margin: 0;
+    }
+  
+    @media (min-width: $widthLarge) {
+      grid-template-columns: 1fr 1fr;
+      column-gap: $marginLarge;
+    }
+}

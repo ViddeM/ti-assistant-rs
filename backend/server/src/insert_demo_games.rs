@@ -56,7 +56,9 @@ pub async fn insert_demo_games(opt: &Opt, db_pool: &DbPool) -> eyre::Result<()> 
             // Verify that we can re-apply the events to a new game.
             let mut new_game = Game::default();
             for (event, timestamp) in events.into_iter() {
-                new_game.apply_or_fail(event, timestamp);
+                new_game
+                    .apply_or_err(event, timestamp)
+                    .expect("Failed to apply event for demo game");
             }
 
             (name, id, new_game)

@@ -1,6 +1,6 @@
 import { GameOptions } from "@/api/GameOptions";
 import { GameState } from "@/api/GameState";
-import { SetupPhase } from "../setup/SetupPhase";
+import { CreationPhase } from "../creation/CreationPhase";
 import { SelectStrategyCardView } from "../strategy_card_select/SelectStrategyCard";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import { ActionPhaseView } from "../action_phase_View/ActionPhaseView";
@@ -9,6 +9,7 @@ import { TacticalView } from "../tactical_view/TacticalView";
 import { StatusPhaseView } from "../status_phase_view/StatusPhaseView";
 import { ActionCardView } from "../action_card_view/ActionCardView";
 import { AgendaPhaseView } from "../agenda_phase_view/AgendaPhaseView";
+import { SetupPhase } from "../setup/Setup";
 
 export const PhaseView = ({
   gameState,
@@ -20,12 +21,20 @@ export const PhaseView = ({
   sendMessage: (data: any) => void;
 }) => {
   switch (gameState.phase) {
-    case "Setup":
+    case "Creation":
       return (
-        <SetupPhase
+        <CreationPhase
           gameOptions={gameOptions}
           gameState={gameState}
           sendMessage={sendMessage}
+        />
+      );
+    case "Setup":
+      return (
+        <SetupPhase
+          gameState={gameState}
+          gameOptions={gameOptions}
+          sendEvent={sendMessage}
         />
       );
     case "Strategy":

@@ -2,6 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use chrono::{DateTime, Utc};
 use eyre::{bail, ensure};
+use strum::IntoEnumIterator;
 
 use crate::{
     data::{
@@ -13,7 +14,7 @@ use crate::{
             phase::Phase,
             planet::Planet,
             strategy_card::StrategyCard,
-            system::{systems, System, SystemType},
+            system::System,
             tech::{TechOrigin, TechType, Technology},
         },
     },
@@ -61,7 +62,8 @@ pub fn update_game_state(
                 "can't have less than {MIN_PLAYER_COUNT} players"
             );
 
-            game_state.change_phase(Phase::Setup, timestamp)?;
+            // We do not call change_phase here as we should not track time / calculate turn order here.
+            game_state.phase = Phase::Setup;
         }
         Event::SetupTheTribunii { player, faction } => {
             game_state.assert_phase(Phase::Setup)?;
@@ -99,12 +101,96 @@ pub fn update_game_state(
             player,
             technologies,
         } => {
-            todo!("Not implemented")
+            game_state.assert_phase(Phase::Setup)?;
+            ensure!(
+                !game_state.player_initialization_finished(&player)?,
+                "Player has already performed all necessary initialization"
+            );
+
+            let (allowed_techs, possible_techs) = match game_state
+                .players
+                .get(&player)
+                .expect("Player doesn't exist?")
+                .faction
+            {
+                Faction::Winnu => (
+                    1,
+                    Technology::iter()
+                        .filter(|t| t.info().requirements.is_empty())
+                        .filter(|t| t.info().origin == TechOrigin::Base)
+                        .collect(),
+                ),
+                Faction::ArgentFlight => (
+                    2,
+                    vec![
+                        Technology::NeuralMotivator,
+                        Technology::SarweenTools,
+                        Technology::PlasmaScoring,
+                    ],
+                ),
+                Faction::CouncilKeleres => (
+                    2,
+                    game_state
+                        .players
+                        .values()
+                        .filter(|p| p.faction != Faction::CouncilKeleres)
+                        .flat_map(|p| p.technologies.iter())
+                        .filter(|t| t.info().origin == TechOrigin::Base)
+                        .map(|t| t.clone())
+                        .collect::<Vec<Technology>>(),
+                ),
+                _ => bail!("Players faction has no technology setup to perform"),
+            };
+
+            ensure!(
+                technologies.len() == allowed_techs,
+                "Invalid amount of technologies selected for faction"
+            );
+
+            ensure!(
+                technologies.iter().all(|t| possible_techs.contains(&t)),
+                "Invalid technology selection for players faction"
+            );
+
+            let Some(player) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist!")
+            };
+
+            ensure!(
+                player.technologies.is_empty(),
+                "Player already has technologies?"
+            );
+
+            for tech in technologies.into_iter() {
+                player.technologies.insert(tech);
+            }
+        }
+        Event::SetupSpeaker { player } => {
+            game_state.assert_phase(Phase::Setup)?;
+            ensure!(
+                game_state.players.contains_key(&player),
+                "Player does not exist"
+            );
+            game_state.speaker = Some(player);
         }
         Event::StartGame => {
             game_state.assert_phase(Phase::Setup)?;
-            // pick speaker at random.
-            // TODO: in the future we should set this in the frontend.
+
+            ensure!(game_state.speaker.is_some(), "No speaker has been set!");
+
+            let initialization_finished = game_state
+                .players
+                .keys()
+                .map(|p| game_state.player_initialization_finished(p))
+                .collect::<Result<Vec<bool>, GameError>>()?
+                .into_iter()
+                .all(|t| t);
+
+            ensure!(
+                initialization_finished,
+                "All initialization has not yet been completed"
+            );
+
             game_state.speaker = game_state.players.keys().next().cloned();
             game_state.change_phase(Phase::Strategy, timestamp)?;
         }
@@ -813,6 +899,6 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::TacticalAction
         | Phase::ActionCardAction => true,
 
-        Phase::Setup | Phase::Status | Phase::Agenda => false,
+        Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => false,
     }
 }

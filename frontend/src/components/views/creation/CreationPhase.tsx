@@ -2,14 +2,14 @@
 
 import { Color, FactionResponse, GameOptions } from "@/api/GameOptions";
 import { Button } from "@/components/elements/button/Button";
-import styles from "./SetupPhase.module.scss";
+import styles from "./CreationPhase.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import { Faction } from "@/resources/types/factions";
 import { GameState, Player } from "@/api/GameState";
 
-export interface SetupPhaseProps {
+export interface CreationPhaseProps {
   gameOptions: GameOptions;
   gameState: GameState;
   sendMessage: (data: any) => void;
@@ -17,11 +17,11 @@ export interface SetupPhaseProps {
 
 const FACTION_NOT_SELECTED = "not_selected";
 
-export const SetupPhase = ({
+export const CreationPhase = ({
   gameOptions,
   gameState,
   sendMessage,
-}: SetupPhaseProps) => {
+}: CreationPhaseProps) => {
   const playerCount = Object.keys(gameState.players).length;
   const allowedNumberOfPlayers = gameOptions.playerCounts.includes(playerCount);
 
@@ -44,7 +44,7 @@ export const SetupPhase = ({
   };
   return (
     <div className={`card ${styles.setupCard}`}>
-      <h2>Setup</h2>
+      <h2>Add players</h2>
       {Object.entries(gameState.players).map(([playerId, player]) => (
         <DisplayPlayer key={playerId} {...player} />
       ))}
@@ -60,7 +60,7 @@ export const SetupPhase = ({
         className={styles.startGameButton}
         disabled={!allowedNumberOfPlayers}
         onClick={() => {
-          sendMessage("StartGame");
+          sendMessage("CreationDone");
         }}
       >
         Start game
