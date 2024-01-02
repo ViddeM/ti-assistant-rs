@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
+use eyre::Context;
 use serde::{Deserialize, Serialize};
 
 use crate::gameplay::game_event_handler::update_game_state;
@@ -30,16 +31,14 @@ impl Game {
         }
     }
 
-    /// Works the same as apply but panics on failure.
-    pub fn apply_or_fail(&mut self, event: Event, timestamp: DateTime<Utc>) {
-        self.apply_or_err(event, timestamp)
-            .expect("Failed to apply event");
-    }
-
-    fn apply_or_err(&mut self, event: Event, timestamp: DateTime<Utc>) -> eyre::Result<()> {
+    /// Apply an error and update the game state.
+    ///
+    /// Returns an error if the event is not valid for the current state.
+    pub fn apply_or_err(&mut self, event: Event, timestamp: DateTime<Utc>) -> eyre::Result<()> {
         log::debug!("{event:?}");
         let state = Arc::make_mut(&mut self.current);
-        update_game_state(state, event.clone(), timestamp)?;
+        update_game_state(state, event.clone(), timestamp)
+            .wrap_err_with(|| format!("Failed to update game state with event {event:?}"))?;
 
         log::info!("{:#?}", self.current);
         self.history.push((event, timestamp));

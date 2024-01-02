@@ -42,6 +42,12 @@ pub enum Event {
         technologies: Vec<Technology>,
     },
 
+    /// Set the starting speaker.
+    SetupSpeaker {
+        /// The player who shall be the new speaker.
+        player: PlayerId,
+    },
+
     /// Start the game.
     StartGame,
 

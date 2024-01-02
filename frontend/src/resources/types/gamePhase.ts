@@ -1,4 +1,5 @@
 export type GamePhase =
+  | "Creation"
   | "Setup"
   | "Strategy"
   | "Action"

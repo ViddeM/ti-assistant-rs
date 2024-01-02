@@ -56,7 +56,9 @@ fn main() {
             // Verify that we can re-apply the events to a new game.
             let mut new_game = Game::default();
             for (event, timestamp) in events.into_iter() {
-                new_game.apply_or_fail(event, timestamp);
+                new_game
+                    .apply_or_err(event, timestamp)
+                    .expect("Failed to apply event");
             }
         });
 }

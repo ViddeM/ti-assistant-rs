@@ -71,10 +71,28 @@
     },
     "2023-12-30T15:51:09.206829Z"
   ],
+  ["CreationDone", "2023-12-27T09:43:27.119838Z"],
   [
-    "StartGame",
-    "2023-12-30T15:51:11.808015Z"
+    {
+      "SetupSpeaker": {
+        "player": "Dobbler"
+      }
+    },
+    "2023-12-28T15:51:11.808015Z"
   ],
+  [
+    {
+      "SetupPlayerTechs": {
+        "player": "Dobbler",
+        "technologies": [
+          "NeuralMotivator",
+          "SarweenTools"
+        ]
+      }
+    },
+    "2023-12-29T15:51:11.808015Z"
+  ],
+  ["StartGame", "2023-12-30T15:51:11.808015Z"],
   [
     {
       "TakeStrategyCard": {
@@ -129,10 +147,7 @@
     },
     "2023-12-30T15:51:33.273561Z"
   ],
-  [
-    "CompleteStrategyPhase",
-    "2023-12-30T15:51:33.909674Z"
-  ],
+  ["CompleteStrategyPhase", "2023-12-30T15:51:33.909674Z"],
   [
     {
       "StrategicActionBegin": {
@@ -187,10 +202,7 @@
     },
     "2023-12-30T15:51:38.545976Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:51:39.063331Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:51:39.063331Z"],
   [
     {
       "StrategicActionBegin": {
@@ -245,10 +257,7 @@
     },
     "2023-12-30T15:51:42.407875Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:51:42.850231Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:51:42.850231Z"],
   [
     {
       "StrategicActionBegin": {
@@ -316,10 +325,7 @@
     },
     "2023-12-30T15:51:50.876026Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:51:51.792024Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:51:51.792024Z"],
   [
     {
       "StrategicActionBegin": {
@@ -374,10 +380,7 @@
     },
     "2023-12-30T15:51:55.638286Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:51:56.267826Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:51:56.267826Z"],
   [
     {
       "StrategicActionBegin": {
@@ -432,10 +435,7 @@
     },
     "2023-12-30T15:52:00.153249Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:52:00.760813Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:52:00.760813Z"],
   [
     {
       "StrategicActionBegin": {
@@ -504,10 +504,7 @@
     },
     "2023-12-30T15:52:10.393673Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:52:11.515141Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:52:11.515141Z"],
   [
     {
       "PassAction": {
@@ -672,10 +669,7 @@
     },
     "2023-12-30T15:52:33.558486Z"
   ],
-  [
-    "CompleteStatusPhase",
-    "2023-12-30T15:52:34.719439Z"
-  ],
+  ["CompleteStatusPhase", "2023-12-30T15:52:34.719439Z"],
   [
     {
       "TakeStrategyCard": {
@@ -730,10 +724,7 @@
     },
     "2023-12-30T15:52:40.563292Z"
   ],
-  [
-    "CompleteStrategyPhase",
-    "2023-12-30T15:52:41.276186Z"
-  ],
+  ["CompleteStrategyPhase", "2023-12-30T15:52:41.276186Z"],
   [
     {
       "StrategicActionBegin": {
@@ -788,10 +779,7 @@
     },
     "2023-12-30T15:52:44.823577Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:52:45.295817Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:52:45.295817Z"],
   [
     {
       "StrategicActionBegin": {
@@ -846,10 +834,7 @@
     },
     "2023-12-30T15:52:47.838099Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:52:48.213142Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:52:48.213142Z"],
   [
     {
       "StrategicActionBegin": {
@@ -917,10 +902,7 @@
     },
     "2023-12-30T15:53:01.848051Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:53:02.933986Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:53:02.933986Z"],
   [
     {
       "StrategicActionBegin": {
@@ -975,10 +957,7 @@
     },
     "2023-12-30T15:53:05.296621Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:53:05.596825Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:53:05.596825Z"],
   [
     {
       "StrategicActionBegin": {
@@ -1033,10 +1012,7 @@
     },
     "2023-12-30T15:53:09.348331Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:53:09.939229Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:53:09.939229Z"],
   [
     {
       "StrategicActionBegin": {
@@ -1091,10 +1067,7 @@
     },
     "2023-12-30T15:53:13.556171Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-30T15:53:14.500864Z"
-  ],
+  ["StrategicActionCommit", "2023-12-30T15:53:14.500864Z"],
   [
     {
       "TacticalActionBegin": {
@@ -1386,10 +1359,7 @@
     },
     "2023-12-30T15:53:54.888700Z"
   ],
-  [
-    "CompleteStatusPhase",
-    "2023-12-30T15:53:57.138012Z"
-  ],
+  ["CompleteStatusPhase", "2023-12-30T15:53:57.138012Z"],
   [
     {
       "RevealAgenda": {
