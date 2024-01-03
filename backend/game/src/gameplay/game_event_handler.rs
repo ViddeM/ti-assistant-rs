@@ -107,6 +107,7 @@ pub fn update_game_state(
                 "Player has already performed all necessary initialization"
             );
 
+            println!("Lol?");
             let (allowed_techs, possible_techs) = match game_state
                 .players
                 .get(&player)
@@ -141,6 +142,7 @@ pub fn update_game_state(
                 ),
                 _ => bail!("Players faction has no technology setup to perform"),
             };
+            println!("Allowed techs {allowed_techs:?} Possible {possible_techs:?}");
 
             ensure!(
                 technologies.len() == allowed_techs,

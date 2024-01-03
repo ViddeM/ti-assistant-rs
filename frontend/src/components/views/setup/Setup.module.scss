@@ -10,6 +10,18 @@
     }
 }
 
+.setupPlayerFieldset {
+    border-width: 4px;
+    border-style: solid;
+    border-radius: $border-radius;
+}
+
+.setupPlayerLegend {
+    border-radius: $border-radius;
+    border-width: 4px;
+    border-style: solid;
+}
+
 .playersSetupContainer {
     display: grid;
     grid-template-columns: 1fr;
@@ -21,5 +33,21 @@
     @media (min-width: $widthLarge) {
       grid-template-columns: 1fr 1fr;
       column-gap: $marginLarge;
+      row-gap: $marginLarge;
+    }
+}
+
+.setupRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.setupColumn {
+    display: flex;
+    flex-direction: column;
+    
+    > * {
+        margin: $margin 0;
     }
 }
