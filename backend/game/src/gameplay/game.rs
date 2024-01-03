@@ -1,12 +1,11 @@
 use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
-use eyre::Context;
 use serde::{Deserialize, Serialize};
 
 use crate::gameplay::game_event_handler::update_game_state;
 
-use super::{event::Event, game_state::GameState, player::Player};
+use super::{error::GameError, event::Event, game_state::GameState, player::Player};
 
 /// A game.
 #[derive(Default, Debug, Serialize, Deserialize)]
@@ -34,11 +33,14 @@ impl Game {
     /// Apply an error and update the game state.
     ///
     /// Returns an error if the event is not valid for the current state.
-    pub fn apply_or_err(&mut self, event: Event, timestamp: DateTime<Utc>) -> eyre::Result<()> {
+    pub fn apply_or_err(
+        &mut self,
+        event: Event,
+        timestamp: DateTime<Utc>,
+    ) -> Result<(), GameError> {
         log::debug!("{event:?}");
         let state = Arc::make_mut(&mut self.current);
-        update_game_state(state, event.clone(), timestamp)
-            .wrap_err_with(|| format!("Failed to update game state with event {event:?}"))?;
+        update_game_state(state, event.clone(), timestamp)?;
 
         log::info!("{:#?}", self.current);
         self.history.push((event, timestamp));
