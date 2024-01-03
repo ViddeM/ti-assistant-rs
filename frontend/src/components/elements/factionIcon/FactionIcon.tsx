@@ -15,10 +15,14 @@ export const FactionIcon = ({
   className,
 }: FactionIconProps) => (
   <Image
-    src={`/icons/factions/${faction}.png`}
+    src={factionIconName(faction)}
     alt={`Faction Icon ${faction}`}
     width={width ? width : 32}
     height={height ? height : 32}
     className={className}
   />
 );
+
+export function factionIconName(faction: Faction): string {
+  return `/icons/factions/${faction}.png`;
+}
