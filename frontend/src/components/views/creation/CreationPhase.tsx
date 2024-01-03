@@ -46,7 +46,11 @@ export const CreationPhase = ({
     <div className={`card ${styles.setupCard}`}>
       <h2>Add players</h2>
       {Object.entries(gameState.players).map(([playerId, player]) => (
-        <DisplayPlayer key={playerId} {...player} />
+        <DisplayPlayer
+          key={playerId}
+          player={player}
+          gameOptions={gameOptions}
+        />
       ))}
       {playerCount < 8 && (
         <AddPlayer
@@ -69,13 +73,23 @@ export const CreationPhase = ({
   );
 };
 
-const DisplayPlayer = (player: Player) => {
+interface DisplayPlayerProps {
+  gameOptions: GameOptions;
+  player: Player;
+}
+
+const DisplayPlayer = ({ player, gameOptions }: DisplayPlayerProps) => {
   return (
     <div className={styles.displayPlayerContainer}>
       <h3>{player.name}</h3>
       <div className={styles.factionRow}>
         <FactionIcon faction={player.faction} />
-        <p className={styles.factionName}>{player.faction}</p>
+        <p className={styles.factionName}>
+          {
+            gameOptions.factions.filter((f) => f.faction === player.faction)[0]
+              .name
+          }
+        </p>
       </div>
     </div>
   );

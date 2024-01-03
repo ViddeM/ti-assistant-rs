@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use chrono::{DateTime, Utc};
-use eyre::{bail, ensure};
+use eyre::{bail, ensure, Result};
 use strum::IntoEnumIterator;
 
 use crate::{
@@ -107,7 +107,6 @@ pub fn update_game_state(
                 "Player has already performed all necessary initialization"
             );
 
-            println!("Lol?");
             let (allowed_techs, possible_techs) = match game_state
                 .players
                 .get(&player)
@@ -142,7 +141,6 @@ pub fn update_game_state(
                 ),
                 _ => bail!("Players faction has no technology setup to perform"),
             };
-            println!("Allowed techs {allowed_techs:?} Possible {possible_techs:?}");
 
             ensure!(
                 technologies.len() == allowed_techs,
@@ -180,17 +178,26 @@ pub fn update_game_state(
 
             ensure!(game_state.speaker.is_some(), "No speaker has been set!");
 
-            let initialization_finished = game_state
+            let uninitialized_players = game_state
                 .players
                 .keys()
-                .map(|p| game_state.player_initialization_finished(p))
-                .collect::<Result<Vec<bool>, GameError>>()?
+                .map(|p| {
+                    game_state.player_initialization_finished(p).map(|ok| {
+                        if ok {
+                            None
+                        } else {
+                            Some(p)
+                        }
+                    })
+                })
+                .collect::<Result<Vec<Option<&PlayerId>>, GameError>>()?
                 .into_iter()
-                .all(|t| t);
+                .filter_map(|p| p)
+                .collect::<Vec<&PlayerId>>();
 
             ensure!(
-                initialization_finished,
-                "All initialization has not yet been completed"
+                uninitialized_players.is_empty(),
+                format!("All initialization has not yet been completed for players {uninitialized_players:?}")
             );
 
             game_state.speaker = game_state.players.keys().next().cloned();

@@ -261,6 +261,7 @@ const CouncilKeleresSetup = ({
 }: FactionSpecificSetupProps) => {
   const [firstTech, setFirstTech] = useState<string>("");
   const [secondTech, setSecondTech] = useState<string>("");
+  const [selectedFaction, setSelectedFaction] = useState<string>("");
 
   const possibleTechs = Object.keys(gameState.players)
     .filter((p) => p !== player.name)
@@ -273,6 +274,16 @@ const CouncilKeleresSetup = ({
       };
     })
     .filter((t) => t.origin === "Base");
+
+  const takenFactions = Object.values(gameState.players).map((p) => p.faction);
+  const possibleFactions = gameOptions.factions
+    .filter(
+      (f) =>
+        f.faction === "MentakCoalition" ||
+        f.faction === "XxchaKingdom" ||
+        f.faction === "ArgentFlight"
+    )
+    .filter((f) => !takenFactions.includes(f.faction));
 
   return (
     <div className={styles.setupColumn}>
@@ -316,6 +327,41 @@ const CouncilKeleresSetup = ({
         <>
           <p>{gameOptions.technologies[player.technologies[0]].name}</p>
           <p>{gameOptions.technologies[player.technologies[1]].name}</p>
+        </>
+      )}
+
+      {player.planets.length === 0 ? (
+        <>
+          <Dropdown
+            value={selectedFaction}
+            onChange={(e) => setSelectedFaction(e.target.value)}
+          >
+            <option value="">--Select faction--</option>
+            {possibleFactions.map((f) => (
+              <option value={f.faction} key={f.faction}>
+                {f.name}
+              </option>
+            ))}
+          </Dropdown>
+          <Button
+            disabled={selectedFaction === ""}
+            onClick={() =>
+              sendEvent({
+                SetupTheTribunii: {
+                  player: player.id,
+                  faction: selectedFaction,
+                },
+              })
+            }
+          >
+            Select faction
+          </Button>
+        </>
+      ) : (
+        <>
+          {player.planets.map((p) => (
+            <p>{p}</p>
+          ))}
         </>
       )}
     </div>
