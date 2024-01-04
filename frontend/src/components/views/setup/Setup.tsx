@@ -4,10 +4,7 @@ import { Button } from "@/components/elements/button/Button";
 import styles from "./Setup.module.scss";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
-import {
-  FactionIcon,
-  factionIconName,
-} from "@/components/elements/factionIcon/FactionIcon";
+import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 
 export interface SetupProps {
   gameState: GameState;
@@ -20,6 +17,9 @@ export const SetupPhase = ({
   gameOptions,
   sendEvent,
 }: SetupProps) => {
+  const [firstObjective, setFirstObjective] = useState<string>("");
+  const [secondObjective, setSecondObjective] = useState<string>("");
+
   const players = Object.keys(gameState.players).map((p) => {
     return {
       id: p,
@@ -27,53 +27,133 @@ export const SetupPhase = ({
     };
   });
 
+  const availableObjectives = Object.keys(gameOptions.objectives)
+    .map((o) => {
+      return {
+        id: o,
+        ...gameOptions.objectives[o],
+      };
+    })
+    .filter((o) => o.kind === "StageI");
+
+  const revealedObjectives = Object.keys(
+    gameState.score.revealedObjectives
+  ).map((o) => {
+    return {
+      id: o,
+      ...gameOptions.objectives[o],
+    };
+  });
+
   return (
     <div className={`card ${styles.setupContainer}`}>
       <h2>Setup</h2>
-      <div className={styles.playersSetupContainer}>
-        {players.map((p) => (
-          <fieldset
-            className={`playerColorBorder${p.color} ${styles.setupPlayerFieldset}`}
-          >
-            <legend
-              className={`playerColorBorder${p.color} ${styles.setupPlayerLegend}`}
+
+      <div className={styles.playerSpecificSetupContainer}>
+        <h3>Player specific setup</h3>
+
+        <div className={styles.playersSetupContainer}>
+          {players.map((p) => (
+            <fieldset
+              className={`playerColorBorder${p.color} ${styles.setupPlayerFieldset}`}
             >
-              {p.name}
-            </legend>
-            <div className={styles.setupRow}>
-              {gameState.speaker === p.id ? (
-                <p>Speaker</p>
-              ) : (
-                <Button
-                  disabled={gameState.speaker === p.id}
-                  onClick={() =>
-                    sendEvent({
-                      SetupSpeaker: {
-                        player: p.id,
-                      },
-                    })
-                  }
-                >
-                  Set Speaker
-                </Button>
-              )}
-              <FactionIcon faction={p.faction} />
-            </div>
-            {
-              gameOptions.factions.filter((f) => f.faction === p.faction)[0]
-                .name
-            }
-            <FactionSpecificSetup
-              player={p}
-              gameState={gameState}
-              gameOptions={gameOptions}
-              sendEvent={sendEvent}
-            />
-          </fieldset>
-        ))}
+              <legend
+                className={`playerColorBorder${p.color} ${styles.setupPlayerLegend}`}
+              >
+                {p.name}
+              </legend>
+              <div className={styles.setupRow}>
+                {gameState.speaker === p.id ? (
+                  <p>Speaker</p>
+                ) : (
+                  <Button
+                    disabled={gameState.speaker === p.id}
+                    onClick={() =>
+                      sendEvent({
+                        SetupSpeaker: {
+                          player: p.id,
+                        },
+                      })
+                    }
+                  >
+                    Set Speaker
+                  </Button>
+                )}
+                <FactionIcon faction={p.faction} />
+              </div>
+              {
+                gameOptions.factions.filter((f) => f.faction === p.faction)[0]
+                  .name
+              }
+              <FactionSpecificSetup
+                player={p}
+                gameState={gameState}
+                gameOptions={gameOptions}
+                sendEvent={sendEvent}
+              />
+            </fieldset>
+          ))}
+        </div>
       </div>
+
+      <div className={styles.revealObjectivesContainer}>
+        <h3>Select initial objectives</h3>
+        {revealedObjectives.length === 0 ? (
+          <>
+            <Dropdown
+              value={firstObjective}
+              onChange={(e) => setFirstObjective(e.target.value)}
+            >
+              <option value="">--Select Objective--</option>
+              {availableObjectives
+                .filter((o) => o.id !== secondObjective)
+                .map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+            </Dropdown>
+            <Dropdown
+              value={secondObjective}
+              onChange={(e) => setSecondObjective(e.target.value)}
+            >
+              <option value="">--Select Objective--</option>
+              {availableObjectives
+                .filter((o) => o.id !== firstObjective)
+                .map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+            </Dropdown>
+            <Button
+              disabled={firstObjective === "" || secondObjective === ""}
+              onClick={() =>
+                sendEvent({
+                  RevealInitialObjectives: {
+                    firstObjective: firstObjective,
+                    secondObjective: secondObjective,
+                  },
+                })
+              }
+            >
+              Select Objectives
+            </Button>
+          </>
+        ) : (
+          <>
+            {revealedObjectives.map((o) => (
+              <p key={o.id}>{o.name}</p>
+            ))}
+          </>
+        )}
+      </div>
+
       <Button
-        disabled={!gameState.speaker}
+        disabled={
+          !gameState.speaker ||
+          Object.keys(gameState.score.revealedObjectives).length === 0
+        }
         onClick={() => sendEvent("StartGame")}
       >
         Start Game
@@ -148,7 +228,7 @@ const WinnuSetup = ({
   return (
     <div>
       {player.technologies.length === 0 ? (
-        <div>
+        <div className={styles.setupColumn}>
           <Dropdown
             value={selectedTech}
             onChange={(e) => setSelectedTech(e.target.value)}

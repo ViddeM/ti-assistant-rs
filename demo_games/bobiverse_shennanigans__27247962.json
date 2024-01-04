@@ -72,6 +72,15 @@
     "2023-12-29T11:59:16.119848Z"
   ],
   [
+    {
+      "RevealInitialObjectives": {
+        "firstObjective": "DevelopWeaponry",
+        "secondObjective": "FoundResearchOutposts"
+      }
+    },
+    "2023-12-29T11:59:16.119948Z"
+  ],
+  [
     "StartGame",
     "2023-12-29T11:59:17.119838Z"
   ],
@@ -1227,7 +1236,7 @@
   [
     {
       "RevealPublicObjective": {
-        "objective": "CornerTheMarket"
+        "objective": "FoundAGoldenAge"
       }
     },
     "2023-12-29T12:06:55.999260Z"
