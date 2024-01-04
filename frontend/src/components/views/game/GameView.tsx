@@ -147,13 +147,15 @@ const DisplayViewMode = ({
     case "Game":
       return (
         <div className={styles.gamePageContainer}>
-          <PlayerSidebar
-            players={getPlayersFromGame(gameState, gameOptions)}
-            score={gameState.score}
-            gameOptions={gameOptions}
-            currentTurnStartTime={gameState.currentTurnStartTime}
-            isPaused={gameState.timeTrackingPaused}
-          />
+          {!(gameState.phase === "Setup" || gameState.phase === "Creation") && (
+            <PlayerSidebar
+              players={getPlayersFromGame(gameState, gameOptions)}
+              score={gameState.score}
+              gameOptions={gameOptions}
+              currentTurnStartTime={gameState.currentTurnStartTime}
+              isPaused={gameState.timeTrackingPaused}
+            />
+          )}
           <div className={styles.phaseContainer}>
             <PhaseView
               gameState={gameState}

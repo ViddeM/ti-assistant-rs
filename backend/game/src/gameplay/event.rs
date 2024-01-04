@@ -48,6 +48,15 @@ pub enum Event {
         player: PlayerId,
     },
 
+    /// Reveal the two starting objectives.
+    #[serde(rename_all = "camelCase")]
+    RevealInitialObjectives {
+        /// The first objective.
+        first_objective: Objective,
+        /// The second objective.
+        second_objective: Objective,
+    },
+
     /// Start the game.
     StartGame,
 

@@ -141,7 +141,7 @@ const AddPlayer = ({
           onChange={(e) => setNewPlayerName(e.target.value)}
         />
       </div>
-      <div>
+      <div className="marginTop">
         <label htmlFor="player_faction_dropdown">Faction: </label>
         <Dropdown
           required
@@ -189,6 +189,7 @@ const AddPlayer = ({
         ))}
       </div>
       <Button
+        className="marginTop"
         type="submit"
         disabled={newPlayerName === "" || newPlayerFaction === null}
       >

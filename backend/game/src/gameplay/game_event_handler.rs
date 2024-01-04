@@ -1,4 +1,7 @@
-use std::collections::{HashMap, HashSet};
+use std::{
+    borrow::BorrowMut,
+    collections::{HashMap, HashSet},
+};
 
 use chrono::{DateTime, Utc};
 use eyre::{bail, ensure, Result};
@@ -10,7 +13,7 @@ use crate::{
         components::{
             action_card::{ActionCard, ActionCardPlay},
             agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
-            objectives::Objective,
+            objectives::{Objective, ObjectiveKind},
             phase::Phase,
             planet::Planet,
             strategy_card::StrategyCard,
@@ -173,10 +176,39 @@ pub fn update_game_state(
             );
             game_state.speaker = Some(player);
         }
+        Event::RevealInitialObjectives {
+            first_objective,
+            second_objective,
+        } => {
+            game_state.assert_phase(Phase::Setup)?;
+            ensure!(
+                game_state.score.revealed_objectives.is_empty(),
+                "Objectives have already been revealed"
+            );
+            ensure!(
+                first_objective.get_objective_info().kind == ObjectiveKind::StageI,
+                "Invalid starting objective"
+            );
+            ensure!(
+                second_objective.get_objective_info().kind == ObjectiveKind::StageI,
+                "Invalid starting objective"
+            );
+            let score = game_state.score.borrow_mut();
+            score
+                .revealed_objectives
+                .insert(first_objective, HashSet::new());
+            score
+                .revealed_objectives
+                .insert(second_objective, HashSet::new());
+        }
         Event::StartGame => {
             game_state.assert_phase(Phase::Setup)?;
 
             ensure!(game_state.speaker.is_some(), "No speaker has been set!");
+            ensure!(
+                !game_state.score.revealed_objectives.is_empty(),
+                "No objectives have been revealed"
+            );
 
             let uninitialized_players = game_state
                 .players

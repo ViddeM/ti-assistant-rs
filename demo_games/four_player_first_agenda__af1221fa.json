@@ -60,6 +60,15 @@
     "2023-12-27T09:43:28.124083Z"
   ],
   [
+    {
+      "RevealInitialObjectives": {
+        "firstObjective": "DiversifyResearch",
+        "secondObjective": "SwayTheCouncil"
+      }
+    },
+    "2023-12-27T09:43:28.144083Z"
+  ],
+  [
     "StartGame",
     "2023-12-27T09:43:28.154083Z"
   ],
@@ -733,7 +742,7 @@
   [
     {
       "RevealExtraPublicObjective": {
-        "objective": "SwayTheCouncil"
+        "objective": "NegotiateTradeRoutes"
       }
     },
     "2023-12-28T17:19:35.123408Z"
