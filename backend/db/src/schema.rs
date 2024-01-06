@@ -22,7 +22,4 @@ diesel::table! {
 
 diesel::joinable!(game_event -> game (game_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    game,
-    game_event,
-);
+diesel::allow_tables_to_appear_in_same_query!(game, game_event,);

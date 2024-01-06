@@ -1,6 +1,22 @@
 [
   [
     {
+      "SetSettings": {
+        "settings": {
+          "maxPoints": 10,
+          "expansions": {
+            "prophecyOfKings": true,
+            "codex1": false,
+            "codex2": false,
+            "codex3": false
+          }
+        }
+      }
+    },
+    "2023-12-29T11:22:45.619082Z"
+  ],
+  [
+    {
       "AddPlayer": {
         "player": {
           "name": "Bob",
