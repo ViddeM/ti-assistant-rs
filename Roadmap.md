@@ -40,6 +40,7 @@
      - ❌ Obsidian (Draw and have 1 extra secret objective)
      - ❌ Shard of the Throne (Player with this card has 1 extra VP)
      - ❌ Crown of Emphydia (Purge to gain 1 VP)
+   - ❌ Winning the game (when reaching the winning score).
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
