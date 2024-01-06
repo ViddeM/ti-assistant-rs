@@ -517,4 +517,22 @@ impl Agenda {
             },
         }
     }
+
+    /// Returns true if this agenda is disabled in pok.
+    pub fn disabled_in_pok(&self) -> bool {
+        matches!(
+            self,
+            Self::CoreMining
+                | Self::DemilitarizedZone
+                | Self::HolyPlanetOfIxth
+                | Self::ResearchTeamBiotic
+                | Self::ResearchTeamCybernetic
+                | Self::ResearchTeamPropulsion
+                | Self::ResearchTeamWarfare
+                | Self::SenateSanctuary
+                | Self::ShardOfTheThrone
+                | Self::TheCrownOfEmphidia
+                | Self::TheCrownOfThalnos
+        )
+    }
 }
