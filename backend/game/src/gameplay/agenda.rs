@@ -106,7 +106,7 @@ impl VoteState {
         // list eligible planets for the vote, given the provided trait filter
         let planets = |trait_filter: fn(Option<PlanetTrait>) -> bool| {
             let eligible_planets: Vec<_> = Planet::iter()
-                .filter(|planet| trait_filter(planet.planet_info().planet_trait))
+                .filter(|planet| trait_filter(planet.info().planet_trait))
                 // planet must be owned by a player
                 .filter(|planet| {
                     game.players

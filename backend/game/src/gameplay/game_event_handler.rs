@@ -194,15 +194,15 @@ pub fn update_game_state(
             );
 
             ensure!(
-                first_objective.get_objective_info().kind == ObjectiveKind::StageI,
+                first_objective.info().kind == ObjectiveKind::StageI,
                 "Invalid starting objective"
             );
-            game_state.assert_expansion(&first_objective.get_objective_info().expansion)?;
+            game_state.assert_expansion(&first_objective.info().expansion)?;
             ensure!(
-                second_objective.get_objective_info().kind == ObjectiveKind::StageI,
+                second_objective.info().kind == ObjectiveKind::StageI,
                 "Invalid starting objective"
             );
-            game_state.assert_expansion(&second_objective.get_objective_info().expansion)?;
+            game_state.assert_expansion(&second_objective.info().expansion)?;
 
             let score = game_state.score.borrow_mut();
             score
@@ -597,7 +597,7 @@ pub fn update_game_state(
             game_state.assert_phase(Phase::Status)?;
 
             if let Some(obj) = &objective {
-                game_state.assert_expansion(&obj.get_objective_info().expansion)?;
+                game_state.assert_expansion(&obj.info().expansion)?;
             }
 
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
@@ -626,7 +626,7 @@ pub fn update_game_state(
             game_state.assert_phase(Phase::Status)?;
 
             if let Some(obj) = &objective {
-                game_state.assert_expansion(&obj.get_objective_info().expansion)?;
+                game_state.assert_expansion(&obj.info().expansion)?;
             }
 
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
@@ -665,14 +665,14 @@ pub fn update_game_state(
                 "Objective has already been revealed!"
             );
 
-            game_state.assert_expansion(&pub_obj.get_objective_info().expansion)?;
+            game_state.assert_expansion(&pub_obj.info().expansion)?;
 
             let Some(status_phase_state) = game_state.status_phase_state.as_mut() else {
                 bail!("Status phase state not set!")
             };
 
             let num_revealed = game_state.score.revealed_objectives.len();
-            match pub_obj.get_objective_info().kind {
+            match pub_obj.info().kind {
                 crate::data::components::objectives::ObjectiveKind::StageI => {
                     if num_revealed >= status_phase_state.expected_objectives_before_stage_two {
                         bail!("Already revealed enough stage I objective, expected stage II");
@@ -831,7 +831,7 @@ pub fn update_game_state(
             *imperial = imperial.saturating_add(value);
         }
         Event::ScoreExtraPublicObjective { player, objective } => {
-            game_state.assert_expansion(&objective.get_objective_info().expansion)?;
+            game_state.assert_expansion(&objective.info().expansion)?;
 
             let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
                 bail!("can't score an unrevealed public objective");
@@ -842,7 +842,7 @@ pub fn update_game_state(
             }
         }
         Event::ScoreExtraSecretObjective { player, objective } => {
-            game_state.assert_expansion(&objective.get_objective_info().expansion)?;
+            game_state.assert_expansion(&objective.info().expansion)?;
 
             for scored in game_state.score.secret_objectives.values() {
                 if scored.contains(&objective) {
@@ -877,7 +877,7 @@ pub fn update_game_state(
                 !game_state.score.revealed_objectives.contains_key(&pub_obj),
                 "Objective has already been revealed!"
             );
-            game_state.assert_expansion(&pub_obj.get_objective_info().expansion)?;
+            game_state.assert_expansion(&pub_obj.info().expansion)?;
 
             game_state
                 .score
@@ -920,7 +920,7 @@ pub fn update_game_state(
             }
         }
         Event::SetPlanetOwner { player, planet } => {
-            game_state.assert_expansion(&planet.planet_info().expansion)?;
+            game_state.assert_expansion(&planet.info().expansion)?;
 
             // Give the planet to the new owner.
             if let Some(p) = &player {

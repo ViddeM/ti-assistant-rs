@@ -74,7 +74,7 @@ pub enum PublicObjective {
 
 impl PublicObjective {
     /// Get the [ObjectiveInfo] for this public objective.
-    pub fn get_objective_info(&self) -> ObjectiveInfo {
+    pub fn info(&self) -> ObjectiveInfo {
         match self {
             PublicObjective::CornerTheMarket => o!(
                 StageI,

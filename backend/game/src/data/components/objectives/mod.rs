@@ -58,10 +58,10 @@ pub enum ObjectiveKind {
 
 impl Objective {
     /// Get the [ObjectiveInfo] for this objective.
-    pub fn get_objective_info(&self) -> ObjectiveInfo {
+    pub fn info(&self) -> ObjectiveInfo {
         match self {
-            Objective::Public(o) => o.get_objective_info(),
-            Objective::Secret(o) => o.get_objective_info(),
+            Objective::Public(o) => o.info(),
+            Objective::Secret(o) => o.info(),
         }
     }
 }
