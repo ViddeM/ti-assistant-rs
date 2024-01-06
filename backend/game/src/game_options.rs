@@ -77,6 +77,7 @@ impl GameOptions {
                     let info = o.get_objective_info();
                     (o, info)
                 })
+                .filter(|(_, o)| expansions.is_enabled(&o.expansion))
                 .collect(),
             technologies: Technology::iter()
                 .map(|t| (t.clone(), t.info()))

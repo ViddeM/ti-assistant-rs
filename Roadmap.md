@@ -61,7 +61,7 @@
      - ✅ 31 new systems
      - ✅ 8 new techs (psycoarch, bio stims, dark energy tap, sling ray, scanlink drone network, predictive intelligence, ai dev algos, self assembly)
      - ❌ alliances ( use other players commanders)
-     - ❌ 40 new objectives
+     - ✅ 40 new objectives
      - ❌ 20 new action cards
      - ❌ 13 agendas removed
      - ❌ 13 new agendas

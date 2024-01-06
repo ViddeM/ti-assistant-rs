@@ -66,8 +66,6 @@ impl System {
             .cloned()
             .collect::<Vec<System>>();
 
-        println!("PLANET? {planet:?}");
-
         ensure!(
             systems.len() == 1,
             "A planet should only be a part of one system, got: {systems:?}"

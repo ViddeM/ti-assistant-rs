@@ -379,7 +379,7 @@ impl GameState {
             }
             StrategicPrimaryAction::Imperial { score_objective } => {
                 if let Some(obj) = score_objective {
-                    // TODO: Check objective expansion.
+                    self.assert_expansion(&obj.get_objective_info().expansion)?;
                 }
             }
             StrategicPrimaryAction::Politics { .. } => {}
