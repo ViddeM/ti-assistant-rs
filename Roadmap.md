@@ -63,8 +63,8 @@
      - ❌ alliances ( use other players commanders)
      - ✅ 40 new objectives
      - ✅ 20 new action cards
-     - ❌ 13 agendas removed
-     - ❌ 13 new agendas
+     - ✅ 13 agendas removed
+     - ✅ 13 new agendas
      - ❌ updated diplo strat card
      - ❌ updated construction strat card
    - ❌ Codex I
