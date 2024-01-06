@@ -63,6 +63,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
 
   const sendMsg = (data: any) => sendMessage(JSON.stringify(data));
   const sendEvent = (data: any) => sendMsg({ Event: data });
+  const sendUndo = () => sendMsg("Undo");
 
   /* Send join game message */
   useEffect(() => {
@@ -117,6 +118,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           </Button>
         </div>
         <p>Round {gameState?.round}</p>
+        <Button onClick={() => sendUndo()}>Undo</Button>
       </div>
       {gameOptions && gameState && (
         <DisplayViewMode
