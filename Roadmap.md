@@ -48,6 +48,26 @@
  - ❌ Agenda Phase (see below)
  - ❌ Relics
  - ❌ Separation between base/PoK/codexes
+   - PoK
+     - Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
+     - Leaders (agents, commanders, heroes)
+     - Mechs (probably not relevant?)
+     - Increases player limit to 8
+     - 31 new systems
+     - 8 new techs (psycoarch, bio stims, dark energy tap, sling ray, scanlink drone network, predictive intelligence, ai dev algos, self assembly)
+     - alliances ( use other players commanders)
+     - 40 new objectives
+     - 20 new action cards
+     - 13 agendas removed
+     - 13 new agendas
+     - updated diplo strat card
+     - updated construction strat card
+   - Codex I
+     - updated techs: (magmus reactor, wormhole generator, yin spinner, magan defence grid, x-89)
+     - promissary notes (stymie, war funding, cybernetic enhancements, acquiessence, greyfire)
+     - new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
+     - updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
+   - Codex II
  - ✅ Strategy cards (speaker handling etc)
  - ❌ Real names for things (currently we only use the ID for e.g objectives)
  - ❌ Status phase
