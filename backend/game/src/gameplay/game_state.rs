@@ -24,6 +24,7 @@ use crate::data::{
 use super::{
     agenda::{AgendaRecord, AgendaState},
     error::GameError,
+    event::{StrategicPrimaryAction, StrategicSecondaryAction},
     game_settings::GameSettings,
     player::{Player, PlayerId},
     score::Score,
@@ -360,6 +361,49 @@ impl GameState {
     pub fn assert_expansion(&self, expansion: &Expansion) -> Result<(), GameError> {
         if !self.game_settings.expansions.is_enabled(expansion) {
             bail!("Expansion is not enabled {expansion:?}");
+        }
+        Ok(())
+    }
+
+    /// Asserts that the configured expansions is valid for the provided action.
+    pub fn assert_action_expansion(
+        &self,
+        action: &StrategicPrimaryAction,
+    ) -> Result<(), GameError> {
+        match action {
+            StrategicPrimaryAction::Technology { tech, extra } => {
+                self.assert_expansion(&tech.info().expansion)?;
+                if let Some(t) = extra {
+                    self.assert_expansion(&t.info().expansion)?;
+                }
+            }
+            StrategicPrimaryAction::Imperial { score_objective } => {
+                if let Some(obj) = score_objective {
+                    // TODO: Check objective expansion.
+                }
+            }
+            StrategicPrimaryAction::Politics { .. } => {}
+        }
+        Ok(())
+    }
+
+    /// Asserts that the configured expansions is valid for the provided action.
+    pub fn assert_secondary_action_expansion(
+        &self,
+        action: &StrategicSecondaryAction,
+    ) -> Result<(), GameError> {
+        match action {
+            StrategicSecondaryAction::Technology { tech } => {
+                self.assert_expansion(&tech.info().expansion)?;
+            }
+            StrategicSecondaryAction::Skip => {}
+            StrategicSecondaryAction::Leadership => {}
+            StrategicSecondaryAction::Diplomacy => {}
+            StrategicSecondaryAction::Politics => {}
+            StrategicSecondaryAction::Construction => {}
+            StrategicSecondaryAction::Trade => {}
+            StrategicSecondaryAction::Warfare => {}
+            StrategicSecondaryAction::Imperial => {}
         }
         Ok(())
     }

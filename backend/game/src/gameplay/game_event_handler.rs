@@ -356,6 +356,9 @@ pub fn update_game_state(
                 game_state.action_progress.is_some(),
                 "Invalid game state: expected action_progress not to be None"
             );
+
+            game_state.assert_action_expansion(&action)?;
+
             let progress = game_state.action_progress.as_mut().unwrap();
             let progress = match progress {
                 ActionPhaseProgress::Strategic(p) => p,
@@ -426,6 +429,8 @@ pub fn update_game_state(
                 "current player can't perform the secondary on a strategy card",
             );
 
+            game_state.assert_secondary_action_expansion(&action)?;
+
             let Some(action_progress) = &mut game_state.action_progress else {
                 bail!("no strategic action in progress");
             };
@@ -441,7 +446,6 @@ pub fn update_game_state(
                         .other_players
                         .insert(player.clone(), action.clone().into());
 
-                    // TODO: add other relevant strategy cards (initially Imperial)
                     match action {
                         StrategicSecondaryAction::Technology { tech } => {
                             let player = game_state.players.get_mut(&player).unwrap();
@@ -516,6 +520,8 @@ pub fn update_game_state(
             if let Some(data) = data {
                 match data {
                     ActionCardInfo::FocusedResearch { tech } => {
+                        game_state.assert_expansion(&tech.info().expansion)?;
+
                         let current_player = game_state.get_current_player()?;
                         current_player.take_tech(tech.clone())?;
                     }
@@ -523,6 +529,8 @@ pub fn update_game_state(
                         remove_tech,
                         take_tech,
                     } => {
+                        game_state.assert_expansion(&take_tech.info().expansion)?;
+
                         let current_player = game_state.get_current_player()?;
                         ensure!(
                             current_player.has_tech(&remove_tech),
@@ -856,6 +864,8 @@ pub fn update_game_state(
                 .insert(pub_obj, HashSet::new());
         }
         Event::AddTechToPlayer { player, tech } => {
+            game_state.assert_expansion(&tech.info().expansion)?;
+
             let Some(p) = game_state.players.get_mut(&player) else {
                 bail!("Player does not exist?");
             };
@@ -889,6 +899,8 @@ pub fn update_game_state(
             }
         }
         Event::SetPlanetOwner { player, planet } => {
+            game_state.assert_expansion(&planet.planet_info().expansion)?;
+
             // Give the planet to the new owner.
             if let Some(p) = &player {
                 let Some(player) = game_state.players.get_mut(p) else {
