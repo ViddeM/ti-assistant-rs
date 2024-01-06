@@ -117,7 +117,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
             Laws
           </Button>
         </div>
-        <p>Round {gameState?.round}</p>
+        <p className="marginTop">Round {gameState?.round}</p>
         <Button onClick={() => sendUndo()}>Undo</Button>
       </div>
       {gameOptions && gameState && (
