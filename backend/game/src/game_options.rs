@@ -89,6 +89,7 @@ impl GameOptions {
                 .collect(),
             agendas: Agenda::iter()
                 .map(|agenda| (agenda, agenda.info()))
+                .filter(|(_, agenda)| expansions.is_enabled(&agenda.expansion))
                 .collect(),
         }
     }
