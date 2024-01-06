@@ -716,6 +716,7 @@ pub fn update_game_state(
         }
         Event::RevealAgenda { agenda } => {
             game_state.assert_phase(Phase::Agenda)?;
+            game_state.assert_expansion(&agenda.info().expansion)?;
             let vote = VoteState::new(agenda, game_state)?;
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
