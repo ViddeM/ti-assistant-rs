@@ -49,6 +49,7 @@
  - ❌ Relics
  - ❌ Separation between base/PoK/codexes
    - PoK
+     - Exploration (frontier cards), relics, relic fragments
      - Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
      - Leaders (agents, commanders, heroes)
      - Mechs (probably not relevant?)
@@ -68,6 +69,15 @@
      - new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
      - updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
    - Codex II
+     - Reference cards (not relevant)
+     - 3 new relics (PoK), (dynamis core, JR-XS455-O, nano forge)
+     - pax nomina (game mode with teams)
+   - Codex III
+     - updated leaders: (naalu collective agent, commander, xxcha kingdom hero, yin brotherhood agent, commander, hero)
+     - updated mech naalu collective
+     - updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
+     - 6 new frontier cards
+     - council keleres faction
  - ✅ Strategy cards (speaker handling etc)
  - ❌ Real names for things (currently we only use the ID for e.g objectives)
  - ❌ Status phase
