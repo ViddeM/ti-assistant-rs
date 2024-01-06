@@ -85,6 +85,7 @@ impl GameOptions {
                 .collect(),
             action_cards: ActionCard::iter()
                 .map(|card| (card.clone(), card.info()))
+                .filter(|(_, card)| expansions.is_enabled(&card.expansion))
                 .collect(),
             agendas: Agenda::iter()
                 .map(|agenda| (agenda, agenda.info()))
