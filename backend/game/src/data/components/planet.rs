@@ -149,7 +149,7 @@ pub enum Planet {
 
 impl Planet {
     /// Returns the [PlanetInfo] for this planet.
-    pub fn planet_info(&self) -> PlanetInfo {
+    pub fn info(&self) -> PlanetInfo {
         match self {
             Planet::Nestphar => p!(None, None, 3, 2, Expansion::Base),
             Planet::ArcPrime => p!(None, None, 4, 0, Expansion::Base),

@@ -51,7 +51,7 @@ impl Score {
                 .revealed_objectives
                 .iter()
                 .filter(|(_objective, has_scored)| has_scored.contains(player))
-                .map(|(objective, _)| objective.get_objective_info().points)
+                .map(|(objective, _)| objective.info().points)
                 .sum::<i8>();
 
             // Check players completed secret objectives

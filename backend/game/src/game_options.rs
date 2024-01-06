@@ -67,14 +67,14 @@ impl GameOptions {
                 .filter(|s| expansions.is_enabled(&s.expansion))
                 .collect(),
             planet_infos: Planet::iter()
-                .map(|p| (p.clone(), p.planet_info()))
+                .map(|p| (p.clone(), p.info()))
                 .filter(|(_, info)| expansions.is_enabled(&info.expansion))
                 .collect(),
             objectives: PublicObjective::iter()
                 .map(Objective::from)
                 .chain(SecretObjective::iter().map(Objective::from))
                 .map(|o| {
-                    let info = o.get_objective_info();
+                    let info = o.info();
                     (o, info)
                 })
                 .filter(|(_, o)| expansions.is_enabled(&o.expansion))

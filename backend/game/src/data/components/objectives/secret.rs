@@ -72,7 +72,7 @@ pub enum SecretObjective {
 // TODO: Look over codex updates for these.
 impl SecretObjective {
     /// Get the [ObjectiveInfo] for this secret objective.
-    pub fn get_objective_info(&self) -> ObjectiveInfo {
+    pub fn info(&self) -> ObjectiveInfo {
         match self {
             SecretObjective::DestroyTheirGreatestShip => s!(
                 Phase::Action,
