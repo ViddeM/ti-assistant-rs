@@ -24,6 +24,7 @@ use crate::data::{
 use super::{
     agenda::{AgendaRecord, AgendaState},
     error::GameError,
+    game_settings::GameSettings,
     player::{Player, PlayerId},
     score::Score,
     status::StatusPhaseState,
@@ -35,6 +36,9 @@ use super::{
 pub struct GameState {
     /// The current round number of the game.
     pub round: u32,
+
+    /// The settings for the game.
+    pub game_settings: GameSettings,
 
     /// The current phase of the game.
     pub phase: Phase,
@@ -390,5 +394,13 @@ impl GameState {
             Faction::CouncilKeleres => player.technologies.len() == 2 && player.planets.len() >= 1,
             _ => true,
         })
+    }
+
+    /// The max number of players allowed for this game.
+    pub fn max_players(&self) -> usize {
+        if self.game_settings.expansion.prophecy_of_kings {
+            return 8;
+        }
+        6
     }
 }

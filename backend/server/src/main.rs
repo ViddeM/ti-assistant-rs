@@ -141,7 +141,7 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
         let message = ws_client.receive_message::<WsMessageIn>().await?;
 
         let (id, lobby) = match message {
-            WsMessageIn::NewGame => {
+            WsMessageIn::NewGame(new_game) => {
                 let id = GameId::random();
                 let name = generate_game_name(id);
 
@@ -152,7 +152,14 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
                         .wrap_err_with(|| format!("insert new game {id:?} in db"))?;
                 }
 
-                let lobby = Lobby::new(Game::default());
+                let mut game = Game::default();
+                game.apply(
+                    Event::SetSettings {
+                        settings: new_game.into(),
+                    },
+                    Utc::now(),
+                );
+                let lobby = Lobby::new(game);
                 let mut lobbies = lobbies.list.write().await;
 
                 if lobbies.contains_key(&id) {

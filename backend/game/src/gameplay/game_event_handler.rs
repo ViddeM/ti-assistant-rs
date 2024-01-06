@@ -39,7 +39,6 @@ use super::{
 };
 
 const MIN_PLAYER_COUNT: usize = 3;
-const MAX_PLAYER_COUNT: usize = 8;
 
 /// Update the game_state with the provided event, using the timestamp for time-keeping purposes.
 pub fn update_game_state(
@@ -48,11 +47,18 @@ pub fn update_game_state(
     timestamp: DateTime<Utc>,
 ) -> Result<(), GameError> {
     match event {
+        Event::SetSettings { settings } => {
+            game_state.assert_phase(Phase::Creation)?;
+
+            game_state.game_settings = settings;
+        }
+
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;
             ensure!(
-                game_state.players.len() <= MAX_PLAYER_COUNT,
-                "can't have more than {MAX_PLAYER_COUNT} players"
+                game_state.players.len() < game_state.max_players(),
+                "can't have more than {} players",
+                game_state.max_players()
             );
             let id: PlayerId = player.name.clone().into();
             game_state.table_order.push(id.clone());

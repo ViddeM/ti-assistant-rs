@@ -8,6 +8,8 @@ pub mod event;
 pub mod game;
 /// Handles updates of the [GameState] using [Event]s.
 pub mod game_event_handler;
+/// Settings for a game.
+pub mod game_settings;
 /// The game state.
 pub mod game_state;
 /// A player.
