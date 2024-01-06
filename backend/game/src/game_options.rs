@@ -78,7 +78,10 @@ impl GameOptions {
                     (o, info)
                 })
                 .collect(),
-            technologies: Technology::iter().map(|t| (t.clone(), t.info())).collect(),
+            technologies: Technology::iter()
+                .map(|t| (t.clone(), t.info()))
+                .filter(|(_, t)| expansions.is_enabled(&t.expansion))
+                .collect(),
             action_cards: ActionCard::iter()
                 .map(|card| (card.clone(), card.info()))
                 .collect(),
