@@ -8,6 +8,7 @@ export type PlayerId = string;
 
 export interface GameState {
   round: number;
+  gameSettings: GameSettings;
   phase: GamePhase;
   players: { [key: PlayerId]: Player };
   speaker: PlayerId | null;
@@ -26,6 +27,16 @@ export interface GameState {
   timeTrackingPaused: boolean;
   playersPlayTime: { [playerId: string]: Duration };
   currentTurnStartTime: string | null;
+}
+
+export interface GameSettings {
+  maxPoints: number;
+  expansion: {
+    prophecyOfKings: boolean;
+    codex1: boolean;
+    codex2: boolean;
+    codex3: boolean;
+  };
 }
 
 export interface ActionProgress {

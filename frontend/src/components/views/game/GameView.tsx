@@ -18,7 +18,6 @@ import { TechViewMode } from "../tech_view_mode/TechViewMode";
 import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
 import { LawsViewMode } from "../laws_view_mode/LawsViewMode";
 import { GameContext, useGameContext } from "@/hooks/GameContext";
-import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 
 const NEW_GAME_ID = "new";
 
