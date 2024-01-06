@@ -17,7 +17,7 @@ pub struct AgendaInfo {
     /// What is to be elected for this agenda.
     pub elect: AgendaElectKind,
     /// What expansion this agenda belongs to.
-    pub origin: Expansion,
+    pub expansion: Expansion,
 }
 
 /// The type of agenda this is.
@@ -158,13 +158,13 @@ impl Agenda {
     /// Get the agenda info for this agenda.
     pub fn info(&self) -> AgendaInfo {
         macro_rules! info {
-            ($ident:ident, $name:literal, $kind:ident, $elect:ident, $origin:ident) => {
+            ($ident:ident, $name:literal, $kind:ident, $elect:ident, $expansion:ident) => {
                 AgendaInfo {
                     name: $name,
                     description: include_str!(concat!("./description/", stringify!($ident))),
                     kind: AgendaKind::$kind,
                     elect: AgendaElectKind::$elect,
-                    origin: Expansion::$origin,
+                    expansion: Expansion::$expansion,
                 }
             };
         }
@@ -516,5 +516,23 @@ impl Agenda {
                 elect: Player,
             },
         }
+    }
+
+    /// Returns true if this agenda is disabled in pok.
+    pub fn disabled_in_pok(&self) -> bool {
+        matches!(
+            self,
+            Self::CoreMining
+                | Self::DemilitarizedZone
+                | Self::HolyPlanetOfIxth
+                | Self::ResearchTeamBiotic
+                | Self::ResearchTeamCybernetic
+                | Self::ResearchTeamPropulsion
+                | Self::ResearchTeamWarfare
+                | Self::SenateSanctuary
+                | Self::ShardOfTheThrone
+                | Self::TheCrownOfEmphidia
+                | Self::TheCrownOfThalnos
+        )
     }
 }

@@ -5,6 +5,8 @@ pub mod secret;
 
 use serde::{Deserialize, Serialize};
 
+use crate::data::common::expansions::Expansion;
+
 use self::{public::PublicObjective, secret::SecretObjective};
 
 use super::phase::Phase;
@@ -34,6 +36,9 @@ pub struct ObjectiveInfo {
 
     /// How many points are given by this objective.
     pub points: i8,
+
+    /// Which expansion this objective came from.
+    pub expansion: Expansion,
 }
 
 /// What type of objective this is.
@@ -53,10 +58,10 @@ pub enum ObjectiveKind {
 
 impl Objective {
     /// Get the [ObjectiveInfo] for this objective.
-    pub fn get_objective_info(&self) -> ObjectiveInfo {
+    pub fn info(&self) -> ObjectiveInfo {
         match self {
-            Objective::Public(o) => o.get_objective_info(),
-            Objective::Secret(o) => o.get_objective_info(),
+            Objective::Public(o) => o.info(),
+            Objective::Secret(o) => o.info(),
         }
     }
 }

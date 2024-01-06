@@ -72,6 +72,7 @@ export const ActionPhaseView = () => {
           Tactical
         </Button>
         <Button
+          disabled={isComponent}
           className={styles.actionButton}
           onClick={() => setIsComponent(true)}
         >
@@ -132,6 +133,7 @@ const ActionCardSelectView = () => {
         ))}
       </Dropdown>
       <Button
+        disabled={card === ""}
         onClick={() =>
           sendEvent({
             ActionCardActionBegin: {

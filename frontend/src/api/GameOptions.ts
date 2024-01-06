@@ -4,9 +4,8 @@ import { System } from "./System";
 import { AgendaElect, AgendaKind } from "./Agenda";
 
 export interface GameOptions {
-  playerCounts: number[];
-  minScore: number;
-  maxScore: number;
+  minPlayers: number;
+  maxPlayers: number;
   factions: FactionResponse[];
   colors: Color[];
   systems: System[];

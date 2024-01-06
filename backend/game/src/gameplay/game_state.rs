@@ -8,7 +8,7 @@ use eyre::{bail, eyre, Context};
 use serde::{Deserialize, Serialize};
 
 use crate::data::{
-    common::faction::Faction,
+    common::{expansions::Expansion, faction::Faction},
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
@@ -24,6 +24,8 @@ use crate::data::{
 use super::{
     agenda::{AgendaRecord, AgendaState},
     error::GameError,
+    event::{StrategicPrimaryAction, StrategicSecondaryAction},
+    game_settings::GameSettings,
     player::{Player, PlayerId},
     score::Score,
     status::StatusPhaseState,
@@ -35,6 +37,9 @@ use super::{
 pub struct GameState {
     /// The current round number of the game.
     pub round: u32,
+
+    /// The settings for the game.
+    pub game_settings: GameSettings,
 
     /// The current phase of the game.
     pub phase: Phase,
@@ -352,6 +357,57 @@ impl GameState {
         Ok(())
     }
 
+    /// Asserts that the provided expansion is enabled.
+    pub fn assert_expansion(&self, expansion: &Expansion) -> Result<(), GameError> {
+        if !self.game_settings.expansions.is_enabled(expansion) {
+            bail!("Expansion is not enabled {expansion:?}");
+        }
+        Ok(())
+    }
+
+    /// Asserts that the configured expansions is valid for the provided action.
+    pub fn assert_action_expansion(
+        &self,
+        action: &StrategicPrimaryAction,
+    ) -> Result<(), GameError> {
+        match action {
+            StrategicPrimaryAction::Technology { tech, extra } => {
+                self.assert_expansion(&tech.info().expansion)?;
+                if let Some(t) = extra {
+                    self.assert_expansion(&t.info().expansion)?;
+                }
+            }
+            StrategicPrimaryAction::Imperial { score_objective } => {
+                if let Some(obj) = score_objective {
+                    self.assert_expansion(&obj.info().expansion)?;
+                }
+            }
+            StrategicPrimaryAction::Politics { .. } => {}
+        }
+        Ok(())
+    }
+
+    /// Asserts that the configured expansions is valid for the provided action.
+    pub fn assert_secondary_action_expansion(
+        &self,
+        action: &StrategicSecondaryAction,
+    ) -> Result<(), GameError> {
+        match action {
+            StrategicSecondaryAction::Technology { tech } => {
+                self.assert_expansion(&tech.info().expansion)?;
+            }
+            StrategicSecondaryAction::Skip => {}
+            StrategicSecondaryAction::Leadership => {}
+            StrategicSecondaryAction::Diplomacy => {}
+            StrategicSecondaryAction::Politics => {}
+            StrategicSecondaryAction::Construction => {}
+            StrategicSecondaryAction::Trade => {}
+            StrategicSecondaryAction::Warfare => {}
+            StrategicSecondaryAction::Imperial => {}
+        }
+        Ok(())
+    }
+
     /// Get a mutable reference to the currently active player.
     pub fn get_current_player(&mut self) -> Result<&mut Player, GameError> {
         let current_player_id = match self.current_player.as_ref() {
@@ -390,5 +446,10 @@ impl GameState {
             Faction::CouncilKeleres => player.technologies.len() == 2 && player.planets.len() >= 1,
             _ => true,
         })
+    }
+
+    /// The max number of players allowed for this game.
+    pub fn max_players(&self) -> usize {
+        self.game_settings.expansions.max_number_of_players()
     }
 }

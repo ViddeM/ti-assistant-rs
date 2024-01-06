@@ -8,7 +8,7 @@ use crate::gameplay::game_event_handler::update_game_state;
 use super::{error::GameError, event::Event, game_state::GameState, player::Player};
 
 /// A game.
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Game {
     /// The players in the game.

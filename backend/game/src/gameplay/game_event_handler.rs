@@ -39,7 +39,6 @@ use super::{
 };
 
 const MIN_PLAYER_COUNT: usize = 3;
-const MAX_PLAYER_COUNT: usize = 8;
 
 /// Update the game_state with the provided event, using the timestamp for time-keeping purposes.
 pub fn update_game_state(
@@ -48,11 +47,19 @@ pub fn update_game_state(
     timestamp: DateTime<Utc>,
 ) -> Result<(), GameError> {
     match event {
+        Event::SetSettings { settings } => {
+            game_state.assert_phase(Phase::Creation)?;
+
+            game_state.game_settings = settings;
+        }
+
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;
+            game_state.assert_expansion(&player.faction.expansion())?;
             ensure!(
-                game_state.players.len() <= MAX_PLAYER_COUNT,
-                "can't have more than {MAX_PLAYER_COUNT} players"
+                game_state.players.len() < game_state.max_players(),
+                "can't have more than {} players",
+                game_state.max_players()
             );
             let id: PlayerId = player.name.clone().into();
             game_state.table_order.push(id.clone());
@@ -185,14 +192,18 @@ pub fn update_game_state(
                 game_state.score.revealed_objectives.is_empty(),
                 "Objectives have already been revealed"
             );
+
             ensure!(
-                first_objective.get_objective_info().kind == ObjectiveKind::StageI,
+                first_objective.info().kind == ObjectiveKind::StageI,
                 "Invalid starting objective"
             );
+            game_state.assert_expansion(&first_objective.info().expansion)?;
             ensure!(
-                second_objective.get_objective_info().kind == ObjectiveKind::StageI,
+                second_objective.info().kind == ObjectiveKind::StageI,
                 "Invalid starting objective"
             );
+            game_state.assert_expansion(&second_objective.info().expansion)?;
+
             let score = game_state.score.borrow_mut();
             score
                 .revealed_objectives
@@ -269,6 +280,7 @@ pub fn update_game_state(
         Event::TacticalActionTakePlanet { player, planet } => {
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
+            game_state.assert_expansion(&System::for_planet(&planet)?.expansion)?;
             ensure!(
                 game_state.action_progress.is_some(),
                 "Must have action progress to perform take planet action."
@@ -348,6 +360,9 @@ pub fn update_game_state(
                 game_state.action_progress.is_some(),
                 "Invalid game state: expected action_progress not to be None"
             );
+
+            game_state.assert_action_expansion(&action)?;
+
             let progress = game_state.action_progress.as_mut().unwrap();
             let progress = match progress {
                 ActionPhaseProgress::Strategic(p) => p,
@@ -418,6 +433,8 @@ pub fn update_game_state(
                 "current player can't perform the secondary on a strategy card",
             );
 
+            game_state.assert_secondary_action_expansion(&action)?;
+
             let Some(action_progress) = &mut game_state.action_progress else {
                 bail!("no strategic action in progress");
             };
@@ -433,7 +450,6 @@ pub fn update_game_state(
                         .other_players
                         .insert(player.clone(), action.clone().into());
 
-                    // TODO: add other relevant strategy cards (initially Imperial)
                     match action {
                         StrategicSecondaryAction::Technology { tech } => {
                             let player = game_state.players.get_mut(&player).unwrap();
@@ -471,6 +487,7 @@ pub fn update_game_state(
         Event::ActionCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
+            game_state.assert_expansion(&card.info().expansion)?;
 
             let card_info = card.info();
             ensure!(
@@ -508,6 +525,8 @@ pub fn update_game_state(
             if let Some(data) = data {
                 match data {
                     ActionCardInfo::FocusedResearch { tech } => {
+                        game_state.assert_expansion(&tech.info().expansion)?;
+
                         let current_player = game_state.get_current_player()?;
                         current_player.take_tech(tech.clone())?;
                     }
@@ -515,6 +534,8 @@ pub fn update_game_state(
                         remove_tech,
                         take_tech,
                     } => {
+                        game_state.assert_expansion(&take_tech.info().expansion)?;
+
                         let current_player = game_state.get_current_player()?;
                         ensure!(
                             current_player.has_tech(&remove_tech),
@@ -575,6 +596,10 @@ pub fn update_game_state(
         Event::ScorePublicObjective { player, objective } => {
             game_state.assert_phase(Phase::Status)?;
 
+            if let Some(obj) = &objective {
+                game_state.assert_expansion(&obj.info().expansion)?;
+            }
+
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
                 bail!("No status phase state!");
             };
@@ -599,6 +624,10 @@ pub fn update_game_state(
         }
         Event::ScoreSecretObjective { player, objective } => {
             game_state.assert_phase(Phase::Status)?;
+
+            if let Some(obj) = &objective {
+                game_state.assert_expansion(&obj.info().expansion)?;
+            }
 
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
                 bail!("No status phase state?")
@@ -636,12 +665,14 @@ pub fn update_game_state(
                 "Objective has already been revealed!"
             );
 
+            game_state.assert_expansion(&pub_obj.info().expansion)?;
+
             let Some(status_phase_state) = game_state.status_phase_state.as_mut() else {
                 bail!("Status phase state not set!")
             };
 
             let num_revealed = game_state.score.revealed_objectives.len();
-            match pub_obj.get_objective_info().kind {
+            match pub_obj.info().kind {
                 crate::data::components::objectives::ObjectiveKind::StageI => {
                     if num_revealed >= status_phase_state.expected_objectives_before_stage_two {
                         bail!("Already revealed enough stage I objective, expected stage II");
@@ -685,6 +716,7 @@ pub fn update_game_state(
         }
         Event::RevealAgenda { agenda } => {
             game_state.assert_phase(Phase::Agenda)?;
+            game_state.assert_expansion(&agenda.info().expansion)?;
             let vote = VoteState::new(agenda, game_state)?;
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
@@ -799,6 +831,8 @@ pub fn update_game_state(
             *imperial = imperial.saturating_add(value);
         }
         Event::ScoreExtraPublicObjective { player, objective } => {
+            game_state.assert_expansion(&objective.info().expansion)?;
+
             let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
                 bail!("can't score an unrevealed public objective");
             };
@@ -808,6 +842,8 @@ pub fn update_game_state(
             }
         }
         Event::ScoreExtraSecretObjective { player, objective } => {
+            game_state.assert_expansion(&objective.info().expansion)?;
+
             for scored in game_state.score.secret_objectives.values() {
                 if scored.contains(&objective) {
                     bail!("secred objective has already been scored");
@@ -841,6 +877,7 @@ pub fn update_game_state(
                 !game_state.score.revealed_objectives.contains_key(&pub_obj),
                 "Objective has already been revealed!"
             );
+            game_state.assert_expansion(&pub_obj.info().expansion)?;
 
             game_state
                 .score
@@ -848,6 +885,8 @@ pub fn update_game_state(
                 .insert(pub_obj, HashSet::new());
         }
         Event::AddTechToPlayer { player, tech } => {
+            game_state.assert_expansion(&tech.info().expansion)?;
+
             let Some(p) = game_state.players.get_mut(&player) else {
                 bail!("Player does not exist?");
             };
@@ -881,6 +920,8 @@ pub fn update_game_state(
             }
         }
         Event::SetPlanetOwner { player, planet } => {
+            game_state.assert_expansion(&planet.info().expansion)?;
+
             // Give the planet to the new owner.
             if let Some(p) = &player {
                 let Some(player) = game_state.players.get_mut(p) else {

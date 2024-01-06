@@ -3,33 +3,33 @@ use std::collections::HashMap;
 use serde::Serialize;
 use strum::IntoEnumIterator;
 
-use crate::data::{
-    common::{color::Color, faction::Faction},
-    components::{
-        action_card::{ActionCard, ActionCardInfo},
-        agenda::{Agenda, AgendaInfo},
-        objectives::{public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo},
-        planet::{Planet, PlanetInfo},
-        system::{systems, System},
-        tech::{TechInfo, Technology},
+use crate::{
+    data::{
+        common::{color::Color, faction::Faction},
+        components::{
+            action_card::{ActionCard, ActionCardInfo},
+            agenda::{Agenda, AgendaInfo},
+            objectives::{
+                public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo,
+            },
+            planet::{Planet, PlanetInfo},
+            system::{systems, System},
+            tech::{TechInfo, Technology},
+        },
     },
+    gameplay::game_settings::Expansions,
 };
 
-const MIN_PLAYER_COUNT: u32 = 3;
-const MAX_PLAYER_COUNT: u32 = 8;
-const MIN_SCORE: u32 = 4;
-const MAX_SCORE: u32 = 20;
+const MIN_PLAYER_COUNT: usize = 3;
 
 /// All information that is static for a game of TI4.
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GameOptions {
-    /// What numbers of players are allowed for the game.
-    player_counts: Vec<u32>,
-    /// The minimum score required to win a game.
-    min_score: u32,
-    /// The maximum score required to win a game.
-    max_score: u32,
+    /// The minimum number of players allowed for the game.
+    min_players: usize,
+    /// The maximum number of players allowed for the game.
+    max_players: usize,
     /// What colors players are allowed to have.
     colors: Vec<Color>,
     /// What factions exist within the game.
@@ -48,37 +48,49 @@ pub struct GameOptions {
     agendas: HashMap<Agenda, AgendaInfo>,
 }
 
-impl Default for GameOptions {
-    fn default() -> Self {
+impl GameOptions {
+    /// Returns GameOptions for the specified expansions.
+    pub fn new(expansions: &Expansions) -> Self {
         Self {
-            player_counts: (MIN_PLAYER_COUNT..=MAX_PLAYER_COUNT).collect::<Vec<u32>>(),
-            min_score: MIN_SCORE,
-            max_score: MAX_SCORE,
+            min_players: MIN_PLAYER_COUNT,
+            max_players: expansions.max_number_of_players(),
             factions: Faction::iter()
+                .filter(|f| expansions.is_enabled(&f.expansion()))
                 .map(|f| FactionResponse {
                     faction: f.clone(),
                     name: f.name(),
                 })
                 .collect::<Vec<FactionResponse>>(),
             colors: Color::iter().collect(),
-            systems: systems().into_values().collect(),
+            systems: systems()
+                .into_values()
+                .filter(|s| expansions.is_enabled(&s.expansion))
+                .collect(),
             planet_infos: Planet::iter()
-                .map(|p| (p.clone(), p.planet_info()))
+                .map(|p| (p.clone(), p.info()))
+                .filter(|(_, info)| expansions.is_enabled(&info.expansion))
                 .collect(),
             objectives: PublicObjective::iter()
                 .map(Objective::from)
                 .chain(SecretObjective::iter().map(Objective::from))
                 .map(|o| {
-                    let info = o.get_objective_info();
+                    let info = o.info();
                     (o, info)
                 })
+                .filter(|(_, o)| expansions.is_enabled(&o.expansion))
                 .collect(),
-            technologies: Technology::iter().map(|t| (t.clone(), t.info())).collect(),
+            technologies: Technology::iter()
+                .map(|t| (t.clone(), t.info()))
+                .filter(|(_, t)| expansions.is_enabled(&t.expansion))
+                .collect(),
             action_cards: ActionCard::iter()
                 .map(|card| (card.clone(), card.info()))
+                .filter(|(_, card)| expansions.is_enabled(&card.expansion))
                 .collect(),
             agendas: Agenda::iter()
                 .map(|agenda| (agenda, agenda.info()))
+                .filter(|(_, agenda)| expansions.is_enabled(&agenda.expansion))
+                .filter(|(agenda, _)| !expansions.prophecy_of_kings || agenda.disabled_in_pok())
                 .collect(),
         }
     }

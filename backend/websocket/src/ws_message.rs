@@ -5,7 +5,11 @@ use serde::{Deserialize, Serialize};
 use ti_helper_db::game_id::GameId;
 use ti_helper_game::{
     game_options::GameOptions,
-    gameplay::{event::Event, game_state::GameState},
+    gameplay::{
+        event::Event,
+        game_settings::{Expansions, GameSettings},
+        game_state::GameState,
+    },
 };
 
 /// Websocket messages that can be received.
@@ -13,11 +17,35 @@ use ti_helper_game::{
 #[allow(missing_docs)]
 pub enum WsMessageIn {
     JoinGame(GameId),
-    NewGame,
+    NewGame(NewGame),
     Event(Event),
 
     /// Undo the most recent [Event].
     Undo,
+}
+
+/// information required for a new game.
+#[derive(Debug, Clone, Deserialize)]
+pub struct NewGame {
+    points: u32,
+    pok: bool,
+    cod1: bool,
+    cod2: bool,
+    cod3: bool,
+}
+
+impl Into<GameSettings> for NewGame {
+    fn into(self) -> GameSettings {
+        GameSettings {
+            max_points: self.points,
+            expansions: Expansions {
+                prophecy_of_kings: self.pok,
+                codex_1: self.cod1,
+                codex_2: self.cod2,
+                codex_3: self.cod3,
+            },
+        }
+    }
 }
 
 /// Messages that can be sent to a client.
@@ -39,8 +67,8 @@ pub enum WsMessageOut {
 
 impl WsMessageOut {
     /// Returns a new [WsMessageOut::GameOptions] event.
-    pub fn game_options() -> Self {
-        Self::GameOptions(Default::default())
+    pub fn game_options(expansions: &Expansions) -> Self {
+        Self::GameOptions(Arc::new(GameOptions::new(expansions)))
     }
 
     /// Returns a new [WsMessageOut::GameState] event from the provided state.
