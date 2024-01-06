@@ -196,6 +196,7 @@ const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
         />
         <label htmlFor="cod3">Codex III</label>
       </div>
+      <label htmlFor="points-slider">Winning Score</label>
       <div className={styles.createGameRow}>
         <input
           type="range"
@@ -205,7 +206,7 @@ const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
           value={points}
           onChange={(e) => setPoints(parseInt(e.target.value))}
         />
-        <label htmlFor="points-slider">{points}</label>
+        <p>{points}</p>
       </div>
       <Button
         onClick={() =>
