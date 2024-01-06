@@ -73,7 +73,7 @@ impl Faction {
             Faction::Nomad => Expansion::ProphecyOfKings,
             Faction::TitansOfUl => Expansion::ProphecyOfKings,
             Faction::VuilRaithCabal => Expansion::ProphecyOfKings,
-            Faction::CouncilKeleres => Expansion::Codex,
+            Faction::CouncilKeleres => Expansion::CodexIII,
         }
     }
 

@@ -53,11 +53,11 @@
  - ❌ Separation between base/PoK/codexes
    - ❌ PoK
      - ❌ Exploration (frontier cards), relics, relic fragments
-     - ❌ Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
+     - ✅ Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
      - ❌ Leaders (agents, commanders, heroes)
      - ❌ Mechs (probably not relevant?)
-     - ❌ Increases player limit to 8
-     - ❌ 31 new systems
+     - ✅ Increases player limit to 8
+     - ✅ 31 new systems
      - ❌ 8 new techs (psycoarch, bio stims, dark energy tap, sling ray, scanlink drone network, predictive intelligence, ai dev algos, self assembly)
      - ❌ alliances ( use other players commanders)
      - ❌ 40 new objectives
@@ -80,7 +80,7 @@
      - ❌ updated mech naalu collective
      - ❌ updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
      - ❌ 6 new frontier cards
-     - ❌ council keleres faction
+     - ✅ council keleres faction
  - ✅ Strategy cards (speaker handling etc)
  - ❌ Real names for things (currently we only use the ID for e.g objectives)
  - ❌ Status phase

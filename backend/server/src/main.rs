@@ -153,12 +153,25 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
                 }
 
                 let mut game = Game::default();
-                game.apply(
-                    Event::SetSettings {
-                        settings: new_game.into(),
-                    },
-                    Utc::now(),
-                );
+
+                let set_settings_event = Event::SetSettings {
+                    settings: new_game.into(),
+                };
+                let now = Utc::now();
+                game.apply_or_err(set_settings_event.clone(), now)?;
+                if let Some(db_pool) = &shared.db_pool {
+                    log::info!("persisting event for game {id:?}");
+
+                    queries::insert_game_event(
+                        db_pool,
+                        id,
+                        serde_json::to_value(&set_settings_event)?,
+                        now,
+                    )
+                    .await
+                    .wrap_err_with(|| format!("error querying game events ({id:?})"))?;
+                }
+
                 let lobby = Lobby::new(game);
                 let mut lobbies = lobbies.list.write().await;
 
@@ -207,7 +220,9 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
         };
 
         ws_client
-            .send_message(&WsMessageOut::game_options())
+            .send_message(&WsMessageOut::game_options(
+                &lobby.read().await.game.current.game_settings.expansions,
+            ))
             .await?;
         ws_client.send_message(&WsMessageOut::join_game(id)).await?;
 

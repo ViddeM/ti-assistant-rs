@@ -31,7 +31,7 @@ export interface GameState {
 
 export interface GameSettings {
   maxPoints: number;
-  expansion: {
+  expansions: {
     prophecyOfKings: boolean;
     codex1: boolean;
     codex2: boolean;
