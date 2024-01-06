@@ -1,18 +1,12 @@
-import { GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./Primary.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-interface PoliticsPrimaryViewProps {
-  gameState: GameState;
-  sendMessage: (data: any) => void;
-}
+export const PoliticsPrimaryView = () => {
+  const { gameState, sendEvent } = useGameContext();
 
-export const PoliticsPrimaryView = ({
-  gameState,
-  sendMessage,
-}: PoliticsPrimaryViewProps) => {
   const [nextSpeaker, setNextSpeaker] = useState<string>("");
 
   const progress = gameState.actionProgress?.Strategic?.primary;
@@ -39,7 +33,7 @@ export const PoliticsPrimaryView = ({
               className={styles.marginTop}
               disabled={nextSpeaker === ""}
               onClick={() =>
-                sendMessage({
+                sendEvent({
                   StrategicActionPrimary: {
                     player: gameState.currentPlayer!!,
                     action: {

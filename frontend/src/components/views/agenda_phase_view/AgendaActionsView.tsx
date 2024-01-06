@@ -1,24 +1,18 @@
 import { AgendaElect, AgendaElectKind } from "@/api/Agenda";
-import { GameOptions } from "@/api/GameOptions";
-import { AgendaState, GameState, Player, Vote } from "@/api/GameState";
+import { AgendaState, Player, Vote } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useEffect, useState } from "react";
 import styles from "./AgendaPhaseView.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
 export interface AgendaActionsViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
   state: AgendaState;
-  sendMessage: (data: any) => void;
 }
 
-export const AgendaActionsView = ({
-  gameState,
-  gameOptions,
-  state,
-  sendMessage,
-}: AgendaActionsViewProps) => {
+export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
   const [currentAgenda, setCurrentAgenda] = useState<string>("");
 
   const allAgendas = Object.keys(gameOptions.agendas).map((a) => {
@@ -48,7 +42,7 @@ export const AgendaActionsView = ({
     outcome: AgendaElect | null,
     votes: number = 0
   ) => {
-    sendMessage({
+    sendEvent({
       CastAgendaVote: {
         player: player,
         outcome: outcome,
@@ -62,7 +56,7 @@ export const AgendaActionsView = ({
       {state.round === "Completed" ? (
         <div className={styles.agendaPhaseCompleteContainer}>
           <h3>Ready all planets!</h3>
-          <Button onClick={() => sendMessage("CompleteAgendaPhase")}>
+          <Button onClick={() => sendEvent("CompleteAgendaPhase")}>
             Complete Agenda Phase
           </Button>
         </div>
@@ -93,7 +87,7 @@ export const AgendaActionsView = ({
                   <Button
                     disabled={currentAgenda === ""}
                     onClick={() => {
-                      sendMessage({
+                      sendEvent({
                         RevealAgenda: {
                           agenda: currentAgenda,
                         },
@@ -114,9 +108,7 @@ export const AgendaActionsView = ({
                 <li>
                   When agenda is revealed
                   <br />
-                  <Button onClick={() => sendMessage("VetoAgenda")}>
-                    Veto
-                  </Button>
+                  <Button onClick={() => sendEvent("VetoAgenda")}>Veto</Button>
                 </li>
                 <li>
                   After agenda is revealed <br />
@@ -137,7 +129,6 @@ export const AgendaActionsView = ({
                 </li>
                 <li>
                   <ResolveOutcome
-                    sendMessage={sendMessage}
                     everyoneHasVoted={everyoneHasVoted}
                     state={state}
                   />
@@ -238,14 +229,11 @@ const PlayerVoteView = ({
 interface ResolveOutcomeProps {
   everyoneHasVoted: boolean;
   state: AgendaState;
-  sendMessage: (data: any) => void;
 }
 
-const ResolveOutcome = ({
-  everyoneHasVoted,
-  state,
-  sendMessage,
-}: ResolveOutcomeProps) => {
+const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
+  const { sendEvent } = useGameContext();
+
   const expectedOutcome = state.vote?.expectedOutcome?.value ?? "Discard";
   const [outcome, setOutcome] = useState<string>(expectedOutcome);
 
@@ -276,7 +264,7 @@ const ResolveOutcome = ({
           <Button
             disabled={!everyoneHasVoted}
             onClick={() =>
-              sendMessage({
+              sendEvent({
                 ResolveAgenda: {
                   outcome:
                     outcome === "Discard"

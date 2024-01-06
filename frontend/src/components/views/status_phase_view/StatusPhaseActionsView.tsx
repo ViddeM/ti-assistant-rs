@@ -1,43 +1,21 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState, Player } from "@/api/GameState";
+import { Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import React, { useState } from "react";
 import styles from "./StatusPhaseView.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface StatusPhaseActionsViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
-
-export const StatusPhaseActionsView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: StatusPhaseActionsViewProps) => {
+export const StatusPhaseActionsView = () => {
   return (
     <div className="card">
-      <ScoreObjectives
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendMessage={sendMessage}
-      />
+      <ScoreObjectives />
     </div>
   );
 };
 
-interface ScoreObjectivesProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+const ScoreObjectives = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-const ScoreObjectives = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: ScoreObjectivesProps) => {
   const [revealedObjective, setRevealedObjective] = useState<string>("");
 
   const players = Object.keys(gameState.players).map((p) => {
@@ -82,13 +60,7 @@ const ScoreObjectives = ({
     <div>
       <h2>Score Objectives</h2>
       {players.map((p) => (
-        <PlayerObjectives
-          key={p.id}
-          gameState={gameState}
-          gameOptions={gameOptions}
-          player={p}
-          sendMessage={sendMessage}
-        />
+        <PlayerObjectives key={p.id} player={p} />
       ))}
       <fieldset className={styles.revealObjectiveContainer}>
         <legend>
@@ -113,7 +85,7 @@ const ScoreObjectives = ({
             <Button
               disabled={revealedObjective === ""}
               onClick={() =>
-                sendMessage({
+                sendEvent({
                   RevealPublicObjective: {
                     objective: revealedObjective,
                   },
@@ -130,18 +102,12 @@ const ScoreObjectives = ({
 };
 
 interface PlayerObjectivesProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
   player: Player & { id: string };
-  sendMessage: (data: any) => void;
 }
 
-const PlayerObjectives = ({
-  gameState,
-  gameOptions,
-  player,
-  sendMessage,
-}: PlayerObjectivesProps) => {
+const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
   const pub = gameState.statusPhaseState!!.scoredPublicObjectives[player.id];
   const sec = gameState.statusPhaseState!!.scoredSecretObjectives[player.id];
   const availablePubs = Object.keys(gameState.score.revealedObjectives)
@@ -168,7 +134,7 @@ const PlayerObjectives = ({
   const [selectedSec, setSelectedSec] = useState<string>("");
 
   const scorePublic = (obj: string | null) => {
-    sendMessage({
+    sendEvent({
       ScorePublicObjective: {
         player: player.id,
         objective: obj,
@@ -176,7 +142,7 @@ const PlayerObjectives = ({
     });
   };
   const scoreSecret = (obj: string | null) => {
-    sendMessage({
+    sendEvent({
       ScoreSecretObjective: {
         player: player.id,
         objective: obj,

@@ -1,23 +1,16 @@
-import { GameOptions, PlanetInfo } from "@/api/GameOptions";
-import { GameState, Player } from "@/api/GameState";
+import { PlanetInfo } from "@/api/GameOptions";
+import { Player } from "@/api/GameState";
 import { Icon, IconType } from "@/components/elements/icon/Icon";
 import styles from "./PlanetViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Button } from "@/components/elements/button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface PlayerPlanetsGridProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
+export const PlayerPlanetsGrid = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const PlayerPlanetsGrid = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: PlayerPlanetsGridProps) => {
   return (
     <div className={styles.playerPlanetCardsContainer}>
       {Object.keys(gameState.players).map((p) => (
@@ -25,7 +18,6 @@ export const PlayerPlanetsGrid = ({
           key={p}
           player={gameState.players[p]}
           planets={gameOptions.planetInfos}
-          sendEvent={sendEvent}
         />
       ))}
     </div>
@@ -42,15 +34,10 @@ const TECH_COL_ALIGN = "center";
 interface PlayerPlanetsCardProps {
   player: Player;
   planets: { [id: string]: PlanetInfo };
-  sendEvent: (data: any) => void;
 }
 
 const NUM_COLUMNS = 6;
-const PlayerPlanetsCard = ({
-  player,
-  planets,
-  sendEvent,
-}: PlayerPlanetsCardProps) => {
+const PlayerPlanetsCard = ({ player, planets }: PlayerPlanetsCardProps) => {
   const playerTotals = player.planets.reduce(
     (tot, p) => {
       let planet = planets[p];
@@ -170,7 +157,6 @@ const PlayerPlanetsCard = ({
               key={planet}
               planetId={planet}
               planet={planets[planet]}
-              sendEvent={sendEvent}
             />
           ))}
         </tbody>
@@ -182,14 +168,11 @@ const PlayerPlanetsCard = ({
 interface PlayerPlanetRowProps {
   planetId: string;
   planet: PlanetInfo;
-  sendEvent: (data: any) => void;
 }
 
-const PlayerPlanetRow = ({
-  planetId,
-  planet,
-  sendEvent,
-}: PlayerPlanetRowProps) => {
+const PlayerPlanetRow = ({ planetId, planet }: PlayerPlanetRowProps) => {
+  const { sendEvent } = useGameContext();
+
   return (
     <tr>
       <td align={DELETE_COL_ALIGN}>

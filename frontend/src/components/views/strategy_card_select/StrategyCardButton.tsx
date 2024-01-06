@@ -1,4 +1,4 @@
-import { Button, ButtonBase } from "@/components/elements/button/Button";
+import { ButtonBase } from "@/components/elements/button/Button";
 import styles from "./SelectStrategyCard.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Faction } from "@/resources/types/factions";

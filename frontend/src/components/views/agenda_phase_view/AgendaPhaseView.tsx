@@ -1,20 +1,10 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
 import { AgendaActionsView } from "./AgendaActionsView";
 import { AgendaInfoView } from "./AgendaInfoView";
 import styles from "./AgendaPhaseView.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface AgendaPhaseViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
-
-export const AgendaPhaseView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: AgendaPhaseViewProps) => {
+export const AgendaPhaseView = () => {
+  const { gameState } = useGameContext();
   const state = gameState.agenda;
 
   if (!state) {
@@ -23,17 +13,8 @@ export const AgendaPhaseView = ({
 
   return (
     <div className={styles.agendaPhaseContainer}>
-      <AgendaInfoView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        state={state}
-      />
-      <AgendaActionsView
-        state={state}
-        sendMessage={sendMessage}
-        gameState={gameState}
-        gameOptions={gameOptions}
-      />
+      <AgendaInfoView state={state} />
+      <AgendaActionsView state={state} />
     </div>
   );
 };

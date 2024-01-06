@@ -1,19 +1,14 @@
-import { GameState, Player } from "@/api/GameState";
+import { Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { useState } from "react";
 import styles from "./ScoreViewMode.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface SupportForTheThroneViewProps {
-  gameState: GameState;
-  sendEvent: (data: any) => void;
-}
+export const SupportForTheThroneView = () => {
+  const { gameState } = useGameContext();
 
-export const SupportForTheThroneView = ({
-  gameState,
-  sendEvent,
-}: SupportForTheThroneViewProps) => {
   const players = Object.keys(gameState.players).map((p) => {
     return {
       ...gameState.players[p],
@@ -36,10 +31,8 @@ export const SupportForTheThroneView = ({
             {players.map((p) => (
               <PlayerSupportForTheThroneView
                 key={p.id}
-                gameState={gameState}
                 player={p}
                 allPlayers={players}
-                sendEvent={sendEvent}
               />
             ))}
           </tbody>
@@ -50,8 +43,6 @@ export const SupportForTheThroneView = ({
 };
 
 interface PlayerSupportForTheThroneViewProps {
-  gameState: GameState;
-  sendEvent: (data: any) => void;
   player: Player & {
     id: string;
   };
@@ -59,11 +50,11 @@ interface PlayerSupportForTheThroneViewProps {
 }
 
 const PlayerSupportForTheThroneView = ({
-  gameState,
-  sendEvent,
   player,
   allPlayers,
 }: PlayerSupportForTheThroneViewProps) => {
+  const { gameState, sendEvent } = useGameContext();
+
   const currentSelectedPlayer =
     gameState.score.supportForTheThrone[player.id] ?? "";
   const [selectedPlayer, setSelectedPlayer] = useState<string>(

@@ -1,21 +1,13 @@
 import { Button } from "@/components/elements/button/Button";
 import styles from "./StrategyCardView.module.scss";
-import { GameOptions } from "@/api/GameOptions";
 import { StrategyCardSecondary } from "./StrategyCardSecondary";
-import { GameState } from "@/api/GameState";
 import { StrategyCardPrimary } from "./StrategyCardPrimary";
+import { useGameContext } from "@/hooks/GameContext";
+import { GameState } from "@/api/GameState";
 
-export interface StrategyCardViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+export const StrategyCardView = () => {
+  const { gameState, sendEvent } = useGameContext();
 
-export const StrategyCardView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: StrategyCardViewProps) => {
   const strategicAction = gameState.actionProgress?.Strategic!!;
   const secondaryDone =
     Object.keys(strategicAction.otherPlayers).length ===
@@ -29,24 +21,16 @@ export const StrategyCardView = ({
       <div className={styles.partDivider} />
 
       <h6>Primary</h6>
-      <StrategyCardPrimary
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendMessage={sendMessage}
-      />
+      <StrategyCardPrimary />
 
       <div className={styles.partDivider} />
 
       <h6>Secondary</h6>
-      <StrategyCardSecondary
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendMessage={sendMessage}
-      />
+      <StrategyCardSecondary />
 
       <Button
         disabled={!primaryDone || !secondaryDone}
-        onClick={() => sendMessage("StrategicActionCommit")}
+        onClick={() => sendEvent("StrategicActionCommit")}
       >
         Submit
       </Button>

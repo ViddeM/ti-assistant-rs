@@ -17,6 +17,7 @@ import { ScoreViewMode } from "../score_view_mode/ScoreViewMode";
 import { TechViewMode } from "../tech_view_mode/TechViewMode";
 import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
 import { LawsViewMode } from "../laws_view_mode/LawsViewMode";
+import { GameContext, useGameContext } from "@/hooks/GameContext";
 
 const NEW_GAME_ID = "new";
 
@@ -81,8 +82,19 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
     }
   }, [gameId, sendMessage]);
 
+  if (!gameOptions || !gameState) {
+    return <div>Awaiting response from server</div>;
+  }
+
   return (
-    <>
+    <GameContext.Provider
+      value={{
+        gameOptions: gameOptions,
+        gameState: gameState,
+        sendEvent: sendEvent,
+        sendUndo: sendUndo,
+      }}
+    >
       <div className={`card ${styles.gameInfoCard}`}>
         <h4>Game: {gameId}</h4>
         <div className={styles.viewModeButtonGroup}>
@@ -121,30 +133,19 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         <Button onClick={() => sendUndo()}>Undo</Button>
       </div>
       {gameOptions && gameState && (
-        <DisplayViewMode
-          viewMode={currentViewMode}
-          gameOptions={gameOptions}
-          gameState={gameState}
-          sendEvent={sendEvent}
-        />
+        <DisplayViewMode viewMode={currentViewMode} />
       )}
-    </>
+    </GameContext.Provider>
   );
 };
 
 interface DisplayViewModeProps {
   viewMode: View;
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
 }
 
-const DisplayViewMode = ({
-  viewMode,
-  gameOptions,
-  gameState,
-  sendEvent,
-}: DisplayViewModeProps) => {
+const DisplayViewMode = ({ viewMode }: DisplayViewModeProps) => {
+  const { gameState, gameOptions } = useGameContext();
+
   switch (viewMode) {
     case "Game":
       return (
@@ -153,52 +154,23 @@ const DisplayViewMode = ({
             <PlayerSidebar
               players={getPlayersFromGame(gameState, gameOptions)}
               score={gameState.score}
-              gameOptions={gameOptions}
               currentTurnStartTime={gameState.currentTurnStartTime}
               isPaused={gameState.timeTrackingPaused}
             />
           )}
           <div className={styles.phaseContainer}>
-            <PhaseView
-              gameState={gameState}
-              gameOptions={gameOptions}
-              sendMessage={sendEvent}
-            />
+            <PhaseView />
           </div>
         </div>
       );
     case "Score":
-      return (
-        <ScoreViewMode
-          gameOptions={gameOptions}
-          gameState={gameState}
-          sendEvent={sendEvent}
-        />
-      );
+      return <ScoreViewMode />;
     case "Techs":
-      return (
-        <TechViewMode
-          gameOptions={gameOptions}
-          gameState={gameState}
-          sendEvent={sendEvent}
-        />
-      );
+      return <TechViewMode />;
     case "Planets":
-      return (
-        <PlanetViewMode
-          gameOptions={gameOptions}
-          gameState={gameState}
-          sendEvent={sendEvent}
-        />
-      );
+      return <PlanetViewMode />;
     case "Laws":
-      return (
-        <LawsViewMode
-          gameOptions={gameOptions}
-          gameState={gameState}
-          sendEvent={sendEvent}
-        />
-      );
+      return <LawsViewMode />;
     default:
       return <p>Unknown view mode ({viewMode})?</p>;
   }

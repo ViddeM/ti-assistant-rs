@@ -1,16 +1,10 @@
 import { Button } from "@/components/elements/button/Button";
 import styles from "./StatusPhaseView.module.scss";
-import { GameState } from "@/api/GameState";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface StatusPhaseInstructionsViewProps {
-  gameState: GameState;
-  sendMessage: (data: any) => void;
-}
+export const StatusPhaseInstructionsView = () => {
+  const { gameState, sendEvent } = useGameContext();
 
-export const StatusPhaseInstructionsView = ({
-  gameState,
-  sendMessage,
-}: StatusPhaseInstructionsViewProps) => {
   // Relies on this only being true iff objectives have already been scored which should be handled in the BE.
   const statusPhaseComplete =
     gameState.statusPhaseState!!.revealedObjective !== null;
@@ -30,7 +24,7 @@ export const StatusPhaseInstructionsView = ({
       </ol>
       <Button
         disabled={!statusPhaseComplete}
-        onClick={() => sendMessage("CompleteStatusPhase")}
+        onClick={() => sendEvent("CompleteStatusPhase")}
       >
         Next phase
       </Button>

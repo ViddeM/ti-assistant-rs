@@ -1,30 +1,15 @@
-import { GameOptions } from "@/api/GameOptions";
 import { StrategyTechnologySecondaryView } from "./secondary_views/TechSecondary";
-import { GameState } from "@/api/GameState";
 import { GenericSecondary } from "./secondary_views/GenericSecondary";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface StrategyCardSecondaryProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+export const StrategyCardSecondary = () => {
+  const { gameState } = useGameContext();
 
-export const StrategyCardSecondary = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: StrategyCardSecondaryProps) => {
   const strategyCard = gameState.actionProgress?.Strategic?.card!!;
 
   if (strategyCard === "Technology") {
-    return (
-      <StrategyTechnologySecondaryView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendMessage={sendMessage}
-      />
-    );
+    return <StrategyTechnologySecondaryView />;
   }
 
-  return <GenericSecondary gameState={gameState} sendMessage={sendMessage} />;
+  return <GenericSecondary />;
 };

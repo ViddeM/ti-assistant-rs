@@ -1,5 +1,3 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
 import { CreationPhase } from "../creation/CreationPhase";
 import { SelectStrategyCardView } from "../strategy_card_select/SelectStrategyCard";
 import { StrategyCard } from "@/resources/types/strategyCards";
@@ -10,33 +8,16 @@ import { StatusPhaseView } from "../status_phase_view/StatusPhaseView";
 import { ActionCardView } from "../action_card_view/ActionCardView";
 import { AgendaPhaseView } from "../agenda_phase_view/AgendaPhaseView";
 import { SetupPhase } from "../setup/Setup";
+import { useGameContext } from "@/hooks/GameContext";
 
-export const PhaseView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}) => {
+export const PhaseView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
   switch (gameState.phase) {
     case "Creation":
-      return (
-        <CreationPhase
-          gameOptions={gameOptions}
-          gameState={gameState}
-          sendMessage={sendMessage}
-        />
-      );
+      return <CreationPhase />;
     case "Setup":
-      return (
-        <SetupPhase
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendEvent={sendMessage}
-        />
-      );
+      return <SetupPhase />;
     case "Strategy":
       return (
         <SelectStrategyCardView
@@ -52,65 +33,28 @@ export const PhaseView = ({
             Object.keys(gameState.players).length
           )}
           selectCard={(card) => {
-            sendMessage({
+            sendEvent({
               TakeStrategyCard: {
                 player: gameState.currentPlayer,
                 card: card,
               },
             });
           }}
-          startActionPhase={() => sendMessage("CompleteStrategyPhase")}
+          startActionPhase={() => sendEvent("CompleteStrategyPhase")}
         />
       );
     case "Action":
-      return (
-        <ActionPhaseView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          systems={gameOptions.systems}
-          sendMessage={sendMessage}
-        />
-      );
+      return <ActionPhaseView />;
     case "StrategicAction":
-      return (
-        <StrategyCardView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendMessage={sendMessage}
-        />
-      );
+      return <StrategyCardView />;
     case "TacticalAction":
-      return (
-        <TacticalView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendMessage={sendMessage}
-        />
-      );
+      return <TacticalView />;
     case "ActionCardAction":
-      return (
-        <ActionCardView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendMessage={sendMessage}
-        />
-      );
+      return <ActionCardView />;
     case "Status":
-      return (
-        <StatusPhaseView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendMessage={sendMessage}
-        />
-      );
+      return <StatusPhaseView />;
     case "Agenda":
-      return (
-        <AgendaPhaseView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendMessage={sendMessage}
-        />
-      );
+      return <AgendaPhaseView />;
     default:
       return (
         <div>

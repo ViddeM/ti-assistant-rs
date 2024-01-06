@@ -2,19 +2,16 @@ import { Icon } from "@/components/elements/icon/Icon";
 import styles from "./PlayerScoreInfo.module.scss";
 import { SidebarPlayer } from "../PlayersSidebar";
 import { Score } from "@/api/GameState";
-import { GameOptions } from "@/api/GameOptions";
+import { useGameContext } from "@/hooks/GameContext";
 
 export interface PlayerScoreInfoProps {
   player: SidebarPlayer;
   score: Score;
-  gameOptions: GameOptions;
 }
 
-export const PlayerScoreInfo = ({
-  player,
-  score,
-  gameOptions,
-}: PlayerScoreInfoProps) => {
+export const PlayerScoreInfo = ({ player, score }: PlayerScoreInfoProps) => {
+  const { gameOptions } = useGameContext();
+
   const isCustodian = score?.custodians === player.name;
   const currentScore = score.playerPoints[player.name];
   const publicObjectivePoints = Object.keys(score.revealedObjectives)

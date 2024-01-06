@@ -5,18 +5,11 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import styles from "./LawsViewMode.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface LawsViewModeProps {
-  gameOptions: GameOptions;
-  gameState: GameState;
-  sendEvent: (data: any) => void;
-}
+export const LawsViewMode = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const LawsViewMode = ({
-  gameOptions,
-  gameState,
-  sendEvent,
-}: LawsViewModeProps) => {
   const laws = Object.keys(gameState.laws).map((l) => {
     return {
       id: l,

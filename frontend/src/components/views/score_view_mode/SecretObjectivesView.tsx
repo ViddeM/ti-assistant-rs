@@ -1,24 +1,16 @@
-import { GameState, Player } from "@/api/GameState";
+import { Player } from "@/api/GameState";
 import styles from "./ScoreViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { Button } from "@/components/elements/button/Button";
 import { useState } from "react";
-import { GameOptions } from "@/api/GameOptions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface SecretObjectivesViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
+export const SecretObjectivesView = () => {
+  const { gameState } = useGameContext();
 
-export const SecretObjectivesView = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: SecretObjectivesViewProps) => {
   const players = Object.keys(gameState.players).map((p) => {
     return {
       id: p,
@@ -43,11 +35,8 @@ export const SecretObjectivesView = ({
         <PlayerSecretView
           key={p.id}
           playerId={p.id}
-          gameOptions={gameOptions}
-          gameState={gameState}
           player={p}
           playerSecrets={getPlayerSecrets(p.id)}
-          sendEvent={sendEvent}
         />
       ))}
     </div>
@@ -58,19 +47,15 @@ interface PlayerSecretViewProps {
   playerId: string;
   player: Player;
   playerSecrets: string[];
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
 }
 
 const PlayerSecretView = ({
   playerId,
   player,
   playerSecrets,
-  gameState,
-  gameOptions,
-  sendEvent,
 }: PlayerSecretViewProps) => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
   const [secret, setSecret] = useState<string>("");
 
   const allTakenSecrets = Object.values(

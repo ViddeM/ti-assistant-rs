@@ -1,22 +1,15 @@
-import { GameOptions, TechInfo } from "@/api/GameOptions";
-import { GameState, Player } from "@/api/GameState";
+import { TechInfo } from "@/api/GameOptions";
+import { Player } from "@/api/GameState";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./TechViewMode.module.scss";
 import React from "react";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
 import { Icon } from "@/components/elements/icon/Icon";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface TechTableProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
+export const TechTable = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const TechTable = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: TechTableProps) => {
   const players = Object.keys(gameState.players).map((p) => {
     return {
       id: p,
@@ -204,7 +197,13 @@ export const TechTable = ({
                 toggleTechForPlayer={toggleTechForPlayer}
               />
             ) : (
-              <p>Faction has no unique techs</p>
+              <tr>
+                <td colSpan={Object.keys(players).length}>
+                  <p className={styles.centerText}>
+                    Faction has no unique techs
+                  </p>
+                </td>
+              </tr>
             )}
           </React.Fragment>
         ))}

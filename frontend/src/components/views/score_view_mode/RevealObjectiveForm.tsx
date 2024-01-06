@@ -1,22 +1,12 @@
-import { GameOptions } from "@/api/GameOptions";
-
-import { GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./ScoreViewMode.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-interface RevealObjectiveViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
+export const RevealObjectiveForm = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const RevealObjectiveForm = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: RevealObjectiveViewProps) => {
   const [selectedStageI, setSelectedStageI] = useState<string>("");
   const [selectedStageII, setSelectedStageII] = useState<string>("");
 

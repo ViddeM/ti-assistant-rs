@@ -4,23 +4,13 @@ import { Button } from "@/components/elements/button/Button";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./ActionPhaseView.module.scss";
 import { GameState } from "@/api/GameState";
-import { System } from "@/api/System";
 import { useEffect, useState } from "react";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
-import { GameOptions } from "@/api/GameOptions";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface ActionPhaseViewProps {
-  gameOptions: GameOptions;
-  gameState: GameState;
-  systems: System[];
-  sendMessage: (data: any) => void;
-}
+export const ActionPhaseView = () => {
+  const { gameState, sendEvent } = useGameContext();
 
-export const ActionPhaseView = ({
-  gameOptions,
-  gameState,
-  sendMessage,
-}: ActionPhaseViewProps) => {
   const [isComponent, setIsComponent] = useState<boolean>(false);
 
   useEffect(() => setIsComponent(false), [gameState]);
@@ -44,7 +34,7 @@ export const ActionPhaseView = ({
           className={styles.actionButton}
           disabled={playableStrategyCards.length > 0}
           onClick={() =>
-            sendMessage({
+            sendEvent({
               PassAction: {
                 player: gameState.currentPlayer,
               },
@@ -58,7 +48,7 @@ export const ActionPhaseView = ({
             key={c}
             className={styles.actionButton}
             onClick={() =>
-              sendMessage({
+              sendEvent({
                 StrategicActionBegin: {
                   card: c,
                   player: currentPlayer,
@@ -72,7 +62,7 @@ export const ActionPhaseView = ({
         <Button
           className={styles.actionButton}
           onClick={() =>
-            sendMessage({
+            sendEvent({
               TacticalActionBegin: {
                 player: gameState.currentPlayer,
               },
@@ -88,30 +78,16 @@ export const ActionPhaseView = ({
           Component
         </Button>
       </div>
-      {isComponent && (
-        <ComponentSelectRow
-          gameState={gameState}
-          sendMessage={sendMessage}
-          gameOptions={gameOptions}
-        />
-      )}
+      {isComponent && <ComponentSelectRow />}
     </div>
   );
 };
 
 type ComponentMode = "ACTION_CARD" | "";
 
-interface ComponentSelectRowProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+const ComponentSelectRow = () => {
+  const { gameState } = useGameContext();
 
-const ComponentSelectRow = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: ComponentSelectRowProps) => {
   const [componentMode, setComponentMode] = useState<ComponentMode>("");
 
   useEffect(() => setComponentMode(""), [gameState]);
@@ -126,28 +102,14 @@ const ComponentSelectRow = ({
           Action Card
         </Button>
       </div>
-      {componentMode === "ACTION_CARD" && (
-        <ActionCardSelectView
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendMessage={sendMessage}
-        />
-      )}
+      {componentMode === "ACTION_CARD" && <ActionCardSelectView />}
     </>
   );
 };
 
-interface ActionCardSelectViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+const ActionCardSelectView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-const ActionCardSelectView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: ActionCardSelectViewProps) => {
   const [card, setCard] = useState<string>("");
 
   useEffect(() => setCard(""), [gameState]);
@@ -171,7 +133,7 @@ const ActionCardSelectView = ({
       </Dropdown>
       <Button
         onClick={() =>
-          sendMessage({
+          sendEvent({
             ActionCardActionBegin: {
               player: gameState.currentPlayer,
               card: card,

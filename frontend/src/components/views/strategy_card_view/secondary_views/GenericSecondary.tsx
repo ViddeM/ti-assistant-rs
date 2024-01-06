@@ -1,4 +1,3 @@
-import { GameState } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./Secondary.module.scss";
@@ -7,16 +6,11 @@ import {
   faCircleCheck,
   faCircleXmark,
 } from "@fortawesome/free-regular-svg-icons";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface GenericSecondaryProps {
-  gameState: GameState;
-  sendMessage: (data: any) => void;
-}
+export const GenericSecondary = () => {
+  const { gameState, sendEvent } = useGameContext();
 
-export const GenericSecondary = ({
-  gameState,
-  sendMessage,
-}: GenericSecondaryProps) => {
   const strategyCard = gameState.actionProgress?.Strategic?.card!!;
 
   const otherPlayers = Object.keys(gameState.players)
@@ -29,7 +23,7 @@ export const GenericSecondary = ({
     });
 
   const sendSecondaryMessage = (player: string, val: string) => {
-    sendMessage({
+    sendEvent({
       StrategicActionSecondary: {
         player: player,
         action: val,

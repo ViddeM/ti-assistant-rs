@@ -1,52 +1,35 @@
-import { GameOptions } from "@/api/GameOptions";
-import { ActionCardProgress, GameState } from "@/api/GameState";
+import { ActionCardProgress } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
-import { SelectTechView } from "../strategy_card_view/common_views/SelectTechView";
+import { SelectTechView } from "../select_tech_view/SelectTechView";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./ActionCardView.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface ActionCardViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+export const ActionCardView = () => {
+  const { gameState, gameOptions } = useGameContext();
 
-export const ActionCardView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: ActionCardViewProps) => {
   const progress = gameState.actionProgress!!.ActionCard!!;
   const card = gameOptions.actionCards[progress.card];
   return (
     <div className="card">
       <h2>{card.name}</h2>
-      <ActionCardProgressView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        cardProgress={progress}
-        sendMessage={sendMessage}
-      />
+      <ActionCardProgressView cardProgress={progress} />
     </div>
   );
 };
 
 interface ActionCardProgressViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
   cardProgress: ActionCardProgress;
-  sendMessage: (data: any) => void;
 }
 
 const ActionCardProgressView = ({
-  gameState,
-  gameOptions,
   cardProgress,
-  sendMessage,
 }: ActionCardProgressViewProps) => {
+  const { gameState, sendEvent } = useGameContext();
+
   const sendCommitMessage = (data: any) => {
-    sendMessage({
+    sendEvent({
       ActionCardActionCommit: {
         player: gameState.currentPlayer,
         data: data,
@@ -58,8 +41,6 @@ const ActionCardProgressView = ({
     return (
       <div>
         <SelectTechView
-          gameState={gameState}
-          gameOptions={gameOptions}
           playerId={gameState.currentPlayer!!}
           onSelect={(tech) =>
             sendCommitMessage({
@@ -72,21 +53,9 @@ const ActionCardProgressView = ({
       </div>
     );
   } else if (cardProgress.card === "DivertFunding") {
-    return (
-      <DivertFundingView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendCommitMessage={sendCommitMessage}
-      />
-    );
+    return <DivertFundingView sendCommitMessage={sendCommitMessage} />;
   } else if (cardProgress.card === "Plagiarize") {
-    return (
-      <PlagiarizeView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendCommitMessage={sendCommitMessage}
-      />
-    );
+    return <PlagiarizeView sendCommitMessage={sendCommitMessage} />;
   }
 
   return (
@@ -97,16 +66,12 @@ const ActionCardProgressView = ({
 };
 
 interface DivertFundingViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
   sendCommitMessage: (data: any) => void;
 }
 
-const DivertFundingView = ({
-  gameState,
-  gameOptions,
-  sendCommitMessage,
-}: DivertFundingViewProps) => {
+const DivertFundingView = ({ sendCommitMessage }: DivertFundingViewProps) => {
+  const { gameState, gameOptions } = useGameContext();
+
   const [removeTech, setRemoveTech] = useState<string | null>(null);
   const [gainTech, setGainTech] = useState<string | null>(null);
 
@@ -156,8 +121,6 @@ const DivertFundingView = ({
         <legend>Gain tech</legend>
         {gainTech === null ? (
           <SelectTechView
-            gameState={gameState}
-            gameOptions={gameOptions}
             playerId={gameState.currentPlayer!!}
             onSelect={(tech) => setGainTech(tech)}
           />
@@ -184,16 +147,12 @@ const DivertFundingView = ({
 };
 
 interface PlagiarizeViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
   sendCommitMessage: (data: any) => void;
 }
 
-const PlagiarizeView = ({
-  gameState,
-  gameOptions,
-  sendCommitMessage,
-}: PlagiarizeViewProps) => {
+const PlagiarizeView = ({ sendCommitMessage }: PlagiarizeViewProps) => {
+  const { gameState } = useGameContext();
+
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
 
@@ -221,8 +180,6 @@ const PlagiarizeView = ({
               selectedTech={selectedTech}
               setSelectedTech={setSelectedTech}
               setSelectedPlayer={setSelectedPlayer}
-              gameOptions={gameOptions}
-              gameState={gameState}
             />
           ))}
       </tbody>
@@ -254,8 +211,6 @@ interface PlagiarizePlayerRowProps {
   selectedTech: string | null;
   setSelectedPlayer: (player: string | null) => void;
   setSelectedTech: (tech: string | null) => void;
-  gameOptions: GameOptions;
-  gameState: GameState;
 }
 
 const PlagiarizePlayerRow = ({
@@ -264,9 +219,9 @@ const PlagiarizePlayerRow = ({
   selectedTech,
   setSelectedPlayer,
   setSelectedTech,
-  gameOptions,
-  gameState,
 }: PlagiarizePlayerRowProps) => {
+  const { gameState, gameOptions } = useGameContext();
+
   const availablePlayerTechs = gameState.players[player].technologies
     .map((tech) => {
       return {

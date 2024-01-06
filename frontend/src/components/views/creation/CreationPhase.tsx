@@ -7,21 +7,14 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import { Faction } from "@/resources/types/factions";
-import { GameState, Player } from "@/api/GameState";
-
-export interface CreationPhaseProps {
-  gameOptions: GameOptions;
-  gameState: GameState;
-  sendMessage: (data: any) => void;
-}
+import { Player } from "@/api/GameState";
+import { useGameContext } from "@/hooks/GameContext";
 
 const FACTION_NOT_SELECTED = "not_selected";
 
-export const CreationPhase = ({
-  gameOptions,
-  gameState,
-  sendMessage,
-}: CreationPhaseProps) => {
+export const CreationPhase = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
   const playerCount = Object.keys(gameState.players).length;
   const allowedNumberOfPlayers = gameOptions.playerCounts.includes(playerCount);
 
@@ -32,7 +25,7 @@ export const CreationPhase = ({
   const takenColors = Object.values(gameState.players).map((p) => p.color);
 
   const addPlayer = (name: string, faction: Faction, color: Color) => {
-    sendMessage({
+    sendEvent({
       AddPlayer: {
         player: {
           name: name,
@@ -46,11 +39,7 @@ export const CreationPhase = ({
     <div className={`card ${styles.setupCard}`}>
       <h2>Add players</h2>
       {Object.entries(gameState.players).map(([playerId, player]) => (
-        <DisplayPlayer
-          key={playerId}
-          player={player}
-          gameOptions={gameOptions}
-        />
+        <DisplayPlayer key={playerId} player={player} />
       ))}
       {playerCount < 8 && (
         <AddPlayer
@@ -64,7 +53,7 @@ export const CreationPhase = ({
         className={styles.startGameButton}
         disabled={!allowedNumberOfPlayers}
         onClick={() => {
-          sendMessage("CreationDone");
+          sendEvent("CreationDone");
         }}
       >
         Start game
@@ -74,11 +63,12 @@ export const CreationPhase = ({
 };
 
 interface DisplayPlayerProps {
-  gameOptions: GameOptions;
   player: Player;
 }
 
-const DisplayPlayer = ({ player, gameOptions }: DisplayPlayerProps) => {
+const DisplayPlayer = ({ player }: DisplayPlayerProps) => {
+  const { gameOptions } = useGameContext();
+
   return (
     <div className={styles.displayPlayerContainer}>
       <h3>{player.name}</h3>

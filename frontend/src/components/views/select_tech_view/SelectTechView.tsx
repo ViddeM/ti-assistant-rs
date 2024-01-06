@@ -5,10 +5,9 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { Faction } from "@/resources/types/factions";
 import { useState } from "react";
 import styles from "./SelectTechView.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
 interface SelectTechViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
   playerId: string;
   onSelect: (tech: string) => void;
 }
@@ -23,12 +22,9 @@ const TECH_CATEGORIES: TechCategory[] = [
 const LABEL_COL_ALIGN = "right";
 const DROPDOWN_COL_ALIGN = "left";
 
-export const SelectTechView = ({
-  gameState,
-  gameOptions,
-  playerId,
-  onSelect,
-}: SelectTechViewProps) => {
+export const SelectTechView = ({ playerId, onSelect }: SelectTechViewProps) => {
+  const { gameState, gameOptions } = useGameContext();
+
   const [selectedTech, setSelectedTech] = useState<string>("");
   const playerTechs = getPlayerTechs(gameState, gameOptions, playerId);
   const availableTechs = getAvailableTechs(

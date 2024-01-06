@@ -1,5 +1,3 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
 import styles from "./ScoreViewMode.module.scss";
 import { RevealObjectiveForm } from "./RevealObjectiveForm";
 import React from "react";
@@ -7,38 +5,16 @@ import { SecretObjectivesView } from "./SecretObjectivesView";
 import { ScoreTableView } from "./ScoreTableView";
 import { SupportForTheThroneView } from "./SupportForTheThroneView";
 
-export interface ScoreViewModeProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
-
-export const ScoreViewMode = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: ScoreViewModeProps) => {
+export const ScoreViewMode = () => {
   return (
     <div className={styles.scoreViewContainer}>
-      <ScoreTableView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendEvent={sendEvent}
-      />
+      <ScoreTableView />
 
-      <RevealObjectiveForm
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendEvent={sendEvent}
-      />
+      <RevealObjectiveForm />
 
-      <SecretObjectivesView
-        gameState={gameState}
-        gameOptions={gameOptions}
-        sendEvent={sendEvent}
-      />
+      <SecretObjectivesView />
 
-      <SupportForTheThroneView gameState={gameState} sendEvent={sendEvent} />
+      <SupportForTheThroneView />
     </div>
   );
 };

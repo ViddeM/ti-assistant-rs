@@ -1,14 +1,12 @@
-import { GameState } from "@/api/GameState";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Icon } from "@/components/elements/icon/Icon";
 import styles from "./TechViewMode.module.scss";
 import Link from "next/link";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface TechLedgerProps {
-  gameState: GameState;
-}
+export const TechLedger = () => {
+  const { gameState } = useGameContext();
 
-export const TechLedger = ({ gameState }: TechLedgerProps) => {
   return (
     <div className="card">
       <h2>Shortcuts</h2>

@@ -1,22 +1,14 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState, Player } from "@/api/GameState";
+import { Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import styles from "./Setup.module.scss";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface SetupProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
+export const SetupPhase = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const SetupPhase = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: SetupProps) => {
   const [firstObjective, setFirstObjective] = useState<string>("");
   const [secondObjective, setSecondObjective] = useState<string>("");
 
@@ -55,6 +47,7 @@ export const SetupPhase = ({
         <div className={styles.playersSetupContainer}>
           {players.map((p) => (
             <fieldset
+              key={p.id}
               className={`playerColorBorder${p.color} ${styles.setupPlayerFieldset}`}
             >
               <legend
@@ -85,12 +78,7 @@ export const SetupPhase = ({
                 gameOptions.factions.filter((f) => f.faction === p.faction)[0]
                   .name
               }
-              <FactionSpecificSetup
-                player={p}
-                gameState={gameState}
-                gameOptions={gameOptions}
-                sendEvent={sendEvent}
-              />
+              <FactionSpecificSetup player={p} />
             </fieldset>
           ))}
         </div>
@@ -164,55 +152,24 @@ export const SetupPhase = ({
 
 interface FactionSpecificSetupProps {
   player: Player & { id: string };
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
 }
 
-const FactionSpecificSetup = ({
-  player,
-  gameState,
-  gameOptions,
-  sendEvent,
-}: FactionSpecificSetupProps) => {
+const FactionSpecificSetup = ({ player }: FactionSpecificSetupProps) => {
   switch (player.faction) {
     case "Winnu":
-      return (
-        <WinnuSetup
-          player={player}
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendEvent={sendEvent}
-        />
-      );
+      return <WinnuSetup player={player} />;
     case "ArgentFlight":
-      return (
-        <ArgentFlightSetup
-          player={player}
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendEvent={sendEvent}
-        />
-      );
+      return <ArgentFlightSetup player={player} />;
     case "CouncilKeleres":
-      return (
-        <CouncilKeleresSetup
-          player={player}
-          gameState={gameState}
-          gameOptions={gameOptions}
-          sendEvent={sendEvent}
-        />
-      );
+      return <CouncilKeleresSetup player={player} />;
     default:
       return <div>Pelle</div>;
   }
 };
 
-const WinnuSetup = ({
-  player,
-  gameOptions,
-  sendEvent,
-}: FactionSpecificSetupProps) => {
+const WinnuSetup = ({ player }: FactionSpecificSetupProps) => {
+  const { gameOptions, sendEvent } = useGameContext();
+
   const [selectedTech, setSelectedTech] = useState<string>("");
 
   const availableTechs = Object.keys(gameOptions.technologies)
@@ -261,11 +218,9 @@ const WinnuSetup = ({
   );
 };
 
-const ArgentFlightSetup = ({
-  player,
-  gameOptions,
-  sendEvent,
-}: FactionSpecificSetupProps) => {
+const ArgentFlightSetup = ({ player }: FactionSpecificSetupProps) => {
+  const { gameOptions, sendEvent } = useGameContext();
+
   const possibleTechs = [
     "NeuralMotivator",
     "SarweenTools",
@@ -282,7 +237,7 @@ const ArgentFlightSetup = ({
       {player.technologies.length > 0 ? (
         <>
           {player.technologies.map((t) => (
-            <p>{gameOptions.technologies[t].name}</p>
+            <p key={t}>{gameOptions.technologies[t].name}</p>
           ))}
         </>
       ) : (
@@ -333,12 +288,9 @@ const ArgentFlightSetup = ({
   );
 };
 
-const CouncilKeleresSetup = ({
-  player,
-  gameState,
-  gameOptions,
-  sendEvent,
-}: FactionSpecificSetupProps) => {
+const CouncilKeleresSetup = ({ player }: FactionSpecificSetupProps) => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
   const [firstTech, setFirstTech] = useState<string>("");
   const [secondTech, setSecondTech] = useState<string>("");
   const [selectedFaction, setSelectedFaction] = useState<string>("");
@@ -440,7 +392,7 @@ const CouncilKeleresSetup = ({
       ) : (
         <>
           {player.planets.map((p) => (
-            <p>{p}</p>
+            <p key={p}>{p}</p>
           ))}
         </>
       )}

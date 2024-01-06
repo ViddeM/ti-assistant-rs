@@ -1,21 +1,12 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
 import styles from "./Primary.module.scss";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import { Button } from "@/components/elements/button/Button";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface ImperialPrimaryViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+export const ImperialPrimaryView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const ImperialPrimaryView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: ImperialPrimaryViewProps) => {
   const [objective, setObjective] = useState<string>("");
 
   const progress = gameState.actionProgress?.Strategic?.primary?.Imperial;
@@ -33,7 +24,7 @@ export const ImperialPrimaryView = ({
     });
 
   const performAction = (objective: string | null) => {
-    sendMessage({
+    sendEvent({
       StrategicActionPrimary: {
         player: gameState.currentPlayer!!,
         action: {

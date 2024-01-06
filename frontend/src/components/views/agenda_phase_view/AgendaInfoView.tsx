@@ -1,19 +1,14 @@
-import { GameOptions } from "@/api/GameOptions";
-import { AgendaState, GameState } from "@/api/GameState";
+import { AgendaState } from "@/api/GameState";
 import { electKindToString } from "./AgendaUtils";
-import styles from "./AgendaPhaseView.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
 export interface AgendaInfoViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
   state: AgendaState;
 }
 
-export const AgendaInfoView = ({
-  gameState,
-  gameOptions,
-  state,
-}: AgendaInfoViewProps) => {
+export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
+  const { gameState, gameOptions } = useGameContext();
+
   const previousVotesThisRound = gameState.agendaVoteHistory.filter(
     (vote) => vote.round === gameState.round
   );

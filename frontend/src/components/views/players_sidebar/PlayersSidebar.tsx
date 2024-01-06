@@ -1,7 +1,7 @@
 import styles from "./PlayersSidebar.module.scss";
 import { Faction } from "@/resources/types/factions";
 import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
-import { Color, GameOptions, PlanetInfo, TechInfo } from "@/api/GameOptions";
+import { Color, PlanetInfo, TechInfo } from "@/api/GameOptions";
 import { PlayerResources } from "./parts/PlayerResources";
 import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
 import { Duration, Score } from "@/api/GameState";
@@ -38,7 +38,6 @@ export interface PlayerSidebarProps {
   score: Score;
   isPaused: boolean;
   currentTurnStartTime: string | null;
-  gameOptions: GameOptions;
 }
 
 export const PlayerSidebar = ({
@@ -46,7 +45,6 @@ export const PlayerSidebar = ({
   score,
   isPaused,
   currentTurnStartTime,
-  gameOptions,
 }: PlayerSidebarProps) => {
   return (
     <div className={`${styles.playerSideBarCard} card`}>
@@ -57,7 +55,6 @@ export const PlayerSidebar = ({
           score={score}
           isPaused={isPaused}
           currentTurnStartTime={currentTurnStartTime}
-          gameOptions={gameOptions}
         />
       ))}
     </div>
@@ -69,13 +66,11 @@ interface PlayerBoxProps {
   score: Score;
   isPaused: boolean;
   currentTurnStartTime: string | null;
-  gameOptions: GameOptions;
 }
 
 const PlayerBox = ({
   player,
   score,
-  gameOptions,
   currentTurnStartTime,
   isPaused,
 }: PlayerBoxProps) => {
@@ -102,11 +97,7 @@ const PlayerBox = ({
       <div className={styles.contentRow}>
         <StrategyCardInfo cards={player.cards} />
         <div className={styles.scoreTimeContainer}>
-          <PlayerScoreInfo
-            player={player}
-            score={score}
-            gameOptions={gameOptions}
-          />
+          <PlayerScoreInfo player={player} score={score} />
           <PlayerTimeInfo
             player={player}
             isPaused={isPaused}

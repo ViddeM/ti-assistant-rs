@@ -1,20 +1,11 @@
 import { Button } from "@/components/elements/button/Button";
-import { SelectTechView } from "../common_views/SelectTechView";
+import { SelectTechView } from "../../select_tech_view/SelectTechView";
 import { useState } from "react";
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
+import { useGameContext } from "@/hooks/GameContext";
 
-interface TechnologyPrimaryViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+export const TechnologyPrimaryView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const TechnologyPrimaryView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: TechnologyPrimaryViewProps) => {
   const [firstTech, setFirstTech] = useState<string | null>(null);
   const [secondTech, setSecondTech] = useState<string | null>(null);
   const progress = gameState.actionProgress?.Strategic?.primary;
@@ -37,8 +28,6 @@ export const TechnologyPrimaryView = ({
             <h6>Pick a tech</h6>
           </legend>
           <SelectTechView
-            gameState={gameState}
-            gameOptions={gameOptions}
             playerId={gameState.currentPlayer!!}
             onSelect={setFirstTech}
           />
@@ -52,8 +41,6 @@ export const TechnologyPrimaryView = ({
                 <h6>Take another?</h6>
               </legend>
               <SelectTechView
-                gameState={gameState}
-                gameOptions={gameOptions}
                 playerId={gameState.currentPlayer!!}
                 onSelect={setSecondTech}
               />
@@ -66,7 +53,7 @@ export const TechnologyPrimaryView = ({
       <Button
         disabled={firstTech === null}
         onClick={() =>
-          sendMessage({
+          sendEvent({
             StrategicActionPrimary: {
               player: gameState.currentPlayer!!,
               action: {

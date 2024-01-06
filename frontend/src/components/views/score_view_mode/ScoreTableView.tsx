@@ -1,23 +1,13 @@
-import { GameState } from "@/api/GameState";
 import styles from "./ScoreViewMode.module.scss";
-import { GameOptions } from "@/api/GameOptions";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
-import { Faction } from "@/resources/types/factions";
 import React from "react";
 import { Button } from "@/components/elements/button/Button";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
+import { useGameContext } from "@/hooks/GameContext";
 
-interface ScoreTableViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
+export const ScoreTableView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const ScoreTableView = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: ScoreTableViewProps) => {
   const revealedStageOneObjectives = Object.keys(
     gameState.score.revealedObjectives
   )
@@ -210,10 +200,7 @@ export const ScoreTableView = ({
         <tr>
           {players.map((p) => (
             <td key={p.id} align="center">
-              <PlayerSecretObjectivesScore
-                playerId={p.id}
-                gameState={gameState}
-              />
+              <PlayerSecretObjectivesScore playerId={p.id} />
             </td>
           ))}
         </tr>
@@ -291,13 +278,13 @@ export const ScoreTableView = ({
 
 interface PlayerSecretObjectivesScore {
   playerId: string;
-  gameState: GameState;
 }
 
 const PlayerSecretObjectivesScore = ({
   playerId,
-  gameState,
 }: PlayerSecretObjectivesScore) => {
+  const { gameState } = useGameContext();
+
   const playerSecrets = gameState.score.secretObjectives[playerId];
 
   if (!playerSecrets) {

@@ -1,24 +1,15 @@
-import { GameOptions } from "@/api/GameOptions";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
-import { SelectTechView } from "../common_views/SelectTechView";
+import { SelectTechView } from "../../select_tech_view/SelectTechView";
 import { Button } from "@/components/elements/button/Button";
-import { GameState } from "@/api/GameState";
 import styles from "./Secondary.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-interface StrategyTechnologySecondaryViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+export const StrategyTechnologySecondaryView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const StrategyTechnologySecondaryView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: StrategyTechnologySecondaryViewProps) => {
   const donePlayers = gameState.actionProgress?.Strategic?.otherPlayers!!;
   const sendTechSecondaryMessage = (player: string, action: any) => {
-    sendMessage({
+    sendEvent({
       StrategicActionSecondary: {
         player: player,
         action: action,
@@ -61,8 +52,6 @@ export const StrategyTechnologySecondaryView = ({
                   <FactionIcon faction={player.faction} />
                 </legend>
                 <SelectTechView
-                  gameState={gameState}
-                  gameOptions={gameOptions}
                   playerId={player.name}
                   onSelect={(tech) =>
                     sendTechSecondaryMessage(player.name, {

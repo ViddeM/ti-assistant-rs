@@ -1,20 +1,11 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
 import React, { useState } from "react";
 import styles from "./PlanetViewMode.module.scss";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface UnclaimedPlanetsTable {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendEvent: (data: any) => void;
-}
+export const UnclaimedPlanetsTable = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const UnclaimedPlanetsTable = ({
-  gameState,
-  gameOptions,
-  sendEvent,
-}: UnclaimedPlanetsTable) => {
   const [planetFilter, setPlanetFilter] = useState<string>("");
   const filter = planetFilter.toLowerCase();
 

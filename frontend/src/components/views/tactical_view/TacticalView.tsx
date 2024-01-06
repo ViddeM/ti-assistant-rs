@@ -1,21 +1,12 @@
-import { GameOptions } from "@/api/GameOptions";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./TacticalView.module.scss";
-import { GameState } from "@/api/GameState";
+import { useGameContext } from "@/hooks/GameContext";
 
-export interface TacticalViewProps {
-  gameState: GameState;
-  gameOptions: GameOptions;
-  sendMessage: (data: any) => void;
-}
+export const TacticalView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
-export const TacticalView = ({
-  gameState,
-  gameOptions,
-  sendMessage,
-}: TacticalViewProps) => {
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
   const currentPlayerPlanets =
     gameState.players[gameState.currentPlayer!!].planets;
@@ -31,7 +22,7 @@ export const TacticalView = ({
     );
 
   const takePlanet = (planet: string) => {
-    sendMessage({
+    sendEvent({
       TacticalActionTakePlanet: {
         player: gameState.currentPlayer,
         planet: planet,
@@ -92,7 +83,7 @@ export const TacticalView = ({
       )}
       <Button
         onClick={() =>
-          sendMessage({
+          sendEvent({
             TacticalActionCommit: {
               player: gameState.currentPlayer,
             },
