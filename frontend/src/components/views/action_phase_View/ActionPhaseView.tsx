@@ -132,6 +132,7 @@ const ActionCardSelectView = () => {
         ))}
       </Dropdown>
       <Button
+        disabled={card === ""}
         onClick={() =>
           sendEvent({
             ActionCardActionBegin: {

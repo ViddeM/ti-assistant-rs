@@ -62,7 +62,7 @@
      - ✅ 8 new techs (psycoarch, bio stims, dark energy tap, sling ray, scanlink drone network, predictive intelligence, ai dev algos, self assembly)
      - ❌ alliances ( use other players commanders)
      - ✅ 40 new objectives
-     - ❌ 20 new action cards
+     - ✅ 20 new action cards
      - ❌ 13 agendas removed
      - ❌ 13 new agendas
      - ❌ updated diplo strat card
@@ -70,10 +70,9 @@
    - ❌ Codex I
      - ❌ updated techs: (magmus reactor, wormhole generator, yin spinner, magan defence grid, x-89)
      - ❌ promissary notes (stymie, war funding, cybernetic enhancements, acquiessence, greyfire)
-     - ❌ new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
+     - ✅ new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
      - ❌ updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
    - ❌ Codex II
-     - ❌ Reference cards (not relevant)
      - ❌ 3 new relics (PoK), (dynamis core, JR-XS455-O, nano forge)
      - ❌ pax nomina (game mode with teams)
    - ❌ Codex III
