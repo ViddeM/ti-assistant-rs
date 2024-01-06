@@ -12,7 +12,7 @@
 
 ## Gameplay
  - ✅ Track round number
- - 🍑🚱 Undo
+ - ✅🚱 Undo
  - ✅ Update setup to do all required tasks
    - ✅ Choose speaker at start of game
    - ✅ Reveal initial objectives
