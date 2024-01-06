@@ -1,5 +1,17 @@
 @import "../../../resources/styles/vars.scss";
 
+.createGameContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.createGameRow {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
 .gamePageContainer {
   width: 100%;
   display: flex;

@@ -8,6 +8,7 @@ use crate::data::components::{
     action_card::ActionCard, planet::Planet, strategy_card::StrategyCard, tech::Technology,
 };
 
+use super::game_settings::GameSettings;
 use super::{
     game_state::StrategicSecondaryProgress,
     player::{NewPlayer, PlayerId},
@@ -16,8 +17,14 @@ use super::{
 /// An event in the game.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum Event {
-    /* -- SETUP PHASE EVENTS -- */
-    /// Add a new player to the setup game.
+    /* -- CREATION PHASE EVENTS -- */
+    /// Set the game settings.
+    SetSettings {
+        /// Settings for the game.
+        settings: GameSettings,
+    },
+
+    /// Add a new player to the game.
     AddPlayer {
         /// The new player that joined the game.
         player: NewPlayer,
@@ -26,6 +33,7 @@ pub enum Event {
     /// Creation phase is done.
     CreationDone,
 
+    /* -- SETUP PHASE EVENTS -- */
     /// Faction specific setup for council keleres ability 'The Tribunii' (note that this does not include tech).
     SetupTheTribunii {
         /// The player who selects the system.

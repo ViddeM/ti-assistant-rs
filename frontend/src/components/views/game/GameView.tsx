@@ -18,6 +18,7 @@ import { TechViewMode } from "../tech_view_mode/TechViewMode";
 import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
 import { LawsViewMode } from "../laws_view_mode/LawsViewMode";
 import { GameContext, useGameContext } from "@/hooks/GameContext";
+import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 
 const NEW_GAME_ID = "new";
 
@@ -38,6 +39,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const { sendMessage, lastMessage, readyState } = useWebSocket(wsUri);
 
   const initialized = useRef(false);
+  const isNewGame = gameId === NEW_GAME_ID;
 
   /* General message handling */
   useEffect(() => {
@@ -70,9 +72,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-      if (gameId === NEW_GAME_ID) {
-        sendMessage('"NewGame"');
-      } else {
+      if (!isNewGame) {
         sendMessage(
           JSON.stringify({
             JoinGame: gameId,
@@ -80,7 +80,19 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         );
       }
     }
-  }, [gameId, sendMessage]);
+  }, [gameId, isNewGame, sendMessage]);
+
+  if (isNewGame) {
+    return (
+      <CreateGameView
+        startGame={(data) =>
+          sendMsg({
+            NewGame: data,
+          })
+        }
+      />
+    );
+  }
 
   if (!gameOptions || !gameState) {
     return <div>Awaiting response from server</div>;
@@ -136,6 +148,80 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         <DisplayViewMode viewMode={currentViewMode} />
       )}
     </GameContext.Provider>
+  );
+};
+
+const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
+  const [pok, setPok] = useState<boolean>(false);
+  const [cod1, setCod1] = useState<boolean>(false);
+  const [cod2, setCod2] = useState<boolean>(false);
+  const [cod3, setCod3] = useState<boolean>(false);
+  const [points, setPoints] = useState<number>(10);
+
+  return (
+    <div className={`card ${styles.createGameContainer}`}>
+      <h2>Create Game</h2>
+      <div className={styles.createGameRow}>
+        <input
+          type="checkbox"
+          id="pok-checkbox"
+          checked={pok}
+          onChange={() => setPok(!pok)}
+        />
+        <label htmlFor="pok-checkbox">Prophecy of Kings</label>
+      </div>
+      <div className={styles.createGameRow}>
+        <input
+          type="checkbox"
+          id="cod1"
+          checked={cod1}
+          onChange={() => setCod1(!cod1)}
+        />
+        <label htmlFor="cod1">Codex I</label>
+      </div>
+      <div className={styles.createGameRow}>
+        <input
+          type="checkbox"
+          id="cod2"
+          checked={cod2}
+          onChange={() => setCod2(!cod2)}
+        />
+        <label htmlFor="cod2">Codex II</label>
+      </div>
+      <div className={styles.createGameRow}>
+        <input
+          type="checkbox"
+          id="cod3"
+          checked={cod3}
+          onChange={() => setCod3(!cod3)}
+        />
+        <label htmlFor="cod3">Codex III</label>
+      </div>
+      <div className={styles.createGameRow}>
+        <input
+          type="range"
+          min={4}
+          max={16}
+          id="points-slider"
+          value={points}
+          onChange={(e) => setPoints(parseInt(e.target.value))}
+        />
+        <label htmlFor="points-slider">{points}</label>
+      </div>
+      <Button
+        onClick={() =>
+          startGame({
+            points: points,
+            pok: pok,
+            cod1: cod1,
+            cod2: cod2,
+            cod3: cod3,
+          })
+        }
+      >
+        Create Game
+      </Button>
+    </div>
   );
 };
 
