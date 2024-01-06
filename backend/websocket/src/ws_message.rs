@@ -38,7 +38,7 @@ impl Into<GameSettings> for NewGame {
     fn into(self) -> GameSettings {
         GameSettings {
             max_points: self.points,
-            expansion: Expansions {
+            expansions: Expansions {
                 prophecy_of_kings: self.pok,
                 codex_1: self.cod1,
                 codex_2: self.cod2,
@@ -67,8 +67,8 @@ pub enum WsMessageOut {
 
 impl WsMessageOut {
     /// Returns a new [WsMessageOut::GameOptions] event.
-    pub fn game_options() -> Self {
-        Self::GameOptions(Default::default())
+    pub fn game_options(expansions: &Expansions) -> Self {
+        Self::GameOptions(Arc::new(GameOptions::new(expansions)))
     }
 
     /// Returns a new [WsMessageOut::GameState] event from the provided state.

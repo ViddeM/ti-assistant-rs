@@ -8,7 +8,7 @@ use eyre::{bail, eyre, Context};
 use serde::{Deserialize, Serialize};
 
 use crate::data::{
-    common::faction::Faction,
+    common::{expansions::Expansion, faction::Faction},
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
@@ -356,6 +356,14 @@ impl GameState {
         Ok(())
     }
 
+    /// Asserts that the provided expansion is enabled.
+    pub fn assert_expansion(&self, expansion: &Expansion) -> Result<(), GameError> {
+        if !self.game_settings.expansions.is_enabled(expansion) {
+            bail!("Expansion is not enabled {expansion:?}");
+        }
+        Ok(())
+    }
+
     /// Get a mutable reference to the currently active player.
     pub fn get_current_player(&mut self) -> Result<&mut Player, GameError> {
         let current_player_id = match self.current_player.as_ref() {
@@ -398,9 +406,6 @@ impl GameState {
 
     /// The max number of players allowed for this game.
     pub fn max_players(&self) -> usize {
-        if self.game_settings.expansion.prophecy_of_kings {
-            return 8;
-        }
-        6
+        self.game_settings.expansions.max_number_of_players()
     }
 }

@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
 
+use crate::data::common::expansions::Expansion;
+
 use super::tech::TechCategory;
 
 /// A planetary trait.
@@ -24,15 +26,18 @@ pub struct PlanetInfo {
     pub resources: u32,
     /// How much influence the planet provides.
     pub influence: u32,
+    /// Which expansion the planet belongs to.
+    pub expansion: Expansion,
 }
 
 macro_rules! p {
-    ($trait:expr, $tech_spec:expr, $resources: literal, $influence: literal) => {
+    ($trait:expr, $tech_spec:expr, $resources: literal, $influence: literal, $expansion:expr) => {
         PlanetInfo {
             planet_trait: $trait,
             tech_speciality: $tech_spec,
             resources: $resources,
             influence: $influence,
+            expansion: $expansion,
         }
     };
 }
@@ -146,185 +151,333 @@ impl Planet {
     /// Returns the [PlanetInfo] for this planet.
     pub fn planet_info(&self) -> PlanetInfo {
         match self {
-            Planet::Nestphar => p!(None, None, 3, 2),
-            Planet::ArcPrime => p!(None, None, 4, 0),
-            Planet::WrenTerra => p!(None, None, 2, 1),
-            Planet::LisisII => p!(None, None, 1, 0),
-            Planet::Ragh => p!(None, None, 2, 1),
-            Planet::Muaat => p!(None, None, 4, 1),
-            Planet::Hercant => p!(None, None, 1, 1),
-            Planet::Arretze => p!(None, None, 2, 0),
-            Planet::Kamdorn => p!(None, None, 0, 1),
-            Planet::Jord => p!(None, None, 4, 2),
-            Planet::Creuss => p!(None, None, 4, 2),
-            Planet::ZeroZeroZero => p!(None, None, 5, 0),
-            Planet::MollPrimus => p!(None, None, 4, 1),
-            Planet::Druaa => p!(None, None, 3, 1),
-            Planet::Maaluuk => p!(None, None, 0, 2),
-            Planet::MordaiII => p!(None, None, 4, 0),
-            Planet::TrenLak => p!(None, None, 1, 0),
-            Planet::Quinarra => p!(None, None, 3, 1),
-            Planet::Jol => p!(None, None, 1, 2),
-            Planet::Nar => p!(None, None, 2, 3),
-            Planet::Winnu => p!(None, None, 3, 4),
-            Planet::ArchonRen => p!(None, None, 2, 3),
-            Planet::ArchonTau => p!(None, None, 1, 1),
-            Planet::Darien => p!(None, None, 4, 4),
-            Planet::Retillion => p!(None, None, 2, 3),
-            Planet::Shalloq => p!(None, None, 1, 2),
-            Planet::MecatolRex => p!(None, None, 1, 6),
-            Planet::Abyz => p!(Some(PlanetTrait::Hazardous), None, 3, 0),
-            Planet::Fria => p!(Some(PlanetTrait::Hazardous), None, 2, 0),
-            Planet::Arinam => p!(Some(PlanetTrait::Industrial), None, 1, 2),
+            Planet::Nestphar => p!(None, None, 3, 2, Expansion::Base),
+            Planet::ArcPrime => p!(None, None, 4, 0, Expansion::Base),
+            Planet::WrenTerra => p!(None, None, 2, 1, Expansion::Base),
+            Planet::LisisII => p!(None, None, 1, 0, Expansion::Base),
+            Planet::Ragh => p!(None, None, 2, 1, Expansion::Base),
+            Planet::Muaat => p!(None, None, 4, 1, Expansion::Base),
+            Planet::Hercant => p!(None, None, 1, 1, Expansion::Base),
+            Planet::Arretze => p!(None, None, 2, 0, Expansion::Base),
+            Planet::Kamdorn => p!(None, None, 0, 1, Expansion::Base),
+            Planet::Jord => p!(None, None, 4, 2, Expansion::Base),
+            Planet::Creuss => p!(None, None, 4, 2, Expansion::Base),
+            Planet::ZeroZeroZero => p!(None, None, 5, 0, Expansion::Base),
+            Planet::MollPrimus => p!(None, None, 4, 1, Expansion::Base),
+            Planet::Druaa => p!(None, None, 3, 1, Expansion::Base),
+            Planet::Maaluuk => p!(None, None, 0, 2, Expansion::Base),
+            Planet::MordaiII => p!(None, None, 4, 0, Expansion::Base),
+            Planet::TrenLak => p!(None, None, 1, 0, Expansion::Base),
+            Planet::Quinarra => p!(None, None, 3, 1, Expansion::Base),
+            Planet::Jol => p!(None, None, 1, 2, Expansion::Base),
+            Planet::Nar => p!(None, None, 2, 3, Expansion::Base),
+            Planet::Winnu => p!(None, None, 3, 4, Expansion::Base),
+            Planet::ArchonRen => p!(None, None, 2, 3, Expansion::Base),
+            Planet::ArchonTau => p!(None, None, 1, 1, Expansion::Base),
+            Planet::Darien => p!(None, None, 4, 4, Expansion::Base),
+            Planet::Retillion => p!(None, None, 2, 3, Expansion::Base),
+            Planet::Shalloq => p!(None, None, 1, 2, Expansion::Base),
+            Planet::MecatolRex => p!(None, None, 1, 6, Expansion::Base),
+            Planet::Abyz => p!(Some(PlanetTrait::Hazardous), None, 3, 0, Expansion::Base),
+            Planet::Fria => p!(Some(PlanetTrait::Hazardous), None, 2, 0, Expansion::Base),
+            Planet::Arinam => p!(Some(PlanetTrait::Industrial), None, 1, 2, Expansion::Base),
             Planet::Meer => p!(
                 Some(PlanetTrait::Hazardous),
                 Some(TechCategory::Warfare),
                 0,
-                4
+                4,
+                Expansion::Base
             ),
-            Planet::Arnor => p!(Some(PlanetTrait::Industrial), None, 2, 1),
-            Planet::Lor => p!(Some(PlanetTrait::Industrial), None, 1, 2),
-            Planet::Bereg => p!(Some(PlanetTrait::Hazardous), None, 3, 1),
-            Planet::LirtaIV => p!(Some(PlanetTrait::Hazardous), None, 2, 3),
-            Planet::Centauri => p!(Some(PlanetTrait::Cultural), None, 1, 3),
+            Planet::Arnor => p!(Some(PlanetTrait::Industrial), None, 2, 1, Expansion::Base),
+            Planet::Lor => p!(Some(PlanetTrait::Industrial), None, 1, 2, Expansion::Base),
+            Planet::Bereg => p!(Some(PlanetTrait::Hazardous), None, 3, 1, Expansion::Base),
+            Planet::LirtaIV => p!(Some(PlanetTrait::Hazardous), None, 2, 3, Expansion::Base),
+            Planet::Centauri => p!(Some(PlanetTrait::Cultural), None, 1, 3, Expansion::Base),
             Planet::Gral => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Propulsion),
                 1,
-                1
+                1,
+                Expansion::Base
             ),
-            Planet::Coorneeq => p!(Some(PlanetTrait::Cultural), None, 1, 2),
-            Planet::Resculon => p!(Some(PlanetTrait::Cultural), None, 2, 0),
-            Planet::DalBootha => p!(Some(PlanetTrait::Cultural), None, 0, 2),
-            Planet::Xxehan => p!(Some(PlanetTrait::Cultural), None, 1, 1),
+            Planet::Coorneeq => p!(Some(PlanetTrait::Cultural), None, 1, 2, Expansion::Base),
+            Planet::Resculon => p!(Some(PlanetTrait::Cultural), None, 2, 0, Expansion::Base),
+            Planet::DalBootha => p!(Some(PlanetTrait::Cultural), None, 0, 2, Expansion::Base),
+            Planet::Xxehan => p!(Some(PlanetTrait::Cultural), None, 1, 1, Expansion::Base),
             Planet::Lazar => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Cybernetic),
                 1,
-                0
+                0,
+                Expansion::Base
             ),
-            Planet::Sakulag => p!(Some(PlanetTrait::Hazardous), None, 2, 1),
-            Planet::Lodor => p!(Some(PlanetTrait::Cultural), None, 3, 1),
+            Planet::Sakulag => p!(Some(PlanetTrait::Hazardous), None, 2, 1, Expansion::Base),
+            Planet::Lodor => p!(Some(PlanetTrait::Cultural), None, 3, 1, Expansion::Base),
             Planet::MeharXull => p!(
                 Some(PlanetTrait::Hazardous),
                 Some(TechCategory::Warfare),
                 1,
-                3
+                3,
+                Expansion::Base
             ),
-            Planet::Mellon => p!(Some(PlanetTrait::Cultural), None, 0, 2),
-            Planet::Zohbat => p!(Some(PlanetTrait::Hazardous), None, 3, 1),
+            Planet::Mellon => p!(Some(PlanetTrait::Cultural), None, 0, 2, Expansion::Base),
+            Planet::Zohbat => p!(Some(PlanetTrait::Hazardous), None, 3, 1, Expansion::Base),
             Planet::NewAlbion => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Biotic),
                 1,
-                1
+                1,
+                Expansion::Base
             ),
-            Planet::Starpoint => p!(Some(PlanetTrait::Hazardous), None, 3, 1),
-            Planet::Quann => p!(Some(PlanetTrait::Cultural), None, 2, 1),
-            Planet::Qucenn => p!(Some(PlanetTrait::Industrial), None, 1, 2),
-            Planet::Rarron => p!(Some(PlanetTrait::Cultural), None, 0, 3),
-            Planet::Saudor => p!(Some(PlanetTrait::Industrial), None, 2, 2),
+            Planet::Starpoint => p!(Some(PlanetTrait::Hazardous), None, 3, 1, Expansion::Base),
+            Planet::Quann => p!(Some(PlanetTrait::Cultural), None, 2, 1, Expansion::Base),
+            Planet::Qucenn => p!(Some(PlanetTrait::Industrial), None, 1, 2, Expansion::Base),
+            Planet::Rarron => p!(Some(PlanetTrait::Cultural), None, 0, 3, Expansion::Base),
+            Planet::Saudor => p!(Some(PlanetTrait::Industrial), None, 2, 2, Expansion::Base),
             Planet::TarMann => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Biotic),
                 1,
-                1
+                1,
+                Expansion::Base
             ),
-            Planet::TequRan => p!(Some(PlanetTrait::Industrial), None, 2, 0),
-            Planet::Torkan => p!(Some(PlanetTrait::Cultural), None, 0, 3),
+            Planet::TequRan => p!(Some(PlanetTrait::Industrial), None, 2, 0, Expansion::Base),
+            Planet::Torkan => p!(Some(PlanetTrait::Cultural), None, 0, 3, Expansion::Base),
             Planet::Thibah => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Propulsion),
                 1,
-                1
+                1,
+                Expansion::Base
             ),
-            Planet::VefutII => p!(Some(PlanetTrait::Hazardous), None, 2, 2),
+            Planet::VefutII => p!(Some(PlanetTrait::Hazardous), None, 2, 2, Expansion::Base),
             Planet::Wellon => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Cybernetic),
                 1,
-                2
+                2,
+                Expansion::Base
             ),
             Planet::ArchonVail => p!(
                 Some(PlanetTrait::Hazardous),
                 Some(TechCategory::Propulsion),
                 1,
-                3
+                3,
+                Expansion::ProphecyOfKings
             ),
-            Planet::Perimiter => p!(Some(PlanetTrait::Industrial), None, 2, 1),
+            Planet::Perimiter => p!(
+                Some(PlanetTrait::Industrial),
+                None,
+                2,
+                1,
+                Expansion::ProphecyOfKings
+            ),
             Planet::Ang => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Warfare),
                 2,
-                0
+                0,
+                Expansion::ProphecyOfKings
             ),
             Planet::SemLore => p!(
                 Some(PlanetTrait::Cultural),
                 Some(TechCategory::Cybernetic),
                 3,
-                2
+                2,
+                Expansion::ProphecyOfKings
             ),
             Planet::Vorhal => p!(
                 Some(PlanetTrait::Cultural),
                 Some(TechCategory::Biotic),
                 0,
-                2
+                2,
+                Expansion::ProphecyOfKings
             ),
-            Planet::Atlas => p!(Some(PlanetTrait::Hazardous), None, 3, 1),
-            Planet::Primor => p!(Some(PlanetTrait::Cultural), None, 2, 1),
-            Planet::HopesEnd => p!(Some(PlanetTrait::Hazardous), None, 3, 0),
-            Planet::Cormund => p!(Some(PlanetTrait::Hazardous), None, 2, 1),
-            Planet::Everra => p!(Some(PlanetTrait::Cultural), None, 3, 1),
-            Planet::JoelIr => p!(Some(PlanetTrait::Industrial), None, 2, 3),
-            Planet::Accoen => p!(Some(PlanetTrait::Industrial), None, 2, 3),
-            Planet::Kraag => p!(Some(PlanetTrait::Hazardous), None, 2, 1),
-            Planet::Siig => p!(Some(PlanetTrait::Hazardous), None, 0, 2),
-            Planet::Bakal => p!(Some(PlanetTrait::Industrial), None, 3, 2),
-            Planet::AlioPrima => p!(Some(PlanetTrait::Cultural), None, 1, 1),
-            Planet::Lisis => p!(Some(PlanetTrait::Industrial), None, 2, 2),
+            Planet::Atlas => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                3,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Primor => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                2,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::HopesEnd => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                3,
+                0,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Cormund => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                2,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Everra => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                3,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::JoelIr => p!(
+                Some(PlanetTrait::Industrial),
+                None,
+                2,
+                3,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Accoen => p!(
+                Some(PlanetTrait::Industrial),
+                None,
+                2,
+                3,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Kraag => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                2,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Siig => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                0,
+                2,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Bakal => p!(
+                Some(PlanetTrait::Industrial),
+                None,
+                3,
+                2,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::AlioPrima => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                1,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Lisis => p!(
+                Some(PlanetTrait::Industrial),
+                None,
+                2,
+                2,
+                Expansion::ProphecyOfKings
+            ),
             Planet::Velnor => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Warfare),
                 2,
-                1
+                1,
+                Expansion::ProphecyOfKings
             ),
             Planet::Cealdri => p!(
                 Some(PlanetTrait::Cultural),
                 Some(TechCategory::Cybernetic),
                 0,
-                2
+                2,
+                Expansion::ProphecyOfKings
             ),
-            Planet::Xanhact => p!(Some(PlanetTrait::Hazardous), None, 0, 1),
-            Planet::VegaMajor => p!(Some(PlanetTrait::Cultural), None, 2, 1),
+            Planet::Xanhact => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                0,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::VegaMajor => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                2,
+                1,
+                Expansion::ProphecyOfKings
+            ),
             Planet::VegaMinor => p!(
                 Some(PlanetTrait::Cultural),
                 Some(TechCategory::Propulsion),
                 1,
-                2
+                2,
+                Expansion::ProphecyOfKings
             ),
-            Planet::Abaddon => p!(Some(PlanetTrait::Cultural), None, 1, 0),
-            Planet::Ashtroth => p!(Some(PlanetTrait::Hazardous), None, 2, 0),
-            Planet::Loki => p!(Some(PlanetTrait::Cultural), None, 1, 2),
-            Planet::RigelI => p!(Some(PlanetTrait::Hazardous), None, 0, 1),
-            Planet::RigelII => p!(Some(PlanetTrait::Industrial), None, 1, 2),
+            Planet::Abaddon => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                1,
+                0,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Ashtroth => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                2,
+                0,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Loki => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                1,
+                2,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::RigelI => p!(
+                Some(PlanetTrait::Hazardous),
+                None,
+                0,
+                1,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::RigelII => p!(
+                Some(PlanetTrait::Industrial),
+                None,
+                1,
+                2,
+                Expansion::ProphecyOfKings
+            ),
             Planet::RigelIII => p!(
                 Some(PlanetTrait::Industrial),
                 Some(TechCategory::Biotic),
                 1,
-                1
+                1,
+                Expansion::ProphecyOfKings
             ),
-            Planet::Valk => p!(None, None, 2, 0),
-            Planet::Avar => p!(None, None, 1, 1),
-            Planet::Ylir => p!(None, None, 0, 2),
-            Planet::TheDark => p!(None, None, 3, 4),
-            Planet::Ixth => p!(None, None, 3, 5),
-            Planet::Naazir => p!(None, None, 2, 1),
-            Planet::Rokha => p!(None, None, 1, 2),
-            Planet::Arcturus => p!(None, None, 4, 4),
-            Planet::Elysium => p!(None, None, 4, 1),
-            Planet::Acheron => p!(None, None, 4, 0),
-            Planet::Mallice => p!(Some(PlanetTrait::Cultural), None, 0, 3),
-            Planet::Mirage => p!(Some(PlanetTrait::Cultural), None, 1, 2),
+            Planet::Valk => p!(None, None, 2, 0, Expansion::ProphecyOfKings),
+            Planet::Avar => p!(None, None, 1, 1, Expansion::ProphecyOfKings),
+            Planet::Ylir => p!(None, None, 0, 2, Expansion::ProphecyOfKings),
+            Planet::TheDark => p!(None, None, 3, 4, Expansion::ProphecyOfKings),
+            Planet::Ixth => p!(None, None, 3, 5, Expansion::ProphecyOfKings),
+            Planet::Naazir => p!(None, None, 2, 1, Expansion::ProphecyOfKings),
+            Planet::Rokha => p!(None, None, 1, 2, Expansion::ProphecyOfKings),
+            Planet::Arcturus => p!(None, None, 4, 4, Expansion::ProphecyOfKings),
+            Planet::Elysium => p!(None, None, 4, 1, Expansion::ProphecyOfKings),
+            Planet::Acheron => p!(None, None, 4, 0, Expansion::ProphecyOfKings),
+            Planet::Mallice => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                0,
+                3,
+                Expansion::ProphecyOfKings
+            ),
+            Planet::Mirage => p!(
+                Some(PlanetTrait::Cultural),
+                None,
+                1,
+                2,
+                Expansion::ProphecyOfKings
+            ),
         }
     }
 }

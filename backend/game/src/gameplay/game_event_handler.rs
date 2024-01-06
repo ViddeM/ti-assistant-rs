@@ -55,6 +55,7 @@ pub fn update_game_state(
 
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;
+            game_state.assert_expansion(&player.faction.expansion())?;
             ensure!(
                 game_state.players.len() < game_state.max_players(),
                 "can't have more than {} players",
@@ -275,6 +276,7 @@ pub fn update_game_state(
         Event::TacticalActionTakePlanet { player, planet } => {
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
+            game_state.assert_expansion(&System::for_planet(&planet)?.expansion)?;
             ensure!(
                 game_state.action_progress.is_some(),
                 "Must have action progress to perform take planet action."

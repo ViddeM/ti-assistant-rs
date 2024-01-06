@@ -1022,7 +1022,7 @@
     {
       "TacticalActionTakePlanet": {
         "player": "Bill",
-        "planet": "Bakal"
+        "planet": "Arnor"
       }
     },
     "2023-12-29T12:06:08.615933Z"
@@ -1031,7 +1031,7 @@
     {
       "TacticalActionTakePlanet": {
         "player": "Bill",
-        "planet": "AlioPrima"
+        "planet": "Lor"
       }
     },
     "2023-12-29T12:06:09.283331Z"
@@ -1056,7 +1056,7 @@
     {
       "TacticalActionTakePlanet": {
         "player": "Bender",
-        "planet": "Elysium"
+        "planet": "Lodor"
       }
     },
     "2023-12-29T12:06:13.947975Z"

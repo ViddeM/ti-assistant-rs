@@ -16,7 +16,9 @@ export const CreationPhase = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const playerCount = Object.keys(gameState.players).length;
-  const allowedNumberOfPlayers = gameOptions.playerCounts.includes(playerCount);
+  const allowedNumberOfPlayers =
+    playerCount >= gameOptions.minPlayers &&
+    playerCount <= gameOptions.maxPlayers;
 
   const availableFactions = getAvailableFactions(
     gameOptions.factions,
@@ -41,8 +43,7 @@ export const CreationPhase = () => {
       {Object.entries(gameState.players).map(([playerId, player]) => (
         <DisplayPlayer key={playerId} player={player} />
       ))}
-      {playerCount <
-        (gameState.gameSettings.expansion.prophecyOfKings ? 8 : 6) && (
+      {playerCount < gameOptions.maxPlayers && (
         <AddPlayer
           colors={gameOptions.colors}
           takenColors={takenColors}
