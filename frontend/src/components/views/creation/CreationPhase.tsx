@@ -41,7 +41,8 @@ export const CreationPhase = () => {
       {Object.entries(gameState.players).map(([playerId, player]) => (
         <DisplayPlayer key={playerId} player={player} />
       ))}
-      {playerCount < 8 && (
+      {playerCount <
+        (gameState.gameSettings.expansion.prophecyOfKings ? 8 : 6) && (
         <AddPlayer
           colors={gameOptions.colors}
           takenColors={takenColors}
