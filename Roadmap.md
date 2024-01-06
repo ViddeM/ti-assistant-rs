@@ -13,13 +13,13 @@
 ## Gameplay
  - ✅ Track round number
  - 🍑🚱 Undo
- - ❌ Update setup to do all required tasks
-   - ❌ Choose speaker at start of game
-   - ❌ Reveal initial objectives
+ - ✅ Update setup to do all required tasks
+   - ✅ Choose speaker at start of game
+   - ✅ Reveal initial objectives
    - ❌ Faction specific setups for planets & techs
-     - ❌ planets
+     - ✅ planets
      - ❌ agents
-     - ❌ techs
+     - ✅ techs
  - ✅ Planets
    - ✅ Resource Tracking
    - ❌ Planet attachments (PoK)
@@ -51,36 +51,36 @@
  - ❌ Agenda Phase (see below)
  - ❌ Relics
  - ❌ Separation between base/PoK/codexes
-   - PoK
-     - Exploration (frontier cards), relics, relic fragments
-     - Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
-     - Leaders (agents, commanders, heroes)
-     - Mechs (probably not relevant?)
-     - Increases player limit to 8
-     - 31 new systems
-     - 8 new techs (psycoarch, bio stims, dark energy tap, sling ray, scanlink drone network, predictive intelligence, ai dev algos, self assembly)
-     - alliances ( use other players commanders)
-     - 40 new objectives
-     - 20 new action cards
-     - 13 agendas removed
-     - 13 new agendas
-     - updated diplo strat card
-     - updated construction strat card
-   - Codex I
-     - updated techs: (magmus reactor, wormhole generator, yin spinner, magan defence grid, x-89)
-     - promissary notes (stymie, war funding, cybernetic enhancements, acquiessence, greyfire)
-     - new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
-     - updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
-   - Codex II
-     - Reference cards (not relevant)
-     - 3 new relics (PoK), (dynamis core, JR-XS455-O, nano forge)
-     - pax nomina (game mode with teams)
-   - Codex III
-     - updated leaders: (naalu collective agent, commander, xxcha kingdom hero, yin brotherhood agent, commander, hero)
-     - updated mech naalu collective
-     - updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
-     - 6 new frontier cards
-     - council keleres faction
+   - ❌ PoK
+     - ❌ Exploration (frontier cards), relics, relic fragments
+     - ❌ Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
+     - ❌ Leaders (agents, commanders, heroes)
+     - ❌ Mechs (probably not relevant?)
+     - ❌ Increases player limit to 8
+     - ❌ 31 new systems
+     - ❌ 8 new techs (psycoarch, bio stims, dark energy tap, sling ray, scanlink drone network, predictive intelligence, ai dev algos, self assembly)
+     - ❌ alliances ( use other players commanders)
+     - ❌ 40 new objectives
+     - ❌ 20 new action cards
+     - ❌ 13 agendas removed
+     - ❌ 13 new agendas
+     - ❌ updated diplo strat card
+     - ❌ updated construction strat card
+   - ❌ Codex I
+     - ❌ updated techs: (magmus reactor, wormhole generator, yin spinner, magan defence grid, x-89)
+     - ❌ promissary notes (stymie, war funding, cybernetic enhancements, acquiessence, greyfire)
+     - ❌ new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
+     - ❌ updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
+   - ❌ Codex II
+     - ❌ Reference cards (not relevant)
+     - ❌ 3 new relics (PoK), (dynamis core, JR-XS455-O, nano forge)
+     - ❌ pax nomina (game mode with teams)
+   - ❌ Codex III
+     - ❌ updated leaders: (naalu collective agent, commander, xxcha kingdom hero, yin brotherhood agent, commander, hero)
+     - ❌ updated mech naalu collective
+     - ❌ updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
+     - ❌ 6 new frontier cards
+     - ❌ council keleres faction
  - ✅ Strategy cards (speaker handling etc)
  - ❌ Real names for things (currently we only use the ID for e.g objectives)
  - ❌ Status phase
