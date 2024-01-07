@@ -18,6 +18,7 @@ import { TechViewMode } from "../tech_view_mode/TechViewMode";
 import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
 import { LawsViewMode } from "../laws_view_mode/LawsViewMode";
 import { GameContext, useGameContext } from "@/hooks/GameContext";
+import Link from "next/link";
 
 const NEW_GAME_ID = "new";
 
@@ -32,6 +33,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [currentViewMode, setCurrentViewMode] = useState<View>("Game");
+  const [notFound, setNotFound] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -45,6 +47,11 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
     if (lastMessage !== null) {
       console.log("MESSAGE", lastMessage);
       const data = JSON.parse(lastMessage.data);
+
+      const notFoundGameId = data["NotFound"];
+      if (notFoundGameId) {
+        setNotFound(notFoundGameId as string);
+      }
 
       const joinedGameId = data["JoinedGame"];
       if (joinedGameId && gameId !== joinedGameId) {
@@ -61,7 +68,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         setGameState(gs as GameState);
       }
     }
-  }, [lastMessage, gameOptions, gameId, router]);
+  }, [lastMessage, gameOptions, gameId, router, setNotFound]);
 
   const sendMsg = (data: any) => sendMessage(JSON.stringify(data));
   const sendEvent = (data: any) => sendMsg({ Event: data });
@@ -81,6 +88,12 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
     }
   }, [gameId, isNewGame, sendMessage]);
 
+  useEffect(() => {
+    if (gameId.length !== 8) {
+      setNotFound(gameId);
+    }
+  }, [gameId, setNotFound]);
+
   if (isNewGame) {
     return (
       <CreateGameView
@@ -90,6 +103,16 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           })
         }
       />
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="card">
+        Game {notFound} does not exist.
+        <br />
+        <Link href="/">Back</Link>
+      </div>
     );
   }
 
