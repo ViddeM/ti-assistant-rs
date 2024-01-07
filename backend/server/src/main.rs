@@ -190,9 +190,14 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
                     (id, Arc::clone(lobby))
                 } else if let Some(db_pool) = &db_pool {
                     log::info!("loading game {id:?} from db");
-                    let _game = queries::get_game_by_id(db_pool, &id)
+
+                    if let Err(e) = queries::get_game_by_id(db_pool, &id)
                         .await
-                        .wrap_err_with(|| format!("Failed to retrieve game {id:?} from DB"))?;
+                        .wrap_err_with(|| format!("Failed to retrieve game {id:?} from DB"))
+                    {
+                        ws_client.send_message(&WsMessageOut::not_found(id)).await?;
+                        return Err(e);
+                    }
 
                     let events = queries::get_events_for_game(db_pool, &id)
                         .await
@@ -211,6 +216,7 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
 
                     (id, lobby)
                 } else {
+                    ws_client.send_message(&WsMessageOut::not_found(id)).await?;
                     bail!("no lobby with id {id:?}");
                 }
             }
