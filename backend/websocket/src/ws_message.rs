@@ -63,6 +63,9 @@ pub enum WsMessageOut {
     ///
     /// Will be followed by a [WsMessageOut::GameState] message with the latest state of the game.
     JoinedGame(GameId),
+
+    /// Response of [WsMessageIn::JoinGame] when the game doesn't exist.
+    NotFound(GameId),
 }
 
 impl WsMessageOut {
@@ -76,8 +79,13 @@ impl WsMessageOut {
         Self::GameState(state)
     }
 
-    /// Returns a new [WsMessageOut::JoinGame] event from the provided game_id.
+    /// Returns a new [WsMessageOut::JoinedGame] event from the provided game_id.
     pub fn join_game(game_id: GameId) -> Self {
         Self::JoinedGame(game_id)
+    }
+
+    /// Returns a new [WsMessageOut::NotFound] event from the provided game_id.
+    pub fn not_found(game_id: GameId) -> Self {
+        Self::NotFound(game_id)
     }
 }
