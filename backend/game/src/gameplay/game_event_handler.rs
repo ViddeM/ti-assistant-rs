@@ -327,8 +327,7 @@ pub fn update_game_state(
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
             game_state.action_progress = None;
-            game_state.phase = Phase::Action;
-            game_state.advance_turn(timestamp)?;
+            game_state.phase = Phase::EndActionTurn;
         }
         Event::StrategicActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
@@ -480,9 +479,8 @@ pub fn update_game_state(
                 );
             }
 
-            game_state.phase = Phase::Action;
             game_state.action_progress = None;
-            game_state.advance_turn(timestamp)?;
+            game_state.phase = Phase::EndActionTurn;
         }
         Event::ActionCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
@@ -571,6 +569,18 @@ pub fn update_game_state(
             }
 
             game_state.action_progress = None;
+            game_state.phase = Phase::EndActionTurn;
+        }
+        Event::TakeAnotherTurn { player } => {
+            game_state.assert_phase(Phase::EndActionTurn)?;
+            game_state.assert_player_turn(&player)?;
+
+            game_state.phase = Phase::Action;
+        }
+        Event::EndTurn { player } => {
+            game_state.assert_phase(Phase::EndActionTurn)?;
+            game_state.assert_player_turn(&player)?;
+
             game_state.phase = Phase::Action;
             game_state.advance_turn(timestamp)?;
         }
@@ -979,6 +989,7 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::Action
         | Phase::StrategicAction
         | Phase::TacticalAction
+        | Phase::EndActionTurn
         | Phase::ActionCardAction => true,
 
         Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => false,

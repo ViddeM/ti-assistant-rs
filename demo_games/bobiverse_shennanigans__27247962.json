@@ -200,6 +200,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Ryker"
+      }
+    },
+    "2023-12-29T11:59:47.353506Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Bob",
         "card": "Politics"
@@ -262,6 +270,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Bob"
+      }
+    },
+    "2023-12-29T12:00:00.575050Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Bill",
         "card": "Construction"
@@ -307,6 +323,14 @@
   ],
   [
     "StrategicActionCommit",
+    "2023-12-29T12:00:05.629138Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Bill"
+      }
+    },
     "2023-12-29T12:00:05.629138Z"
   ],
   [
@@ -357,6 +381,14 @@
   [
     "StrategicActionCommit",
     "2023-12-29T12:00:10.316629Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Bender"
+      }
+    },
+    "2023-12-29T12:00:10.416629Z"
   ],
   [
     {
@@ -427,6 +459,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:00:32.797527Z"
+  ],
+  [
+    {
       "RevealExtraPublicObjective": {
         "objective": "ImproveInfrastructure"
       }
@@ -458,6 +498,14 @@
       }
     },
     "2023-12-29T12:00:51.101661Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Ryker"
+      }
+    },
+    "2023-12-29T12:00:52.101661Z"
   ],
   [
     {
@@ -701,6 +749,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Bender"
+      }
+    },
+    "2023-12-29T12:05:10.000001Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Hugh",
         "card": "Diplomacy"
@@ -747,6 +803,14 @@
   [
     "StrategicActionCommit",
     "2023-12-29T12:05:13.573015Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Hugh"
+      }
+    },
+    "2023-12-29T12:05:13.583015Z"
   ],
   [
     {
@@ -812,6 +876,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Bob"
+      }
+    },
+    "2023-12-29T12:05:19.387911Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Ryker",
         "card": "Construction"
@@ -858,6 +930,14 @@
   [
     "StrategicActionCommit",
     "2023-12-29T12:05:23.607960Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Ryker"
+      }
+    },
+    "2023-12-29T12:05:23.807960Z"
   ],
   [
     {
@@ -910,6 +990,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Bill"
+      }
+    },    
+    "2023-12-29T12:05:36.953105Z"
+  ],
+  [
+    {
       "TacticalActionBegin": {
         "player": "Bender"
       }
@@ -932,6 +1020,14 @@
       }
     },
     "2023-12-29T12:05:48.905816Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Bender"
+      }
+    },    
+    "2023-12-29T12:05:49.905816Z"
   ],
   [
     {
@@ -969,6 +1065,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Hugh"
+      }
+    },    
+    "2023-12-29T12:05:54.825818Z"
+  ],
+  [
+    {
       "TacticalActionBegin": {
         "player": "Bob"
       }
@@ -1003,6 +1107,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Bob"
+      }
+    },    
+    "2023-12-29T12:05:59.595241Z"
+  ],
+  [
+    {
       "TacticalActionBegin": {
         "player": "Ryker"
       }
@@ -1025,6 +1137,14 @@
       }
     },
     "2023-12-29T12:06:04.570963Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Ryker"
+      }
+    },    
+    "2023-12-29T12:06:04.670963Z"
   ],
   [
     {
@@ -1062,6 +1182,14 @@
   ],
   [
     {
+      "EndTurn": {
+          "player": "Bill"
+      }
+    },    
+    "2023-12-29T12:06:09.945643Z"
+  ],
+  [
+    {
       "TacticalActionBegin": {
         "player": "Bender"
       }
@@ -1084,6 +1212,14 @@
       }
     },
     "2023-12-29T12:06:14.538928Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Bender"
+      }
+    },    
+    "2023-12-29T12:06:15.138928Z"
   ],
   [
     {
@@ -1118,6 +1254,14 @@
       }
     },
     "2023-12-29T12:06:19.896382Z"
+  ],
+  [
+    {
+      "EndTurn": {
+          "player": "Hugh"
+      }
+    },    
+    "2023-12-29T12:06:20.896382Z"
   ],
   [
     {

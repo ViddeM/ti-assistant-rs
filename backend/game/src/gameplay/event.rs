@@ -145,6 +145,18 @@ pub enum Event {
         data: Option<ActionCardInfo>,
     },
 
+    /// End turn
+    EndTurn {
+        /// The player that ends their turn.
+        player: PlayerId,
+    },
+
+    /// Take another turn
+    TakeAnotherTurn {
+        /// The player that will take another turn.
+        player: PlayerId,
+    },
+
     /// A player passes their turn.
     PassAction {
         /// The player that passed.

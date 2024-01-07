@@ -100,10 +100,7 @@
     {
       "SetupPlayerTechs": {
         "player": "Dobbler",
-        "technologies": [
-          "NeuralMotivator",
-          "SarweenTools"
-        ]
+        "technologies": ["NeuralMotivator", "SarweenTools"]
       }
     },
     "2023-12-29T15:51:11.808015Z"
@@ -230,6 +227,14 @@
   ["StrategicActionCommit", "2023-12-30T15:51:39.063331Z"],
   [
     {
+      "EndTurn": {
+        "player": "Dobbler"
+      }
+    },
+    "2023-12-30T15:51:39.063331Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Gustav",
         "card": "Diplomacy"
@@ -283,6 +288,14 @@
     "2023-12-30T15:51:42.407875Z"
   ],
   ["StrategicActionCommit", "2023-12-30T15:51:42.850231Z"],
+  [
+    {
+      "EndTurn": {
+        "player": "Gustav"
+      }
+    },
+    "2023-12-30T15:51:42.850231Z"
+  ],
   [
     {
       "StrategicActionBegin": {
@@ -353,6 +366,14 @@
   ["StrategicActionCommit", "2023-12-30T15:51:51.792024Z"],
   [
     {
+      "EndTurn": {
+        "player": "Karl"
+      }
+    },
+    "2023-12-30T15:51:51.792024Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Pelle",
         "card": "Construction"
@@ -408,6 +429,14 @@
   ["StrategicActionCommit", "2023-12-30T15:51:56.267826Z"],
   [
     {
+      "EndTurn": {
+        "player": "Pelle"
+      }
+    },
+    "2023-12-30T15:51:56.267826Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Lars",
         "card": "Warfare"
@@ -460,7 +489,18 @@
     },
     "2023-12-30T15:52:00.153249Z"
   ],
-  ["StrategicActionCommit", "2023-12-30T15:52:00.760813Z"],
+  [
+    "StrategicActionCommit", 
+    "2023-12-30T15:52:00.760813Z"
+  ],
+  [
+    {
+      "EndTurn": {
+        "player": "Lars"
+      }
+    },
+    "2023-12-30T15:52:00.760813Z"
+  ],
   [
     {
       "StrategicActionBegin": {
@@ -530,6 +570,14 @@
     "2023-12-30T15:52:10.393673Z"
   ],
   ["StrategicActionCommit", "2023-12-30T15:52:11.515141Z"],
+  [
+    {
+      "EndTurn": {
+        "player": "Dhamer"
+      }
+    },
+    "2023-12-30T15:52:11.515141Z"
+  ],
   [
     {
       "PassAction": {
@@ -807,6 +855,14 @@
   ["StrategicActionCommit", "2023-12-30T15:52:45.295817Z"],
   [
     {
+      "EndTurn": {
+        "player": "Lars"
+      }
+    },
+    "2023-12-30T15:52:45.295817Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Dhamer",
         "card": "Diplomacy"
@@ -860,6 +916,14 @@
     "2023-12-30T15:52:47.838099Z"
   ],
   ["StrategicActionCommit", "2023-12-30T15:52:48.213142Z"],
+  [
+    {
+      "EndTurn": {
+        "player": "Dhamer"
+      }
+    },
+    "2023-12-30T15:52:48.213142Z"
+  ],
   [
     {
       "StrategicActionBegin": {
@@ -930,6 +994,14 @@
   ["StrategicActionCommit", "2023-12-30T15:53:02.933986Z"],
   [
     {
+      "EndTurn": {
+        "player": "Dobbler"
+      }
+    },
+    "2023-12-30T15:53:02.933986Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Gustav",
         "card": "Construction"
@@ -983,6 +1055,14 @@
     "2023-12-30T15:53:05.296621Z"
   ],
   ["StrategicActionCommit", "2023-12-30T15:53:05.596825Z"],
+  [
+    {
+      "EndTurn": {
+        "player": "Gustav"
+      }
+    },
+    "2023-12-30T15:53:05.596825Z"
+  ],
   [
     {
       "StrategicActionBegin": {
@@ -1040,6 +1120,14 @@
   ["StrategicActionCommit", "2023-12-30T15:53:09.939229Z"],
   [
     {
+      "EndTurn": {
+        "player": "Karl"
+      }
+    },
+    "2023-12-30T15:53:09.939229Z"
+  ],
+  [
+    {
       "StrategicActionBegin": {
         "player": "Pelle",
         "card": "Warfare"
@@ -1095,6 +1183,14 @@
   ["StrategicActionCommit", "2023-12-30T15:53:14.500864Z"],
   [
     {
+      "EndTurn": {
+        "player": "Pelle"
+      }
+    },
+    "2023-12-30T15:53:14.500864Z"
+  ],
+  [
+    {
       "TacticalActionBegin": {
         "player": "Lars"
       }
@@ -1122,6 +1218,14 @@
   [
     {
       "TacticalActionCommit": {
+        "player": "Lars"
+      }
+    },
+    "2023-12-30T15:53:19.398772Z"
+  ],
+  [
+    {
+      "EndTurn": {
         "player": "Lars"
       }
     },
@@ -1163,6 +1267,14 @@
   ],
   [
     {
+      "EndTurn": {
+        "player": "Dhamer"
+      }
+    },
+    "2023-12-30T15:53:25.526120Z"
+  ],
+  [
+    {
       "TacticalActionBegin": {
         "player": "Dobbler"
       }
@@ -1197,6 +1309,14 @@
   ],
   [
     {
+      "EndTurn": {
+        "player": "Dobbler"
+      }
+    },
+    "2023-12-30T15:53:30.588268Z"
+  ],
+  [
+    {
       "TacticalActionBegin": {
         "player": "Gustav"
       }
@@ -1215,6 +1335,14 @@
   [
     {
       "TacticalActionCommit": {
+        "player": "Gustav"
+      }
+    },
+    "2023-12-30T15:53:34.758775Z"
+  ],
+  [
+    {
+      "EndTurn": {
         "player": "Gustav"
       }
     },
