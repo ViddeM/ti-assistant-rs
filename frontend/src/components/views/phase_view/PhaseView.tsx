@@ -9,9 +9,10 @@ import { ActionCardView } from "../action_card_view/ActionCardView";
 import { AgendaPhaseView } from "../agenda_phase_view/AgendaPhaseView";
 import { SetupPhase } from "../setup/Setup";
 import { useGameContext } from "@/hooks/GameContext";
+import { EndActionPhaseView } from "../end_action_phase_view/EndActionPhaseView";
 
 export const PhaseView = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, sendEvent } = useGameContext();
 
   switch (gameState.phase) {
     case "Creation":
@@ -51,6 +52,8 @@ export const PhaseView = () => {
       return <TacticalView />;
     case "ActionCardAction":
       return <ActionCardView />;
+    case "EndActionTurn":
+      return <EndActionPhaseView />;
     case "Status":
       return <StatusPhaseView />;
     case "Agenda":
