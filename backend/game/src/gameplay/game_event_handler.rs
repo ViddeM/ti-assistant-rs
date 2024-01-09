@@ -364,13 +364,12 @@ pub fn update_game_state(
                     );
                 };
 
-                ensure!(
-                    tactical.taken_planets.contains_key(&planet),
-                    "Can only attach attachment to planet taken this turn"
-                );
+                let Some(taken_from) = tactical.taken_planets.get(&planet) else {
+                    bail!("Can only attach attachment to planet taken this turn")
+                };
 
                 ensure!(
-                    tactical.taken_planets.get(&planet).is_none(),
+                    taken_from.is_none(),
                     "Cannot explore planet that was taken from another player"
                 );
 

@@ -84,7 +84,7 @@ export type StrategicSecondaryProgress =
 export interface TacticalProgress {
   activatedSystem: string | null;
   takenPlanets: { [player: string]: string | null };
-  planetAttachments: { [player: string]: string };
+  planetAttachments: { [planet: string]: string };
 }
 
 export interface Player {

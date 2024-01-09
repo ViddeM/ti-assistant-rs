@@ -11,8 +11,10 @@ export const TacticalView = () => {
   const currentPlayerPlanets =
     gameState.players[gameState.currentPlayer!!].planets;
 
-  const activatedSystem = gameState.actionProgress?.Tactical?.activatedSystem;
-  const takenPlanets = gameState.actionProgress?.Tactical?.takenPlanets!!;
+  const tactical = gameState.actionProgress?.Tactical!!;
+  const activatedSystem = tactical.activatedSystem;
+  const takenPlanets = tactical.takenPlanets;
+  const attachments = tactical.planetAttachments;
 
   const availablePlanetsInSystem = gameOptions.systems
     .filter((s) => s.id === activatedSystem)
@@ -37,22 +39,32 @@ export const TacticalView = () => {
       <h2>Tactical</h2>
       {Object.keys(takenPlanets).length > 0 ? (
         <div className={styles.column}>
-          <div>
-            {Object.keys(takenPlanets).map((p) => (
-              <p key={p}>{p}</p>
-            ))}
-          </div>
-          {availablePlanetsInSystem.length > 0 && (
-            <fieldset>
-              <legend>Take another planet</legend>
-              <div className={styles.selectAnotherPlanetContainer}>
-                {availablePlanetsInSystem.map((p) => (
-                  <Button key={p} onClick={() => takePlanet(p)}>
-                    {p}
-                  </Button>
-                ))}
+          {Object.keys(takenPlanets).map((p) => (
+            <fieldset key={p}>
+              <legend>{p}</legend>
+
+              <div className={styles.column}>
+                <SelectPlanetAttachment
+                  planet={p}
+                  attachment={attachments[p] ?? null}
+                  previousOwner={takenPlanets[p]}
+                />
               </div>
             </fieldset>
+          ))}
+          {availablePlanetsInSystem.length > 0 && (
+            <>
+              <fieldset>
+                <legend>Take another planet</legend>
+                <div className={styles.selectAnotherPlanetContainer}>
+                  {availablePlanetsInSystem.map((p) => (
+                    <Button key={p} onClick={() => takePlanet(p)}>
+                      {p}
+                    </Button>
+                  ))}
+                </div>
+              </fieldset>
+            </>
           )}
         </div>
       ) : (
@@ -97,5 +109,66 @@ export const TacticalView = () => {
         End Tactical
       </Button>
     </div>
+  );
+};
+
+interface SelectPlanetAttachmentProps {
+  planet: string;
+  attachment: string | null;
+  previousOwner: string | null;
+}
+
+const SelectPlanetAttachment = ({
+  planet,
+  attachment,
+  previousOwner,
+}: SelectPlanetAttachmentProps) => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const [selectedAttachment, setSelectedAttachment] = useState<string>("");
+
+  const planetInfo = gameOptions.planetInfos[planet];
+
+  if (previousOwner !== null) {
+    return <p>Taken from {gameState.players[previousOwner].name}</p>;
+  }
+
+  if (attachment !== null) {
+    return <p>{gameOptions.planetAttachments[attachment].name}</p>;
+  }
+
+  return (
+    <>
+      <Dropdown
+        value={selectedAttachment}
+        onChange={(e) => setSelectedAttachment(e.target.value)}
+      >
+        <option value="">--Select attachment--</option>
+        {Object.keys(gameOptions.planetAttachments)
+          .filter(
+            (a) =>
+              gameOptions.planetAttachments[a].planetTrait ===
+              planetInfo.planetTrait
+          )
+          .map((a) => (
+            <option key={a} value={a}>
+              {gameOptions.planetAttachments[a].name}
+            </option>
+          ))}
+      </Dropdown>
+      <Button
+        className={"marginTop"}
+        onClick={() =>
+          sendEvent({
+            TacticalActionAttachPlanetAttachment: {
+              player: gameState.currentPlayer,
+              planet: planet,
+              attachment: selectedAttachment,
+            },
+          })
+        }
+      >
+        Attach
+      </Button>
+    </>
   );
 };

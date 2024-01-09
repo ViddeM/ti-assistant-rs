@@ -5,7 +5,7 @@ use crate::data::common::expansions::Expansion;
 
 use super::{
     planet::{PlanetInfo, PlanetTrait},
-    tech::{self, TechCategory},
+    tech::TechCategory,
 };
 
 /// A planet attachment.
