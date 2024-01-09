@@ -10,6 +10,7 @@ use strum::IntoEnumIterator;
 use crate::data::components::{
     agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
     planet::{Planet, PlanetTrait},
+    planet_attachment::PlanetAttachment,
     strategy_card::StrategyCard,
 };
 
@@ -104,16 +105,22 @@ impl VoteState {
         let info = agenda.info();
 
         // list eligible planets for the vote, given the provided trait filter
-        let planets = |trait_filter: fn(Option<PlanetTrait>) -> bool| {
+        let planets = |trait_filter: fn(Vec<PlanetTrait>) -> bool| {
             let eligible_planets: Vec<_> = Planet::iter()
-                .filter(|planet| trait_filter(planet.info().planet_trait))
-                // planet must be owned by a player
-                .filter(|planet| {
-                    game.players
-                        .values()
-                        .any(|player| player.planets.contains(planet))
+                // Filter to planets that are held by a player & map to a tuple of the planet, planet attachments.
+                .filter_map(|p| {
+                    game.players.values().fold(None, |acc, player| {
+                        if player.planets.contains_key(&p) {
+                            return Some((p.clone(), &player.planets[&p]));
+                        }
+                        acc
+                    })
                 })
-                .map(AgendaElect::Planet)
+                // Filter to only include planets with the relevant traits.
+                .filter(|(planet, attachments)| {
+                    trait_filter(get_planet_traits(planet, attachments))
+                })
+                .map(|(p, _)| AgendaElect::Planet(p))
                 .collect();
 
             if eligible_planets.is_empty() {
@@ -154,10 +161,10 @@ impl VoteState {
                 eligible_objectives
             }
             AgendaElectKind::Planet => planets(|_| true)?,
-            AgendaElectKind::PlanetWithTrait => planets(|t| t.is_some())?,
-            AgendaElectKind::CulturalPlanet => planets(|t| t == Some(PlanetTrait::Cultural))?,
-            AgendaElectKind::HazardousPlanet => planets(|t| t == Some(PlanetTrait::Hazardous))?,
-            AgendaElectKind::IndustrialPlanet => planets(|t| t == Some(PlanetTrait::Industrial))?,
+            AgendaElectKind::PlanetWithTrait => planets(|t| !t.is_empty())?,
+            AgendaElectKind::CulturalPlanet => planets(|t| t.contains(&PlanetTrait::Cultural))?,
+            AgendaElectKind::HazardousPlanet => planets(|t| t.contains(&PlanetTrait::Hazardous))?,
+            AgendaElectKind::IndustrialPlanet => planets(|t| t.contains(&PlanetTrait::Industrial))?,
 
             // TODO: implement this after we implement law tracking
             AgendaElectKind::Law => bail!("no laws in play"),
@@ -221,4 +228,19 @@ impl Vote {
     pub fn new(votes: u16, outcome: AgendaElect) -> Self {
         Self { votes, outcome }
     }
+}
+
+fn get_planet_traits(planet: &Planet, attachments: &Vec<PlanetAttachment>) -> Vec<PlanetTrait> {
+    let mut ts = vec![];
+
+    if let Some(t) = planet.info().planet_trait {
+        ts.push(t);
+    }
+
+    attachments
+        .iter()
+        .flat_map(|attachment| attachment.info().added_planet_traits)
+        .for_each(|t| ts.push(t));
+
+    ts
 }

@@ -309,10 +309,13 @@ function getPlayersFromGame(
             isActive: isActive,
           };
         }),
-      planets: p.planets.map((p) => {
+      planets: Object.keys(p.planets).map((planet) => {
         return {
-          planet: p,
-          info: gameOptions.planetInfos[p],
+          planet: planet,
+          info: gameOptions.planetInfos[planet],
+          attachments: p.planets[planet].map(
+            (attachment) => gameOptions.planetAttachments[attachment]
+          ),
         };
       }),
       technologies: p.technologies.map((t) => {

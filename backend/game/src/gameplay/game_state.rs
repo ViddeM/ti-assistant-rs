@@ -15,6 +15,7 @@ use crate::data::{
         objectives::Objective,
         phase::Phase,
         planet::Planet,
+        planet_attachment::PlanetAttachment,
         strategy_card::StrategyCard,
         system::SystemId,
         tech::Technology,
@@ -181,8 +182,11 @@ pub enum StrategicSecondaryProgress {
 pub struct TacticalProgress {
     /// What system was activated, if any.
     pub activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
-    /// Which planets have been taken this far.
-    pub taken_planets: Vec<Planet>,
+    /// Which planets have been taken this far and the player who owned them previously (if any).
+    pub taken_planets: HashMap<Planet, Option<PlayerId>>,
+    /// What planet attachments have been selected for the taken planets.
+    /// NOTE: Does not include attachments kept when taken from another player.
+    pub planet_attachments: HashMap<Planet, PlanetAttachment>,
 }
 
 /// The progress of an action card being played.

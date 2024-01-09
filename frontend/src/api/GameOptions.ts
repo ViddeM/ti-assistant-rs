@@ -10,6 +10,7 @@ export interface GameOptions {
   colors: Color[];
   systems: System[];
   planetInfos: { [key: string]: PlanetInfo };
+  planetAttachments: { [key: string]: PlanetAttachmentInfo };
   objectives: { [key: string]: ObjectiveInfo };
   technologies: { [key: string]: TechInfo };
   actionCards: { [key: string]: ActionCardInfo };
@@ -18,9 +19,19 @@ export interface GameOptions {
 
 export interface PlanetInfo {
   planetTrait: PlanetTrait | null;
-  techSpeciality: TechSpeciality | null;
+  techSpecialty: TechSpeciality | null;
   resources: number;
   influence: number;
+}
+
+export interface PlanetAttachmentInfo {
+  name: String;
+  planetTrait: PlanetTrait | null;
+  resources: number;
+  influence: number;
+  techSpecialty: TechCategory | null;
+  addedPlanetTraits: PlanetTrait[];
+  makeLegendary: boolean;
 }
 
 export interface TechInfo {

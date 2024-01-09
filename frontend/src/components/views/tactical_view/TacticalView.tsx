@@ -18,7 +18,9 @@ export const TacticalView = () => {
     .filter((s) => s.id === activatedSystem)
     .flatMap((s) => s.planets)
     .filter(
-      (p) => !currentPlayerPlanets.includes(p) && !takenPlanets.includes(p)
+      (p) =>
+        !Object.keys(currentPlayerPlanets).includes(p) &&
+        !Object.keys(takenPlanets).includes(p)
     );
 
   const takePlanet = (planet: string) => {
@@ -33,10 +35,10 @@ export const TacticalView = () => {
   return (
     <div className={`${styles.tacticalContainer} card`}>
       <h2>Tactical</h2>
-      {takenPlanets?.length > 0 ? (
+      {Object.keys(takenPlanets).length > 0 ? (
         <div className={styles.column}>
           <div>
-            {takenPlanets.map((p) => (
+            {Object.keys(takenPlanets).map((p) => (
               <p key={p}>{p}</p>
             ))}
           </div>
@@ -65,7 +67,9 @@ export const TacticalView = () => {
             <option value={""}>--select a planet--</option>
             {gameOptions.systems
               .flatMap((s) =>
-                s.planets.filter((p) => !currentPlayerPlanets.includes(p))
+                s.planets.filter(
+                  (p) => !Object.keys(currentPlayerPlanets).includes(p)
+                )
               )
               .map((p) => (
                 <option key={p} value={p}>

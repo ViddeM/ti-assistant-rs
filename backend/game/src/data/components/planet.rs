@@ -21,23 +21,36 @@ pub struct PlanetInfo {
     /// Which, if any, planet trait the planet has.
     pub planet_trait: Option<PlanetTrait>,
     /// Which, if any, technology bonus the planet has.
-    pub tech_speciality: Option<TechCategory>,
+    pub tech_specialty: Option<TechCategory>,
     /// How many resources the planet has.
     pub resources: u32,
     /// How much influence the planet provides.
     pub influence: u32,
     /// Which expansion the planet belongs to.
     pub expansion: Expansion,
+    /// Weather the planet is legendary or not.
+    pub is_legendary: bool,
 }
 
 macro_rules! p {
     ($trait:expr, $tech_spec:expr, $resources: literal, $influence: literal, $expansion:expr) => {
         PlanetInfo {
             planet_trait: $trait,
-            tech_speciality: $tech_spec,
+            tech_specialty: $tech_spec,
             resources: $resources,
             influence: $influence,
             expansion: $expansion,
+            is_legendary: false,
+        }
+    };
+    ($trait:expr, $tech_spec:expr, $resources: literal, $influence: literal, $expansion: expr, $legendary: literal) => {
+        PlanetInfo {
+            planet_trait: $trait,
+            tech_specialty: $tech_spec,
+            resources: $resources,
+            influence: $influence,
+            expansion: $expansion,
+            is_legendary: $legendary,
         }
     };
 }

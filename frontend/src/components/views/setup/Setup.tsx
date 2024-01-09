@@ -362,7 +362,7 @@ const CouncilKeleresSetup = ({ player }: FactionSpecificSetupProps) => {
         </>
       )}
 
-      {player.planets.length === 0 ? (
+      {Object.keys(player.planets).length === 0 ? (
         <>
           <Dropdown
             value={selectedFaction}
@@ -391,7 +391,7 @@ const CouncilKeleresSetup = ({ player }: FactionSpecificSetupProps) => {
         </>
       ) : (
         <>
-          {player.planets.map((p) => (
+          {Object.keys(player.planets).map((p) => (
             <p key={p}>{p}</p>
           ))}
         </>

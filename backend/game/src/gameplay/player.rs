@@ -1,11 +1,14 @@
-use std::{collections::HashSet, sync::Arc};
+use std::{
+    collections::{HashMap, HashSet},
+    sync::Arc,
+};
 
 use eyre::ensure;
 use serde::{Deserialize, Serialize};
 
 use crate::data::{
     common::{color::Color, faction::Faction},
-    components::{planet::Planet, tech::Technology},
+    components::{planet::Planet, planet_attachment::PlanetAttachment, tech::Technology},
 };
 
 use super::error::GameError;
@@ -36,8 +39,8 @@ pub struct Player {
     pub faction: Faction,
     /// Which color the player has.
     pub color: Color,
-    /// Which planets the player controls.
-    pub planets: HashSet<Planet>,
+    /// Which planets the player controls and their attachments.
+    pub planets: HashMap<Planet, Vec<PlanetAttachment>>,
     /// Which technologies the player has.
     pub technologies: HashSet<Technology>,
 }
@@ -66,7 +69,12 @@ impl Player {
 
 impl From<NewPlayer> for Player {
     fn from(new: NewPlayer) -> Self {
-        let planets = new.faction.get_starting_planets();
+        let planets = new
+            .faction
+            .get_starting_planets()
+            .into_iter()
+            .map(|p| (p, vec![]))
+            .collect();
         let techs = new.faction.get_starting_techs();
         Player {
             name: new.name,

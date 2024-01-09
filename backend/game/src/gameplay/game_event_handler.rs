@@ -16,6 +16,7 @@ use crate::{
             objectives::{Objective, ObjectiveKind},
             phase::Phase,
             planet::Planet,
+            planet_attachment::PlanetAttachment,
             strategy_card::StrategyCard,
             system::System,
             tech::{TechOrigin, TechType, Technology},
@@ -104,7 +105,7 @@ pub fn update_game_state(
 
             // TODO: Also give the player the correct agent
             for planet in faction.get_starting_planets().into_iter() {
-                player.planets.insert(planet);
+                player.planets.insert(planet, vec![]);
             }
         }
         Event::SetupPlayerTechs {
@@ -274,7 +275,8 @@ pub fn update_game_state(
             game_state.phase = Phase::TacticalAction;
             game_state.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress {
                 activated_system: None,
-                taken_planets: vec![],
+                taken_planets: HashMap::new(),
+                planet_attachments: HashMap::new(),
             }));
         }
         Event::TacticalActionTakePlanet { player, planet } => {
@@ -297,6 +299,21 @@ pub fn update_game_state(
             let Some(current_player_id) = &game_state.current_player else {
                 bail!("no current player");
             };
+            ensure!(
+                game_state.players.contains_key(current_player_id),
+                "Current player doesn't exist?"
+            );
+
+            let (current_owner, attachments) =
+                game_state
+                    .players
+                    .iter_mut()
+                    .fold((None, vec![]), |acc, (id, player)| {
+                        if let Some(attachments) = player.planets.remove(&planet) {
+                            return (Some(id.clone()), attachments);
+                        }
+                        acc
+                    });
 
             let Some(current_player) = game_state.players.get_mut(current_player_id) else {
                 bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
@@ -304,7 +321,14 @@ pub fn update_game_state(
 
             let planet_system = System::for_planet(&planet)?;
 
-            current_player.planets.insert(planet.clone());
+            let planet_info = planet.info();
+            current_player.planets.insert(
+                planet.clone(),
+                attachments
+                    .into_iter()
+                    .map(|a| a.match_planet(&planet_info))
+                    .collect::<Vec<PlanetAttachment>>(),
+            );
 
             // In case someone else currently owns the planet, remove it from them.
             game_state
@@ -321,7 +345,68 @@ pub fn update_game_state(
             }
 
             tactical.activated_system = Some(planet_system.id);
-            tactical.taken_planets.push(planet);
+            tactical.taken_planets.insert(planet, current_owner);
+        }
+        Event::TacticalActionAttachPlanetAttachment {
+            player,
+            planet,
+            attachment,
+        } => {
+            game_state.assert_phase(Phase::TacticalAction)?;
+            game_state.assert_player_turn(&player)?;
+
+            {
+                let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
+                else {
+                    bail!(
+                        "Invalid game state, expected tactical action, got {:?}",
+                        game_state.action_progress
+                    );
+                };
+
+                ensure!(
+                    tactical.taken_planets.contains_key(&planet),
+                    "Can only attach attachment to planet taken this turn"
+                );
+
+                ensure!(
+                    tactical.taken_planets.get(&planet).is_none(),
+                    "Cannot explore planet that was taken from another player"
+                );
+
+                ensure!(
+                    !tactical.planet_attachments.contains_key(&planet),
+                    "Planet has already been explored this turn!"
+                );
+
+                let attachment_info = attachment.info();
+                let Some(attachment_planet_trait) = &attachment_info.planet_trait else {
+                    // TODO: Somewhat of an exploit of the fact that currently, only planets with planet_trait requirements are exploration attachments (and all of them have it).
+                    bail!("Only planets with planet_traits can be used during exploration")
+                };
+                ensure!(
+                    planet.info().planet_trait.as_ref() == Some(attachment_planet_trait),
+                    "Planet does not meet the trait requirements for the attachment"
+                );
+            }
+
+            let current_player = game_state.get_current_player()?;
+            let Some(planet_attachments) = current_player.planets.get_mut(&planet) else {
+                bail!("Player doesn't have planet that they just took, this is a bug!");
+            };
+            let actual_attachment = attachment.match_planet(&planet.info());
+            planet_attachments.push(actual_attachment.clone());
+
+            let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
+            else {
+                bail!(
+                    "Invalid game state, was just tactical action, is now {:?}. This is a bug!",
+                    game_state.action_progress
+                );
+            };
+            tactical
+                .planet_attachments
+                .insert(planet, actual_attachment);
         }
         Event::TacticalActionCommit { player } => {
             game_state.assert_phase(Phase::TacticalAction)?;
@@ -414,7 +499,7 @@ pub fn update_game_state(
                     });
 
                     let current_player = game_state.get_current_player()?;
-                    if current_player.planets.contains(&Planet::MecatolRex) {
+                    if current_player.planets.contains_key(&Planet::MecatolRex) {
                         let imperial_points = game_state.score.imperial.entry(player).or_default();
                         *imperial_points = imperial_points.saturating_add(1);
                     }
@@ -932,25 +1017,32 @@ pub fn update_game_state(
         Event::SetPlanetOwner { player, planet } => {
             game_state.assert_expansion(&planet.info().expansion)?;
 
-            // Give the planet to the new owner.
             if let Some(p) = &player {
-                let Some(player) = game_state.players.get_mut(p) else {
-                    bail!("Player does not exist?")
-                };
-                player.planets.insert(planet.clone());
-            }
+                ensure!(game_state.players.contains_key(p), "Player does not exist");
 
-            // Remove the planet from any player that owns it (that isn't the new owner).
-            game_state
-                .players
-                .iter_mut()
-                .filter(|(id, _)| match &player {
-                    Some(new_owner) => id != &new_owner,
-                    None => true,
-                })
-                .for_each(|(_, p)| {
-                    p.remove_planet(&planet);
-                });
+                let (_, attachments) =
+                    game_state
+                        .players
+                        .iter_mut()
+                        .fold((None, vec![]), |acc, (id, player)| {
+                            if let Some(attachments) = player.planets.remove(&planet) {
+                                return (Some(id.clone()), attachments);
+                            }
+                            acc
+                        });
+
+                let Some(player) = game_state.players.get_mut(p) else {
+                    bail!("Player does not exist? This is a bug!")
+                };
+                let planet_info = planet.info();
+                player.planets.insert(
+                    planet,
+                    attachments
+                        .into_iter()
+                        .map(|a| a.match_planet(&planet_info))
+                        .collect::<Vec<PlanetAttachment>>(),
+                );
+            }
         }
     }
 

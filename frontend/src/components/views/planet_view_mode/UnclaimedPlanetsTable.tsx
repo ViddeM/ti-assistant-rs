@@ -17,7 +17,7 @@ export const UnclaimedPlanetsTable = () => {
   });
   const playerCount = players.length;
 
-  const claimedPlanets = players.flatMap((p) => p.planets);
+  const claimedPlanets = players.flatMap((p) => Object.keys(p.planets));
   const unclaimedPlanets = Object.keys(gameOptions.planetInfos)
     .filter((p) => !claimedPlanets.includes(p))
     .map((p) => {

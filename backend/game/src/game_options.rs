@@ -13,6 +13,7 @@ use crate::{
                 public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo,
             },
             planet::{Planet, PlanetInfo},
+            planet_attachment::{PlanetAttachment, PlanetAttachmentInfo},
             system::{systems, System},
             tech::{TechInfo, Technology},
         },
@@ -40,6 +41,8 @@ pub struct GameOptions {
     technologies: HashMap<Technology, TechInfo>,
     /// What planets exist in the game.
     planet_infos: HashMap<Planet, PlanetInfo>,
+    /// What planet attachments exist in the game.
+    planet_attachments: HashMap<PlanetAttachment, PlanetAttachmentInfo>,
     /// What objectives exist in the game.
     objectives: HashMap<Objective, ObjectiveInfo>,
     /// What action cards exist in the game.
@@ -68,6 +71,10 @@ impl GameOptions {
                 .collect(),
             planet_infos: Planet::iter()
                 .map(|p| (p.clone(), p.info()))
+                .filter(|(_, info)| expansions.is_enabled(&info.expansion))
+                .collect(),
+            planet_attachments: PlanetAttachment::iter()
+                .map(|a| (a.clone(), a.info()))
                 .filter(|(_, info)| expansions.is_enabled(&info.expansion))
                 .collect(),
             objectives: PublicObjective::iter()

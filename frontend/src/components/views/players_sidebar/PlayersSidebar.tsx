@@ -1,7 +1,12 @@
 import styles from "./PlayersSidebar.module.scss";
 import { Faction } from "@/resources/types/factions";
 import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
-import { Color, PlanetInfo, TechInfo } from "@/api/GameOptions";
+import {
+  Color,
+  PlanetAttachmentInfo,
+  PlanetInfo,
+  TechInfo,
+} from "@/api/GameOptions";
 import { PlayerResources } from "./parts/PlayerResources";
 import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
 import { Duration, Score } from "@/api/GameState";
@@ -31,6 +36,7 @@ export interface Tech {
 export interface PlayerPlanetInfo {
   planet: string;
   info: PlanetInfo;
+  attachments: PlanetAttachmentInfo[];
 }
 
 export interface PlayerSidebarProps {

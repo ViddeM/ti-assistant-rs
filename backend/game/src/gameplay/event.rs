@@ -4,6 +4,7 @@ use crate::data::common::faction::Faction;
 use crate::data::components::agenda::{Agenda, AgendaElect};
 use crate::data::components::objectives::public::PublicObjective;
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
+use crate::data::components::planet_attachment::PlanetAttachment;
 use crate::data::components::{
     action_card::ActionCard, planet::Planet, strategy_card::StrategyCard, tech::Technology,
 };
@@ -92,6 +93,16 @@ pub enum Event {
         player: PlayerId,
         /// Which planet is taken.
         planet: Planet,
+    },
+
+    /// Attach an attachment to a newly taken planet.
+    TacticalActionAttachPlanetAttachment {
+        /// Which player takes the attachment.
+        player: PlayerId,
+        /// The planet that will get the attachment.
+        planet: Planet,
+        /// The attachment to be attached.
+        attachment: PlanetAttachment,
     },
 
     /// End a tactical action.

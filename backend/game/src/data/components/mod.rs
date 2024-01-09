@@ -8,6 +8,8 @@ pub mod objectives;
 pub mod phase;
 /// Planets.
 pub mod planet;
+/// Planetary attachments.
+pub mod planet_attachment;
 /// Strategy cards.
 pub mod strategy_card;
 /// Systems.

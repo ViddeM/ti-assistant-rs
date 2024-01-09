@@ -1,27 +1,27 @@
-import { TechCategory } from "@/api/GameOptions";
-import { SidebarPlayer, Tech } from "../PlayersSidebar";
+import { PlanetTrait, TechCategory } from "@/api/GameOptions";
+import { PlayerPlanetInfo, SidebarPlayer, Tech } from "../PlayersSidebar";
 import { Icon } from "@/components/elements/icon/Icon";
 import styles from "./PlayerResources.module.scss";
 
 export const PlayerResources = ({ player }: { player: SidebarPlayer }) => {
   const numPlanets = player.planets.length;
   const resources = player.planets.reduce(
-    (acc, curr) => acc + curr.info.resources,
+    (acc, curr) =>
+      acc +
+      curr.info.resources +
+      curr.attachments.reduce((acc, curr) => acc + curr.resources, 0),
     0
   );
   const influence = player.planets.reduce(
-    (acc, curr) => acc + curr.info.influence,
+    (acc, curr) =>
+      acc +
+      curr.info.influence +
+      curr.attachments.reduce((acc, curr) => acc + curr.influence, 0),
     0
   );
-  const numCultural = player.planets.filter(
-    (p) => p.info.planetTrait === "Cultural"
-  ).length;
-  const numHazardous = player.planets.filter(
-    (p) => p.info.planetTrait === "Hazardous"
-  ).length;
-  const numIndustrial = player.planets.filter(
-    (p) => p.info.planetTrait === "Industrial"
-  ).length;
+  const numCultural = getPlanetTraitCount(player.planets, "Cultural");
+  const numHazardous = getPlanetTraitCount(player.planets, "Hazardous");
+  const numIndustrial = getPlanetTraitCount(player.planets, "Industrial");
 
   const numTechs = player.technologies.length;
   const numBiotic = getTechCategoryCount(player.technologies, "Biotic");
@@ -85,4 +85,15 @@ function getTechCategoryCount(
 
     return true;
   }).length;
+}
+
+function getPlanetTraitCount(
+  planets: PlayerPlanetInfo[],
+  trait: PlanetTrait
+): number {
+  return planets.filter(
+    (p) =>
+      p.info.planetTrait === trait ||
+      p.attachments.filter((p) => p.planetTrait === trait).length > 0
+  ).length;
 }

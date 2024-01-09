@@ -9,16 +9,12 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
 
 export const PlayerPlanetsGrid = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState } = useGameContext();
 
   return (
     <div className={styles.playerPlanetCardsContainer}>
       {Object.keys(gameState.players).map((p) => (
-        <PlayerPlanetsCard
-          key={p}
-          player={gameState.players[p]}
-          planets={gameOptions.planetInfos}
-        />
+        <PlayerPlanetsCard key={p} player={gameState.players[p]} />
       ))}
     </div>
   );
@@ -33,27 +29,69 @@ const TECH_COL_ALIGN = "center";
 
 interface PlayerPlanetsCardProps {
   player: Player;
-  planets: { [id: string]: PlanetInfo };
 }
 
 const NUM_COLUMNS = 6;
-const PlayerPlanetsCard = ({ player, planets }: PlayerPlanetsCardProps) => {
-  const playerTotals = player.planets.reduce(
+const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
+  const { gameOptions } = useGameContext();
+
+  const playerTotals = Object.keys(player.planets).reduce(
     (tot, p) => {
-      let planet = planets[p];
+      let planet = gameOptions.planetInfos[p];
+      let attachments = player.planets[p].map(
+        (a) => gameOptions.planetAttachments[a]
+      );
       return {
-        cultural: tot.cultural + (planet.planetTrait === "Cultural" ? 1 : 0),
+        cultural:
+          tot.cultural +
+          (planet.planetTrait === "Cultural" ||
+          attachments.filter((a) => a.planetTrait === "Cultural").length > 0
+            ? 1
+            : 0),
         industrial:
-          tot.industrial + (planet.planetTrait === "Industrial" ? 1 : 0),
-        hazardous: tot.hazardous + (planet.planetTrait === "Hazardous" ? 1 : 0),
-        resources: tot.resources + planet.resources,
-        influence: tot.influence + planet.influence,
-        warfare: tot.warfare + (planet.techSpeciality === "Warfare" ? 1 : 0),
+          tot.industrial +
+          (planet.planetTrait === "Industrial" ||
+          attachments.filter((a) => a.planetTrait === "Industrial").length > 0
+            ? 1
+            : 0),
+        hazardous:
+          tot.hazardous +
+          (planet.planetTrait === "Hazardous" ||
+          attachments.filter((a) => a.planetTrait === "Hazardous").length > 0
+            ? 1
+            : 0),
+        resources:
+          tot.resources +
+          planet.resources +
+          attachments.reduce((acc, a) => acc + a.resources, 0),
+        influence:
+          tot.influence +
+          planet.influence +
+          attachments.reduce((acc, a) => acc + a.influence, 0),
+        warfare:
+          tot.warfare +
+          (planet.techSpecialty === "Warfare" ||
+          attachments.filter((a) => a.techSpecialty === "Warfare").length > 0
+            ? 1
+            : 0),
         propulsion:
-          tot.propulsion + (planet.techSpeciality === "Propulsion" ? 1 : 0),
+          tot.propulsion +
+          (planet.techSpecialty === "Propulsion" ||
+          attachments.filter((a) => a.techSpecialty === "Propulsion").length > 0
+            ? 1
+            : 0),
         cybernetic:
-          tot.cybernetic + (planet.techSpeciality === "Cybernetic" ? 1 : 0),
-        biotic: tot.biotic + (planet.techSpeciality === "Biotic" ? 1 : 0),
+          tot.cybernetic +
+          (planet.techSpecialty === "Cybernetic" ||
+          attachments.filter((a) => a.techSpecialty === "Cybernetic").length > 0
+            ? 1
+            : 0),
+        biotic:
+          tot.biotic +
+          (planet.techSpecialty === "Biotic" ||
+          attachments.filter((a) => a.techSpecialty === "Biotic").length > 0
+            ? 1
+            : 0),
       };
     },
     {
@@ -152,11 +190,11 @@ const PlayerPlanetsCard = ({ player, planets }: PlayerPlanetsCardProps) => {
           </tr>
         </thead>
         <tbody>
-          {player.planets.map((planet) => (
+          {Object.keys(player.planets).map((planet) => (
             <PlayerPlanetRow
               key={planet}
               planetId={planet}
-              planet={planets[planet]}
+              planet={gameOptions.planetInfos[planet]}
             />
           ))}
         </tbody>
@@ -199,9 +237,9 @@ const PlayerPlanetRow = ({ planetId, planet }: PlayerPlanetRowProps) => {
       <td align={RESOURCE_COL_ALIGN}>{planet.resources}</td>
       <td align={INFLUENCE_COL_ALIGN}>{planet.influence}</td>
       <td align={TECH_COL_ALIGN}>
-        {planet.techSpeciality && (
+        {planet.techSpecialty && (
           <Icon
-            name={planet.techSpeciality.toLowerCase() as IconType}
+            name={planet.techSpecialty.toLowerCase() as IconType}
             isFilled={true}
           />
         )}
