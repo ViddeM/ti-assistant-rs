@@ -20,12 +20,12 @@ export const PlayerPlanetsGrid = () => {
   );
 };
 
-const DELETE_COL_ALIGN = "center";
 const NAME_COL_ALIGN = "left";
 const TRAIT_COL_ALIGN = "center";
 const RESOURCE_COL_ALIGN = "center";
 const INFLUENCE_COL_ALIGN = "center";
 const TECH_COL_ALIGN = "center";
+const DELETE_COL_ALIGN = "right";
 
 interface PlayerPlanetsCardProps {
   player: Player;
@@ -145,10 +145,6 @@ const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
             </th>
           </tr>
           <tr>
-            <th
-              align={DELETE_COL_ALIGN}
-              className={styles.borderBottomRow}
-            ></th>
             <th align={NAME_COL_ALIGN} className={styles.borderBottomRow}>
               Name
             </th>
@@ -164,9 +160,12 @@ const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
             <th align={TECH_COL_ALIGN} className={styles.borderBottomRow}>
               <Icon name="legendary_planet" isFilled={true} />
             </th>
+            <th
+              align={DELETE_COL_ALIGN}
+              className={styles.borderBottomRow}
+            ></th>
           </tr>
           <tr>
-            <th align={DELETE_COL_ALIGN} className={styles.borderBottomRow} />
             <th align={NAME_COL_ALIGN} className={styles.borderBottomRow}>
               Total
             </th>
@@ -187,6 +186,7 @@ const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
                 playerTotals.cybernetic +
                 playerTotals.biotic}
             </th>
+            <th align={DELETE_COL_ALIGN} className={styles.borderBottomRow} />
           </tr>
         </thead>
         <tbody>
@@ -195,6 +195,7 @@ const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
               key={planet}
               planetId={planet}
               planet={gameOptions.planetInfos[planet]}
+              attachments={player.planets[planet]}
             />
           ))}
         </tbody>
@@ -206,43 +207,76 @@ const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
 interface PlayerPlanetRowProps {
   planetId: string;
   planet: PlanetInfo;
+  attachments: string[];
 }
 
-const PlayerPlanetRow = ({ planetId, planet }: PlayerPlanetRowProps) => {
-  const { sendEvent } = useGameContext();
+const PlayerPlanetRow = ({
+  planetId,
+  planet,
+  attachments,
+}: PlayerPlanetRowProps) => {
+  const { gameState, sendEvent } = useGameContext();
+
+  return (
+    <>
+      <tr className={styles.planetRow}>
+        <td align={NAME_COL_ALIGN}>{planetId}</td>
+        <td align={TRAIT_COL_ALIGN}>
+          {planet.planetTrait && (
+            <Icon name={planet.planetTrait.toLowerCase() as IconType} />
+          )}
+        </td>
+        <td align={RESOURCE_COL_ALIGN}>{planet.resources}</td>
+        <td align={INFLUENCE_COL_ALIGN}>{planet.influence}</td>
+        <td align={TECH_COL_ALIGN}>
+          {planet.techSpecialty && (
+            <Icon
+              name={planet.techSpecialty.toLowerCase() as IconType}
+              isFilled={true}
+            />
+          )}
+        </td>
+        <td align={DELETE_COL_ALIGN}>
+          <Button
+            className={styles.unclaimPlanetButton}
+            onClick={() =>
+              sendEvent({
+                SetPlanetOwner: {
+                  player: null,
+                  planet: planetId,
+                },
+              })
+            }
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+        </td>
+      </tr>
+      {attachments.map((a) => (
+        <AttachmentRow key={a} attachment={a} />
+      ))}
+    </>
+  );
+};
+
+interface AttachmentRowProps {
+  attachment: string;
+}
+
+const AttachmentRow = ({ attachment }: AttachmentRowProps) => {
+  const { gameOptions } = useGameContext();
+  const info = gameOptions.planetAttachments[attachment];
 
   return (
     <tr>
+      <td colSpan={1}>ELLO</td>
+      <td colSpan={4} align="right">
+        {info.name}
+      </td>
       <td align={DELETE_COL_ALIGN}>
-        <Button
-          className={styles.unclaimPlanetButton}
-          onClick={() =>
-            sendEvent({
-              SetPlanetOwner: {
-                player: null,
-                planet: planetId,
-              },
-            })
-          }
-        >
+        <Button className={styles.unclaimPlanetButton} onClick={() => {}}>
           <FontAwesomeIcon icon={faTrash} />
         </Button>
-      </td>
-      <td align={NAME_COL_ALIGN}>{planetId}</td>
-      <td align={TRAIT_COL_ALIGN}>
-        {planet.planetTrait && (
-          <Icon name={planet.planetTrait.toLowerCase() as IconType} />
-        )}
-      </td>
-      <td align={RESOURCE_COL_ALIGN}>{planet.resources}</td>
-      <td align={INFLUENCE_COL_ALIGN}>{planet.influence}</td>
-      <td align={TECH_COL_ALIGN}>
-        {planet.techSpecialty && (
-          <Icon
-            name={planet.techSpecialty.toLowerCase() as IconType}
-            isFilled={true}
-          />
-        )}
       </td>
     </tr>
   );

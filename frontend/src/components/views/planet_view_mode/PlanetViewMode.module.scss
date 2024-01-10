@@ -53,6 +53,9 @@
   border: none;
   background-color: inherit;
   color: black;
+  height: 16px;
+  padding-top: 0;
+  padding-bottom: 0;
 
   :hover {
     color: #500000;
@@ -67,4 +70,10 @@
 
 .unclaimedPlanetsContainer {
   min-height: 100vh; /* To prevent from scrolling up whenever we filter the planets list */
+}
+
+.planetRow {
+  > td {
+    border-top: 1px solid black;
+  }
 }

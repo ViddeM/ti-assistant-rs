@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, ImgHTMLAttributes, ReactNode } from "react";
+import { FC } from "react";
 import styles from "./Icon.module.scss";
 import Image from "next/image";
 
@@ -15,7 +15,8 @@ export type IconType =
   | "propulsion"
   | "resource"
   | "warfare"
-  | "custodians";
+  | "custodians"
+  | "tomb_of_emphida";
 
 export type IconProps = {
   name: IconType;
