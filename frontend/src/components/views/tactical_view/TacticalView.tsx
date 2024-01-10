@@ -128,6 +128,10 @@ const SelectPlanetAttachment = ({
 
   const planetInfo = gameOptions.planetInfos[planet];
 
+  if (planetInfo.planetTrait === null) {
+    return <div>Cannot explore</div>;
+  }
+
   if (previousOwner !== null) {
     return <p>Taken from {gameState.players[previousOwner].name}</p>;
   }
@@ -136,6 +140,13 @@ const SelectPlanetAttachment = ({
     return <p>{gameOptions.planetAttachments[attachment].name}</p>;
   }
 
+  const availableAttachments = Object.keys(
+    gameOptions.planetAttachments
+  ).filter(
+    (a) =>
+      gameOptions.planetAttachments[a].planetTrait === planetInfo.planetTrait
+  );
+
   return (
     <>
       <Dropdown
@@ -143,19 +154,14 @@ const SelectPlanetAttachment = ({
         onChange={(e) => setSelectedAttachment(e.target.value)}
       >
         <option value="">--Select attachment--</option>
-        {Object.keys(gameOptions.planetAttachments)
-          .filter(
-            (a) =>
-              gameOptions.planetAttachments[a].planetTrait ===
-              planetInfo.planetTrait
-          )
-          .map((a) => (
-            <option key={a} value={a}>
-              {gameOptions.planetAttachments[a].name}
-            </option>
-          ))}
+        {availableAttachments.map((a) => (
+          <option key={a} value={a}>
+            {gameOptions.planetAttachments[a].name}
+          </option>
+        ))}
       </Dropdown>
       <Button
+        disabled={availableAttachments.length === 0}
         className={"marginTop"}
         onClick={() =>
           sendEvent({
