@@ -59,7 +59,7 @@ export const TacticalView = () => {
                 <div className={styles.selectAnotherPlanetContainer}>
                   {availablePlanetsInSystem.map((p) => (
                     <Button key={p} onClick={() => takePlanet(p)}>
-                      {p}
+                      {gameOptions.planetInfos[p].name}
                     </Button>
                   ))}
                 </div>
@@ -85,7 +85,7 @@ export const TacticalView = () => {
               )
               .map((p) => (
                 <option key={p} value={p}>
-                  {p}
+                  {gameOptions.planetInfos[p].name}
                 </option>
               ))}
           </Dropdown>

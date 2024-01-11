@@ -54,7 +54,7 @@ export const UnclaimedPlanetsTable = () => {
               <React.Fragment key={planet.id}>
                 <tr>
                   <th colSpan={playerCount}>
-                    <h4>{planet.id}</h4>
+                    <h4>{planet.name}</h4>
                   </th>
                 </tr>
                 <tr>

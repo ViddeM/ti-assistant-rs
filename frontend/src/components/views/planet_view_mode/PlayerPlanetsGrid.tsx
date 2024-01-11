@@ -6,12 +6,9 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Button } from "@/components/elements/button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faArrowRight,
   faArrowTurnUp,
-  faMinus,
   faPlus,
   faTrash,
-  faX,
 } from "@fortawesome/free-solid-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
@@ -223,12 +220,12 @@ const PlayerPlanetRow = ({
   planet,
   attachments,
 }: PlayerPlanetRowProps) => {
-  const { gameState, sendEvent } = useGameContext();
+  const { sendEvent } = useGameContext();
 
   return (
     <>
       <tr className={styles.planetRow}>
-        <td align={NAME_COL_ALIGN}>{planetId}</td>
+        <td align={NAME_COL_ALIGN}>{planet.name}</td>
         <td align={TRAIT_COL_ALIGN}>
           {planet.planetTrait && (
             <Icon name={planet.planetTrait.toLowerCase() as IconType} />

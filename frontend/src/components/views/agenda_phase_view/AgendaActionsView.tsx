@@ -232,7 +232,7 @@ interface ResolveOutcomeProps {
 }
 
 const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
-  const { sendEvent } = useGameContext();
+  const { sendEvent, gameOptions } = useGameContext();
 
   const expectedOutcome = state.vote?.expectedOutcome?.value ?? "Discard";
   const [outcome, setOutcome] = useState<string>(expectedOutcome);
@@ -256,7 +256,9 @@ const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
             <option value="Discard">Discard</option>
             {state.vote?.candidates.map((candidate) => (
               <option value={candidate.value} key={candidate.value}>
-                {candidate.value}
+                {candidateIsPlanet(candidate.electKind)
+                  ? gameOptions.planetInfos[candidate.value].name
+                  : candidate.value}
               </option>
             ))}
           </Dropdown>
@@ -284,3 +286,13 @@ const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
     </>
   );
 };
+
+function candidateIsPlanet(electKind: AgendaElectKind): boolean {
+  return (
+    electKind === "CulturalPlanet" ||
+    electKind === "HazardousPlanet" ||
+    electKind === "IndustrialPlanet" ||
+    electKind === "Planet" ||
+    electKind === "PlanetWithTrait"
+  );
+}

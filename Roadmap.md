@@ -91,6 +91,7 @@
    - ❌ Techs
    - ❌ Planet Attachments
    - ❌ Agendas
+   - ❌ Agenda Elect Options
    - ❌ Action Cards
  - ❌ Descriptions for things
    - ❌ Planets

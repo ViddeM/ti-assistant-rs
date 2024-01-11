@@ -18,6 +18,7 @@ export interface GameOptions {
 }
 
 export interface PlanetInfo {
+  name: string;
   planetTrait: PlanetTrait | null;
   techSpecialty: TechSpeciality | null;
   resources: number;
