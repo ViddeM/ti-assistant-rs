@@ -19,7 +19,7 @@ export const PlayerPlanetsGrid = () => {
   return (
     <div className={styles.playerPlanetCardsContainer}>
       {Object.keys(gameState.players).map((p) => (
-        <PlayerPlanetsCard key={p} player={gameState.players[p]} />
+        <PlayerPlanetsCard key={p} playerId={p} player={gameState.players[p]} />
       ))}
     </div>
   );
@@ -33,11 +33,12 @@ const TECH_COL_ALIGN = "center";
 const DELETE_COL_ALIGN = "right";
 
 interface PlayerPlanetsCardProps {
+  playerId: string;
   player: Player;
 }
 
 const NUM_COLUMNS = 6;
-const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
+const PlayerPlanetsCard = ({ playerId, player }: PlayerPlanetsCardProps) => {
   const { gameOptions } = useGameContext();
 
   const playerTotals = Object.keys(player.planets).reduce(
@@ -198,6 +199,7 @@ const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
           {Object.keys(player.planets).map((planet) => (
             <PlayerPlanetRow
               key={planet}
+              playerId={playerId}
               planetId={planet}
               planet={gameOptions.planetInfos[planet]}
               attachments={player.planets[planet]}
@@ -210,12 +212,14 @@ const PlayerPlanetsCard = ({ player }: PlayerPlanetsCardProps) => {
 };
 
 interface PlayerPlanetRowProps {
+  playerId: string;
   planetId: string;
   planet: PlanetInfo;
   attachments: string[];
 }
 
 const PlayerPlanetRow = ({
+  playerId,
   planetId,
   planet,
   attachments,
@@ -258,18 +262,29 @@ const PlayerPlanetRow = ({
         </td>
       </tr>
       {attachments.map((a) => (
-        <AttachmentRow key={a} attachment={a} />
+        <AttachmentRow
+          key={a}
+          playerId={playerId}
+          planetId={planetId}
+          attachment={a}
+        />
       ))}
     </>
   );
 };
 
 interface AttachmentRowProps {
+  playerId: string;
+  planetId: string;
   attachment: string;
 }
 
-const AttachmentRow = ({ attachment }: AttachmentRowProps) => {
-  const { gameOptions } = useGameContext();
+const AttachmentRow = ({
+  playerId,
+  planetId,
+  attachment,
+}: AttachmentRowProps) => {
+  const { gameOptions, sendEvent } = useGameContext();
   const info = gameOptions.planetAttachments[attachment];
 
   return (
@@ -299,7 +314,18 @@ const AttachmentRow = ({ attachment }: AttachmentRowProps) => {
       </td>
 
       <td align={DELETE_COL_ALIGN}>
-        <Button className={styles.unclaimPlanetButton} onClick={() => {}}>
+        <Button
+          className={styles.unclaimPlanetButton}
+          onClick={() =>
+            sendEvent({
+              RemovePlanetAttachment: {
+                player: playerId,
+                planet: planetId,
+                attachment: attachment,
+              },
+            })
+          }
+        >
           <FontAwesomeIcon icon={faTrashCan} />
         </Button>
       </td>

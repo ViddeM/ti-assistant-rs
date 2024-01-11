@@ -340,6 +340,26 @@ pub enum Event {
         /// The planet to change hands.
         planet: Planet,
     },
+
+    /// Add planet attachment to planet.
+    AddPlanetAttachment {
+        /// The player who owns the planet.
+        player: PlayerId,
+        /// The planet that should receive the attachment.
+        planet: Planet,
+        /// The attachment that is added.
+        attachment: PlanetAttachment,
+    },
+
+    /// Remove a planet attachment from a planet.
+    RemovePlanetAttachment {
+        /// The player who owns the planet.
+        player: PlayerId,
+        /// The planet that should receive the attachment.
+        planet: Planet,
+        /// The attachment that is added.
+        attachment: PlanetAttachment,
+    },
 }
 
 /// Primary action taken during a strategy card.

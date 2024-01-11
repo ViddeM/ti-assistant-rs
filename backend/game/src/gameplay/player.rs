@@ -40,7 +40,7 @@ pub struct Player {
     /// Which color the player has.
     pub color: Color,
     /// Which planets the player controls and their attachments.
-    pub planets: HashMap<Planet, Vec<PlanetAttachment>>,
+    pub planets: HashMap<Planet, HashSet<PlanetAttachment>>,
     /// Which technologies the player has.
     pub technologies: HashSet<Technology>,
 }
@@ -73,7 +73,7 @@ impl From<NewPlayer> for Player {
             .faction
             .get_starting_planets()
             .into_iter()
-            .map(|p| (p, vec![]))
+            .map(|p| (p, HashSet::new()))
             .collect();
         let techs = new.faction.get_starting_techs();
         Player {

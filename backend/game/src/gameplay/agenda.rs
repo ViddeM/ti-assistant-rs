@@ -1,6 +1,6 @@
 use std::{
     cmp::Reverse,
-    collections::{BTreeMap, HashMap},
+    collections::{BTreeMap, HashMap, HashSet},
 };
 
 use eyre::bail;
@@ -230,7 +230,7 @@ impl Vote {
     }
 }
 
-fn get_planet_traits(planet: &Planet, attachments: &Vec<PlanetAttachment>) -> Vec<PlanetTrait> {
+fn get_planet_traits(planet: &Planet, attachments: &HashSet<PlanetAttachment>) -> Vec<PlanetTrait> {
     let mut ts = vec![];
 
     if let Some(t) = planet.info().planet_trait {

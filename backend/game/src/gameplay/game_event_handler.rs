@@ -18,7 +18,7 @@ use crate::{
             planet::Planet,
             planet_attachment::PlanetAttachment,
             strategy_card::StrategyCard,
-            system::System,
+            system::{System, SystemType},
             tech::{TechOrigin, TechType, Technology},
         },
     },
@@ -105,7 +105,7 @@ pub fn update_game_state(
 
             // TODO: Also give the player the correct agent
             for planet in faction.get_starting_planets().into_iter() {
-                player.planets.insert(planet, vec![]);
+                player.planets.insert(planet, HashSet::new());
             }
         }
         Event::SetupPlayerTechs {
@@ -308,7 +308,7 @@ pub fn update_game_state(
                 game_state
                     .players
                     .iter_mut()
-                    .fold((None, vec![]), |acc, (id, player)| {
+                    .fold((None, HashSet::new()), |acc, (id, player)| {
                         if let Some(attachments) = player.planets.remove(&planet) {
                             return (Some(id.clone()), attachments);
                         }
@@ -327,7 +327,7 @@ pub fn update_game_state(
                 attachments
                     .into_iter()
                     .map(|a| a.match_planet(&planet_info))
-                    .collect::<Vec<PlanetAttachment>>(),
+                    .collect::<HashSet<PlanetAttachment>>(),
             );
 
             // In case someone else currently owns the planet, remove it from them.
@@ -394,7 +394,7 @@ pub fn update_game_state(
                 bail!("Player doesn't have planet that they just took, this is a bug!");
             };
             let actual_attachment = attachment.match_planet(&planet.info());
-            planet_attachments.push(actual_attachment.clone());
+            planet_attachments.insert(actual_attachment.clone());
 
             let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
             else {
@@ -1019,16 +1019,15 @@ pub fn update_game_state(
             if let Some(p) = &player {
                 ensure!(game_state.players.contains_key(p), "Player does not exist");
 
-                let (_, attachments) =
-                    game_state
-                        .players
-                        .iter_mut()
-                        .fold((None, vec![]), |acc, (id, player)| {
-                            if let Some(attachments) = player.planets.remove(&planet) {
-                                return (Some(id.clone()), attachments);
-                            }
-                            acc
-                        });
+                let (_, attachments) = game_state.players.iter_mut().fold(
+                    (None, HashSet::new()),
+                    |acc, (id, player)| {
+                        if let Some(attachments) = player.planets.remove(&planet) {
+                            return (Some(id.clone()), attachments);
+                        }
+                        acc
+                    },
+                );
 
                 let Some(player) = game_state.players.get_mut(p) else {
                     bail!("Player does not exist? This is a bug!")
@@ -1039,9 +1038,83 @@ pub fn update_game_state(
                     attachments
                         .into_iter()
                         .map(|a| a.match_planet(&planet_info))
-                        .collect::<Vec<PlanetAttachment>>(),
+                        .collect::<HashSet<PlanetAttachment>>(),
                 );
             }
+        }
+        Event::AddPlanetAttachment {
+            player,
+            planet,
+            attachment,
+        } => {
+            let Some(player) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist");
+            };
+
+            let Some(attachments) = player.planets.get_mut(&planet) else {
+                bail!("Player doesn't own planet");
+            };
+
+            ensure!(
+                !attachments.contains(&attachment),
+                "Planet already has the attachment"
+            );
+
+            ensure!(attachment.info().planet_trait == planet.info().planet_trait, "Attachment is not allowed to be placed on this planet, planet_trait requirement not met.");
+            match attachment {
+                PlanetAttachment::UITheProgenitor => {
+                    ensure!(
+                        planet == Planet::Elysium,
+                        "UI The Progenitor can only be used on Elysium"
+                    );
+                }
+                PlanetAttachment::Terraform => {
+                    ensure!(planet != Planet::MecatolRex, "Cannot terraform Mecatol Rex");
+                    ensure!(
+                        !matches!(
+                            System::for_planet(&planet)?.system_type,
+                            SystemType::HomeSystem(..)
+                        ),
+                        "Cannot terraform home planet"
+                    );
+                }
+                PlanetAttachment::NanoForge => {
+                    ensure!(
+                        planet.info().is_legendary == false,
+                        "Cannot place Nano Forge on legendary planet"
+                    );
+                    ensure!(
+                        !matches!(
+                            System::for_planet(&planet)?.system_type,
+                            SystemType::HomeSystem(..)
+                        ),
+                        "Cannot place Nano Forge on home planet"
+                    );
+                }
+                _ => {}
+            }
+
+            attachments.insert(attachment.match_planet(&planet.info()));
+        }
+        Event::RemovePlanetAttachment {
+            player,
+            planet,
+            attachment,
+        } => {
+            let Some(player) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist");
+            };
+
+            let Some(attachments) = player.planets.get_mut(&planet) else {
+                bail!("Player doesn't own planet");
+            };
+
+            ensure!(
+                attachments.contains(&attachment),
+                "Planet doesn't have that attachment"
+            );
+
+            attachments.remove(&attachment);
         }
     }
 

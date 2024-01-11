@@ -4,12 +4,20 @@ import styles from "./PlanetViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 import { useState } from "react";
 
+/* List of attachments added only for technical purposes. */
+const ADDED_ATTACHMENTS = [
+  "BioticResearchFacilityResources",
+  "CyberneticResearchFacilityResources",
+  "PropulsionResearchFacilityResources",
+  "WarfareResearchFacilityResources",
+];
+
 export const AddPlanetAttachment = () => {
   const [player, setPlayer] = useState<string>("");
   const [planet, setPlanet] = useState<string>("");
   const [attachment, setAttachment] = useState<string>("");
 
-  const { gameState, gameOptions } = useGameContext();
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const availablePlayers = Object.keys(gameState.players).map((p) => {
     return {
@@ -28,6 +36,34 @@ export const AddPlanetAttachment = () => {
             ...gameOptions.planetInfos[p],
           };
         });
+
+  // TODO: Maybe filter away home planets for relevant cards?
+  const availableAttachments =
+    planet === ""
+      ? []
+      : Object.keys(gameOptions.planetAttachments)
+          .map((a) => {
+            return {
+              id: a,
+              ...gameOptions.planetAttachments[a],
+            };
+          })
+          .filter((a) => !ADDED_ATTACHMENTS.includes(a.id))
+          .filter(
+            (a) => gameOptions.planetInfos[planet].planetTrait === a.planetTrait
+          )
+          .filter(
+            (a) => !gameState.players[player].planets[planet].includes(a.id)
+          )
+          .filter((a) => !(a.id === "UITheProgenitor" && planet !== "Elysium"))
+          .filter(
+            (a) =>
+              !(
+                a.id === "Terraform" &&
+                (planet === "MecatolRex" ||
+                  gameOptions.planetInfos[planet].isLegendary)
+              )
+          );
 
   return (
     <div className={`card ${styles.addPlanetAttachmentContainer}`}>
@@ -48,18 +84,42 @@ export const AddPlanetAttachment = () => {
         <option value="">--Select Planet--</option>
         {availablePlanets.map((p) => (
           <option key={p.id} value={p.id}>
-            {p.id}
+            {p.name}
           </option>
         ))}
       </Dropdown>
       <Dropdown
         value={attachment}
-        disabled={planet === ""}
+        disabled={planet === "" || availableAttachments.length === 0}
         onChange={(e) => setAttachment(e.target.value)}
       >
-        <option value="">--Select Attachment--</option>
+        {availableAttachments.length === 0 ? (
+          <option value="">No attachments available</option>
+        ) : (
+          <>
+            <option value="">--Select Attachment--</option>
+            {availableAttachments.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </>
+        )}
       </Dropdown>
-      <Button>Add attachment</Button>
+      <Button
+        disabled={player === "" || planet === "" || attachment === ""}
+        onClick={() =>
+          sendEvent({
+            AddPlanetAttachment: {
+              player: player,
+              planet: planet,
+              attachment: attachment,
+            },
+          })
+        }
+      >
+        Add attachment
+      </Button>
     </div>
   );
 };

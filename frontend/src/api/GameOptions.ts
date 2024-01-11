@@ -23,6 +23,7 @@ export interface PlanetInfo {
   techSpecialty: TechSpeciality | null;
   resources: number;
   influence: number;
+  isLegendary: boolean;
 }
 
 export interface PlanetAttachmentInfo {
