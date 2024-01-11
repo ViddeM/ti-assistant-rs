@@ -39,37 +39,40 @@ export const UnclaimedPlanetsTable = () => {
               </th>
             </tr>
             <tr>
-              <input
-                placeholder="Filter planets"
-                value={planetFilter}
-                onChange={(e) => setPlanetFilter(e.target.value)}
-                className={styles.planetFilter}
-              />
+              <th colSpan={playerCount}>
+                <input
+                  placeholder="Filter planets"
+                  value={planetFilter}
+                  onChange={(e) => setPlanetFilter(e.target.value)}
+                  className={styles.planetFilter}
+                />
+              </th>
             </tr>
           </thead>
           <tbody>
             {unclaimedPlanets.map((planet) => (
               <React.Fragment key={planet.id}>
                 <tr>
-                  <th>
+                  <th colSpan={playerCount}>
                     <h4>{planet.id}</h4>
                   </th>
                 </tr>
                 <tr>
                   {players.map((player) => (
-                    <FactionButton
-                      key={player.faction}
-                      faction={player.faction}
-                      selected={false}
-                      onClick={() => {
-                        sendEvent({
-                          SetPlanetOwner: {
-                            player: player.id,
-                            planet: planet.id,
-                          },
-                        });
-                      }}
-                    />
+                    <td key={player.faction} align="center">
+                      <FactionButton
+                        faction={player.faction}
+                        selected={false}
+                        onClick={() => {
+                          sendEvent({
+                            SetPlanetOwner: {
+                              player: player.id,
+                              planet: planet.id,
+                            },
+                          });
+                        }}
+                      />
+                    </td>
                   ))}
                 </tr>
               </React.Fragment>

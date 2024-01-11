@@ -74,6 +74,26 @@
 
 .planetRow {
   > td {
-    border-top: 1px solid black;
+    border-top: 2px solid black;
+  }
+}
+
+.attachmentRow {
+  > td {
+    border-top: 1px solid rgba(0, 0, 0, 0.8);
+  }
+}
+
+.attachmentRowText {
+  color: limegreen;
+}
+
+.addPlanetAttachmentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: $marginLarge 0;
+  > * {
+    margin-bottom: $marginLarge;
   }
 }

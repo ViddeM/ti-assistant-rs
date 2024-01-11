@@ -5,8 +5,16 @@ import styles from "./PlanetViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Button } from "@/components/elements/button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faArrowTurnUp,
+  faMinus,
+  faPlus,
+  faTrash,
+  faX,
+} from "@fortawesome/free-solid-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 export const PlayerPlanetsGrid = () => {
   const { gameState } = useGameContext();
@@ -268,14 +276,34 @@ const AttachmentRow = ({ attachment }: AttachmentRowProps) => {
   const info = gameOptions.planetAttachments[attachment];
 
   return (
-    <tr>
-      <td colSpan={1}>ELLO</td>
-      <td colSpan={4} align="right">
-        {info.name}
+    <tr className={styles.attachmentRow}>
+      <td align="center">
+        <FontAwesomeIcon icon={faArrowTurnUp} style={{ rotate: "90deg" }} />
       </td>
+      <td className={styles.attachmentRowText} align="right">
+        <FontAwesomeIcon icon={faPlus} />
+      </td>
+
+      <td className={styles.attachmentRowText} align={RESOURCE_COL_ALIGN}>
+        {info.resources}
+      </td>
+
+      <td className={styles.attachmentRowText} align={INFLUENCE_COL_ALIGN}>
+        {info.influence}
+      </td>
+
+      <td align={TECH_COL_ALIGN}>
+        {info.techSpecialty && (
+          <Icon
+            name={info.techSpecialty.toLowerCase() as IconType}
+            isFilled={true}
+          />
+        )}
+      </td>
+
       <td align={DELETE_COL_ALIGN}>
         <Button className={styles.unclaimPlanetButton} onClick={() => {}}>
-          <FontAwesomeIcon icon={faTrash} />
+          <FontAwesomeIcon icon={faTrashCan} />
         </Button>
       </td>
     </tr>
