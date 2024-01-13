@@ -289,7 +289,7 @@ const AttachmentRow = ({
   return (
     <tr className={styles.attachmentRow}>
       <td align="center">
-        <FontAwesomeIcon icon={faArrowTurnUp} style={{ rotate: "90deg" }} />
+        <FontAwesomeIcon icon={faArrowTurnUp} className={styles.rotate90} />
       </td>
       <td className={styles.attachmentRowText} align="right">
         <AttachmentIcon attachment={attachment} />
@@ -343,38 +343,38 @@ const AttachmentIcon = ({ attachment }: AttachmentIconProps) => {
     case "TombOfEmphidia":
       return <Icon name="tomb_of_emphida" />;
     case "UITheProgenitor":
-      return <p style={{ color: "white" }}>✹✹✹</p>;
+      return <p className={styles.whiteText}>✹✹✹</p>;
     case "BioticResearchFacility":
     case "CyberneticResearchFacility":
     case "PropulsionResearchFacility":
     case "WarfareResearchFacility":
       return (
-        <div style={{ color: "gray" }}>
+        <div className={styles.grayText}>
           ( 1 <Icon name="resource" isFilled={true} />
           1 <Icon name="influence" isFilled={true} />)
         </div>
       );
     case "BioticResearchFacilityResources":
       return (
-        <div style={{ color: "gray" }}>
+        <div className={styles.grayText}>
           (<Icon name="biotic" isFilled={true} />)
         </div>
       );
     case "CyberneticResearchFacilityResources":
       return (
-        <div style={{ color: "gray" }}>
+        <div className={styles.grayText}>
           (<Icon name="cybernetic" isFilled={true} />)
         </div>
       );
     case "PropulsionResearchFacilityResources":
       return (
-        <div style={{ color: "gray" }}>
+        <div className={styles.grayText}>
           (<Icon name="propulsion" isFilled={true} />)
         </div>
       );
     case "WarfareResearchFacilityResources":
       return (
-        <div style={{ color: "gray" }}>
+        <div className={styles.grayText}>
           (<Icon name="warfare" isFilled={true} />)
         </div>
       );
