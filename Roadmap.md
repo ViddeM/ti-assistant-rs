@@ -84,7 +84,7 @@
      - ❌ 6 new frontier cards
      - ✅ council keleres faction
  - ✅ Strategy cards (speaker handling etc)
- - ❌ Real names for things (currently we only use the ID for e.g objectives)
+ - ✅ Real names for things (currently we only use the ID for e.g objectives)
    - ✅ Planets
    - ✅ Objectives
    - ✅ Factions
