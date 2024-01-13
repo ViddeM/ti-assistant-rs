@@ -376,8 +376,10 @@ pub fn update_game_state(
 
                 let attachment_info = attachment.info();
                 let Some(attachment_planet_trait) = &attachment_info.planet_trait else {
-                    // TODO: Somewhat of an exploit of the fact that currently, only planets with planet_trait requirements are exploration attachments (and all of them have it).
-                    bail!("Only planets with planet_traits can be used during exploration")
+                    // TODO: Somewhat of an exploit of the fact that currently,
+                    //       the attachments that have planet trait requirements match 100%
+                    //       with the ones that are available during exploration.
+                    bail!("Only attachments with planet_traits can be used during exploration")
                 };
                 ensure!(
                     planet.info().planet_trait.as_ref() == Some(attachment_planet_trait),
