@@ -3,7 +3,7 @@ use std::{
     collections::{BTreeMap, HashMap, HashSet},
 };
 
-use eyre::bail;
+use eyre::{bail, ensure};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
@@ -166,9 +166,17 @@ impl VoteState {
             AgendaElectKind::HazardousPlanet => planets(|t| t.contains(&PlanetTrait::Hazardous))?,
             AgendaElectKind::IndustrialPlanet => planets(|t| t.contains(&PlanetTrait::Industrial))?,
 
-            // TODO: implement this after we implement law tracking
-            AgendaElectKind::Law => bail!("no laws in play"),
+            AgendaElectKind::Law => game
+                .laws
+                .keys()
+                .map(|l| AgendaElect::Law(l.clone()))
+                .collect(),
         };
+
+        ensure!(
+            !candidates.is_empty(),
+            "Cannot play agenda, no candidates found"
+        );
 
         Ok(VoteState {
             agenda,
