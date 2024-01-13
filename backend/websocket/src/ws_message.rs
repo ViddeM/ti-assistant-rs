@@ -34,15 +34,15 @@ pub struct NewGame {
     cod3: bool,
 }
 
-impl Into<GameSettings> for NewGame {
-    fn into(self) -> GameSettings {
+impl From<NewGame> for GameSettings {
+    fn from(value: NewGame) -> Self {
         GameSettings {
-            max_points: self.points,
+            max_points: value.points,
             expansions: Expansions {
-                prophecy_of_kings: self.pok,
-                codex_1: self.cod1,
-                codex_2: self.cod2,
-                codex_3: self.cod3,
+                prophecy_of_kings: value.pok,
+                codex_1: value.cod1,
+                codex_2: value.cod2,
+                codex_3: value.cod3,
             },
         }
     }
