@@ -63,6 +63,20 @@ pub fn update_game_state(
                 game_state.max_players()
             );
             let id: PlayerId = player.name.clone().into();
+
+            ensure!(
+                !game_state.players.contains_key(&id),
+                "a player called {id:?} already exists",
+            );
+
+            ensure!(
+                game_state
+                    .players
+                    .values()
+                    .all(|other| other.faction != player.faction),
+                "two players can't play the same faction",
+            );
+
             game_state.table_order.push(id.clone());
             game_state.players.insert(id, player.into());
         }
