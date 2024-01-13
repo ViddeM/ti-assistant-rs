@@ -59,6 +59,9 @@ pub enum WsMessageOut {
     /// An update of the current game state.
     GameState(Arc<GameState>),
 
+    /// Response to [WsMessageIn::Event] when the event cannot be handled.
+    HandleEventError(String),
+
     /// Response of [WsMessageIn::JoinGame] or a [WsMessageIn::NewGame] with the game id.
     ///
     /// Will be followed by a [WsMessageOut::GameState] message with the latest state of the game.
@@ -87,5 +90,10 @@ impl WsMessageOut {
     /// Returns a new [WsMessageOut::NotFound] event from the provided game_id.
     pub fn not_found(game_id: GameId) -> Self {
         Self::NotFound(game_id)
+    }
+
+    /// Returns a new [WsMessageOut::HandleEventError] from the provided error.
+    pub fn event_err(error: String) -> Self {
+        Self::HandleEventError(error)
     }
 }

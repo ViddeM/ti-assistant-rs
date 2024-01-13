@@ -5,7 +5,7 @@
 
 use std::{net::SocketAddr, path::PathBuf, sync::Arc};
 
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 use clap::Parser;
 use eyre::{bail, Context};
 use ti_helper_db::{
@@ -13,7 +13,7 @@ use ti_helper_db::{
     game_id::GameId,
     queries,
 };
-use ti_helper_game::gameplay::{event::Event, game::Game};
+use ti_helper_game::gameplay::{error::GameError, event::Event, game::Game};
 use ti_helper_websocket::{
     websocket_client::WsClient,
     ws_message::{WsMessageIn, WsMessageOut},
@@ -253,7 +253,15 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
 
                     match message {
                         WsMessageIn::Undo => handle_undo(shared, id, &lobby).await?,
-                        WsMessageIn::Event(event) => handle_event(shared, id, &lobby, event).await?,
+                        WsMessageIn::Event(event) => {
+                            match handle_event(shared, id, &lobby, event).await {
+                                Ok(_) => {},
+                                Err(EventError::HandleEventError(e)) => {
+                                    ws_client.send_message(&WsMessageOut::event_err(e)).await?;
+                                },
+                                Err(EventError::InternalError(err)) => return Err(err),
+                            }
+                        }
 
                         _ => bail!("got unexpected event: {message:?}"),
                     };
@@ -270,25 +278,46 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
     }
 }
 
+enum EventError {
+    HandleEventError(String),
+    InternalError(GameError),
+}
+
 async fn handle_event(
     shared: &Shared,
     id: GameId,
     lobby: &RwLock<Lobby>,
     event: Event,
-) -> eyre::Result<()> {
+) -> Result<(), EventError> {
     log::debug!("applying event {event:?}");
 
     let mut lobby = lobby.write().await;
 
     let now = Utc::now();
 
-    // TODO: propagate errors back over the socket?
-    lobby.game.apply(event.clone(), now);
+    if let Err(e) = lobby.game.apply_or_err(event.clone(), now) {
+        log::warn!("Event not valid for the current state, err: {e:?}");
+        return Err(EventError::HandleEventError(e.to_string()));
+    }
 
+    store_and_propagate_event(shared, id, event, now, &mut lobby)
+        .await
+        .map_err(|err| EventError::InternalError(err))?;
+
+    Ok(())
+}
+
+async fn store_and_propagate_event(
+    shared: &Shared,
+    id: GameId,
+    event: Event,
+    timestamp: DateTime<Utc>,
+    lobby: &mut Lobby,
+) -> eyre::Result<()> {
     if let Some(db_pool) = &shared.db_pool {
         log::info!("persisting event for game {id:?}");
 
-        queries::insert_game_event(db_pool, id, serde_json::to_value(&event)?, now)
+        queries::insert_game_event(db_pool, id, serde_json::to_value(&event)?, timestamp)
             .await
             .wrap_err_with(|| format!("error querying game events ({id:?})"))?;
     }

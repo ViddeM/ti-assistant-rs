@@ -30,6 +30,7 @@ interface GameViewProps {
 type View = "Game" | "Score" | "Planets" | "Techs" | "Laws";
 
 export const GameView = ({ gameId, wsUri }: GameViewProps) => {
+  const [error, setError] = useState<string | null>(null);
   const [gameOptions, setGameOptions] = useState<GameOptions | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [currentViewMode, setCurrentViewMode] = useState<View>("Game");
@@ -47,6 +48,13 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
     if (lastMessage !== null) {
       console.log("MESSAGE", lastMessage);
       const data = JSON.parse(lastMessage.data);
+
+      const error = data["HandleEventError"];
+      if (error) {
+        setError(error as string);
+      } else {
+        setError(null);
+      }
 
       const notFoundGameId = data["NotFound"];
       if (notFoundGameId) {
@@ -93,6 +101,17 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
       setNotFound(gameId);
     }
   }, [gameId, setNotFound]);
+
+  if (error) {
+    return (
+      <div className="card column">
+        <h2>Invalid event</h2>
+        <p>Failed to apply error due to:</p>
+        <p> {error}</p>
+        <Button onClick={() => window.location.reload()}>Reload game</Button>
+      </div>
+    );
+  }
 
   if (isNewGame) {
     return (
