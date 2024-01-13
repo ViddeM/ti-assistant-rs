@@ -5,11 +5,7 @@ import styles from "./PlanetViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Button } from "@/components/elements/button/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowTurnUp,
-  faPlus,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faArrowTurnUp, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
@@ -51,19 +47,22 @@ const PlayerPlanetsCard = ({ playerId, player }: PlayerPlanetsCardProps) => {
         cultural:
           tot.cultural +
           (planet.planetTrait === "Cultural" ||
-          attachments.filter((a) => a.planetTrait === "Cultural").length > 0
+          attachments.filter((a) => a.addedPlanetTraits.includes("Cultural"))
+            .length > 0
             ? 1
             : 0),
         industrial:
           tot.industrial +
           (planet.planetTrait === "Industrial" ||
-          attachments.filter((a) => a.planetTrait === "Industrial").length > 0
+          attachments.filter((a) => a.addedPlanetTraits.includes("Industrial"))
+            .length > 0
             ? 1
             : 0),
         hazardous:
           tot.hazardous +
           (planet.planetTrait === "Hazardous" ||
-          attachments.filter((a) => a.planetTrait === "Hazardous").length > 0
+          attachments.filter((a) => a.addedPlanetTraits.includes("Hazardous"))
+            .length > 0
             ? 1
             : 0),
         resources:
@@ -129,24 +128,24 @@ const PlayerPlanetsCard = ({ playerId, player }: PlayerPlanetsCardProps) => {
           <tr>
             <th colSpan={NUM_COLUMNS}>
               <div>
-                <Icon name="cultural" />
                 {playerTotals.cultural}
+                <Icon name="cultural" />
 
-                <Icon name="industrial" />
                 {playerTotals.industrial}
+                <Icon name="industrial" />
 
-                <Icon name="hazardous" />
                 {playerTotals.hazardous}
+                <Icon name="hazardous" />
               </div>
               <div>
-                <Icon name="warfare" isFilled={true} />
                 {playerTotals.warfare}
-                <Icon name="propulsion" isFilled={true} />
+                <Icon name="warfare" isFilled={true} />
                 {playerTotals.propulsion}
-                <Icon name="cybernetic" isFilled={true} />
+                <Icon name="propulsion" isFilled={true} />
                 {playerTotals.cybernetic}
-                <Icon name="biotic" isFilled={true} />
+                <Icon name="cybernetic" isFilled={true} />
                 {playerTotals.biotic}
+                <Icon name="biotic" isFilled={true} />
               </div>
             </th>
           </tr>
@@ -293,7 +292,7 @@ const AttachmentRow = ({
         <FontAwesomeIcon icon={faArrowTurnUp} style={{ rotate: "90deg" }} />
       </td>
       <td className={styles.attachmentRowText} align="right">
-        <FontAwesomeIcon icon={faPlus} />
+        <AttachmentIcon attachment={attachment} />
       </td>
 
       <td className={styles.attachmentRowText} align={RESOURCE_COL_ALIGN}>
@@ -331,4 +330,65 @@ const AttachmentRow = ({
       </td>
     </tr>
   );
+};
+
+interface AttachmentIconProps {
+  attachment: string;
+}
+
+const AttachmentIcon = ({ attachment }: AttachmentIconProps) => {
+  switch (attachment) {
+    case "DemilitarizedZone":
+      return <Icon name="demilitarized" />;
+    case "TombOfEmphidia":
+      return <Icon name="tomb_of_emphida" />;
+    case "UITheProgenitor":
+      return <p style={{ color: "white" }}>✹✹✹</p>;
+    case "BioticResearchFacility":
+    case "CyberneticResearchFacility":
+    case "PropulsionResearchFacility":
+    case "WarfareResearchFacility":
+      return (
+        <div style={{ color: "gray" }}>
+          ( 1 <Icon name="resource" isFilled={true} />
+          1 <Icon name="influence" isFilled={true} />)
+        </div>
+      );
+    case "BioticResearchFacilityResources":
+      return (
+        <div style={{ color: "gray" }}>
+          (<Icon name="biotic" isFilled={true} />)
+        </div>
+      );
+    case "CyberneticResearchFacilityResources":
+      return (
+        <div style={{ color: "gray" }}>
+          (<Icon name="cybernetic" isFilled={true} />)
+        </div>
+      );
+    case "PropulsionResearchFacilityResources":
+      return (
+        <div style={{ color: "gray" }}>
+          (<Icon name="propulsion" isFilled={true} />)
+        </div>
+      );
+    case "WarfareResearchFacilityResources":
+      return (
+        <div style={{ color: "gray" }}>
+          (<Icon name="warfare" isFilled={true} />)
+        </div>
+      );
+    case "NanoForge":
+      return <Icon name="legendary_planet_circled" />;
+    case "Terraform":
+      return (
+        <div>
+          <Icon name="industrial" />
+          <Icon name="hazardous" />
+          <Icon name="cultural" />
+        </div>
+      );
+    default:
+      return <></>;
+  }
 };

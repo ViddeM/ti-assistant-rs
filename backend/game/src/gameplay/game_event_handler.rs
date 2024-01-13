@@ -1060,8 +1060,7 @@ pub fn update_game_state(
                 "Planet already has the attachment"
             );
 
-            ensure!(attachment.info().planet_trait == planet.info().planet_trait, "Attachment is not allowed to be placed on this planet, planet_trait requirement not met.");
-            match attachment {
+            match &attachment {
                 PlanetAttachment::UITheProgenitor => {
                     ensure!(
                         planet == Planet::Elysium,
@@ -1091,7 +1090,9 @@ pub fn update_game_state(
                         "Cannot place Nano Forge on home planet"
                     );
                 }
-                _ => {}
+                v => {
+                    ensure!(v.info().planet_trait == planet.info().planet_trait, "Attachment is not allowed to be placed on this planet, planet_trait requirement not met.");
+                }
             }
 
             attachments.insert(attachment.match_planet(&planet.info()));

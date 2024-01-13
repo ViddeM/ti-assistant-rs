@@ -97,7 +97,7 @@ impl GameOptions {
             agendas: Agenda::iter()
                 .map(|agenda| (agenda, agenda.info()))
                 .filter(|(_, agenda)| expansions.is_enabled(&agenda.expansion))
-                .filter(|(agenda, _)| !expansions.prophecy_of_kings || agenda.disabled_in_pok())
+                .filter(|(agenda, _)| !(expansions.prophecy_of_kings && agenda.disabled_in_pok()))
                 .collect(),
         }
     }

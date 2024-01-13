@@ -2,7 +2,7 @@ import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import styles from "./PlanetViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /* List of attachments added only for technical purposes. */
 const ADDED_ATTACHMENTS = [
@@ -25,45 +25,92 @@ export const AddPlanetAttachment = () => {
       ...gameState.players[p],
     };
   });
-  const availablePlanets =
-    player === ""
-      ? []
-      : Object.keys(
-          availablePlayers.filter((p) => p.id === player)[0].planets
-        ).map((p) => {
-          return {
-            id: p,
-            ...gameOptions.planetInfos[p],
-          };
-        });
 
-  // TODO: Maybe filter away home planets for relevant cards?
-  const availableAttachments =
-    planet === ""
-      ? []
-      : Object.keys(gameOptions.planetAttachments)
-          .map((a) => {
+  const availablePlanets = useMemo(
+    () =>
+      player === ""
+        ? []
+        : Object.keys(
+            availablePlayers.filter((p) => p.id === player)[0].planets
+          ).map((p) => {
             return {
-              id: a,
-              ...gameOptions.planetAttachments[a],
+              id: p,
+              ...gameOptions.planetInfos[p],
             };
-          })
-          .filter((a) => !ADDED_ATTACHMENTS.includes(a.id))
-          .filter(
-            (a) => gameOptions.planetInfos[planet].planetTrait === a.planetTrait
-          )
-          .filter(
-            (a) => !gameState.players[player].planets[planet].includes(a.id)
-          )
-          .filter((a) => !(a.id === "UITheProgenitor" && planet !== "Elysium"))
-          .filter(
-            (a) =>
-              !(
-                a.id === "Terraform" &&
-                (planet === "MecatolRex" ||
-                  gameOptions.planetInfos[planet].isLegendary)
-              )
-          );
+          }),
+    [availablePlayers, gameOptions.planetInfos, player]
+  );
+
+  const homePlanets = Object.values(gameOptions.systems)
+    .filter(
+      (s) =>
+        typeof s.systemType === "object" &&
+        Object.keys(s.systemType).includes("HomeSystem")
+    )
+    .flatMap((s) => s.planets);
+
+  const availableAttachments = useMemo(
+    () =>
+      planet === ""
+        ? []
+        : Object.keys(gameOptions.planetAttachments)
+            .map((a) => {
+              return {
+                id: a,
+                ...gameOptions.planetAttachments[a],
+              };
+            })
+            .filter((a) => !ADDED_ATTACHMENTS.includes(a.id))
+            .filter(
+              (a) =>
+                a.planetTrait === null ||
+                gameOptions.planetInfos[planet].planetTrait === a.planetTrait
+            )
+            .filter(
+              (a) => !gameState.players[player]?.planets[planet]?.includes(a.id)
+            )
+            .filter(
+              (a) => !(a.id === "UITheProgenitor" && planet !== "Elysium")
+            )
+            .filter(
+              (a) =>
+                !(
+                  a.id === "Terraform" &&
+                  (planet === "MecatolRex" ||
+                    gameOptions.planetInfos[planet].isLegendary)
+                )
+            )
+            .filter(
+              (a) =>
+                !(
+                  (a.id === "Terraform" || a.id === "NanoForge") &&
+                  homePlanets.includes(planet)
+                )
+            ),
+    [
+      gameOptions.planetAttachments,
+      gameOptions.planetInfos,
+      gameState.players,
+      homePlanets,
+      planet,
+      player,
+    ]
+  );
+
+  useEffect(() => {
+    if (planet !== "" && !availablePlanets.map((p) => p.id).includes(planet)) {
+      setPlanet("");
+    }
+  }, [availablePlanets, planet, setPlanet]);
+
+  useEffect(() => {
+    if (
+      attachment !== "" &&
+      !availableAttachments.map((a) => a.id).includes(attachment)
+    ) {
+      setAttachment("");
+    }
+  }, [attachment, availableAttachments, setAttachment]);
 
   return (
     <div className={`card ${styles.addPlanetAttachmentContainer}`}>
@@ -108,15 +155,18 @@ export const AddPlanetAttachment = () => {
       </Dropdown>
       <Button
         disabled={player === "" || planet === "" || attachment === ""}
-        onClick={() =>
+        onClick={() => {
           sendEvent({
             AddPlanetAttachment: {
               player: player,
               planet: planet,
               attachment: attachment,
             },
-          })
-        }
+          });
+          setAttachment("");
+          setPlanet("");
+          setPlayer("");
+        }}
       >
         Add attachment
       </Button>

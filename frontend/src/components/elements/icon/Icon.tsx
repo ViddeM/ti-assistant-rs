@@ -16,7 +16,8 @@ export type IconType =
   | "resource"
   | "warfare"
   | "custodians"
-  | "tomb_of_emphida";
+  | "tomb_of_emphida"
+  | "demilitarized";
 
 export type IconProps = {
   name: IconType;

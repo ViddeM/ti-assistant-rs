@@ -94,6 +94,7 @@ function getPlanetTraitCount(
   return planets.filter(
     (p) =>
       p.info.planetTrait === trait ||
-      p.attachments.filter((p) => p.planetTrait === trait).length > 0
+      p.attachments.filter((p) => p.addedPlanetTraits.includes(trait)).length >
+        0
   ).length;
 }
