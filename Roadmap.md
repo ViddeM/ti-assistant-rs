@@ -53,6 +53,7 @@
  - ❌ Separation between base/PoK/codexes
    - ❌ PoK
      - ❌ Exploration
+       - ✅ Exploration cards (attachments only are handled)
        - ❌ Frontier cards
        - ❌ Relics
      - ✅ Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
