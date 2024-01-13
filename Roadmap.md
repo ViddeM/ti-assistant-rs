@@ -85,19 +85,19 @@
      - ✅ council keleres faction
  - ✅ Strategy cards (speaker handling etc)
  - ❌ Real names for things (currently we only use the ID for e.g objectives)
-   - 🍑 Planets
-   - 🍑 Objectives
-   - 🍑 Factions
-   - 🍑 Techs
-   - 🍑 Planet Attachments
-   - 🍑 Agendas
-   - 🍑 Agenda Elect Options
-     - 🍑 For or Against
-     - 🍑 Player
-     - 🍑 Planet
-     - 🍑 Objective
-     - 🍑 Agenda
-   - 🍑 Action Cards
+   - ✅ Planets
+   - ✅ Objectives
+   - ✅ Factions
+   - ✅ Techs
+   - ✅ Planet Attachments
+   - ✅ Agendas
+   - ✅ Agenda Elect Options
+     - ✅ For or Against
+     - ✅ Player
+     - ✅ Planet
+     - ✅ Objective
+     - ✅ Agenda
+   - ✅ Action Cards
  - ❌ Descriptions for things
    - ❌ Planets
    - ❌ Objectives

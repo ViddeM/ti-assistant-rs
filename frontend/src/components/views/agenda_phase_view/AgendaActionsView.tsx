@@ -5,6 +5,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useEffect, useState } from "react";
 import styles from "./AgendaPhaseView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { GameOptions } from "@/api/GameOptions";
 
 export interface AgendaActionsViewProps {
   state: AgendaState;
@@ -157,6 +158,7 @@ const PlayerVoteView = ({
   playerVote,
   voteKind,
 }: PlayerVoteViewProps) => {
+  const { gameOptions } = useGameContext();
   const [voteOption, setVoteOption] = useState<string>("");
   const [votes, setVotes] = useState<string>("");
 
@@ -174,7 +176,7 @@ const PlayerVoteView = ({
             <option value="">--Select vote option--</option>
             {candidates.map((candidate) => (
               <option key={candidate.value} value={candidate.value}>
-                {candidate.value}
+                {getElectDisplayValue(candidate, gameOptions)}
               </option>
             ))}
           </Dropdown>
@@ -256,9 +258,7 @@ const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
             <option value="Discard">Discard</option>
             {state.vote?.candidates.map((candidate) => (
               <option value={candidate.value} key={candidate.value}>
-                {candidateIsPlanet(candidate.electKind)
-                  ? gameOptions.planetInfos[candidate.value].name
-                  : candidate.value}
+                {getElectDisplayValue(candidate, gameOptions)}
               </option>
             ))}
           </Dropdown>
@@ -287,12 +287,22 @@ const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
   );
 };
 
-function candidateIsPlanet(electKind: AgendaElectKind): boolean {
-  return (
-    electKind === "CulturalPlanet" ||
-    electKind === "HazardousPlanet" ||
-    electKind === "IndustrialPlanet" ||
-    electKind === "Planet" ||
-    electKind === "PlanetWithTrait"
-  );
+function getElectDisplayValue(
+  candidate: AgendaElect,
+  gameOptions: GameOptions
+): string {
+  switch (candidate.electKind) {
+    case "CulturalPlanet":
+    case "HazardousPlanet":
+    case "IndustrialPlanet":
+    case "PlanetWithTrait":
+    case "Planet":
+      return gameOptions.planetInfos[candidate.value].name;
+    case "SecretObjective":
+      return gameOptions.objectives[candidate.value].name;
+    case "Law":
+      return gameOptions.agendas[candidate.value].name;
+    default:
+      return candidate.value;
+  }
 }
