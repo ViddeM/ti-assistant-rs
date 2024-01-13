@@ -109,11 +109,11 @@ impl VoteState {
             let eligible_planets: Vec<_> = Planet::iter()
                 // Filter to planets that are held by a player & map to a tuple of the planet, planet attachments.
                 .filter_map(|p| {
-                    game.players.values().fold(None, |acc, player| {
+                    game.players.values().find_map(|player| {
                         if player.planets.contains_key(&p) {
                             return Some((p.clone(), &player.planets[&p]));
                         }
-                        acc
+                        None
                     })
                 })
                 // Filter to only include planets with the relevant traits.

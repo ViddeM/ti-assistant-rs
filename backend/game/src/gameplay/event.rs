@@ -355,9 +355,9 @@ pub enum Event {
     RemovePlanetAttachment {
         /// The player who owns the planet.
         player: PlayerId,
-        /// The planet that should receive the attachment.
+        /// The planet that should lose the attachment.
         planet: Planet,
-        /// The attachment that is added.
+        /// The attachment that is to be removed.
         attachment: PlanetAttachment,
     },
 }
