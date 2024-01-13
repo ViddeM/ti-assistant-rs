@@ -147,7 +147,7 @@ pub fn update_game_state(
                         .filter(|p| p.faction != Faction::CouncilKeleres)
                         .flat_map(|p| p.technologies.iter())
                         .filter(|t| t.info().origin == TechOrigin::Base)
-                        .map(|t| t.clone())
+                        .cloned()
                         .collect::<Vec<Technology>>(),
                 ),
                 _ => bail!("Players faction has no technology setup to perform"),
@@ -159,7 +159,7 @@ pub fn update_game_state(
             );
 
             ensure!(
-                technologies.iter().all(|t| possible_techs.contains(&t)),
+                technologies.iter().all(|t| possible_techs.contains(t)),
                 "Invalid technology selection for players faction"
             );
 
@@ -236,7 +236,7 @@ pub fn update_game_state(
                 })
                 .collect::<Result<Vec<Option<&PlayerId>>, GameError>>()?
                 .into_iter()
-                .filter_map(|p| p)
+                .flatten()
                 .collect::<Vec<&PlayerId>>();
 
             ensure!(
@@ -1079,7 +1079,7 @@ pub fn update_game_state(
                 }
                 PlanetAttachment::NanoForge => {
                     ensure!(
-                        planet.info().is_legendary == false,
+                        !planet.info().is_legendary,
                         "Cannot place Nano Forge on legendary planet"
                     );
                     ensure!(
