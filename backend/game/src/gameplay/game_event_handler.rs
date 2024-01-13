@@ -300,16 +300,16 @@ pub fn update_game_state(
                 bail!("no current player");
             };
 
-            let (current_owner, attachments) =
-                game_state
-                    .players
-                    .iter_mut()
-                    .fold((None, HashSet::new()), |acc, (id, player)| {
-                        if let Some(attachments) = player.planets.remove(&planet) {
-                            return (Some(id.clone()), attachments);
-                        }
-                        acc
-                    });
+            let (current_owner, attachments) = game_state
+                .players
+                .iter_mut()
+                .find_map(|(id, player)| {
+                    if let Some(attachments) = player.planets.remove(&planet) {
+                        return Some((Some(id.clone()), attachments));
+                    }
+                    None
+                })
+                .unwrap_or((None, HashSet::new()));
 
             let Some(current_player) = game_state.players.get_mut(current_player_id) else {
                 bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
