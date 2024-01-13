@@ -75,6 +75,11 @@ fieldset {
   }
 }
 
+.screenContainer {
+  width: 100%;
+  max-width: 600px;
+}
+
 .main {
   display: flex;
   flex-direction: column;

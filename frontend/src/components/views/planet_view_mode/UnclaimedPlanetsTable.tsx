@@ -30,7 +30,7 @@ export const UnclaimedPlanetsTable = () => {
 
   return (
     <div className={styles.unclaimedPlanetsContainer}>
-      <div className="card">
+      <div className={`card screenContainer`}>
         <table>
           <thead>
             <tr>

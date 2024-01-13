@@ -38,7 +38,7 @@ export const CreationPhase = () => {
     });
   };
   return (
-    <div className={`card ${styles.setupCard}`}>
+    <div className={`card screenContainer ${styles.setupCard}`}>
       <h2>Add players</h2>
       {Object.entries(gameState.players).map(([playerId, player]) => (
         <DisplayPlayer key={playerId} player={player} />
