@@ -299,10 +299,6 @@ pub fn update_game_state(
             let Some(current_player_id) = &game_state.current_player else {
                 bail!("no current player");
             };
-            ensure!(
-                game_state.players.contains_key(current_player_id),
-                "Current player doesn't exist?"
-            );
 
             let (current_owner, attachments) =
                 game_state
