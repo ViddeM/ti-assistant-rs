@@ -317,21 +317,7 @@ pub fn update_game_state(
 
             let planet_system = System::for_planet(&planet)?;
 
-            let planet_info = planet.info();
-            current_player.planets.insert(
-                planet.clone(),
-                attachments
-                    .into_iter()
-                    .map(|a| a.match_planet(&planet_info))
-                    .collect::<HashSet<PlanetAttachment>>(),
-            );
-
-            // In case someone else currently owns the planet, remove it from them.
-            game_state
-                .players
-                .iter_mut()
-                .filter(|&(id, _)| id != current_player_id)
-                .for_each(|(_, p)| p.remove_planet(&planet));
+            current_player.planets.insert(planet.clone(), attachments);
 
             // Give the current player Custodians if he is the first to take Mecatol Rex
             if let Planet::MecatolRex = planet {
@@ -1017,27 +1003,21 @@ pub fn update_game_state(
             if let Some(p) = &player {
                 ensure!(game_state.players.contains_key(p), "Player does not exist");
 
-                let (_, attachments) = game_state.players.iter_mut().fold(
-                    (None, HashSet::new()),
-                    |acc, (id, player)| {
+                let attachments = game_state
+                    .players
+                    .values_mut()
+                    .find_map(|player| {
                         if let Some(attachments) = player.planets.remove(&planet) {
-                            return (Some(id.clone()), attachments);
+                            return Some(attachments);
                         }
-                        acc
-                    },
-                );
+                        None
+                    })
+                    .unwrap_or(HashSet::new());
 
                 let Some(player) = game_state.players.get_mut(p) else {
                     bail!("Player does not exist? This is a bug!")
                 };
-                let planet_info = planet.info();
-                player.planets.insert(
-                    planet,
-                    attachments
-                        .into_iter()
-                        .map(|a| a.match_planet(&planet_info))
-                        .collect::<HashSet<PlanetAttachment>>(),
-                );
+                player.planets.insert(planet, attachments);
             }
         }
         Event::AddPlanetAttachment {
