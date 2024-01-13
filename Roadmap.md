@@ -22,7 +22,7 @@
      - ✅ techs
  - ✅ Planets
    - ✅ Resource Tracking
-   - ❌ Planet attachments (PoK)
+   - ✅ Planet attachments (PoK)
  - ❌ Score
    - ✅ Objectives (Stage I and II)
    - ✅ Custodians (Mecatroll rex)
@@ -55,7 +55,6 @@
      - ❌ Exploration
        - ❌ Frontier cards
        - ❌ Relics
-       - ❌ Relic fragments (do we want to track this?)
      - ✅ Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
      - ❌ Leaders (agents, commanders, heroes)
      - ❌ Mechs (probably not relevant?)
