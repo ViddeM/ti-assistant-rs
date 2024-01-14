@@ -6,6 +6,7 @@ use crate::data::components::frontier_card::FrontierCard;
 use crate::data::components::objectives::public::PublicObjective;
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
 use crate::data::components::planet_attachment::PlanetAttachment;
+use crate::data::components::relic::Relic;
 use crate::data::components::{
     action_card::ActionCard, planet::Planet, strategy_card::StrategyCard, tech::Technology,
 };
@@ -158,7 +159,7 @@ pub enum Event {
     },
 
     /// Begin playing a frontier card.
-    FrontierCardBegin {
+    FrontierCardActionBegin {
         /// The player who plays the card.
         player: PlayerId,
         /// The card that is being played.
@@ -166,11 +167,27 @@ pub enum Event {
     },
 
     /// Finish a frontier card action.
-    FrontierCardCommit {
+    FrontierCardActionCommit {
         /// The player who takes the action.
         player: PlayerId,
         /// Additional information required to carry out the action.
         data: FrontierCardAction,
+    },
+
+    /// Begin playing a relic action.
+    RelicActionBegin {
+        /// The player who plays the relic.
+        player: PlayerId,
+        /// The relic being played.
+        relic: Relic,
+    },
+
+    /// Finish a relic action.
+    RelicActionCommit {
+        /// The player who took the action.
+        player: PlayerId,
+        /// Additional information required to carry out the action.
+        data: Option<RelicAction>,
     },
 
     /// End turn
@@ -519,4 +536,21 @@ pub fn action_matches_frontier_card(action: &FrontierCardAction, card: &Frontier
             FrontierCard::EnigmaticDevice
         )
     )
+}
+
+/// The actions taken for specific frontier cards.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[allow(missing_docs)]
+pub enum RelicAction {
+    StellarConverter { planet: Planet },
+    NanoForge { planet: Planet },
+}
+
+/// Returns weather the [RelicAction] is for the provided [Relic].
+pub fn action_matches_relic(action: &Option<RelicAction>, relic: &Relic) -> bool {
+    match relic {
+        Relic::StellarConverter => matches!(action, Some(RelicAction::StellarConverter { .. })),
+        Relic::NanoForge => matches!(action, Some(RelicAction::NanoForge { .. })),
+        _ => action.is_none(),
+    }
 }

@@ -1,7 +1,6 @@
 import { FrontierCardProgress } from "@/api/GameState";
 import { useGameContext } from "@/hooks/GameContext";
 import { SelectTechView } from "../select_tech_view/SelectTechView";
-import { useState } from "react";
 
 export const FrontierCardView = () => {
   const { gameState, gameOptions } = useGameContext();
@@ -34,7 +33,7 @@ const FrontierCardProgressView = ({
             playerId={gameState.currentPlayer!!}
             onSelect={(tech) =>
               sendEvent({
-                FrontierCardCommit: {
+                FrontierCardActionCommit: {
                   player: gameState.currentPlayer,
                   data: {
                     EnigmaticDevice: {

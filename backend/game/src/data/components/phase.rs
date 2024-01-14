@@ -28,6 +28,9 @@ pub enum Phase {
     /// Performing a frontier card action
     FrontierCardAction,
 
+    /// Performing a relic action
+    RelicAction,
+
     /// Player has finished one action turn, check if they're gonna take another one.
     EndActionTurn,
 

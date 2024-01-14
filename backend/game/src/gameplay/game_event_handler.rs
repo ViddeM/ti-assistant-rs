@@ -18,6 +18,7 @@ use crate::{
             phase::Phase,
             planet::Planet,
             planet_attachment::PlanetAttachment,
+            relic::RelicPlay,
             strategy_card::StrategyCard,
             system::{System, SystemType},
             tech::{TechOrigin, TechType, Technology},
@@ -26,11 +27,11 @@ use crate::{
     gameplay::{
         agenda::{AgendaRound, Vote, VoteState},
         event::{
-            action_matches_action_card, FrontierCardAction, StrategicPrimaryAction,
-            StrategicSecondaryAction,
+            action_matches_action_card, action_matches_relic, FrontierCardAction, RelicAction,
+            StrategicPrimaryAction, StrategicSecondaryAction,
         },
         game_state::{
-            ActionCardProgress, ActionPhaseProgress, FrontierCardProgress,
+            ActionCardProgress, ActionPhaseProgress, FrontierCardProgress, RelicProgress,
             StrategicPrimaryProgress, StrategicProgress,
         },
         player::PlayerId,
@@ -658,7 +659,7 @@ pub fn update_game_state(
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
-        Event::FrontierCardBegin { player, card } => {
+        Event::FrontierCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
             game_state.assert_expansion(&card.info().expansion)?;
@@ -677,7 +678,7 @@ pub fn update_game_state(
                 }));
             game_state.phase = Phase::FrontierCardAction;
         }
-        Event::FrontierCardCommit { player, data } => {
+        Event::FrontierCardActionCommit { player, data } => {
             game_state.assert_phase(Phase::FrontierCardAction)?;
             game_state.assert_player_turn(&player)?;
 
@@ -707,6 +708,107 @@ pub fn update_game_state(
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
+        Event::RelicActionBegin { player, relic } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+            game_state.assert_expansion(&relic.info().expansion)?;
+            ensure!(
+                relic.info().play == RelicPlay::Action,
+                "Only able to play relic actions during action phase"
+            );
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Invalid game state, action_progress not None during Action Phase"
+            );
+
+            game_state.action_progress = Some(ActionPhaseProgress::Relic(RelicProgress { relic }));
+            game_state.phase = Phase::RelicAction;
+        }
+        Event::RelicActionCommit { player, data } => {
+            game_state.assert_phase(Phase::RelicAction)?;
+            game_state.assert_player_turn(&player)?;
+
+            let Some(ActionPhaseProgress::Relic(progress)) = game_state.action_progress.as_ref()
+            else {
+                bail!(
+                    "Invalid state, expected relic progress, got {:?}",
+                    game_state.action_progress
+                )
+            };
+
+            ensure!(
+                action_matches_relic(&data, &progress.relic),
+                "Data provided doesn't match the card being played."
+            );
+
+            if let Some(data) = data {
+                match data {
+                    RelicAction::StellarConverter { planet } => {
+                        ensure!(
+                            planet != Planet::MecatolRex,
+                            "Cannot use stellar converter on mecatol rex"
+                        );
+                        ensure!(
+                            !matches!(
+                                System::for_planet(&planet)?.system_type,
+                                SystemType::HomeSystem(..)
+                            ),
+                            "Cannot use stellar converter on home system"
+                        );
+                        ensure!(
+                            !planet.info().is_legendary,
+                            "Cannot use stellar converter on legendary planet"
+                        );
+
+                        if let Some(player) = game_state
+                            .players
+                            .values_mut()
+                            .find_map(|p| {
+                                if p.planets.contains_key(&planet) {
+                                    Some(p)
+                                } else {
+                                    None
+                                }
+                            })
+                        {
+                            let Some(attachments) = player.planets.get(&planet) else { bail!("Player no longer has planet? (This is a bug)") };
+                            ensure!(
+                                attachments.iter().any(|a| a.info().set_legendary), 
+                                "Planet has attachment that makes it legendary and stellar converter cannot be played on legendary planets"
+                            );
+                            player.planets.remove(&planet);
+                        }
+                        // TODO: Should we also mark the planet as destroyed and disallow anyone else taking it in the future?
+                    }
+                    RelicAction::NanoForge { planet } => {
+                        ensure!(
+                            !planet.info().is_legendary, 
+                            "Cannot place nano forge on legendary planet"
+                        );
+                        ensure!(
+                            !matches!(System::for_planet(&planet)?.system_type, SystemType::HomeSystem(..)),
+                            "Cannot place Nano Forge on home planet"
+                        );
+                        let Some(player) = game_state.players.get_mut(&player) else {
+                            bail!("Player doesn't exist?")
+                        };
+                        ensure!(
+                            player.planets.contains_key(&planet), 
+                            "Player must own the planet in order to place nano-forges there"
+                        );
+                        let Some(attachments) = player.planets.get_mut(&planet) else { 
+                            bail!("Player no longer owns planet? (This is a bug)") 
+                        };
+                        ensure!(!attachments.contains(&PlanetAttachment::NanoForge), "Planet already has attachment Nano-Forges");
+                        attachments.insert(PlanetAttachment::NanoForge);
+                    },
+                }
+            }
+
+            game_state.action_progress = None;
+            game_state.phase = Phase::EndActionTurn;
+        }
+
         Event::TakeAnotherTurn { player } => {
             game_state.assert_phase(Phase::EndActionTurn)?;
             game_state.assert_player_turn(&player)?;
@@ -1202,6 +1304,7 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::TacticalAction
         | Phase::EndActionTurn
         | Phase::FrontierCardAction
+        | Phase::RelicAction
         | Phase::ActionCardAction => true,
 
         Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => false,
