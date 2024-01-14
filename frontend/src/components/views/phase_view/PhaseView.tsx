@@ -55,6 +55,8 @@ export const PhaseView = () => {
       return <ActionCardView />;
     case "FrontierCardAction":
       return <FrontierCardView />;
+    case "RelicAction":
+      return <RelicCardView />;
     case "EndActionTurn":
       return <EndActionPhaseView />;
     case "Status":

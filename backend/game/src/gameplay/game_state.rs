@@ -17,6 +17,7 @@ use crate::data::{
         phase::Phase,
         planet::Planet,
         planet_attachment::PlanetAttachment,
+        relic::Relic,
         strategy_card::StrategyCard,
         system::SystemId,
         tech::Technology,
@@ -112,6 +113,8 @@ pub enum ActionPhaseProgress {
     ActionCard(ActionCardProgress),
     /// The progress of a frontier card.
     FrontierCard(FrontierCardProgress),
+    /// The progress of a relic action.
+    Relic(RelicProgress),
 }
 
 impl ActionPhaseProgress {
@@ -206,6 +209,14 @@ pub struct ActionCardProgress {
 pub struct FrontierCardProgress {
     /// Which card is being played.
     pub card: FrontierCard,
+}
+
+/// The progress of a frontier card being played.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RelicProgress {
+    /// The relic whose action is being taken.
+    pub relic: Relic,
 }
 
 impl GameState {

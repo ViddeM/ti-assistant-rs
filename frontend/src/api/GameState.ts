@@ -44,6 +44,7 @@ export interface ActionProgress {
   Tactical?: TacticalProgress;
   ActionCard?: ActionCardProgress;
   FrontierCard?: FrontierCardProgress;
+  Relic?: RelicProgress;
 }
 
 export interface StrategyCardProgress {
@@ -71,6 +72,10 @@ export interface ActionCardProgress {
 
 export interface FrontierCardProgress {
   card: string;
+}
+
+export interface RelicProgress {
+  relic: string;
 }
 
 export type StrategicSecondaryProgress =

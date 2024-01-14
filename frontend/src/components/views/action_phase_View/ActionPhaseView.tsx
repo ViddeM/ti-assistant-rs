@@ -185,7 +185,7 @@ const ActionCardSelectView = () => {
 };
 
 const RelicCardView = () => {
-  const { gameOptions } = useGameContext();
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const [selected, setSelected] = useState<string>("");
 
@@ -197,7 +197,7 @@ const RelicCardView = () => {
     <div>
       <fieldset className={styles.playActionCardContainer}>
         <legend>Play Relic</legend>
-        <Dropdown>
+        <Dropdown onChange={(e) => setSelected(e.target.value)}>
           <option value="">--Select relic--</option>
           {availableRelics.map((r) => (
             <option key={r.card} value={r.card}>
@@ -205,7 +205,19 @@ const RelicCardView = () => {
             </option>
           ))}
         </Dropdown>
-        <Button>Play</Button>
+        <Button
+          disabled={selected === ""}
+          onClick={() =>
+            sendEvent({
+              RelicActionBegin: {
+                player: gameState.currentPlayer,
+                relic: selected,
+              },
+            })
+          }
+        >
+          Play
+        </Button>
       </fieldset>
     </div>
   );
@@ -239,7 +251,7 @@ const FrontierCardView = () => {
           disabled={selected === ""}
           onClick={() =>
             sendEvent({
-              FrontierCardBegin: {
+              FrontierCardActionBegin: {
                 player: gameState.currentPlayer,
                 card: selected,
               },
