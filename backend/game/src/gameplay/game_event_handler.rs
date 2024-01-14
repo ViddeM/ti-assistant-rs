@@ -13,6 +13,7 @@ use crate::{
         components::{
             action_card::{ActionCard, ActionCardPlay},
             agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
+            frontier_card::FrontierCardType,
             objectives::{Objective, ObjectiveKind},
             phase::Phase,
             planet::Planet,
@@ -24,9 +25,13 @@ use crate::{
     },
     gameplay::{
         agenda::{AgendaRound, Vote, VoteState},
-        event::{action_matches_action_card, StrategicPrimaryAction, StrategicSecondaryAction},
+        event::{
+            action_matches_action_card, FrontierCardAction, StrategicPrimaryAction,
+            StrategicSecondaryAction,
+        },
         game_state::{
-            ActionCardProgress, ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress,
+            ActionCardProgress, ActionPhaseProgress, FrontierCardProgress,
+            StrategicPrimaryProgress, StrategicProgress,
         },
         player::PlayerId,
     },
@@ -35,7 +40,7 @@ use crate::{
 use super::{
     agenda::AgendaRecord,
     error::GameError,
-    event::{ActionCardInfo, Event},
+    event::{action_matches_frontier_card, ActionCardAction, Event},
     game_state::{GameState, TacticalProgress},
 };
 
@@ -604,13 +609,13 @@ pub fn update_game_state(
 
             if let Some(data) = data {
                 match data {
-                    ActionCardInfo::FocusedResearch { tech } => {
+                    ActionCardAction::FocusedResearch { tech } => {
                         game_state.assert_expansion(&tech.info().expansion)?;
 
                         let current_player = game_state.get_current_player()?;
                         current_player.take_tech(tech.clone())?;
                     }
-                    ActionCardInfo::DivertFunding {
+                    ActionCardAction::DivertFunding {
                         remove_tech,
                         take_tech,
                     } => {
@@ -637,7 +642,7 @@ pub fn update_game_state(
                         current_player.technologies.remove(&remove_tech);
                         current_player.take_tech(take_tech.clone())?;
                     }
-                    ActionCardInfo::Plagiarize { tech } => {
+                    ActionCardAction::Plagiarize { tech } => {
                         let available_techs = get_plagiarize_available_techs(game_state)?;
                         ensure!(
                             available_techs.contains(&tech),
@@ -647,6 +652,55 @@ pub fn update_game_state(
                         let current_player = game_state.get_current_player()?;
                         current_player.take_tech(tech)?;
                     }
+                }
+            }
+
+            game_state.action_progress = None;
+            game_state.phase = Phase::EndActionTurn;
+        }
+        Event::FrontierCardBegin { player, card } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+            game_state.assert_expansion(&card.info().expansion)?;
+            ensure!(
+                card.info().frontier_type == FrontierCardType::Action,
+                "Only able to play frontier card actions during action phase"
+            );
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Invalid game state, action_progress not None during Action Phase"
+            );
+
+            game_state.action_progress =
+                Some(ActionPhaseProgress::FrontierCard(FrontierCardProgress {
+                    card,
+                }));
+            game_state.phase = Phase::FrontierCardAction;
+        }
+        Event::FrontierCardCommit { player, data } => {
+            game_state.assert_phase(Phase::FrontierCardAction)?;
+            game_state.assert_player_turn(&player)?;
+
+            let Some(ActionPhaseProgress::FrontierCard(progress)) =
+                game_state.action_progress.as_ref()
+            else {
+                bail!(
+                    "Invalid state, expected frontier card progress, got {:?}",
+                    game_state.action_progress
+                );
+            };
+
+            ensure!(
+                action_matches_frontier_card(&data, &progress.card),
+                "Data provided doesn't match the card being played."
+            );
+
+            match data {
+                FrontierCardAction::EnigmaticDevice { tech } => {
+                    game_state.assert_expansion(&tech.info().expansion)?;
+
+                    let current_player = game_state.get_current_player()?;
+                    current_player.take_tech(tech.clone())?;
                 }
             }
 
@@ -1147,6 +1201,7 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::StrategicAction
         | Phase::TacticalAction
         | Phase::EndActionTurn
+        | Phase::FrontierCardAction
         | Phase::ActionCardAction => true,
 
         Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => false,

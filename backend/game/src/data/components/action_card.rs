@@ -134,6 +134,7 @@ pub enum AgendaStagePlay {
 
 /// All relevant information for an action card.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct ActionCardInfo {
     /// Which action card this is in regards to.
     pub card: ActionCard,

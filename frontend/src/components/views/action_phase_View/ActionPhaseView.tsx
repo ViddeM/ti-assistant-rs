@@ -84,10 +84,10 @@ export const ActionPhaseView = () => {
   );
 };
 
-type ComponentMode = "ACTION_CARD" | "";
+type ComponentMode = "ACTION_CARD" | "RELICS" | "FRONTIER_CARD" | "";
 
 const ComponentSelectRow = () => {
-  const { gameState } = useGameContext();
+  const { gameOptions, gameState } = useGameContext();
 
   const [componentMode, setComponentMode] = useState<ComponentMode>("");
 
@@ -95,17 +95,52 @@ const ComponentSelectRow = () => {
 
   return (
     <>
-      <div>
+      <div className={styles.componentSelectContainer}>
         <Button
           disabled={componentMode === "ACTION_CARD"}
           onClick={() => setComponentMode("ACTION_CARD")}
         >
           Action Card
         </Button>
+        <Button
+          disabled={
+            componentMode === "RELICS" ||
+            Object.keys(gameOptions.relics).length === 0
+          }
+          onClick={() => setComponentMode("RELICS")}
+        >
+          Relics
+        </Button>
+        <Button
+          disabled={
+            componentMode === "FRONTIER_CARD" ||
+            Object.keys(gameOptions.frontierCards).length === 0
+          }
+          onClick={() => setComponentMode("FRONTIER_CARD")}
+        >
+          Frontier Card
+        </Button>
       </div>
-      {componentMode === "ACTION_CARD" && <ActionCardSelectView />}
+      {componentMode !== "" && <DisplayComponentMode mode={componentMode} />}
     </>
   );
+};
+
+interface DisplayComponentModeProps {
+  mode: ComponentMode;
+}
+
+const DisplayComponentMode = ({ mode }: DisplayComponentModeProps) => {
+  switch (mode) {
+    case "ACTION_CARD":
+      return <ActionCardSelectView />;
+    case "RELICS":
+      return <RelicCardView />;
+    case "FRONTIER_CARD":
+      return <FrontierCardView />;
+    default:
+      return <p>Invalid display mode {mode}</p>;
+  }
 };
 
 const ActionCardSelectView = () => {
@@ -146,6 +181,75 @@ const ActionCardSelectView = () => {
         Play
       </Button>
     </fieldset>
+  );
+};
+
+const RelicCardView = () => {
+  const { gameOptions } = useGameContext();
+
+  const [selected, setSelected] = useState<string>("");
+
+  const availableRelics = Object.values(gameOptions.relics).filter(
+    (r) => r.play === "Action"
+  );
+
+  return (
+    <div>
+      <fieldset className={styles.playActionCardContainer}>
+        <legend>Play Relic</legend>
+        <Dropdown>
+          <option value="">--Select relic--</option>
+          {availableRelics.map((r) => (
+            <option key={r.card} value={r.card}>
+              {r.name}
+            </option>
+          ))}
+        </Dropdown>
+        <Button>Play</Button>
+      </fieldset>
+    </div>
+  );
+};
+
+const FrontierCardView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
+  const [selected, setSelected] = useState<string>("");
+
+  const availableCards = Object.values(gameOptions.frontierCards).filter(
+    (f) => f.frontierType === "Action"
+  );
+
+  return (
+    <div>
+      <fieldset className={styles.playActionCardContainer}>
+        <legend>Play Frontier Card</legend>
+        <Dropdown
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+        >
+          <option>--Select frontier card--</option>
+          {availableCards.map((f) => (
+            <option key={f.card} value={f.card}>
+              {f.name}
+            </option>
+          ))}
+        </Dropdown>
+        <Button
+          disabled={selected === ""}
+          onClick={() =>
+            sendEvent({
+              FrontierCardBegin: {
+                player: gameState.currentPlayer,
+                card: selected,
+              },
+            })
+          }
+        >
+          Play
+        </Button>
+      </fieldset>
+    </div>
   );
 };
 

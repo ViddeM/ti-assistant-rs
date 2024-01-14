@@ -6,6 +6,7 @@ export type GamePhase =
   | "StrategicAction"
   | "TacticalAction"
   | "ActionCardAction"
+  | "FrontierCardAction"
   | "EndActionTurn"
   | "Status"
   | "Agenda";
