@@ -38,3 +38,12 @@
     margin-top: $marginLarge;
   }
 }
+
+.componentSelectContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  & > *:not(:last-child) {
+    margin-right: $marginLarge;
+  }
+}

@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::common::faction::Faction;
 use crate::data::components::agenda::{Agenda, AgendaElect};
+use crate::data::components::frontier_card::FrontierCard;
 use crate::data::components::objectives::public::PublicObjective;
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
 use crate::data::components::planet_attachment::PlanetAttachment;
@@ -153,7 +154,23 @@ pub enum Event {
         /// What player played the data.
         player: PlayerId,
         /// Additional information about what occurred when they played the card.
-        data: Option<ActionCardInfo>,
+        data: Option<ActionCardAction>,
+    },
+
+    /// Begin playing a frontier card.
+    FrontierCardBegin {
+        /// The player who plays the card.
+        player: PlayerId,
+        /// The card that is being played.
+        card: FrontierCard,
+    },
+
+    /// Finish a frontier card action.
+    FrontierCardCommit {
+        /// The player who takes the action.
+        player: PlayerId,
+        /// Additional information required to carry out the action.
+        data: FrontierCardAction,
     },
 
     /// End turn
@@ -449,7 +466,7 @@ impl From<StrategicSecondaryAction> for StrategicSecondaryProgress {
 /// The actions taken for specific action cards.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[allow(missing_docs)]
-pub enum ActionCardInfo {
+pub enum ActionCardAction {
     FocusedResearch {
         /// The technology that was taken.
         tech: Technology,
@@ -467,18 +484,39 @@ pub enum ActionCardInfo {
     },
 }
 
-/// Returns weather the [ActionCardInfo] is for the provided [ActionCard].
-pub fn action_matches_action_card(action: &Option<ActionCardInfo>, card: &ActionCard) -> bool {
+/// Returns weather the [ActionCardAction] is for the provided [ActionCard].
+pub fn action_matches_action_card(action: &Option<ActionCardAction>, card: &ActionCard) -> bool {
     match card {
         ActionCard::FocusedResearch => {
-            matches!(action, Some(ActionCardInfo::FocusedResearch { .. }))
+            matches!(action, Some(ActionCardAction::FocusedResearch { .. }))
         }
         ActionCard::DivertFunding => {
-            matches!(action, Some(ActionCardInfo::DivertFunding { .. }))
+            matches!(action, Some(ActionCardAction::DivertFunding { .. }))
         }
         ActionCard::Plagiarize => {
-            matches!(action, Some(ActionCardInfo::Plagiarize { .. }))
+            matches!(action, Some(ActionCardAction::Plagiarize { .. }))
         }
         _ => action.is_none(),
     }
+}
+
+/// The actions taken for specific frontier cards.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[allow(missing_docs)]
+pub enum FrontierCardAction {
+    EnigmaticDevice {
+        /// The tech to gain.
+        tech: Technology,
+    },
+}
+
+/// Returns weather the [FrontierCardAction] is for the provided [FrontierCard].
+pub fn action_matches_frontier_card(action: &FrontierCardAction, card: &FrontierCard) -> bool {
+    matches!(
+        (action, card),
+        (
+            FrontierCardAction::EnigmaticDevice { .. },
+            FrontierCard::EnigmaticDevice
+        )
+    )
 }

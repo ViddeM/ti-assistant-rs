@@ -9,12 +9,14 @@ use crate::{
         components::{
             action_card::{ActionCard, ActionCardInfo},
             agenda::{Agenda, AgendaInfo},
+            frontier_card::{FrontierCard, FrontierCardInfo},
             leaders::{Agent, Commander, Hero, Leader, LeaderInfo},
             objectives::{
                 public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo,
             },
             planet::{Planet, PlanetInfo},
             planet_attachment::{PlanetAttachment, PlanetAttachmentInfo},
+            relic::{Relic, RelicInfo},
             system::{systems, System},
             tech::{TechInfo, Technology},
         },
@@ -54,6 +56,10 @@ pub struct GameOptions {
     leaders: HashMap<Leader, LeaderInfo>,
     /// Map from all factions in the game to the leaders of that faction.
     leaders_by_faction: HashMap<Faction, Vec<Leader>>,
+    /// What frontier cards exists in the game.
+    frontier_cards: HashMap<FrontierCard, FrontierCardInfo>,
+    /// What relics exists in the game.
+    relics: HashMap<Relic, RelicInfo>,
 }
 
 impl GameOptions {
@@ -120,6 +126,14 @@ impl GameOptions {
                     acc
                 }),
             leaders,
+            frontier_cards: FrontierCard::iter()
+                .map(|f| (f.clone(), f.info()))
+                .filter(|(_, card)| expansions.is_enabled(&card.expansion))
+                .collect(),
+            relics: Relic::iter()
+                .map(|relic| (relic.clone(), relic.info()))
+                .filter(|(_, relic)| expansions.is_enabled(&relic.expansion))
+                .collect(),
         }
     }
 }

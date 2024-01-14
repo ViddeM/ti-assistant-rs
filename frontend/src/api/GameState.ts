@@ -43,6 +43,7 @@ export interface ActionProgress {
   Strategic?: StrategyCardProgress;
   Tactical?: TacticalProgress;
   ActionCard?: ActionCardProgress;
+  FrontierCard?: FrontierCardProgress;
 }
 
 export interface StrategyCardProgress {
@@ -65,6 +66,10 @@ export interface StrategicPrimaryProgress {
 }
 
 export interface ActionCardProgress {
+  card: string;
+}
+
+export interface FrontierCardProgress {
   card: string;
 }
 

@@ -12,6 +12,7 @@ use crate::data::{
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
+        frontier_card::FrontierCard,
         objectives::Objective,
         phase::Phase,
         planet::Planet,
@@ -109,6 +110,8 @@ pub enum ActionPhaseProgress {
     Tactical(TacticalProgress),
     /// The progress of an action card.
     ActionCard(ActionCardProgress),
+    /// The progress of a frontier card.
+    FrontierCard(FrontierCardProgress),
 }
 
 impl ActionPhaseProgress {
@@ -195,6 +198,14 @@ pub struct TacticalProgress {
 pub struct ActionCardProgress {
     /// Which card is being played.
     pub card: ActionCard,
+}
+
+/// The progress of a frontier card being played.
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FrontierCardProgress {
+    /// Which card is being played.
+    pub card: FrontierCard,
 }
 
 impl GameState {

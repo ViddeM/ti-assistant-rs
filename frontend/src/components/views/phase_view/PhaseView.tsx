@@ -10,6 +10,7 @@ import { AgendaPhaseView } from "../agenda_phase_view/AgendaPhaseView";
 import { SetupPhase } from "../setup/Setup";
 import { useGameContext } from "@/hooks/GameContext";
 import { EndActionPhaseView } from "../end_action_phase_view/EndActionPhaseView";
+import { FrontierCardView } from "../frontier_card_view/FrontierCardView";
 
 export const PhaseView = () => {
   const { gameState, sendEvent } = useGameContext();
@@ -52,6 +53,8 @@ export const PhaseView = () => {
       return <TacticalView />;
     case "ActionCardAction":
       return <ActionCardView />;
+    case "FrontierCardAction":
+      return <FrontierCardView />;
     case "EndActionTurn":
       return <EndActionPhaseView />;
     case "Status":

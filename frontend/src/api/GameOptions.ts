@@ -15,6 +15,8 @@ export interface GameOptions {
   technologies: { [key: string]: TechInfo };
   actionCards: { [key: string]: ActionCardInfo };
   agendas: { [key: string]: AgendaInfo };
+  frontierCards: { [key: string]: FrontierCardInfo };
+  relics: { [key: string]: RelicInfo };
 }
 
 export interface PlanetInfo {
@@ -114,10 +116,10 @@ export interface ActionCardInfo {
   card: string;
   name: string;
   expansion: string; // TODO
-  play_text: string;
+  playText: string;
   play: ActionCardPlay;
   effect: string;
-  flavor_text: string;
+  flavorText: string;
 }
 
 export interface AgendaInfo {
@@ -126,4 +128,28 @@ export interface AgendaInfo {
   kind: AgendaKind;
   elect: AgendaElect;
   origin: string; // TODO
+}
+
+export type FrontierCardType = "Action" | "Unhandled";
+
+export interface FrontierCardInfo {
+  card: string;
+  name: string;
+  expansion: string;
+  numInDeck: number;
+  frontierType: FrontierCardType;
+}
+
+export type RelicPlay =
+  | "Action"
+  | "Agenda"
+  | "Possession"
+  | "AfterTactical"
+  | "Unhandled";
+
+export interface RelicInfo {
+  card: string;
+  name: string;
+  expansion: string;
+  play: RelicPlay;
 }

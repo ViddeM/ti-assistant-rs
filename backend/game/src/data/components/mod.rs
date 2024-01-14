@@ -2,6 +2,8 @@
 pub mod action_card;
 /// Agenda cards.
 pub mod agenda;
+/// Frontier cards.
+pub mod frontier_card;
 /// Leader cards, i.e. agents, commanders, and heroes.
 pub mod leaders;
 /// Objectives.
@@ -12,6 +14,8 @@ pub mod phase;
 pub mod planet;
 /// Planetary attachments.
 pub mod planet_attachment;
+/// Relics
+pub mod relic;
 /// Strategy cards.
 pub mod strategy_card;
 /// Systems.
