@@ -171,7 +171,7 @@ pub enum Event {
         /// The player who takes the action.
         player: PlayerId,
         /// Additional information required to carry out the action.
-        data: FrontierCardAction,
+        data: Option<FrontierCardAction>,
     },
 
     /// Begin playing a relic action.
@@ -528,14 +528,16 @@ pub enum FrontierCardAction {
 }
 
 /// Returns weather the [FrontierCardAction] is for the provided [FrontierCard].
-pub fn action_matches_frontier_card(action: &FrontierCardAction, card: &FrontierCard) -> bool {
-    matches!(
-        (action, card),
-        (
-            FrontierCardAction::EnigmaticDevice { .. },
-            FrontierCard::EnigmaticDevice
-        )
-    )
+pub fn action_matches_frontier_card(
+    action: &Option<FrontierCardAction>,
+    card: &FrontierCard,
+) -> bool {
+    match card {
+        FrontierCard::EnigmaticDevice => {
+            matches!(action, Some(FrontierCardAction::EnigmaticDevice { .. }))
+        }
+        _ => action.is_none(),
+    }
 }
 
 /// The actions taken for specific frontier cards.

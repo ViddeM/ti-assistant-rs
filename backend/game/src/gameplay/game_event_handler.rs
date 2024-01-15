@@ -13,7 +13,7 @@ use crate::{
         components::{
             action_card::{ActionCard, ActionCardPlay},
             agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
-            frontier_card::FrontierCardType,
+            frontier_card::{FrontierCard, FrontierCardType},
             objectives::{Objective, ObjectiveKind},
             phase::Phase,
             planet::Planet,
@@ -696,13 +696,29 @@ pub fn update_game_state(
                 "Data provided doesn't match the card being played."
             );
 
-            match data {
-                FrontierCardAction::EnigmaticDevice { tech } => {
-                    game_state.assert_expansion(&tech.info().expansion)?;
+            if let Some(progress) = data {
+                match progress {
+                    FrontierCardAction::EnigmaticDevice { tech } => {
+                        game_state.assert_expansion(&tech.info().expansion)?;
 
-                    let current_player = game_state.get_current_player()?;
-                    current_player.take_tech(tech.clone())?;
+                        let current_player = game_state.get_current_player()?;
+                        current_player.take_tech(tech.clone())?;
+                    }
                 }
+            } else if progress.card == FrontierCard::Mirage {
+                ensure!(
+                    !game_state
+                        .players
+                        .values()
+                        .flat_map(|p| p.planets.keys())
+                        .any(|p| p == &Planet::Mirage),
+                    "Another player has already taken mirage"
+                );
+
+                let current_player = game_state.get_current_player()?;
+                current_player
+                    .planets
+                    .insert(Planet::Mirage, HashSet::new());
             }
 
             game_state.action_progress = None;
@@ -760,20 +776,18 @@ pub fn update_game_state(
                             "Cannot use stellar converter on legendary planet"
                         );
 
-                        if let Some(player) = game_state
-                            .players
-                            .values_mut()
-                            .find_map(|p| {
-                                if p.planets.contains_key(&planet) {
-                                    Some(p)
-                                } else {
-                                    None
-                                }
-                            })
-                        {
-                            let Some(attachments) = player.planets.get(&planet) else { bail!("Player no longer has planet? (This is a bug)") };
+                        if let Some(player) = game_state.players.values_mut().find_map(|p| {
+                            if p.planets.contains_key(&planet) {
+                                Some(p)
+                            } else {
+                                None
+                            }
+                        }) {
+                            let Some(attachments) = player.planets.get(&planet) else {
+                                bail!("Player no longer has planet? (This is a bug)")
+                            };
                             ensure!(
-                                !attachments.iter().any(|a| a.info().set_legendary), 
+                                !attachments.iter().any(|a| a.info().set_legendary),
                                 "Planet has attachment that makes it legendary and stellar converter cannot be played on legendary planets"
                             );
                             player.planets.remove(&planet);
@@ -782,26 +796,32 @@ pub fn update_game_state(
                     }
                     RelicAction::NanoForge { planet } => {
                         ensure!(
-                            !planet.info().is_legendary, 
+                            !planet.info().is_legendary,
                             "Cannot place nano forge on legendary planet"
                         );
                         ensure!(
-                            !matches!(System::for_planet(&planet)?.system_type, SystemType::HomeSystem(..)),
+                            !matches!(
+                                System::for_planet(&planet)?.system_type,
+                                SystemType::HomeSystem(..)
+                            ),
                             "Cannot place Nano Forge on home planet"
                         );
                         let Some(player) = game_state.players.get_mut(&player) else {
                             bail!("Player doesn't exist?")
                         };
                         ensure!(
-                            player.planets.contains_key(&planet), 
+                            player.planets.contains_key(&planet),
                             "Player must own the planet in order to place nano-forges there"
                         );
-                        let Some(attachments) = player.planets.get_mut(&planet) else { 
-                            bail!("Player no longer owns planet? (This is a bug)") 
+                        let Some(attachments) = player.planets.get_mut(&planet) else {
+                            bail!("Player no longer owns planet? (This is a bug)")
                         };
-                        ensure!(!attachments.contains(&PlanetAttachment::NanoForge), "Planet already has attachment Nano-Forges");
+                        ensure!(
+                            !attachments.contains(&PlanetAttachment::NanoForge),
+                            "Planet already has attachment Nano-Forges"
+                        );
                         attachments.insert(PlanetAttachment::NanoForge);
-                    },
+                    }
                 }
             }
 
