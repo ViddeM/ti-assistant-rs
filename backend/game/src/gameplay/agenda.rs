@@ -166,11 +166,7 @@ impl VoteState {
             AgendaElectKind::HazardousPlanet => planets(|t| t.contains(&PlanetTrait::Hazardous))?,
             AgendaElectKind::IndustrialPlanet => planets(|t| t.contains(&PlanetTrait::Industrial))?,
 
-            AgendaElectKind::Law => game
-                .laws
-                .keys()
-                .map(|l| AgendaElect::Law(l.clone()))
-                .collect(),
+            AgendaElectKind::Law => game.laws.keys().map(|l| AgendaElect::Law(*l)).collect(),
         };
 
         ensure!(
