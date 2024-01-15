@@ -773,7 +773,7 @@ pub fn update_game_state(
                         {
                             let Some(attachments) = player.planets.get(&planet) else { bail!("Player no longer has planet? (This is a bug)") };
                             ensure!(
-                                attachments.iter().any(|a| a.info().set_legendary), 
+                                !attachments.iter().any(|a| a.info().set_legendary), 
                                 "Planet has attachment that makes it legendary and stellar converter cannot be played on legendary planets"
                             );
                             player.planets.remove(&planet);

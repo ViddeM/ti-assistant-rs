@@ -11,6 +11,7 @@ import { SetupPhase } from "../setup/Setup";
 import { useGameContext } from "@/hooks/GameContext";
 import { EndActionPhaseView } from "../end_action_phase_view/EndActionPhaseView";
 import { FrontierCardView } from "../frontier_card_view/FrontierCardView";
+import { RelicCardView } from "../relic_card_view/RelicCardView";
 
 export const PhaseView = () => {
   const { gameState, sendEvent } = useGameContext();
