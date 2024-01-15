@@ -1,6 +1,7 @@
 import { FrontierCardProgress } from "@/api/GameState";
 import { useGameContext } from "@/hooks/GameContext";
 import { SelectTechView } from "../select_tech_view/SelectTechView";
+import { Button } from "@/components/elements/button/Button";
 
 export const FrontierCardView = () => {
   const { gameState, gameOptions } = useGameContext();
@@ -9,7 +10,7 @@ export const FrontierCardView = () => {
   const card = gameOptions.frontierCards[progress.card];
 
   return (
-    <div className="card">
+    <div className="card column">
       <h2>{card.name}</h2>
       <FrontierCardProgressView cardProgress={progress} />
     </div>
@@ -47,6 +48,18 @@ const FrontierCardProgressView = ({
         </div>
       );
     default:
-      return <div>Frontier card not implemented {cardProgress.card}</div>;
+      return (
+        <Button
+          onClick={() =>
+            sendEvent({
+              FrontierCardActionCommit: {
+                player: gameState.currentPlayer,
+              },
+            })
+          }
+        >
+          Commit
+        </Button>
+      );
   }
 };
