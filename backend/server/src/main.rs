@@ -300,9 +300,9 @@ async fn handle_event(
         return Err(EventError::HandleEventError(e.to_string()));
     }
 
-    store_and_propagate_event(shared, id, event, now, &mut lobby)
+    store_and_propagate_event(shared, id, event, now, &lobby)
         .await
-        .map_err(|err| EventError::InternalError(err))?;
+        .map_err(EventError::InternalError)?;
 
     Ok(())
 }
@@ -312,7 +312,7 @@ async fn store_and_propagate_event(
     id: GameId,
     event: Event,
     timestamp: DateTime<Utc>,
-    lobby: &mut Lobby,
+    lobby: &Lobby,
 ) -> eyre::Result<()> {
     if let Some(db_pool) = &shared.db_pool {
         log::info!("persisting event for game {id:?}");
