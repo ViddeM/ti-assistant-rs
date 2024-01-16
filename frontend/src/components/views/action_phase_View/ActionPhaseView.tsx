@@ -245,21 +245,30 @@ const PlayRelicCardView = () => {
 
   const [selected, setSelected] = useState<string>("");
 
-  const availableRelics = Object.values(gameOptions.relics).filter(
-    (r) => r.play === "Action"
-  );
+  const availableRelics = gameState.players[gameState.currentPlayer!!].relics
+    .map((r) => gameOptions.relics[r])
+    .filter((r) => r.play === "Action");
 
   return (
     <div>
       <fieldset className={styles.playActionCardContainer}>
         <legend>Play Relic</legend>
-        <Dropdown onChange={(e) => setSelected(e.target.value)}>
-          <option value="">--Select relic--</option>
-          {availableRelics.map((r) => (
-            <option key={r.card} value={r.card}>
-              {r.name}
-            </option>
-          ))}
+        <Dropdown
+          onChange={(e) => setSelected(e.target.value)}
+          disabled={availableRelics.length === 0}
+        >
+          {availableRelics.length === 0 ? (
+            <option>--No relics available--</option>
+          ) : (
+            <>
+              <option value="">--Select relic--</option>
+              {availableRelics.map((r) => (
+                <option key={r.card} value={r.card}>
+                  {r.name}
+                </option>
+              ))}
+            </>
+          )}
         </Dropdown>
         <Button
           disabled={selected === ""}

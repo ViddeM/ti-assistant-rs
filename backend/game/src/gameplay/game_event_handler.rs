@@ -4,7 +4,7 @@ use std::{
 };
 
 use chrono::{DateTime, Utc};
-use eyre::{bail, ensure, Result};
+use eyre::{bail, ensure, OptionExt, Result};
 use strum::IntoEnumIterator;
 
 use crate::{
@@ -777,6 +777,15 @@ pub fn update_game_state(
                 game_state.action_progress.is_none(),
                 "Invalid game state, action_progress not None during Action Phase"
             );
+            ensure!(
+                game_state
+                    .players
+                    .get(&player)
+                    .ok_or_else(|| eyre::eyre!("Player doesn't exist? (This is a bug)"))?
+                    .relics
+                    .contains(&relic),
+                "Player doesn't own the relic"
+            );
 
             game_state.action_progress = Some(ActionPhaseProgress::Relic(RelicProgress { relic }));
             game_state.phase = Phase::RelicAction;
@@ -792,6 +801,16 @@ pub fn update_game_state(
                     game_state.action_progress
                 )
             };
+
+            ensure!(
+                game_state
+                    .players
+                    .get(&player)
+                    .ok_or_eyre("Player doesn't exist? (This is a bug)")?
+                    .relics
+                    .contains(&progress.relic),
+                "Player doesn't own the relic"
+            );
 
             ensure!(
                 action_matches_relic(&data, &progress.relic),
@@ -865,6 +884,13 @@ pub fn update_game_state(
                     }
                 }
             }
+
+            game_state
+                .players
+                .get_mut(&player)
+                .ok_or_eyre("Player no longer exists? (This is a bug)")?
+                .relics
+                .remove(&progress.relic);
 
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
