@@ -11,6 +11,10 @@ import { PlayerResources } from "./parts/PlayerResources";
 import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
 import { Duration, Score } from "@/api/GameState";
 import { PlayerTimeInfo } from "./parts/PlayerTimeInfo";
+import {
+  FactionIcon,
+  factionIconName,
+} from "@/components/elements/factionIcon/FactionIcon";
 
 export interface SidebarPlayer {
   name: string;
@@ -82,6 +86,12 @@ const PlayerBox = ({
 }: PlayerBoxProps) => {
   return (
     <fieldset
+      style={{
+        backgroundImage: `url("${factionIconName(player.faction.faction)}")`,
+        backgroundSize: "contain",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center",
+      }}
       className={`playerColorBorder${player.color} ${
         styles.playerBoxContainer
       } playerColor${player.color} ${

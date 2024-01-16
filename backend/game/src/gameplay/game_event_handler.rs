@@ -336,9 +336,29 @@ pub fn update_game_state(
                 })
                 .unwrap_or((None, HashSet::new()));
 
+            let shard_of_the_throne = if let Some(current_owner) = current_owner.as_ref() {
+                let Some(p) = game_state.players.get_mut(current_owner) else {
+                    bail!("Player doesn't exist {current_owner:?} (THIS IS A BUG!)");
+                };
+
+                let legendary_attachment = attachments.iter().any(|a| a.info().set_legendary);
+                if planet.info().is_legendary || legendary_attachment {
+                    p.relics.remove(&Relic::ShardOfTheThrone)
+                } else {
+                    false
+                }
+            } else {
+                false
+            };
+
             let Some(current_player) = game_state.players.get_mut(current_player_id) else {
                 bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
             };
+
+            if shard_of_the_throne {
+                current_player.relics.insert(Relic::ShardOfTheThrone);
+                game_state.score.shard_of_the_throne = Some(current_player_id.clone());
+            }
 
             let planet_system = if planet == Planet::Mirage {
                 None
@@ -1172,6 +1192,28 @@ pub fn update_game_state(
                 .revealed_objectives
                 .insert(pub_obj, HashSet::new());
         }
+        Event::SetShardForTheThroneOwner { player } => {
+            if let Some(p) = player.as_ref() {
+                ensure!(
+                    game_state.players.contains_key(p),
+                    "Player doesn't exist '{p}'"
+                );
+            }
+
+            // Remove shard of the throne relic from the player who has it.
+            game_state.players.values_mut().for_each(|p| {
+                p.relics.remove(&Relic::ShardOfTheThrone);
+            });
+
+            if let Some(p) = player.as_ref() {
+                // Give the relic to the new owner.
+                let Some(new_owner) = game_state.players.get_mut(p) else {
+                    bail!("Player doesn't exist?")
+                };
+                new_owner.relics.insert(Relic::ShardOfTheThrone);
+            }
+            game_state.score.shard_of_the_throne = player;
+        }
         Event::AddTechToPlayer { player, tech } => {
             game_state.assert_expansion(&tech.info().expansion)?;
 
@@ -1213,20 +1255,33 @@ pub fn update_game_state(
             if let Some(p) = &player {
                 ensure!(game_state.players.contains_key(p), "Player does not exist");
 
-                let attachments = game_state
+                let (sott, attachments) = game_state
                     .players
-                    .values_mut()
-                    .find_map(|player| {
+                    .iter_mut()
+                    .find_map(|(id, player)| {
                         if let Some(attachments) = player.planets.remove(&planet) {
-                            return Some(attachments);
+                            let sott = if planet.info().is_legendary
+                                || attachments.iter().any(|a| a.info().set_legendary)
+                            {
+                                player.relics.remove(&Relic::ShardOfTheThrone)
+                            } else {
+                                false
+                            };
+
+                            return Some((sott, attachments));
                         }
                         None
                     })
-                    .unwrap_or(HashSet::new());
+                    .unwrap_or((false, HashSet::new()));
 
                 let Some(player) = game_state.players.get_mut(p) else {
                     bail!("Player does not exist? This is a bug!")
                 };
+
+                if sott {
+                    player.relics.insert(Relic::ShardOfTheThrone);
+                }
+
                 player.planets.insert(planet, attachments);
             }
         }
