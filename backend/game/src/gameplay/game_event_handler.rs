@@ -1257,8 +1257,8 @@ pub fn update_game_state(
 
                 let (sott, attachments) = game_state
                     .players
-                    .iter_mut()
-                    .find_map(|(id, player)| {
+                    .values_mut()
+                    .find_map(|player| {
                         if let Some(attachments) = player.planets.remove(&planet) {
                             let sott = if planet.info().is_legendary
                                 || attachments.iter().any(|a| a.info().set_legendary)
