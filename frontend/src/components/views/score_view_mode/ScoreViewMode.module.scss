@@ -90,6 +90,7 @@ $custodians-color: rgb(0, 0, 0);
 $imperial-color: rgb(181, 0, 181);
 $spftt-color:  #a74551;
 $extra-color: green;
+$shard-color: white;
 
 .stageOneColor {
     color: $stage-one-color;
@@ -119,6 +120,10 @@ $extra-color: green;
     color: $extra-color;
 }
 
+.shardColor {
+    color: $shard-color;
+}
+
 .stageOneBackgroundColor {
     background-color: $stage-one-color;
 }
@@ -145,6 +150,10 @@ $extra-color: green;
 
 .extraBackgroundColor {
     background-color: $extra-color;
+}
+
+.shardBackgroundColor {
+    background-color: $shard-color;
 }
 
 .factionButton {

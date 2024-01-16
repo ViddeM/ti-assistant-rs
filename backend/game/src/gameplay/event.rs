@@ -346,6 +346,12 @@ pub enum Event {
         objective: SecretObjective,
     },
 
+    /// Give / remove shard of the throne to/from a player.
+    SetShardForTheThroneOwner {
+        /// The player that should receive it, or None if no one should have it.
+        player: Option<PlayerId>,
+    },
+
     /// Add the tech to the players list of techs.
     AddTechToPlayer {
         /// The player to receive the technology.

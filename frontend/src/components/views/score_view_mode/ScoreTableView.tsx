@@ -205,6 +205,32 @@ export const ScoreTableView = () => {
           ))}
         </tr>
 
+        {/* Shard of the Throne */}
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="Shard of the Throne"
+          stylingPrefix="shard"
+        />
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              <FactionButton
+                faction={p.faction}
+                selected={gameState.score.shardOfTheThrone === p.id}
+                onClick={() => {
+                  let newOwner =
+                    gameState.score.shardOfTheThrone === p.id ? null : p.id;
+                  sendEvent({
+                    SetShardForTheThroneOwner: {
+                      player: newOwner,
+                    },
+                  });
+                }}
+              />
+            </td>
+          ))}
+        </tr>
+
         {/* Support for the Throne */}
         <TableSectionHeading
           playerCount={playerCount}
@@ -301,6 +327,7 @@ interface TableSectionHeadingProps {
     | "stageOne"
     | "stageTwo"
     | "secret"
+    | "shard"
     | "custodians"
     | "imperial"
     | "spftt"
