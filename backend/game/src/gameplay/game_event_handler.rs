@@ -18,7 +18,7 @@ use crate::{
             phase::Phase,
             planet::Planet,
             planet_attachment::PlanetAttachment,
-            relic::RelicPlay,
+            relic::{Relic, RelicPlay},
             strategy_card::StrategyCard,
             system::{System, SystemType},
             tech::{TechOrigin, TechType, Technology},
@@ -719,6 +719,32 @@ pub fn update_game_state(
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
+        Event::GainRelicAction { player, relic } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+            ensure!(
+                !game_state
+                    .players
+                    .values()
+                    .any(|p| p.relics.contains(&relic)),
+                "Relic {relic:?} is already owned by another player."
+            );
+
+            match relic {
+                Relic::ShardOfTheThrone => {
+                    ensure!(
+                        game_state.score.shard_of_the_throne.is_none(),
+                        "Shard of the Throne is already assigned to a player? (This is a bug)"
+                    );
+                    game_state.score.shard_of_the_throne = Some(player);
+                }
+                _ => { /* Has no relevant effect at this point */ }
+            }
+
+            let player = game_state.get_current_player()?;
+            player.relics.insert(relic);
+            game_state.phase = Phase::EndActionTurn;
+        }
         Event::RelicActionBegin { player, relic } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
@@ -823,7 +849,6 @@ pub fn update_game_state(
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
-
         Event::TakeAnotherTurn { player } => {
             game_state.assert_phase(Phase::EndActionTurn)?;
             game_state.assert_player_turn(&player)?;

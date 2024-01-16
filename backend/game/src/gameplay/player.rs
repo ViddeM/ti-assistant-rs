@@ -8,7 +8,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::{
     common::{color::Color, faction::Faction},
-    components::{planet::Planet, planet_attachment::PlanetAttachment, tech::Technology},
+    components::{
+        planet::Planet, planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
+    },
 };
 
 use super::error::GameError;
@@ -43,6 +45,8 @@ pub struct Player {
     pub planets: HashMap<Planet, HashSet<PlanetAttachment>>,
     /// Which technologies the player has.
     pub technologies: HashSet<Technology>,
+    /// Which relics the player currently owns.
+    pub relics: HashSet<Relic>,
 }
 
 impl Player {
@@ -82,6 +86,7 @@ impl From<NewPlayer> for Player {
             color: new.color,
             planets,
             technologies: techs,
+            relics: HashSet::new(),
         }
     }
 }

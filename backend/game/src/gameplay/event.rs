@@ -174,6 +174,14 @@ pub enum Event {
         data: Option<FrontierCardAction>,
     },
 
+    /// Gain a relic
+    GainRelicAction {
+        /// The player who gains the relic.
+        player: PlayerId,
+        /// The relic to be gained.
+        relic: Relic,
+    },
+
     /// Begin playing a relic action.
     RelicActionBegin {
         /// The player who plays the relic.

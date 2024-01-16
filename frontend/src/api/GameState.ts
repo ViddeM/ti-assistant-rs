@@ -103,6 +103,7 @@ export interface Player {
   color: Color;
   planets: { [planet: string]: string[] };
   technologies: string[];
+  relics: string[];
 }
 
 export interface Score {
@@ -114,6 +115,7 @@ export interface Score {
   extraPoints: { [player: string]: number };
   imperial: { [player: string]: number };
   custodians: string | null;
+  shardOfTheThrone: string | null;
 }
 
 export interface StatusPhaseState {
