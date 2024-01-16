@@ -84,7 +84,12 @@ export const ActionPhaseView = () => {
   );
 };
 
-type ComponentMode = "ACTION_CARD" | "RELICS" | "FRONTIER_CARD" | "";
+type ComponentMode =
+  | "ACTION_CARD"
+  | "PLAY_RELIC"
+  | "GAIN_RELIC"
+  | "FRONTIER_CARD"
+  | "";
 
 const ComponentSelectRow = () => {
   const { gameOptions, gameState } = useGameContext();
@@ -104,12 +109,21 @@ const ComponentSelectRow = () => {
         </Button>
         <Button
           disabled={
-            componentMode === "RELICS" ||
+            componentMode === "GAIN_RELIC" ||
             Object.keys(gameOptions.relics).length === 0
           }
-          onClick={() => setComponentMode("RELICS")}
+          onClick={() => setComponentMode("GAIN_RELIC")}
         >
-          Relics
+          Gain Relic
+        </Button>
+        <Button
+          disabled={
+            componentMode === "PLAY_RELIC" ||
+            Object.keys(gameOptions.relics).length === 0
+          }
+          onClick={() => setComponentMode("PLAY_RELIC")}
+        >
+          Play Relic
         </Button>
         <Button
           disabled={
@@ -134,8 +148,10 @@ const DisplayComponentMode = ({ mode }: DisplayComponentModeProps) => {
   switch (mode) {
     case "ACTION_CARD":
       return <ActionCardSelectView />;
-    case "RELICS":
-      return <RelicCardView />;
+    case "GAIN_RELIC":
+      return <GainRelicCardView />;
+    case "PLAY_RELIC":
+      return <PlayRelicCardView />;
     case "FRONTIER_CARD":
       return <FrontierCardView />;
     default:
@@ -184,7 +200,47 @@ const ActionCardSelectView = () => {
   );
 };
 
-const RelicCardView = () => {
+const GainRelicCardView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
+  const [selected, setSelected] = useState<string>("");
+
+  const takenRelics = Object.values(gameState.players).flatMap((p) => p.relics);
+  const availableRelics = Object.values(gameOptions.relics).filter(
+    (r) => !takenRelics.includes(r.card)
+  );
+
+  return (
+    <div>
+      <fieldset className={styles.playActionCardContainer}>
+        <legend>Gain Relic</legend>
+        <Dropdown onChange={(e) => setSelected(e.target.value)}>
+          <option value="">--Select relic--</option>
+          {availableRelics.map((r) => (
+            <option key={r.card} value={r.card}>
+              {r.name}
+            </option>
+          ))}
+        </Dropdown>
+        <Button
+          disabled={selected === ""}
+          onClick={() =>
+            sendEvent({
+              GainRelicAction: {
+                player: gameState.currentPlayer,
+                relic: selected,
+              },
+            })
+          }
+        >
+          Gain
+        </Button>
+      </fieldset>
+    </div>
+  );
+};
+
+const PlayRelicCardView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const [selected, setSelected] = useState<string>("");

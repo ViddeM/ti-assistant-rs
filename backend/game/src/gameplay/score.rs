@@ -28,6 +28,9 @@ pub struct Score {
     /// Map from giver to receiver of Support for the Throne.
     pub support_for_the_throne: HashMap<PlayerId, PlayerId>,
 
+    /// Which (if any) player has teh Shard of the Throne relic.
+    pub shard_of_the_throne: Option<PlayerId>,
+
     /// Manually assigned points
     pub extra_points: HashMap<PlayerId, i8>,
 
@@ -76,6 +79,13 @@ impl Score {
 
             // Check if player has the custodians
             player_points += i8::from(self.custodians.as_ref() == Some(player));
+
+            // Check if the player has the Shard of the Throne relic
+            if let Some(p) = self.shard_of_the_throne.as_ref() {
+                if p == player {
+                    player_points += 1;
+                }
+            }
 
             self.player_points.insert(Arc::clone(player), player_points);
         }
