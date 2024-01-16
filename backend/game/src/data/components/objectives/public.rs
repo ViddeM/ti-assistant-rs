@@ -112,7 +112,7 @@ impl PublicObjective {
             ),
             PublicObjective::IntimidateCouncil => {
                 o!(
-                    StageI, 
+                    StageI,
                     "Intimidate Council",
                     "Have 1 or more ships in 2 systems that are adjacent to Mectrol Rex's System.", 
                     Expansion::Base
@@ -162,7 +162,7 @@ impl PublicObjective {
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::MakeHistory => o!(
-                StageI, 
+                StageI,
                 "Make History",
                 "Have units in 2 systems that contain legendary planets, Mecatol Rex, or anomalies.",
                 Expansion::ProphecyOfKings

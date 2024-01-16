@@ -9,6 +9,7 @@ use crate::{
         components::{
             action_card::{ActionCard, ActionCardInfo},
             agenda::{Agenda, AgendaInfo},
+            leaders::{Agent, Commander, Hero, Leader, LeaderInfo},
             objectives::{
                 public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo,
             },
@@ -49,11 +50,23 @@ pub struct GameOptions {
     action_cards: HashMap<ActionCard, ActionCardInfo>,
     /// What agendas exist in the game.
     agendas: HashMap<Agenda, AgendaInfo>,
+    /// What leaders exist in the game.
+    leaders: HashMap<Leader, LeaderInfo>,
+    /// Map from all factions in the game to the leaders of that faction.
+    leaders_by_faction: HashMap<Faction, Vec<Leader>>,
 }
 
 impl GameOptions {
     /// Returns GameOptions for the specified expansions.
     pub fn new(expansions: &Expansions) -> Self {
+        let leaders: HashMap<_, _> = Agent::iter()
+            .map(Leader::from)
+            .chain(Commander::iter().map(Leader::from))
+            .chain(Hero::iter().map(Leader::from))
+            .filter(|leader| leader.is_enabled_in(expansions))
+            .map(|leader| (leader, leader.info()))
+            .collect();
+
         Self {
             min_players: MIN_PLAYER_COUNT,
             max_players: expansions.max_number_of_players(),
@@ -99,6 +112,14 @@ impl GameOptions {
                 .filter(|(_, agenda)| expansions.is_enabled(&agenda.expansion))
                 .filter(|(agenda, _)| !(expansions.prophecy_of_kings && agenda.disabled_in_pok()))
                 .collect(),
+            leaders_by_faction: leaders
+                .iter()
+                .map(|(leader, info)| (info.faction(), leader))
+                .fold(HashMap::new(), |mut acc, (faction, leader)| {
+                    acc.entry(faction).or_default().push(*leader);
+                    acc
+                }),
+            leaders,
         }
     }
 }

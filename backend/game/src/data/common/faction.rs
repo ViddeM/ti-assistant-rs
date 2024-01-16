@@ -12,7 +12,7 @@ use crate::data::components::{
 use super::expansions::Expansion;
 
 /// A playable faction in the game.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter)]
 #[allow(missing_docs)]
 pub enum Faction {
     // Vanilla

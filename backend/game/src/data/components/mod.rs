@@ -2,6 +2,8 @@
 pub mod action_card;
 /// Agenda cards.
 pub mod agenda;
+/// Leader cards, i.e. agents, commanders, and heroes.
+pub mod leaders;
 /// Objectives.
 pub mod objectives;
 /// Phases of the game.
