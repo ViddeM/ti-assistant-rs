@@ -23,6 +23,7 @@ export const StatusPhaseInstructionsView = () => {
         <li>Return Strategy Cards</li>
       </ol>
       <Button
+        className="marginTop"
         disabled={!statusPhaseComplete}
         onClick={() => sendEvent("CompleteStatusPhase")}
       >
