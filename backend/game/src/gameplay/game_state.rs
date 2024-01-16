@@ -322,6 +322,7 @@ impl GameState {
                 self.calculate_turn_order_from_speaker()?;
                 self.agenda = Some(AgendaState::default());
             }
+            Phase::MawOfWorlds => { /* Nein */ }
             _ => bail!(
                 "reset turn order called in unexpected phase: {:?}",
                 self.phase

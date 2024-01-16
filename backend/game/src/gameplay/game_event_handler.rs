@@ -742,6 +742,7 @@ pub fn update_game_state(
         Event::GainRelicAction { player, relic } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
+            game_state.assert_expansion(&relic.info().expansion)?;
             ensure!(
                 !game_state
                     .players
@@ -1037,17 +1038,66 @@ pub fn update_game_state(
             game_state.assert_phase(Phase::Status)?;
             // TODO: Require objectives scored & revealed
 
+            let Some(state) = game_state.status_phase_state.as_ref() else {
+                bail!("Expected status phase state");
+            };
+
+            ensure!(
+                state.revealed_objective.is_some(),
+                "No public objective has been revealed!"
+            );
+            ensure!(
+                state.scored_public_objectives.len() == game_state.players.len(),
+                "Not all players have made a decision regarding their public objectives"
+            );
+            ensure!(
+                state.scored_secret_objectives.len() == game_state.players.len(),
+                "Not all players have made a decision regarding their secret objectives"
+            );
+
             // Reset state
             game_state.strategy_card_holders = HashMap::new();
             game_state.passed_players = HashSet::new();
             game_state.spent_strategy_cards = HashSet::new();
 
-            if game_state.score.custodians.is_some() {
-                game_state.change_phase(Phase::Agenda, timestamp)?;
+            let phase = if game_state.score.custodians.is_some() {
+                if game_state
+                    .players
+                    .values()
+                    .any(|p| p.relics.contains(&Relic::MawOfWorlds))
+                {
+                    Phase::MawOfWorlds
+                } else {
+                    Phase::Agenda
+                }
             } else {
-                game_state.change_phase(Phase::Strategy, timestamp)?;
-            }
+                Phase::Strategy
+            };
+            game_state.change_phase(phase, timestamp)?;
         }
+        /* Maw of Worlds relic phase */
+        Event::PlayMawOfWorlds { player, tech } => {
+            game_state.assert_phase(Phase::MawOfWorlds)?;
+
+            game_state.assert_expansion(&tech.info().expansion)?;
+
+            let Some(player) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist");
+            };
+
+            ensure!(
+                player.relics.contains(&Relic::MawOfWorlds),
+                "Player doesn't have the Maw of Worlds relic!"
+            );
+
+            player.take_tech(tech)?;
+            player.relics.remove(&Relic::MawOfWorlds);
+        }
+        Event::CompleteMawOfWorldsPhase => {
+            game_state.assert_phase(Phase::MawOfWorlds)?;
+            game_state.change_phase(Phase::Agenda, timestamp)?;
+        }
+        /* Agenda phase events */
         Event::RevealAgenda { agenda } => {
             game_state.assert_phase(Phase::Agenda)?;
             game_state.assert_expansion(&agenda.info().expansion)?;
@@ -1428,6 +1478,8 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::RelicAction
         | Phase::ActionCardAction => true,
 
-        Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => false,
+        Phase::MawOfWorlds | Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => {
+            false
+        }
     }
 }

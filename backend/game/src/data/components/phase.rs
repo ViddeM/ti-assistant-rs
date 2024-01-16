@@ -37,6 +37,9 @@ pub enum Phase {
     /// The Status phase.
     Status,
 
+    /// Optional phase to allow a player to play the Maw of Worlds card.
+    MawOfWorlds,
+
     /// The Agenda phase.
     Agenda,
 }

@@ -10,4 +10,5 @@ export type GamePhase =
   | "RelicAction"
   | "EndActionTurn"
   | "Status"
+  | "MawOfWorlds"
   | "Agenda";
