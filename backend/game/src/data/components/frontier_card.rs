@@ -87,8 +87,7 @@ impl FrontierCard {
             FrontierCard::MerchantStation => {
                 fi!(MerchantStation, "Merchant Station", ProphecyOfKings, 2)
             }
-            // TODO: Mirage isn't really an action but it effectively works like one. Is there a nicer way of doing this?
-            FrontierCard::Mirage => fi!(Mirage, "Mirage", ProphecyOfKings, 1, Action),
+            FrontierCard::Mirage => fi!(Mirage, "Mirage", ProphecyOfKings, 1),
             FrontierCard::UnknownRelicFragment => fi!(
                 UnknownRelicFragment,
                 "Unknown Relic Fragment",

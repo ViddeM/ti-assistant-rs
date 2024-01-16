@@ -24,6 +24,14 @@ export const TacticalView = () => {
         !Object.keys(currentPlayerPlanets).includes(p) &&
         !Object.keys(takenPlanets).includes(p)
     );
+  const allPlanetsNotOwned = Object.keys(gameOptions.planetInfos)
+    .filter((p) => !Object.keys(currentPlayerPlanets).includes(p))
+    .map((p) => {
+      return {
+        id: p,
+        ...gameOptions.planetInfos[p],
+      };
+    });
 
   const takePlanet = (planet: string) => {
     sendEvent({
@@ -77,17 +85,11 @@ export const TacticalView = () => {
             }}
           >
             <option value={""}>--select a planet--</option>
-            {gameOptions.systems
-              .flatMap((s) =>
-                s.planets.filter(
-                  (p) => !Object.keys(currentPlayerPlanets).includes(p)
-                )
-              )
-              .map((p) => (
-                <option key={p} value={p}>
-                  {gameOptions.planetInfos[p].name}
-                </option>
-              ))}
+            {allPlanetsNotOwned.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
           </Dropdown>
           <Button
             disabled={!selectedPlanet}

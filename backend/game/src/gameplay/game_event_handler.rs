@@ -302,7 +302,12 @@ pub fn update_game_state(
         Event::TacticalActionTakePlanet { player, planet } => {
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
-            game_state.assert_expansion(&System::for_planet(&planet)?.expansion)?;
+            if planet == Planet::Mirage {
+                game_state.assert_expansion(&FrontierCard::Mirage.info().expansion)?;
+            } else {
+                game_state.assert_expansion(&System::for_planet(&planet)?.expansion)?;
+            }
+
             ensure!(
                 game_state.action_progress.is_some(),
                 "Must have action progress to perform take planet action."
@@ -335,7 +340,11 @@ pub fn update_game_state(
                 bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
             };
 
-            let planet_system = System::for_planet(&planet)?;
+            let planet_system = if planet == Planet::Mirage {
+                None
+            } else {
+                Some(System::for_planet(&planet)?.id)
+            };
 
             current_player.planets.insert(planet.clone(), attachments);
 
@@ -346,7 +355,7 @@ pub fn update_game_state(
                 }
             }
 
-            tactical.activated_system = Some(planet_system.id);
+            tactical.activated_system = planet_system;
             tactical.taken_planets.insert(planet, current_owner);
         }
         Event::TacticalActionAttachPlanetAttachment {
@@ -705,20 +714,6 @@ pub fn update_game_state(
                         current_player.take_tech(tech.clone())?;
                     }
                 }
-            } else if progress.card == FrontierCard::Mirage {
-                ensure!(
-                    !game_state
-                        .players
-                        .values()
-                        .flat_map(|p| p.planets.keys())
-                        .any(|p| p == &Planet::Mirage),
-                    "Another player has already taken mirage"
-                );
-
-                let current_player = game_state.get_current_player()?;
-                current_player
-                    .planets
-                    .insert(Planet::Mirage, HashSet::new());
             }
 
             game_state.action_progress = None;
