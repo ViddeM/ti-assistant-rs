@@ -242,6 +242,17 @@ pub enum Event {
     /// Complete the status phase.
     CompleteStatusPhase,
 
+    /// A player plays the Maw of Worlds relic.
+    PlayMawOfWorlds {
+        /// The player who plays Maw of Worlds.
+        player: PlayerId,
+        /// The tech they decided to take.
+        tech: Technology,
+    },
+
+    /// Complete the Maw of Worlds phase, moving on to the Agenda phase.
+    CompleteMawOfWorldsPhase,
+
     /* -- AGENDA PHASE EVENTS -- */
     /// Reveal a new agenda.
     RevealAgenda {

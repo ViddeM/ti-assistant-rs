@@ -13,7 +13,7 @@
 
 ## Gameplay
  - ✅ Track round number
- - ✅🚱 Undo
+ - ✅ Undo
  - ✅ Update setup to do all required tasks
    - ✅ Choose speaker at start of game
    - ✅ Reveal initial objectives
@@ -46,6 +46,7 @@
    - ✅ Actions
    - ❌ Other relevant ones
  - ❌ Time tracking
+   - 🍑 Pause timekeeping
    - ✅ Time spent / player
    - ❌ Time spent / phase
    - ❌ Show breakdown while playing

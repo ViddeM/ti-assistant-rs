@@ -12,6 +12,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { EndActionPhaseView } from "../end_action_phase_view/EndActionPhaseView";
 import { FrontierCardView } from "../frontier_card_view/FrontierCardView";
 import { RelicCardView } from "../relic_card_view/RelicCardView";
+import { MawOfWorldsView } from "../maw_of_worlds_view/MawOfWorlds";
 
 export const PhaseView = () => {
   const { gameState, sendEvent } = useGameContext();
@@ -62,6 +63,8 @@ export const PhaseView = () => {
       return <EndActionPhaseView />;
     case "Status":
       return <StatusPhaseView />;
+    case "MawOfWorlds":
+      return <MawOfWorldsView />;
     case "Agenda":
       return <AgendaPhaseView />;
     default:
