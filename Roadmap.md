@@ -4,6 +4,7 @@
 - 🍈 = Implemented in frontend only
 - 🍑 = Implemented in backend only
 - 🚱 = Feature is untested or needs polish
+- 👺 = OUT OF SCOPE, go away, I have no more spare time to give 😢
 
 ## Infra
  - ✅ Multiple games
@@ -58,7 +59,7 @@
        - ❌ Relics
      - ✅ Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
      - ❌ Leaders (agents, commanders, heroes)
-     - ❌ Mechs (probably not relevant?)
+     - ❌👺 Mechs (probably not relevant?)
      - ✅ Increases player limit to 8
      - ✅ 31 new systems
      - ✅ 8 new techs (psycoarch, bio stims, dark energy tap, sling ray, scanlink drone network, predictive intelligence, ai dev algos, self assembly)
@@ -76,10 +77,10 @@
      - ❌ updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
    - ❌ Codex II
      - ❌ 3 new relics (PoK), (dynamis core, JR-XS455-O, nano forge)
-     - ❌ pax nomina (game mode with teams)
+     - ❌👺 pax nomina (game mode with teams)
    - ❌ Codex III
      - ❌ updated leaders: (naalu collective agent, commander, xxcha kingdom hero, yin brotherhood agent, commander, hero)
-     - ❌ updated mech naalu collective
+     - ❌👺 updated mech naalu collective
      - ❌ updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
      - ❌ 6 new frontier cards
      - ✅ council keleres faction
