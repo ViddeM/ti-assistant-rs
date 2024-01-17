@@ -1,6 +1,6 @@
 import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../../select_tech_view/SelectTechView";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGameContext } from "@/hooks/GameContext";
 
 export const TechnologyPrimaryView = () => {
@@ -13,15 +13,17 @@ export const TechnologyPrimaryView = () => {
   if (progress) {
     const techProgress = progress!!.Technology!!;
     return (
-      <div>
+      <div className="column">
         <p>{gameOptions.technologies[techProgress.tech].name}</p>
-        {techProgress.extra && <p>{techProgress.extra}</p>}{" "}
+        {techProgress.extra && (
+          <p>{gameOptions.technologies[techProgress.extra].name}</p>
+        )}
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="column">
       {firstTech === null ? (
         <fieldset>
           <legend>
@@ -52,7 +54,7 @@ export const TechnologyPrimaryView = () => {
       )}
       <Button
         disabled={firstTech === null}
-        onClick={() =>
+        onClick={() => {
           sendEvent({
             StrategicActionPrimary: {
               player: gameState.currentPlayer!!,
@@ -63,8 +65,10 @@ export const TechnologyPrimaryView = () => {
                 },
               },
             },
-          })
-        }
+          });
+          setFirstTech(null);
+          setSecondTech(null);
+        }}
       >
         Done
       </Button>
