@@ -161,7 +161,9 @@ const SelectPlanetAttachment = ({
         ))}
       </Dropdown>
       <Button
-        disabled={availableAttachments.length === 0}
+        disabled={
+          availableAttachments.length === 0 || selectedAttachment === ""
+        }
         className={"marginTop"}
         onClick={() =>
           sendEvent({

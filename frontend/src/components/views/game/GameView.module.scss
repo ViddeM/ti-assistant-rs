@@ -16,10 +16,12 @@
 .gamePageContainer {
   width: 100%;
   display: flex;
+  align-items: center;
   flex-direction: column-reverse;
 
-  @media (min-width: $widthMedium) {
+  @media (min-width: $widthLarge) {
     flex-direction: row;
+    align-items: flex-start;
     justify-content: space-between;
 
     > :last-child {

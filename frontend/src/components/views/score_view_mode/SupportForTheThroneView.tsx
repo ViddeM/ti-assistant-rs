@@ -2,7 +2,7 @@ import { Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "./ScoreViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 

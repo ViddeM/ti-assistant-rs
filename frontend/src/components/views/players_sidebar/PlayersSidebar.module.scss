@@ -2,12 +2,15 @@
 
 .playerSideBarCard {
   border-radius: 0;
-  margin-top: 1rem;
   border-radius: $border-radius;
   display: grid;
   grid-template-columns: 1fr;
 
-  @media (min-width: $widthLarge) {
+  @media (max-width: $widthLarge) {
+    margin-top: $marginLarge;
+  }
+
+  @media (min-width: $widthExtraLarge) {
     grid-template-columns: 1fr 1fr;
     column-gap: $marginLarge;
     height: fit-content;
