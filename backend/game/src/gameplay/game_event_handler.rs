@@ -1061,12 +1061,16 @@ pub fn update_game_state(
             game_state.spent_strategy_cards = HashSet::new();
 
             let phase = if game_state.score.custodians.is_some() {
-                if game_state
-                    .players
-                    .values()
-                    .any(|p| p.relics.contains(&Relic::MawOfWorlds))
-                {
-                    Phase::MawOfWorlds
+                if game_state.players.values().any(|p| {
+                    p.relics.contains(&Relic::MawOfWorlds)
+                        || (p.relics.contains(&Relic::TheCrownOfEmphidia)
+                            && p.planets.values().any(|attachments| {
+                                attachments
+                                    .iter()
+                                    .any(|a| a == &PlanetAttachment::TombOfEmphidia)
+                            }))
+                }) {
+                    Phase::Relics
                 } else {
                     Phase::Agenda
                 }
@@ -1075,10 +1079,33 @@ pub fn update_game_state(
             };
             game_state.change_phase(phase, timestamp)?;
         }
+        Event::PlayCrownOfEmphidia { player } => {
+            game_state.assert_phase(Phase::Relics)?;
+
+            game_state.assert_expansion(&Relic::TheCrownOfEmphidia.info().expansion)?;
+
+            let Some(p) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist");
+            };
+
+            ensure!(
+                p.relics.contains(&Relic::TheCrownOfEmphidia),
+                "Player doesn't have the Crown of emphidia relic!"
+            );
+
+            ensure!(
+                p.planets.values().any(|attachments| attachments.iter().any(|a| a == &PlanetAttachment::TombOfEmphidia)),
+                "Planet must have the 'Tomb of Emphidia' planet attachment in order to play the Crown of Emphidia"
+            );
+
+            p.relics.remove(&Relic::TheCrownOfEmphidia);
+            game_state.score.crown_of_emphidia = Some(player);
+        }
         /* Maw of Worlds relic phase */
         Event::PlayMawOfWorlds { player, tech } => {
-            game_state.assert_phase(Phase::MawOfWorlds)?;
+            game_state.assert_phase(Phase::Relics)?;
 
+            game_state.assert_expansion(&Relic::MawOfWorlds.info().expansion)?;
             game_state.assert_expansion(&tech.info().expansion)?;
 
             let Some(player) = game_state.players.get_mut(&player) else {
@@ -1093,8 +1120,8 @@ pub fn update_game_state(
             player.take_tech(tech)?;
             player.relics.remove(&Relic::MawOfWorlds);
         }
-        Event::CompleteMawOfWorldsPhase => {
-            game_state.assert_phase(Phase::MawOfWorlds)?;
+        Event::CompleteRelicsPhase => {
+            game_state.assert_phase(Phase::Relics)?;
             game_state.change_phase(Phase::Agenda, timestamp)?;
         }
         /* Agenda phase events */
@@ -1290,6 +1317,21 @@ pub fn update_game_state(
             }
             game_state.score.shard_of_the_throne = player;
         }
+        Event::SetCrownOfEmphidiaOwner { player } => {
+            if let Some(p) = player.as_ref() {
+                ensure!(
+                    game_state.players.contains_key(p),
+                    "Player doesn't exist '{p}'"
+                );
+            }
+
+            // Should any player currently own the relic, remove it from them.
+            game_state.players.values_mut().for_each(|p| {
+                p.relics.remove(&Relic::TheCrownOfEmphidia);
+            });
+
+            game_state.score.crown_of_emphidia = player;
+        }
         Event::AddTechToPlayer { player, tech } => {
             game_state.assert_expansion(&tech.info().expansion)?;
 
@@ -1482,8 +1524,6 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::RelicAction
         | Phase::ActionCardAction => true,
 
-        Phase::MawOfWorlds | Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => {
-            false
-        }
+        Phase::Relics | Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => false,
     }
 }

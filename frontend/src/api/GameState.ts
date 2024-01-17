@@ -116,6 +116,7 @@ export interface Score {
   imperial: { [player: string]: number };
   custodians: string | null;
   shardOfTheThrone: string | null;
+  crownOfEmphidia: string | null;
 }
 
 export interface StatusPhaseState {

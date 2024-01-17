@@ -242,6 +242,12 @@ pub enum Event {
     /// Complete the status phase.
     CompleteStatusPhase,
 
+    /// A player plays the Crown of Emphidia card.
+    PlayCrownOfEmphidia {
+        /// The player who plays the Crown of Emphidia card.
+        player: PlayerId,
+    },
+
     /// A player plays the Maw of Worlds relic.
     PlayMawOfWorlds {
         /// The player who plays Maw of Worlds.
@@ -251,7 +257,7 @@ pub enum Event {
     },
 
     /// Complete the Maw of Worlds phase, moving on to the Agenda phase.
-    CompleteMawOfWorldsPhase,
+    CompleteRelicsPhase,
 
     /* -- AGENDA PHASE EVENTS -- */
     /// Reveal a new agenda.
@@ -359,6 +365,12 @@ pub enum Event {
 
     /// Give / remove shard of the throne to/from a player.
     SetShardForTheThroneOwner {
+        /// The player that should receive it, or None if no one should have it.
+        player: Option<PlayerId>,
+    },
+
+    /// Give / remove the Crown of Emphidia to/from a player.
+    SetCrownOfEmphidiaOwner {
         /// The player that should receive it, or None if no one should have it.
         player: Option<PlayerId>,
     },

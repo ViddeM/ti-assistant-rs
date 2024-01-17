@@ -28,8 +28,11 @@ pub struct Score {
     /// Map from giver to receiver of Support for the Throne.
     pub support_for_the_throne: HashMap<PlayerId, PlayerId>,
 
-    /// Which (if any) player has teh Shard of the Throne relic.
+    /// Which (if any) player has the Shard of the Throne relic.
     pub shard_of_the_throne: Option<PlayerId>,
+
+    /// Which (if any) player has played the Crown of Emphidia relic.
+    pub crown_of_emphidia: Option<PlayerId>,
 
     /// Manually assigned points
     pub extra_points: HashMap<PlayerId, i8>,
@@ -82,6 +85,13 @@ impl Score {
 
             // Check if the player has the Shard of the Throne relic
             if let Some(p) = self.shard_of_the_throne.as_ref() {
+                if p == player {
+                    player_points += 1;
+                }
+            }
+
+            // Check if the player has the crown of emphidia relic
+            if let Some(p) = self.crown_of_emphidia.as_ref() {
                 if p == player {
                     player_points += 1;
                 }

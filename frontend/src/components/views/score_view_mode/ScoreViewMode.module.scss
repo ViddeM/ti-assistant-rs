@@ -91,6 +91,7 @@ $imperial-color: rgb(181, 0, 181);
 $spftt-color:  #a74551;
 $extra-color: green;
 $shard-color: white;
+$crown-color: gold;
 
 .stageOneColor {
     color: $stage-one-color;
@@ -124,6 +125,10 @@ $shard-color: white;
     color: $shard-color;
 }
 
+.crownColor {
+    color: $crown-color;
+}
+
 .stageOneBackgroundColor {
     background-color: $stage-one-color;
 }
@@ -154,6 +159,10 @@ $shard-color: white;
 
 .shardBackgroundColor {
     background-color: $shard-color;
+}
+
+.crownBackgroundColor {
+    background-color: $crown-color;
 }
 
 .factionButton {
