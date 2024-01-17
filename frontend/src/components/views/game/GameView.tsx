@@ -19,6 +19,8 @@ import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
 import { LawsViewMode } from "../laws_view_mode/LawsViewMode";
 import { GameContext, useGameContext } from "@/hooks/GameContext";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 
 const NEW_GAME_ID = "new";
 
@@ -81,6 +83,12 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const sendMsg = (data: any) => sendMessage(JSON.stringify(data));
   const sendEvent = (data: any) => sendMsg({ Event: data });
   const sendUndo = () => sendMsg("Undo");
+  const sendTimekeeping = (paused: boolean) =>
+    sendEvent({
+      TrackTime: {
+        paused: paused,
+      },
+    });
 
   /* Send join game message */
   useEffect(() => {
@@ -183,7 +191,17 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           </Button>
         </div>
         <p className="marginTop">Round {gameState?.round}</p>
-        <Button onClick={() => sendUndo()}>Undo</Button>
+        <div>
+          <Button
+            className="marginRight"
+            onClick={() => sendTimekeeping(!gameState.timeTrackingPaused)}
+          >
+            <FontAwesomeIcon
+              icon={gameState.timeTrackingPaused ? faPlay : faPause}
+            />
+          </Button>
+          <Button onClick={() => sendUndo()}>Undo</Button>
+        </div>
       </div>
       {gameOptions && gameState && (
         <DisplayViewMode viewMode={currentViewMode} />
