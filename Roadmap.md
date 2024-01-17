@@ -38,15 +38,15 @@
      - ❌ Seed of an empire (Give 1 VP to player(s) with most/least victory points)
      - ❌ (LAW) Political Censure (Player gains 1 vp and can't play action cards)
    - ❌ Relics
-     - ❌ Obsidian (Draw and have 1 extra secret objective)
-     - ❌ Shard of the Throne (Player with this card has 1 extra VP)
-     - ❌ Crown of Emphydia (Purge to gain 1 VP)
+     - ❌ Obsidian (Draw and have 1 extra secret objective) :: Note we don't track the cap atm so technically it is not required to be implemented?
+     - ✅ Shard of the Throne (Player with this card has 1 extra VP)
+     - ✅ Crown of Emphydia (Purge to gain 1 VP)
    - ❌ Winning the game (when reaching the winning score).
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
  - ❌ Time tracking
-   - 🍑 Pause timekeeping
+   - ✅ Pause timekeeping
    - ✅ Time spent / player
    - ❌ Time spent / phase
    - ❌ Show breakdown while playing
@@ -56,8 +56,8 @@
    - ❌ PoK
      - ❌ Exploration
        - ✅ Exploration cards (attachments only are handled)
-       - ❌ Frontier cards
-       - ❌ Relics
+       - ✅ Frontier cards
+       - ✅ Relics
      - ✅ Factions (argent, empyrean, mahact, naaz-rokha, nomad, titans of ul, vuilrath)
      - ❌ Leaders (agents, commanders, heroes)
      - ❌👺 Mechs (probably not relevant?)
@@ -77,13 +77,13 @@
      - ✅ new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
      - ❌ updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
    - ❌ Codex II
-     - ❌ 3 new relics (PoK), (dynamis core, JR-XS455-O, nano forge)
+     - ✅ 3 new relics (PoK), (dynamis core, JR-XS455-O, nano forge)
      - ❌👺 pax nomina (game mode with teams)
    - ❌ Codex III
      - ❌ updated leaders: (naalu collective agent, commander, xxcha kingdom hero, yin brotherhood agent, commander, hero)
      - ❌👺 updated mech naalu collective
      - ❌ updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
-     - ❌ 6 new frontier cards
+     - ✅ 6 new frontier cards
      - ✅ council keleres faction
  - ✅ Strategy cards (speaker handling etc)
  - ✅ Real names for things (currently we only use the ID for e.g objectives)
