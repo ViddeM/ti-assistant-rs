@@ -151,8 +151,10 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
   };
 
   return (
-    <div>
-      <h4>{player.name}</h4>
+    <fieldset>
+      <legend>
+        <h4>{player.name}</h4>
+      </legend>
       {pub !== undefined ? (
         <p>Public: {pub ? gameOptions.objectives[pub].name : "Skipped"}</p>
       ) : (
@@ -212,6 +214,6 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
           </div>
         </div>
       )}
-    </div>
+    </fieldset>
   );
 };
