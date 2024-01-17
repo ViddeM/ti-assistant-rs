@@ -1330,26 +1330,30 @@ pub fn update_game_state(
 
             if let Some(p) = &player {
                 ensure!(game_state.players.contains_key(p), "Player does not exist");
+            }
 
-                let (sott, attachments) = game_state
-                    .players
-                    .values_mut()
-                    .find_map(|player| {
-                        if let Some(attachments) = player.planets.remove(&planet) {
-                            let sott = if planet.info().is_legendary
-                                || attachments.iter().any(|a| a.info().set_legendary)
-                            {
-                                player.relics.remove(&Relic::ShardOfTheThrone)
-                            } else {
-                                false
-                            };
+            // Remove the planet from the current owner (if any)
+            let (sott, attachments) = game_state
+                .players
+                .values_mut()
+                .find_map(|player| {
+                    if let Some(attachments) = player.planets.remove(&planet) {
+                        let sott = if planet.info().is_legendary
+                            || attachments.iter().any(|a| a.info().set_legendary)
+                        {
+                            player.relics.remove(&Relic::ShardOfTheThrone)
+                        } else {
+                            false
+                        };
 
-                            return Some((sott, attachments));
-                        }
-                        None
-                    })
-                    .unwrap_or((false, HashSet::new()));
+                        return Some((sott, attachments));
+                    }
+                    None
+                })
+                .unwrap_or((false, HashSet::new()));
 
+            if let Some(p) = &player {
+                // Give the planet to its new owner.
                 let Some(player) = game_state.players.get_mut(p) else {
                     bail!("Player does not exist? This is a bug!")
                 };
