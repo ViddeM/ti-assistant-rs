@@ -205,6 +205,32 @@ export const ScoreTableView = () => {
           ))}
         </tr>
 
+        {/* Crown of Emphidia */}
+        <TableSectionHeading
+          playerCount={playerCount}
+          title="The Crown of Emphidia"
+          stylingPrefix="crown"
+        />
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              <FactionButton
+                faction={p.faction}
+                selected={gameState.score.crownOfEmphidia === p.id}
+                onClick={() => {
+                  let newOwner =
+                    gameState.score.crownOfEmphidia === p.id ? null : p.id;
+                  sendEvent({
+                    SetCrownOfEmphidiaOwner: {
+                      player: newOwner,
+                    },
+                  });
+                }}
+              />
+            </td>
+          ))}
+        </tr>
+
         {/* Shard of the Throne */}
         <TableSectionHeading
           playerCount={playerCount}
@@ -328,6 +354,7 @@ interface TableSectionHeadingProps {
     | "stageTwo"
     | "secret"
     | "shard"
+    | "crown"
     | "custodians"
     | "imperial"
     | "spftt"
