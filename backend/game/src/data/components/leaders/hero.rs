@@ -7,7 +7,7 @@ use crate::data::common::faction::Faction;
 #[derive(Clone, Debug, Serialize)]
 pub struct HeroInfo {
     /// [Hero] variant for this hero.
-    pub hero: Hero,
+    pub tag: Hero,
 
     /// Faction that this hero belongs to.
     pub faction: Faction,
@@ -17,6 +17,9 @@ pub struct HeroInfo {
 
     /// Name of the heros ability.
     pub ability: &'static str,
+
+    /// Description of the heros ability.
+    pub description: &'static str,
 }
 
 /// A hero leader.
@@ -52,12 +55,13 @@ pub enum Hero {
 }
 
 macro_rules! info {
-    (hero: $hero:ident, name: $name:expr, ability: $ability:expr, faction: $faction:ident,) => {
+    (tag: $tag:ident, name: $name:expr, ability: $ability:expr, faction: $faction:ident,) => {
         HeroInfo {
-            hero: Hero::$hero,
+            tag: Hero::$tag,
             faction: Faction::$faction,
             name: $name,
             ability: $ability,
+            description: include_str!(concat!("description/", stringify!($tag))),
         }
     };
 }
@@ -67,145 +71,145 @@ impl Hero {
     pub fn info(&self) -> HeroInfo {
         match self {
             Hero::LetaniMiasmiala => info! {
-                hero: LetaniMiasmiala,
+                tag: LetaniMiasmiala,
                 name: "Letani Miasmiala",
                 ability: "Ultrasonic Emitter",
                 faction: Arborec,
             },
             Hero::MirikAunSissiri => info! {
-                hero: MirikAunSissiri,
+                tag: MirikAunSissiri,
                 name: "Mirik Aun Sissiri",
                 ability: "Helix Protocol",
                 faction: ArgentFlight,
             },
             Hero::DarktalonTreilla => info! {
-                hero: DarktalonTreilla,
+                tag: DarktalonTreilla,
                 name: "Darktalon Treilla",
                 ability: "Dark Matter Affinity",
                 faction: BaronyOfLetnev,
             },
             Hero::GurnoAggero => info! {
-                hero: GurnoAggero,
+                tag: GurnoAggero,
                 name: "Gurno Aggero",
                 ability: "Armageddon Relay",
                 faction: ClanOfSaar,
             },
             Hero::AdjudicatorBaal => info! {
-                hero: AdjudicatorBaal,
+                tag: AdjudicatorBaal,
                 name: "Adjudicator Ba'al",
                 ability: "Nova Seed",
                 faction: EmbersOfMuaat,
             },
             Hero::HarrughGefhara => info! {
-                hero: HarrughGefhara,
+                tag: HarrughGefhara,
                 name: "Harrugh Gefhara",
                 ability: "Galactic Securities Net",
                 faction: EmiratesOfHacan,
             },
             Hero::ConservatorProcyon => info! {
-                hero: ConservatorProcyon,
+                tag: ConservatorProcyon,
                 name: "Conservator Procyon",
                 ability: "Multiverse Shift",
                 faction: Empyrean,
             },
             Hero::JaceX4thAirLegion => info! {
-                hero: JaceX4thAirLegion,
+                tag: JaceX4thAirLegion,
                 name: "Jace X. 4th Air Legion",
                 ability: "Helio Command Array",
                 faction: FederationOfSol,
             },
             Hero::RiftwalkerMeian => info! {
-                hero: RiftwalkerMeian,
+                tag: RiftwalkerMeian,
                 name: "Riftwalker Meian",
                 ability: "Singularity Reactor",
                 faction: GhostsOfCreuss,
             },
             Hero::TheHelmsman => info! {
-                hero: TheHelmsman,
+                tag: TheHelmsman,
                 name: "The Helmsman",
                 ability: "Dark Space Navigation",
                 faction: L1Z1XMindnet,
             },
             Hero::AiroShirAur => info! {
-                hero: AiroShirAur,
+                tag: AiroShirAur,
                 name: "Airo Shir Aur",
                 ability: "Benediction",
                 faction: MahactGeneSorcerers,
             },
             Hero::IpswitchLooseCannon => info! {
-                hero: IpswitchLooseCannon,
+                tag: IpswitchLooseCannon,
                 name: "Ipswitch, Loose Cannon",
                 ability: "Sleeper Cell",
                 faction: MentakCoalition,
             },
             Hero::TheOracle => info! {
-                hero: TheOracle,
+                tag: TheOracle,
                 name: "The Oracle",
                 ability: "C-Radium Geometry",
                 faction: NaaluCollective,
             },
             Hero::HeshAndPrit => info! {
-                hero: HeshAndPrit,
+                tag: HeshAndPrit,
                 name: "Hesh and Prit",
                 ability: "Perfect Synthesis",
                 faction: NaazRokhaAlliance,
             },
             Hero::UnitDsgnFlayesh => info! {
-                hero: UnitDsgnFlayesh,
+                tag: UnitDsgnFlayesh,
                 name: "UNIT.DSGN.FLAYESH",
                 ability: "Polymorphic Algorithm",
                 faction: NekroVirus,
             },
             Hero::ShvalHarbinger => info! {
-                hero: ShvalHarbinger,
+                tag: ShvalHarbinger,
                 name: "Sh'val, Harbinger",
                 ability: "Tekklar Conditioning",
                 faction: SardakkNorr,
             },
             Hero::UlTheProgenitor => info! {
-                hero: UlTheProgenitor,
+                tag: UlTheProgenitor,
                 name: "Ul the Progenitor",
                 ability: "Geoform",
                 faction: TitansOfUl,
             },
             Hero::RinTheMastersLegacy => info! {
-                hero: RinTheMastersLegacy,
+                tag: RinTheMastersLegacy,
                 name: "Rin, the Master's Legacy",
                 ability: "Genetic Memory",
                 faction: UniversitiesOfJolNar,
             },
             Hero::ItFeedsOnCarrion => info! {
-                hero: ItFeedsOnCarrion,
+                tag: ItFeedsOnCarrion,
                 name: "It Feeds on Carrion",
                 ability: "Dimensional Anchor",
                 faction: VuilRaithCabal,
             },
             Hero::MathisMathinus => info! {
-                hero: MathisMathinus,
+                tag: MathisMathinus,
                 name: "Mathis Mathinus",
                 ability: "Imperial Seal",
                 faction: Winnu,
             },
             Hero::XxekirGrom => info! {
-                hero: XxekirGrom,
+                tag: XxekirGrom,
                 name: "Xxekir Grom",
                 ability: "Political Data Nexus",
                 faction: XxchaKingdom,
             },
             Hero::DannelOfTheTenth => info! {
-                hero: DannelOfTheTenth,
+                tag: DannelOfTheTenth,
                 name: "Dannel of the Tenth",
                 ability: "Spinner Overdrive",
                 faction: YinBrotherhood,
             },
             Hero::KyverBladeAndKey => info! {
-                hero: KyverBladeAndKey,
+                tag: KyverBladeAndKey,
                 name: "Kyver, Blade and Key",
                 ability: "Guild of Spies",
                 faction: YssarilTribes,
             },
             Hero::AhkSylSiven => info! {
-                hero: AhkSylSiven,
+                tag: AhkSylSiven,
                 name: "Ahk-Syl Siven",
                 ability: "Probability Matrix",
                 faction: Nomad,

@@ -7,7 +7,7 @@ use crate::data::common::faction::Faction;
 #[derive(Clone, Debug, Serialize)]
 pub struct AgentInfo {
     /// [Agent] variant for this agent.
-    pub agent: Agent,
+    pub tag: Agent,
 
     /// Faction that this agent belongs to.
     pub faction: Faction,
@@ -54,12 +54,12 @@ pub enum Agent {
 }
 
 macro_rules! info {
-    (agent: $agent:ident, name: $name:expr, faction: $faction:ident,) => {
+    (tag: $agent:ident, name: $name:expr, faction: $faction:ident,) => {
         AgentInfo {
-            agent: Agent::$agent,
+            tag: Agent::$agent,
             faction: Faction::$faction,
             name: $name,
-            description: include_str!(concat!("description/", $name)),
+            description: include_str!(concat!("description/", stringify!($agent))),
         }
     };
 }
@@ -69,132 +69,132 @@ impl Agent {
     pub fn info(&self) -> AgentInfo {
         match self {
             Agent::LetaniOspha => info! {
-                agent: LetaniOspha,
+                tag: LetaniOspha,
                 name: "Letani Ospha",
                 faction: Arborec,
             },
             Agent::TrillossaAunMirik => info! {
-                agent: TrillossaAunMirik,
+                tag: TrillossaAunMirik,
                 name: "Trillossa Aun Mirik",
                 faction: ArgentFlight,
             },
             Agent::ViscountUnlenn => info! {
-                agent: ViscountUnlenn,
+                tag: ViscountUnlenn,
                 name: "Viscount Unlenn",
                 faction: BaronyOfLetnev,
             },
             Agent::CaptainMendosa => info! {
-                agent: CaptainMendosa,
+                tag: CaptainMendosa,
                 name: "Captain Mendosa",
                 faction: ClanOfSaar,
             },
             Agent::Umbat => info! {
-                agent: Umbat,
+                tag: Umbat,
                 name: "Umbat",
                 faction: EmbersOfMuaat,
             },
             Agent::CarthOfGoldenSands => info! {
-                agent: CarthOfGoldenSands,
+                tag: CarthOfGoldenSands,
                 name: "Carth of Golden Sands",
                 faction: EmiratesOfHacan,
             },
             Agent::Acamar => info! {
-                agent: Acamar,
+                tag: Acamar,
                 name: "Acamar",
                 faction: Empyrean,
             },
             Agent::EvelynDelouis => info! {
-                agent: EvelynDelouis,
+                tag: EvelynDelouis,
                 name: "Evelyn Delouis",
                 faction: FederationOfSol,
             },
             Agent::EmissaryTaivra => info! {
-                agent: EmissaryTaivra,
+                tag: EmissaryTaivra,
                 name: "Emissary Taivra",
                 faction: GhostsOfCreuss,
             },
             Agent::I48S => info! {
-                agent: I48S,
+                tag: I48S,
                 name: "I48S",
                 faction: L1Z1XMindnet,
             },
             Agent::JaeMirKan => info! {
-                agent: JaeMirKan,
+                tag: JaeMirKan,
                 name: "Jae Mir Kan",
                 faction: MahactGeneSorcerers,
             },
             Agent::SuffiAn => info! {
-                agent: SuffiAn,
+                tag: SuffiAn,
                 name: "Suffi An",
                 faction: MentakCoalition,
             },
             Agent::Zeu => info! {
-                agent: Zeu,
+                tag: Zeu,
                 name: "Z'eu",
                 faction: NaaluCollective,
             },
             Agent::GarvAndGunn => info! {
-                agent: GarvAndGunn,
+                tag: GarvAndGunn,
                 name: "Garv and Gunn",
                 faction: NaazRokhaAlliance,
             },
             Agent::NekroMalleon => info! {
-                agent: NekroMalleon,
+                tag: NekroMalleon,
                 name: "Nekro Malleon",
                 faction: NekroVirus,
             },
             Agent::Tro => info! {
-                agent: Tro,
+                tag: Tro,
                 name: "T'ro",
                 faction: SardakkNorr,
             },
             Agent::Tellurian => info! {
-                agent: Tellurian,
+                tag: Tellurian,
                 name: "Tellurian",
                 faction: TitansOfUl,
             },
             Agent::DoctorSucaban => info! {
-                agent: DoctorSucaban,
+                tag: DoctorSucaban,
                 name: "Doctor Sucaban",
                 faction: UniversitiesOfJolNar,
             },
             Agent::TheStillnessOfStars => info! {
-                agent: TheStillnessOfStars,
+                tag: TheStillnessOfStars,
                 name: "The Stillness of Stars",
                 faction: VuilRaithCabal,
             },
             Agent::BerekarBerekon => info! {
-                agent: BerekarBerekon,
+                tag: BerekarBerekon,
                 name: "Berekar Berekon",
                 faction: Winnu,
             },
             Agent::GgrucotoRinn => info! {
-                agent: GgrucotoRinn,
+                tag: GgrucotoRinn,
                 name: "Ggrucoto Rinn",
                 faction: XxchaKingdom,
             },
             Agent::BrotherMilor => info! {
-                agent: BrotherMilor,
+                tag: BrotherMilor,
                 name: "Brother Milor",
                 faction: YinBrotherhood,
             },
             Agent::CleverCleverSsruu => info! {
-                agent: CleverCleverSsruu,
+                tag: CleverCleverSsruu,
                 name: "Clever Clever Ssruu",
                 faction: YssarilTribes,
             },
             Agent::ArtunoTheBetrayer => info! {
-                agent: ArtunoTheBetrayer,
+                tag: ArtunoTheBetrayer,
                 name: "Artuno the Betrayer",
                 faction: Nomad,
             },
             Agent::FieldMarshallMercer => info! {
-                agent: FieldMarshallMercer,
+                tag: FieldMarshallMercer,
                 name: "Field Marshall Mercer",
                 faction: Nomad,
             },
             Agent::TheThundarian => info! {
-                agent: TheThundarian,
+                tag: TheThundarian,
                 name: "The Thundarian",
                 faction: Nomad,
             },
