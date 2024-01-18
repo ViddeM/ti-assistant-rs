@@ -10,6 +10,7 @@ import { useGameContext } from "@/hooks/GameContext";
 interface SelectTechViewProps {
   playerId: string;
   onSelect: (tech: string) => void;
+  filteredTechs?: string[];
 }
 
 const TECH_CATEGORIES: TechCategory[] = [
@@ -22,7 +23,11 @@ const TECH_CATEGORIES: TechCategory[] = [
 const LABEL_COL_ALIGN = "right";
 const DROPDOWN_COL_ALIGN = "left";
 
-export const SelectTechView = ({ playerId, onSelect }: SelectTechViewProps) => {
+export const SelectTechView = ({
+  playerId,
+  onSelect,
+  filteredTechs,
+}: SelectTechViewProps) => {
   const { gameState, gameOptions } = useGameContext();
 
   const [selectedTech, setSelectedTech] = useState<string>("");
@@ -30,7 +35,8 @@ export const SelectTechView = ({ playerId, onSelect }: SelectTechViewProps) => {
   const availableTechs = getAvailableTechs(
     playerTechs,
     gameOptions,
-    gameState.players[playerId].faction
+    gameState.players[playerId].faction,
+    filteredTechs ?? []
   );
 
   return (
@@ -128,22 +134,23 @@ interface Tech {
 function getAvailableTechs(
   taken: Tech[],
   gameOptions: GameOptions,
-  playerFaction: Faction
+  playerFaction: Faction,
+  filterTechs: string[]
 ): Tech[] {
   return Object.keys(gameOptions.technologies)
     .filter((t) => !taken.map((t) => t.tech).includes(t))
-    .filter((t) => {
-      const origin = gameOptions.technologies[t].origin;
-      if (origin === "Base") {
-        return true;
-      }
-
-      return origin.Faction === playerFaction;
-    })
     .map((t) => {
       return {
         tech: t,
         info: gameOptions.technologies[t],
       };
+    })
+    .filter((t) => !filterTechs.includes(t.tech))
+    .filter((t) => {
+      if (t.info.origin === "Base") {
+        return true;
+      }
+
+      return t.info.origin.Faction === playerFaction;
     });
 }

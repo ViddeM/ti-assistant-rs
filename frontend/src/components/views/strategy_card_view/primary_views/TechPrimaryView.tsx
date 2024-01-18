@@ -1,6 +1,6 @@
 import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../../select_tech_view/SelectTechView";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGameContext } from "@/hooks/GameContext";
 
 export const TechnologyPrimaryView = () => {
@@ -45,6 +45,7 @@ export const TechnologyPrimaryView = () => {
               <SelectTechView
                 playerId={gameState.currentPlayer!!}
                 onSelect={setSecondTech}
+                filteredTechs={[firstTech]}
               />
             </fieldset>
           ) : (
