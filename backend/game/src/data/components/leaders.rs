@@ -41,29 +41,47 @@ impl Leader {
 
     /// Is this leader enabled for the given [Expansions]?
     pub fn is_enabled_in(&self, expansions: &Expansions) -> bool {
+        use {Agent::*, Commander::*, Hero::*};
+
         // leaders are a PoK feature
         if !expansions.prophecy_of_kings {
             return false;
         }
 
-        // check if the expansion that adds this leader is enabled.
-        let source_expansion = self.info().faction().expansion();
-        if !expansions.is_enabled(&source_expansion) {
+        // check if the expansion that adds this leaders faction is enabled.
+        let faction_source = self.info().faction().expansion();
+        if !expansions.is_enabled(&faction_source) {
             return false;
         }
 
-        // check if any enabled expansion explicitly disables this leader
-        let is_replaced_in_codex_3 = matches!(
-            self,
-            Leader::Agent(Agent::Zeu)
-                | Leader::Commander(Commander::Maban)
-                | Leader::Hero(Hero::XxekirGrom)
-                | Leader::Agent(Agent::BrotherMilor)
-                | Leader::Commander(Commander::BrotherOmar)
-                | Leader::Hero(Hero::DannelOfTheTenth)
-        );
+        // check if leader is patched in codex 3
 
-        if expansions.codex_3 && is_replaced_in_codex_3 {
+        let removed_in_codex_3 = &[
+            Zeu.into(),
+            Maban.into(),
+            XxekirGrom.into(),
+            BrotherMilor.into(),
+            BrotherOmar.into(),
+            DannelOfTheTenth.into(),
+        ];
+
+        let added_in_codex_3 = &[
+            ZeuCxIII.into(),
+            MabanCxIII.into(),
+            XxekirGromCxIII.into(),
+            BrotherMilorCxIII.into(),
+            BrotherOmarCxIII.into(),
+            DannelOfTheTenthCxIII.into(),
+        ];
+
+        let is_removed_in_codex_3 = removed_in_codex_3.contains(self);
+        let is_added_in_codex_3 = added_in_codex_3.contains(self);
+
+        if expansions.codex_3 && is_removed_in_codex_3 {
+            return false;
+        }
+
+        if !expansions.codex_3 && is_added_in_codex_3 {
             return false;
         }
 

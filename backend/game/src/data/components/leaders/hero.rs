@@ -33,6 +33,7 @@ pub enum Hero {
     AiroShirAur,
     ConservatorProcyon,
     DannelOfTheTenth,
+    DannelOfTheTenthCxIII, // patch of Xxekir Grom from Codex III
     DarktalonTreilla,
     GurnoAggero,
     HarrughGefhara,
@@ -52,6 +53,7 @@ pub enum Hero {
     UlTheProgenitor,
     UnitDsgnFlayesh,
     XxekirGrom,
+    XxekirGromCxIII, // patch of Xxekir Grom from Codex III
 }
 
 macro_rules! info {
@@ -196,10 +198,22 @@ impl Hero {
                 ability: "Political Data Nexus",
                 faction: XxchaKingdom,
             },
+            Hero::XxekirGromCxIII => info! {
+                tag: XxekirGromCxIII,
+                name: "Xxekir Grom Ω",
+                ability: "Political Data Nexus Ω",
+                faction: XxchaKingdom,
+            },
             Hero::DannelOfTheTenth => info! {
                 tag: DannelOfTheTenth,
                 name: "Dannel of the Tenth",
                 ability: "Spinner Overdrive",
+                faction: YinBrotherhood,
+            },
+            Hero::DannelOfTheTenthCxIII => info! {
+                tag: DannelOfTheTenthCxIII,
+                name: "Dannel of the Tenth Ω",
+                ability: "Spinner Overdrive Ω",
                 faction: YinBrotherhood,
             },
             Hero::KyverBladeAndKey => info! {

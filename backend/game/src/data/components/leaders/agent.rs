@@ -29,6 +29,7 @@ pub enum Agent {
     ArtunoTheBetrayer,
     BerekarBerekon,
     BrotherMilor,
+    BrotherMilorCxIII, // patch of Brother Milor from Codex III
     CaptainMendosa,
     CarthOfGoldenSands,
     CleverCleverSsruu,
@@ -51,6 +52,7 @@ pub enum Agent {
     Umbat,
     ViscountUnlenn,
     Zeu,
+    ZeuCxIII, // patch of Zeu from Codex III
 }
 
 macro_rules! info {
@@ -133,6 +135,11 @@ impl Agent {
                 name: "Z'eu",
                 faction: NaaluCollective,
             },
+            Agent::ZeuCxIII => info! {
+                tag: ZeuCxIII,
+                name: "Z'eu Ω",
+                faction: NaaluCollective,
+            },
             Agent::GarvAndGunn => info! {
                 tag: GarvAndGunn,
                 name: "Garv and Gunn",
@@ -176,6 +183,11 @@ impl Agent {
             Agent::BrotherMilor => info! {
                 tag: BrotherMilor,
                 name: "Brother Milor",
+                faction: YinBrotherhood,
+            },
+            Agent::BrotherMilorCxIII => info! {
+                tag: BrotherMilorCxIII,
+                name: "Brother Milor Ω",
                 faction: YinBrotherhood,
             },
             Agent::CleverCleverSsruu => info! {
