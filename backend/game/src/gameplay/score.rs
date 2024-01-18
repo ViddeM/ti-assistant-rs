@@ -84,17 +84,13 @@ impl Score {
             player_points += i8::from(self.custodians.as_ref() == Some(player));
 
             // Check if the player has the Shard of the Throne relic
-            if let Some(p) = self.shard_of_the_throne.as_ref() {
-                if p == player {
-                    player_points += 1;
-                }
+            if Some(player) == self.shard_of_the_throne.as_ref() {
+                player_points += 1;
             }
 
             // Check if the player has the crown of emphidia relic
-            if let Some(p) = self.crown_of_emphidia.as_ref() {
-                if p == player {
-                    player_points += 1;
-                }
+            if Some(player) == self.crown_of_emphidia.as_ref() {
+                player_points += 1;
             }
 
             self.player_points.insert(Arc::clone(player), player_points);
