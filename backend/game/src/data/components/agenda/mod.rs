@@ -525,12 +525,14 @@ impl Agenda {
             Self::CoreMining
                 | Self::DemilitarizedZone
                 | Self::HolyPlanetOfIxth
+                | Self::RepresentativeGovernmentTI4
                 | Self::ResearchTeamBiotic
                 | Self::ResearchTeamCybernetic
                 | Self::ResearchTeamPropulsion
                 | Self::ResearchTeamWarfare
                 | Self::SenateSanctuary
                 | Self::ShardOfTheThrone
+                | Self::TerraformingInitiative
                 | Self::TheCrownOfEmphidia
                 | Self::TheCrownOfThalnos
         )
