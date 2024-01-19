@@ -12,19 +12,21 @@ export const PlayerTimeInfo = ({
   isPaused,
   currentTurnStartTime,
 }: PlayerTimeInfoProps) => {
-  const [extraSeconds, setExtraSeconds] = useState<number>(0);
+  const [timeSinceEvent, setTimeSinceEvent] = useState<number>(0);
 
   useEffect(() => {
-    if (player.isActive && currentTurnStartTime !== null && !isPaused) {
+    if (isPaused) {
+      setTimeSinceEvent(0);
+    } else if (player.isActive && currentTurnStartTime !== null) {
       // To avoid the time freezing when taking actions.
       const startTime = Date.parse(currentTurnStartTime);
       const now = Date.now();
-      setExtraSeconds(Math.floor((now - startTime) / 1000));
+      setTimeSinceEvent(Math.max(Math.floor((now - startTime) / 1000), 0));
 
       let interval = setInterval(() => {
         const startTime = Date.parse(currentTurnStartTime);
         const now = Date.now();
-        setExtraSeconds(Math.floor((now - startTime) / 1000));
+        setTimeSinceEvent(Math.floor((now - startTime) / 1000));
       }, 1000);
 
       return () => {
@@ -33,11 +35,7 @@ export const PlayerTimeInfo = ({
     }
   }, [player, currentTurnStartTime, isPaused]);
 
-  useEffect(() => {
-    setExtraSeconds(0);
-  }, [player.isActive]);
-
-  const totalSeconds = player.playTime.secs + extraSeconds;
+  const totalSeconds = player.playTime.secs + (isPaused ? 0 : timeSinceEvent);
   const seconds = totalSeconds % 60;
   const totalMinutes = Math.floor((totalSeconds - seconds) / 60);
   const minutes = totalMinutes % 60;
