@@ -32,6 +32,16 @@ pub enum LeaderInfo {
     Hero(HeroInfo),
 }
 
+/// Information about a leader ability, i.e. if it's an Action, etc.
+#[derive(Clone, Copy, Debug, Serialize, PartialEq, Eq)]
+pub enum LeaderAbilityKind {
+    /// Leader ability is an Action.
+    Action,
+
+    /// Leader ability is not one of the other alternatives.
+    Other,
+}
+
 impl Leader {
     /// Get the [LeaderInfo] of this [Leader].
     pub fn info(&self) -> LeaderInfo {
