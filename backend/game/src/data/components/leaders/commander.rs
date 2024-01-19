@@ -3,6 +3,8 @@ use strum_macros::EnumIter;
 
 use crate::data::common::faction::Faction;
 
+use super::LeaderAbilityKind;
+
 /// Information about a commander leader.
 #[derive(Clone, Debug, Serialize)]
 pub struct CommanderInfo {
@@ -20,6 +22,9 @@ pub struct CommanderInfo {
 
     /// Description of the commanders ability.
     pub description: &'static str,
+
+    /// The kind of ability, i.e. whether it's an action or something else.
+    pub kind: LeaderAbilityKind,
 }
 
 /// A commander leader.
@@ -64,6 +69,7 @@ macro_rules! info {
             name: $name,
             unlock: $unlock,
             description: include_str!(concat!("description/", stringify!($commander))),
+            kind: LeaderAbilityKind::Other, // No commanders have an ACTION ability.
         }
     };
 }
