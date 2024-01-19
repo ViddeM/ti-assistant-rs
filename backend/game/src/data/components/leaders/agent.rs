@@ -53,6 +53,7 @@ pub enum Agent {
     ViscountUnlenn,
     Zeu,
     ZeuCxIII, // patch of Zeu from Codex III
+    XanderAlexinVictoriIII,
 }
 
 macro_rules! info {
@@ -68,7 +69,7 @@ macro_rules! info {
 
 impl Agent {
     /// Get the [AgentInfo] of this [Agent].
-    pub fn info(&self) -> AgentInfo {
+    pub const fn info(&self) -> AgentInfo {
         match self {
             Agent::LetaniOspha => info! {
                 tag: LetaniOspha,
@@ -209,6 +210,11 @@ impl Agent {
                 tag: TheThundarian,
                 name: "The Thundarian",
                 faction: Nomad,
+            },
+            Agent::XanderAlexinVictoriIII => info! {
+                tag: XanderAlexinVictoriIII,
+                name: "Xander Alexin Victori III",
+                faction: CouncilKeleres,
             },
         }
     }

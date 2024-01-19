@@ -48,6 +48,7 @@ pub enum Commander {
     SUlaMentarion,
     SaiSeravus,
     SoAta,
+    SuffiAnKeleres,
     TaZern,
     ThatWhichMoldsFlesh,
     TrrakanAunZulok,
@@ -226,6 +227,12 @@ impl Commander {
                 name: "Navarch Feng",
                 unlock: "Have 1 scored secret objective",
                 faction:  Nomad,
+            },
+            Commander::SuffiAnKeleres => info! {
+                tag: SuffiAnKeleres,
+                name: "Suffi An",
+                unlock: "Spend 1 trade good after you play an action card that has a component action",
+                faction: CouncilKeleres,
             },
         }
     }

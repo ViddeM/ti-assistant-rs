@@ -33,18 +33,21 @@ pub enum Hero {
     AiroShirAur,
     ConservatorProcyon,
     DannelOfTheTenth,
-    DannelOfTheTenthCxIII, // patch of Xxekir Grom from Codex III
+    DannelOfTheTenthCxIII, // patch of Dannel from Codex III
     DarktalonTreilla,
     GurnoAggero,
+    HarkaLeeds,
     HarrughGefhara,
     HeshAndPrit,
     IpswitchLooseCannon,
     ItFeedsOnCarrion,
     JaceX4thAirLegion,
+    KuuasiAunJalatai,
     KyverBladeAndKey,
     LetaniMiasmiala,
     MathisMathinus,
     MirikAunSissiri,
+    OdlynnMyrr,
     RiftwalkerMeian,
     RinTheMastersLegacy,
     ShvalHarbinger,
@@ -227,6 +230,24 @@ impl Hero {
                 name: "Ahk-Syl Siven",
                 ability: "Probability Matrix",
                 faction: Nomad,
+            },
+            Hero::KuuasiAunJalatai => info! {
+                tag: KuuasiAunJalatai,
+                name: "Kuuasi Aun Jalatai",
+                ability: "Overwing Zeta",
+                faction: CouncilKeleres,
+            },
+            Hero::OdlynnMyrr => info! {
+                tag: OdlynnMyrr,
+                name: "Odlynn Myrr",
+                ability: "Operation Archon",
+                faction: CouncilKeleres,
+            },
+            Hero::HarkaLeeds => info! {
+                tag: HarkaLeeds,
+                name: "Harka Leeds",
+                ability: "Erwan's Covenant",
+                faction: CouncilKeleres,
             },
         }
     }
