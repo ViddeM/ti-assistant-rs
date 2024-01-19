@@ -103,12 +103,30 @@ impl Leader {
 }
 
 impl LeaderInfo {
+    /// Get the pretty name of this leader.
+    pub fn name(&self) -> &'static str {
+        match self {
+            LeaderInfo::Agent(l) => l.name,
+            LeaderInfo::Commander(l) => l.name,
+            LeaderInfo::Hero(l) => l.name,
+        }
+    }
+
     /// Get the [Faction] that this [Leader] is a part of.
     pub fn faction(&self) -> Faction {
         match self {
             LeaderInfo::Agent(l) => l.faction,
             LeaderInfo::Commander(l) => l.faction,
             LeaderInfo::Hero(l) => l.faction,
+        }
+    }
+
+    /// Get the [LeaderAbilityKind] of this [Leader]s ability.
+    pub fn ability_kind(&self) -> LeaderAbilityKind {
+        match self {
+            LeaderInfo::Agent(l) => l.kind,
+            LeaderInfo::Commander(_) => LeaderAbilityKind::Other,
+            LeaderInfo::Hero(l) => l.kind,
         }
     }
 }

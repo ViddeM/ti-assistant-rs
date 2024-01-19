@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::data::common::faction::Faction;
 use crate::data::components::agenda::{Agenda, AgendaElect};
 use crate::data::components::frontier_card::FrontierCard;
+use crate::data::components::leaders::Leader;
 use crate::data::components::objectives::public::PublicObjective;
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
 use crate::data::components::planet_attachment::PlanetAttachment;
@@ -156,6 +157,14 @@ pub enum Event {
         player: PlayerId,
         /// Additional information about what occurred when they played the card.
         data: Option<ActionCardAction>,
+    },
+
+    LeaderAction {
+        /// The player that is taking the action.
+        player: PlayerId,
+
+        /// The leader that is being played.
+        leader: Leader,
     },
 
     /// Begin playing a frontier card.
