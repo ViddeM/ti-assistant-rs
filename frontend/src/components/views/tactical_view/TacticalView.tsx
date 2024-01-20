@@ -31,7 +31,10 @@ export const TacticalView = () => {
         id: p,
         ...gameOptions.planetInfos[p],
       };
-    });
+    })
+    .sort((a, b) =>
+      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase())
+    );
 
   const takePlanet = (planet: string) => {
     sendEvent({

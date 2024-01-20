@@ -23,9 +23,11 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
     };
   });
   const usedAgendas = gameState.agendaVoteHistory.map((a) => a.vote.agenda);
-  const availableAgendas = allAgendas.filter(
-    (a) => !usedAgendas.includes(a.id)
-  );
+  const availableAgendas = allAgendas
+    .filter((a) => !usedAgendas.includes(a.id))
+    .sort((a, b) =>
+      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase())
+    );
 
   const speaker = gameState.players[gameState.speaker!!];
   const players = Object.keys(gameState.players).map((p) => {
