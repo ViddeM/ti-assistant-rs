@@ -11,10 +11,7 @@ import { PlayerResources } from "./parts/PlayerResources";
 import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
 import { Duration, Score } from "@/api/GameState";
 import { PlayerTimeInfo } from "./parts/PlayerTimeInfo";
-import {
-  FactionIcon,
-  factionIconName,
-} from "@/components/elements/factionIcon/FactionIcon";
+import { factionIconName } from "@/components/elements/factionIcon/FactionIcon";
 
 export interface SidebarPlayer {
   name: string;
