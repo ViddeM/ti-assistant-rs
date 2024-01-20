@@ -26,6 +26,12 @@ export const ActionPhaseView = () => {
     currentPlayer
   );
 
+  const playerName =
+    currentPlayer.toLocaleLowerCase() === "portals" ||
+    currentPlayer.toLocaleLowerCase() === "potholes"
+      ? `${currentPlayer} ❤️`
+      : currentPlayer;
+
   return (
     <div className={`card ${styles.actionPhaseViewContainer}`}>
       <h2>ACTION PHASE</h2>
@@ -39,7 +45,7 @@ export const ActionPhaseView = () => {
             gameState.players[currentPlayer!!].color
           } ${styles.actionPlayerContainer}`}
         >
-          <h4>PEPPE</h4>
+          <h4>{playerName}</h4>
         </legend>
         <div className={styles.actionsContainer}>
           <Button
