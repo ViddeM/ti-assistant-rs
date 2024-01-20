@@ -264,7 +264,6 @@ pub fn update_game_state(
                 format!("All initialization has not yet been completed for players {uninitialized_players:?}")
             );
 
-            game_state.speaker = game_state.players.keys().next().cloned();
             game_state.change_phase(Phase::Strategy, timestamp)?;
         }
         Event::TakeStrategyCard { player, card } => {
