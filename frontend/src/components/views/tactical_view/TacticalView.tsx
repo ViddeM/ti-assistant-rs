@@ -145,12 +145,12 @@ const SelectPlanetAttachment = ({
     return <p>{gameOptions.planetAttachments[attachment].name}</p>;
   }
 
-  const availableAttachments = Object.keys(
-    gameOptions.planetAttachments
-  ).filter(
-    (a) =>
-      gameOptions.planetAttachments[a].planetTrait === planetInfo.planetTrait
-  );
+  const availableAttachments = Object.keys(gameOptions.planetAttachments)
+    .filter(
+      (a) =>
+        gameOptions.planetAttachments[a].planetTrait === planetInfo.planetTrait
+    )
+    .filter((a) => !a.toLocaleLowerCase().endsWith("resources"));
 
   return (
     <>
