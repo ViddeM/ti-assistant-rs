@@ -26,11 +26,7 @@ export const ActionPhaseView = () => {
     currentPlayer
   );
 
-  const playerName =
-    currentPlayer.toLocaleLowerCase() === "portals" ||
-    currentPlayer.toLocaleLowerCase() === "potholes"
-      ? `${currentPlayer} ❤️`
-      : currentPlayer;
+  const playerName = `${currentPlayer} ${playerEmoji(currentPlayer)}`;
 
   return (
     <div className={`card ${styles.actionPhaseViewContainer}`}>
