@@ -366,3 +366,20 @@ function getPlayableStrategyCards(
     .filter((v) => v.player === `${currentPlayer}`)
     .map((v) => v.card as StrategyCard);
 }
+
+function playerEmoji(name: string): string {
+  switch (name.toLocaleLowerCase()) {
+    case "portals":
+      return "❤️";
+    case "potholes":
+      return "❤️";
+    case "tux":
+      return "🐧";
+    case "sponken":
+      return "🦤";
+    case "vidde":
+      return "⌨️";
+    default:
+      return "";
+  }
+}
