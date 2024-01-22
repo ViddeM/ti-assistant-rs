@@ -7,12 +7,12 @@ import { TacticalView } from "../tactical_view/TacticalView";
 import { StatusPhaseView } from "../status_phase_view/StatusPhaseView";
 import { ActionCardView } from "../action_card_view/ActionCardView";
 import { AgendaPhaseView } from "../agenda_phase_view/AgendaPhaseView";
-import { SetupPhase } from "../setup/Setup";
 import { useGameContext } from "@/hooks/GameContext";
 import { EndActionPhaseView } from "../end_action_phase_view/EndActionPhaseView";
 import { FrontierCardView } from "../frontier_card_view/FrontierCardView";
 import { RelicCardView } from "../relic_card_view/RelicCardView";
 import { RelicsPhaseView } from "../relics_phase_view/RelicsPhaseView";
+import { SetupPhase } from "../setup/Setup";
 
 export const PhaseView = () => {
   const { gameState, sendEvent } = useGameContext();

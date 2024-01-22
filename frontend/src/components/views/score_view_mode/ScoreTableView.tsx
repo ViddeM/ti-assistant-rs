@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/elements/button/Button";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const ScoreTableView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
@@ -17,7 +18,8 @@ export const ScoreTableView = () => {
         ...gameOptions.objectives[obj],
       };
     })
-    .filter((obj) => obj.kind === "StageI");
+    .filter((obj) => obj.kind === "StageI")
+    .sort(nameSort);
 
   const revealedStageTwoObjectives = Object.keys(
     gameState.score.revealedObjectives
@@ -28,14 +30,18 @@ export const ScoreTableView = () => {
         ...gameOptions.objectives[obj],
       };
     })
-    .filter((obj) => obj.kind === "StageII");
+    .filter((obj) => obj.kind === "StageII")
+    .sort(nameSort);
 
-  const players = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
+
   const playerCount = players.length;
 
   return (

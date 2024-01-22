@@ -2,6 +2,7 @@ import { RelicProgress } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 import { useState } from "react";
 
 export const RelicCardView = () => {
@@ -77,7 +78,8 @@ const StellarConvertersView = () => {
       return (
         typeof type !== "object" || !Object.keys(type).includes("HomeSystem")
       );
-    });
+    })
+    .sort(nameSort);
 
   return (
     <fieldset>
@@ -137,7 +139,8 @@ const NanoForgeView = () => {
       return (
         typeof type !== "object" || !Object.keys(type).includes("HomeSystem")
       );
-    });
+    })
+    .sort(nameSort);
 
   return (
     <fieldset>

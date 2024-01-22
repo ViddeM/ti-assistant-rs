@@ -1,4 +1,7 @@
-import { StrategyCard } from "@/resources/types/strategyCards";
+import {
+  StrategyCard,
+  StrategyCardNumber,
+} from "@/resources/types/strategyCards";
 import styles from "./StrategyCardInfo.module.scss";
 
 export interface StrategicCardInfo {
@@ -12,9 +15,13 @@ export interface StrategyCardInfoProps {
 }
 
 export const StrategyCardInfo = ({ cards }: StrategyCardInfoProps) => {
+  const sortedCards = cards.sort(
+    (a, b) => StrategyCardNumber[a.name] - StrategyCardNumber[b.name]
+  );
+
   return (
     <div className={styles.strategyCardsContainer}>
-      {cards.map((c) => (
+      {sortedCards.map((c) => (
         <div
           key={c.name}
           className={`${styles.cardContainer} style${c.name} ${

@@ -8,14 +8,24 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowTurnUp, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { nameSort, stringSort } from "@/utils/Utils";
 
 export const PlayerPlanetsGrid = () => {
   const { gameState } = useGameContext();
 
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
+
   return (
     <div className={styles.playerPlanetCardsContainer}>
-      {Object.keys(gameState.players).map((p) => (
-        <PlayerPlanetsCard key={p} playerId={p} player={gameState.players[p]} />
+      {players.map((p) => (
+        <PlayerPlanetsCard key={p.id} playerId={p.id} player={p} />
       ))}
     </div>
   );
@@ -112,6 +122,14 @@ const PlayerPlanetsCard = ({ playerId, player }: PlayerPlanetsCardProps) => {
     }
   );
 
+  const planets = Object.keys(player.planets).map((p) => {
+    return {
+      id: p,
+      attachments: player.planets[p].sort(stringSort),
+      ...gameOptions.planetInfos[p],
+    };
+  });
+
   return (
     <div className={`card ${styles.playerPlanetsTableContainer}`}>
       <table className={styles.playerPlanetsTable}>
@@ -195,13 +213,13 @@ const PlayerPlanetsCard = ({ playerId, player }: PlayerPlanetsCardProps) => {
           </tr>
         </thead>
         <tbody>
-          {Object.keys(player.planets).map((planet) => (
+          {planets.map((p) => (
             <PlayerPlanetRow
-              key={planet}
+              key={p.id}
               playerId={playerId}
-              planetId={planet}
-              planet={gameOptions.planetInfos[planet]}
-              attachments={player.planets[planet]}
+              planetId={p.id}
+              planet={p}
+              attachments={p.attachments}
             />
           ))}
         </tbody>

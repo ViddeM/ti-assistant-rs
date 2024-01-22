@@ -3,6 +3,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./Primary.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { stringSort } from "@/utils/Utils";
 
 export const PoliticsPrimaryView = () => {
   const { gameState, sendEvent } = useGameContext();
@@ -10,9 +11,10 @@ export const PoliticsPrimaryView = () => {
   const [nextSpeaker, setNextSpeaker] = useState<string>("");
 
   const progress = gameState.actionProgress?.Strategic?.primary;
-  const nonSpeakerPlayers = Object.keys(gameState.players).filter(
-    (p) => p !== gameState.speaker
-  );
+  const nonSpeakerPlayers = Object.keys(gameState.players)
+    .filter((p) => p !== gameState.speaker)
+    .sort(stringSort);
+
   return (
     <div>
       {progress ? (

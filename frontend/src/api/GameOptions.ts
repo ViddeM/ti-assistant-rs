@@ -29,7 +29,7 @@ export interface PlanetInfo {
 }
 
 export interface PlanetAttachmentInfo {
-  name: String;
+  name: string;
   planetTrait: PlanetTrait | null;
   resources: number;
   influence: number;

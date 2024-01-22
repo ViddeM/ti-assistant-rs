@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import styles from "./AgendaPhaseView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 import { GameOptions } from "@/api/GameOptions";
+import { nameSort } from "@/utils/Utils";
 
 export interface AgendaActionsViewProps {
   state: AgendaState;
@@ -30,12 +31,14 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
     );
 
   const speaker = gameState.players[gameState.speaker!!];
-  const players = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
 
   const everyoneHasVoted =
     Object.keys(state.vote?.playerVotes ?? {}).length === players.length;

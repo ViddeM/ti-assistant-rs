@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Faction } from "@/resources/types/factions";
 import { Player } from "@/api/GameState";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 const FACTION_NOT_SELECTED = "not_selected";
 
@@ -24,7 +25,17 @@ export const CreationPhase = () => {
     gameOptions.factions,
     Object.values(gameState.players)
   );
+
   const takenColors = Object.values(gameState.players).map((p) => p.color);
+
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
 
   const addPlayer = (name: string, faction: Faction, color: Color) => {
     sendEvent({
@@ -37,11 +48,12 @@ export const CreationPhase = () => {
       },
     });
   };
+
   return (
     <div className={`card screenContainer ${styles.setupCard}`}>
       <h2>Add players</h2>
-      {Object.entries(gameState.players).map(([playerId, player]) => (
-        <DisplayPlayer key={playerId} player={player} />
+      {players.map((p) => (
+        <DisplayPlayer key={p.id} player={p} />
       ))}
       {playerCount < gameOptions.maxPlayers && (
         <AddPlayer
@@ -71,17 +83,16 @@ interface DisplayPlayerProps {
 const DisplayPlayer = ({ player }: DisplayPlayerProps) => {
   const { gameOptions } = useGameContext();
 
+  const faction = gameOptions.factions.filter(
+    (f) => f.faction === player.faction
+  )[0];
+
   return (
     <div className={styles.displayPlayerContainer}>
       <h3>{player.name}</h3>
       <div className={styles.factionRow}>
         <FactionIcon faction={player.faction} />
-        <p className={styles.factionName}>
-          {
-            gameOptions.factions.filter((f) => f.faction === player.faction)[0]
-              .name
-          }
-        </p>
+        <p className={styles.factionName}>{faction.name}</p>
       </div>
     </div>
   );
@@ -196,5 +207,7 @@ function getAvailableFactions(
   players: Player[]
 ): FactionResponse[] {
   const takenFactions = players.map((p) => p.faction);
-  return allFactions.filter((f) => takenFactions.includes(f.faction) === false);
+  return allFactions
+    .filter((f) => takenFactions.includes(f.faction) === false)
+    .sort(nameSort);
 }

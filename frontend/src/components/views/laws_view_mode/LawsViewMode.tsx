@@ -6,16 +6,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import styles from "./LawsViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const LawsViewMode = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
-  const laws = Object.keys(gameState.laws).map((l) => {
-    return {
-      id: l,
-      ...gameOptions.agendas[l],
-    };
-  });
+  const laws = Object.keys(gameState.laws)
+    .map((l) => {
+      return {
+        id: l,
+        ...gameOptions.agendas[l],
+      };
+    })
+    .sort(nameSort);
 
   return (
     <div className="card">

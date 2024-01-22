@@ -7,6 +7,7 @@ import { GameState } from "@/api/GameState";
 import { useEffect, useState } from "react";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort, stringSort } from "@/utils/Utils";
 
 export const ActionPhaseView = () => {
   const { gameState, sendEvent } = useGameContext();
@@ -185,7 +186,8 @@ const ActionCardSelectView = () => {
     .map((card) => gameOptions.actionCards[card])
     .filter((card) => {
       return card.play === "Action";
-    });
+    })
+    .sort(nameSort);
 
   return (
     <fieldset className={styles.playActionCardContainer}>
@@ -221,9 +223,9 @@ const GainRelicCardView = () => {
   const [selected, setSelected] = useState<string>("");
 
   const takenRelics = Object.values(gameState.players).flatMap((p) => p.relics);
-  const availableRelics = Object.values(gameOptions.relics).filter(
-    (r) => !takenRelics.includes(r.card)
-  );
+  const availableRelics = Object.values(gameOptions.relics)
+    .filter((r) => !takenRelics.includes(r.card))
+    .sort(nameSort);
 
   return (
     <div>
@@ -308,9 +310,9 @@ const FrontierCardView = () => {
 
   const [selected, setSelected] = useState<string>("");
 
-  const availableCards = Object.values(gameOptions.frontierCards).filter(
-    (f) => f.frontierType === "Action"
-  );
+  const availableCards = Object.values(gameOptions.frontierCards)
+    .filter((f) => f.frontierType === "Action")
+    .sort(nameSort);
 
   return (
     <div>
@@ -360,7 +362,8 @@ function getPlayableStrategyCards(
       (v) => !gameState.spentStrategyCards.includes(v.card as StrategyCard)
     )
     .filter((v) => v.player === `${currentPlayer}`)
-    .map((v) => v.card as StrategyCard);
+    .map((v) => v.card as StrategyCard)
+    .sort(stringSort);
 }
 
 function playerEmoji(name: string): string {

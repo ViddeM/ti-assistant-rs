@@ -2,6 +2,7 @@ import { FactionButton } from "@/components/elements/factionButton/FactionButton
 import React, { useState } from "react";
 import styles from "./PlanetViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const UnclaimedPlanetsTable = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
@@ -9,12 +10,14 @@ export const UnclaimedPlanetsTable = () => {
   const [planetFilter, setPlanetFilter] = useState<string>("");
   const filter = planetFilter.toLowerCase();
 
-  const players = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
   const playerCount = players.length;
 
   const claimedPlanets = players.flatMap((p) => Object.keys(p.planets));
@@ -26,7 +29,8 @@ export const UnclaimedPlanetsTable = () => {
         ...gameOptions.planetInfos[p],
       };
     })
-    .filter((p) => p.id.toLowerCase().includes(filter));
+    .filter((p) => p.id.toLowerCase().includes(filter))
+    .sort(nameSort);
 
   return (
     <div className={styles.unclaimedPlanetsContainer}>

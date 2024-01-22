@@ -5,6 +5,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const SetupPhase = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
@@ -12,12 +13,14 @@ export const SetupPhase = () => {
   const [firstObjective, setFirstObjective] = useState<string>("");
   const [secondObjective, setSecondObjective] = useState<string>("");
 
-  const players = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
 
   const availableObjectives = Object.keys(gameOptions.objectives)
     .map((o) => {
@@ -26,16 +29,17 @@ export const SetupPhase = () => {
         ...gameOptions.objectives[o],
       };
     })
-    .filter((o) => o.kind === "StageI");
+    .filter((o) => o.kind === "StageI")
+    .sort(nameSort);
 
-  const revealedObjectives = Object.keys(
-    gameState.score.revealedObjectives
-  ).map((o) => {
-    return {
-      id: o,
-      ...gameOptions.objectives[o],
-    };
-  });
+  const revealedObjectives = Object.keys(gameState.score.revealedObjectives)
+    .map((o) => {
+      return {
+        id: o,
+        ...gameOptions.objectives[o],
+      };
+    })
+    .sort(nameSort);
 
   return (
     <div className={`card ${styles.setupContainer}`}>
@@ -180,7 +184,8 @@ const WinnuSetup = ({ player }: FactionSpecificSetupProps) => {
       };
     })
     .filter((t) => t.origin === "Base")
-    .filter((t) => Object.keys(t.requirements).length === 0);
+    .filter((t) => Object.keys(t.requirements).length === 0)
+    .sort(nameSort);
 
   return (
     <div>
@@ -221,23 +226,29 @@ const WinnuSetup = ({ player }: FactionSpecificSetupProps) => {
 const ArgentFlightSetup = ({ player }: FactionSpecificSetupProps) => {
   const { gameOptions, sendEvent } = useGameContext();
 
-  const possibleTechs = [
-    "NeuralMotivator",
-    "SarweenTools",
-    "PlasmaScoring",
-  ].map((t) => {
-    return { id: t, ...gameOptions.technologies[t] };
-  });
-
   const [firstTech, setFirstTech] = useState<string>("");
   const [secondTech, setSecondTech] = useState<string>("");
+
+  const takenTechs = player.technologies
+    .map((t) => {
+      return {
+        id: t,
+        ...gameOptions.technologies[t],
+      };
+    })
+    .sort(nameSort);
+  const possibleTechs = ["NeuralMotivator", "SarweenTools", "PlasmaScoring"]
+    .map((t) => {
+      return { id: t, ...gameOptions.technologies[t] };
+    })
+    .sort(nameSort);
 
   return (
     <div className={styles.setupColumn}>
       {player.technologies.length > 0 ? (
         <>
-          {player.technologies.map((t) => (
-            <p key={t}>{gameOptions.technologies[t].name}</p>
+          {takenTechs.map((t) => (
+            <p key={t.id}>{t.name}</p>
           ))}
         </>
       ) : (
@@ -305,7 +316,8 @@ const CouncilKeleresSetup = ({ player }: FactionSpecificSetupProps) => {
         ...gameOptions.technologies[t],
       };
     })
-    .filter((t) => t.origin === "Base");
+    .filter((t) => t.origin === "Base")
+    .sort(nameSort);
 
   const takenFactions = Object.values(gameState.players).map((p) => p.faction);
   const possibleFactions = gameOptions.factions
@@ -315,7 +327,8 @@ const CouncilKeleresSetup = ({ player }: FactionSpecificSetupProps) => {
         f.faction === "XxchaKingdom" ||
         f.faction === "ArgentFlight"
     )
-    .filter((f) => !takenFactions.includes(f.faction));
+    .filter((f) => !takenFactions.includes(f.faction))
+    .sort(nameSort);
 
   return (
     <div className={styles.setupColumn}>

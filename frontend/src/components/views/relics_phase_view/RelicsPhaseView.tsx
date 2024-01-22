@@ -1,16 +1,19 @@
 import { useGameContext } from "@/hooks/GameContext";
 import { SelectTechView } from "../select_tech_view/SelectTechView";
 import { Button } from "@/components/elements/button/Button";
+import { nameSort } from "@/utils/Utils";
 
 export const RelicsPhaseView = () => {
   const { gameState, sendEvent } = useGameContext();
 
-  const allPlayers = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const allPlayers = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
 
   const mawOfWorldsHolder =
     allPlayers.filter((p) => p.relics.includes("MawOfWorlds"))[0] ?? null;

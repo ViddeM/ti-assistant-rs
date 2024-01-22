@@ -3,6 +3,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import { Button } from "@/components/elements/button/Button";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const ImperialPrimaryView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
@@ -21,7 +22,8 @@ export const ImperialPrimaryView = () => {
         id: o,
         ...gameOptions.objectives[o],
       };
-    });
+    })
+    .sort(nameSort);
 
   const performAction = (objective: string | null) => {
     sendEvent({

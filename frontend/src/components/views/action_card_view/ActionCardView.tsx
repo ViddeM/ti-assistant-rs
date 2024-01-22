@@ -5,6 +5,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./ActionCardView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort, stringSort } from "@/utils/Utils";
 
 export const ActionCardView = () => {
   const { gameState, gameOptions } = useGameContext();
@@ -156,6 +157,10 @@ const PlagiarizeView = ({ sendCommitMessage }: PlagiarizeViewProps) => {
   const [selectedPlayer, setSelectedPlayer] = useState<string | null>(null);
   const [selectedTech, setSelectedTech] = useState<string | null>(null);
 
+  const players = Object.keys(gameState.players)
+    .filter((p) => p !== gameState.currentPlayer)
+    .sort(stringSort);
+
   return (
     <table className={styles.plagiarizeTable}>
       <thead>
@@ -170,18 +175,16 @@ const PlagiarizeView = ({ sendCommitMessage }: PlagiarizeViewProps) => {
         </tr>
       </thead>
       <tbody>
-        {Object.keys(gameState.players)
-          .filter((p) => p !== gameState.currentPlayer)
-          .map((player) => (
-            <PlagiarizePlayerRow
-              key={player}
-              player={player}
-              selectedPlayer={selectedPlayer}
-              selectedTech={selectedTech}
-              setSelectedTech={setSelectedTech}
-              setSelectedPlayer={setSelectedPlayer}
-            />
-          ))}
+        {players.map((player) => (
+          <PlagiarizePlayerRow
+            key={player}
+            player={player}
+            selectedPlayer={selectedPlayer}
+            selectedTech={selectedTech}
+            setSelectedTech={setSelectedTech}
+            setSelectedPlayer={setSelectedPlayer}
+          />
+        ))}
       </tbody>
       <tfoot>
         <tr>
@@ -235,7 +238,8 @@ const PlagiarizePlayerRow = ({
         !gameState.players[gameState.currentPlayer!!].technologies.includes(
           tech.id
         )
-    );
+    )
+    .sort(nameSort);
 
   return (
     <tr key={player}>

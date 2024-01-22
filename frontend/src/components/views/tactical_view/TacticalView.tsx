@@ -3,6 +3,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
 import styles from "./TacticalView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const TacticalView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
@@ -23,7 +24,15 @@ export const TacticalView = () => {
       (p) =>
         !Object.keys(currentPlayerPlanets).includes(p) &&
         !Object.keys(takenPlanets).includes(p)
-    );
+    )
+    .map((p) => {
+      return {
+        id: p,
+        ...gameOptions.planetInfos[p],
+      };
+    })
+    .sort(nameSort);
+
   const allPlanetsNotOwned = Object.keys(gameOptions.planetInfos)
     .filter((p) => !Object.keys(currentPlayerPlanets).includes(p))
     .map((p) => {
@@ -32,9 +41,7 @@ export const TacticalView = () => {
         ...gameOptions.planetInfos[p],
       };
     })
-    .sort((a, b) =>
-      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase())
-    );
+    .sort(nameSort);
 
   const takePlanet = (planet: string) => {
     sendEvent({
@@ -69,8 +76,8 @@ export const TacticalView = () => {
                 <legend>Take another planet</legend>
                 <div className={styles.selectAnotherPlanetContainer}>
                   {availablePlanetsInSystem.map((p) => (
-                    <Button key={p} onClick={() => takePlanet(p)}>
-                      {gameOptions.planetInfos[p].name}
+                    <Button key={p.id} onClick={() => takePlanet(p.id)}>
+                      {p.name}
                     </Button>
                   ))}
                 </div>
@@ -150,7 +157,14 @@ const SelectPlanetAttachment = ({
       (a) =>
         gameOptions.planetAttachments[a].planetTrait === planetInfo.planetTrait
     )
-    .filter((a) => !a.toLocaleLowerCase().endsWith("resources"));
+    .filter((a) => !a.toLocaleLowerCase().endsWith("resources"))
+    .map((a) => {
+      return {
+        id: a,
+        ...gameOptions.planetAttachments[a],
+      };
+    })
+    .sort(nameSort);
 
   return (
     <>
@@ -160,8 +174,8 @@ const SelectPlanetAttachment = ({
       >
         <option value="">--Select attachment--</option>
         {availableAttachments.map((a) => (
-          <option key={a} value={a}>
-            {gameOptions.planetAttachments[a].name}
+          <option key={a.id} value={a.id}>
+            {a.name}
           </option>
         ))}
       </Dropdown>

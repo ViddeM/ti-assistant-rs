@@ -7,22 +7,25 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort, stringSort } from "@/utils/Utils";
 
 export const SecretObjectivesView = () => {
   const { gameState } = useGameContext();
 
-  const players = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
 
   const playerSecrets = gameState.score.secretObjectives;
 
   const getPlayerSecrets = (playerId: string) => {
     if (playerSecrets[playerId]) {
-      return playerSecrets[playerId];
+      return playerSecrets[playerId].sort(stringSort);
     }
 
     return [];
@@ -70,7 +73,8 @@ const PlayerSecretView = ({
       };
     })
     .filter((o) => o.kind !== "StageI" && o.kind !== "StageII")
-    .filter((o) => !allTakenSecrets.includes(o.id));
+    .filter((o) => !allTakenSecrets.includes(o.id))
+    .sort(nameSort);
 
   return (
     <div>

@@ -3,6 +3,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import styles from "./PlanetViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 import { useEffect, useMemo, useState } from "react";
+import { nameSort, stringSort } from "@/utils/Utils";
 
 /* List of attachments added only for technical purposes. */
 const ADDED_ATTACHMENTS = [
@@ -19,12 +20,14 @@ export const AddPlanetAttachment = () => {
 
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
-  const availablePlayers = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const availablePlayers = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
 
   const availablePlanets = useMemo(
     () =>
@@ -32,12 +35,14 @@ export const AddPlanetAttachment = () => {
         ? []
         : Object.keys(
             availablePlayers.filter((p) => p.id === player)[0].planets
-          ).map((p) => {
-            return {
-              id: p,
-              ...gameOptions.planetInfos[p],
-            };
-          }),
+          )
+            .map((p) => {
+              return {
+                id: p,
+                ...gameOptions.planetInfos[p],
+              };
+            })
+            .sort(nameSort),
     [availablePlayers, gameOptions.planetInfos, player]
   );
 
@@ -47,7 +52,8 @@ export const AddPlanetAttachment = () => {
         typeof s.systemType === "object" &&
         Object.keys(s.systemType).includes("HomeSystem")
     )
-    .flatMap((s) => s.planets);
+    .flatMap((s) => s.planets)
+    .sort(stringSort);
 
   const availableAttachments = useMemo(
     () =>
@@ -86,7 +92,8 @@ export const AddPlanetAttachment = () => {
                   (a.id === "Terraform" || a.id === "NanoForge") &&
                   homePlanets.includes(planet)
                 )
-            ),
+            )
+            .sort(nameSort),
     [
       gameOptions.planetAttachments,
       gameOptions.planetInfos,

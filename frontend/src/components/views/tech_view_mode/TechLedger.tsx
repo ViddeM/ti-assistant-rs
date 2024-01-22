@@ -3,9 +3,19 @@ import { Icon } from "@/components/elements/icon/Icon";
 import styles from "./TechViewMode.module.scss";
 import Link from "next/link";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const TechLedger = () => {
   const { gameState } = useGameContext();
+
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
 
   return (
     <div className="card">
@@ -32,16 +42,10 @@ export const TechLedger = () => {
           <Icon name={"biotic"} isFilled={true} />
           <Link href={"#Biotic"}>Biotic</Link>
         </li>
-        {Object.keys(gameState.players).map((pId) => (
-          <li key={pId}>
-            <FactionIcon
-              faction={gameState.players[pId].faction}
-              width={16}
-              height={16}
-            />
-            <Link
-              href={`#${pId}`}
-            >{`${gameState.players[pId].name} - ${gameState.players[pId].faction}`}</Link>
+        {players.map((p) => (
+          <li key={p.id}>
+            <FactionIcon faction={p.faction} width={16} height={16} />
+            <Link href={`#${p.id}`}>{`${p.name} - ${p.faction}`}</Link>
           </li>
         ))}
       </ul>

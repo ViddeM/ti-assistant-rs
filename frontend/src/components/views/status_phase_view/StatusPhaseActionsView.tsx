@@ -4,6 +4,7 @@ import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import React, { useState } from "react";
 import styles from "./StatusPhaseView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const StatusPhaseActionsView = () => {
   return (
@@ -117,7 +118,8 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
         id: o,
         ...gameOptions.objectives[o],
       };
-    });
+    })
+    .sort(nameSort);
 
   const playerScoredSecrets = gameState.score.secretObjectives[player.id] ?? [];
   const availableSecs = Object.keys(gameOptions.objectives)
@@ -128,7 +130,8 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
       };
     })
     .filter((o) => o.kind !== "StageI" && o.kind !== "StageII")
-    .filter((o) => !playerScoredSecrets.includes(o.id));
+    .filter((o) => !playerScoredSecrets.includes(o.id))
+    .sort(nameSort);
 
   const [selectedPub, setSelectedPub] = useState<string>("");
   const [selectedSec, setSelectedSec] = useState<string>("");

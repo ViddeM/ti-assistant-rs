@@ -6,6 +6,7 @@ import { Faction } from "@/resources/types/factions";
 import { useState } from "react";
 import styles from "./SelectTechView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 interface SelectTechViewProps {
   playerId: string;
@@ -152,5 +153,6 @@ function getAvailableTechs(
       }
 
       return t.info.origin.Faction === playerFaction;
-    });
+    })
+    .sort((a, b) => nameSort(a.info, b.info));
 }

@@ -7,6 +7,7 @@ import {
   faCircleXmark,
 } from "@fortawesome/free-regular-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const GenericSecondary = () => {
   const { gameState, sendEvent } = useGameContext();
@@ -20,7 +21,8 @@ export const GenericSecondary = () => {
         action: gameState.actionProgress?.Strategic?.otherPlayers[p],
         ...gameState.players[p]!!,
       };
-    });
+    })
+    .sort(nameSort);
 
   const sendSecondaryMessage = (player: string, val: string) => {
     sendEvent({

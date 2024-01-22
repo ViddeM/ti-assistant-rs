@@ -2,19 +2,22 @@ import { Player } from "@/api/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import styles from "./ScoreViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const SupportForTheThroneView = () => {
   const { gameState } = useGameContext();
 
-  const players = Object.keys(gameState.players).map((p) => {
-    return {
-      ...gameState.players[p],
-      id: p,
-    };
-  });
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        ...gameState.players[p],
+        id: p,
+      };
+    })
+    .sort(nameSort);
 
   return (
     <div className="card" style={{ marginBottom: "1rem" }}>

@@ -6,16 +6,19 @@ import React from "react";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
 import { Icon } from "@/components/elements/icon/Icon";
 import { useGameContext } from "@/hooks/GameContext";
+import { nameSort } from "@/utils/Utils";
 
 export const TechTable = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
-  const players = Object.keys(gameState.players).map((p) => {
-    return {
-      id: p,
-      ...gameState.players[p],
-    };
-  });
+  const players = Object.keys(gameState.players)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .sort(nameSort);
   const playerCount = players.length;
 
   const techs = Object.keys(gameOptions.technologies)
@@ -25,18 +28,7 @@ export const TechTable = () => {
         ...gameOptions.technologies[t],
       };
     })
-    .sort((a, b) => {
-      let aDeps = Object.values(a.requirements).reduce(
-        (prev, curr) => prev + curr,
-        0
-      );
-      let bDeps = Object.values(b.requirements).reduce(
-        (prev, curr) => prev + curr,
-        0
-      );
-
-      return aDeps - bDeps;
-    });
+    .sort(nameSort);
 
   const unitUpgrades = techs.filter(
     (t) => t.techType === "UnitUpgrade" && t.origin === "Base"
