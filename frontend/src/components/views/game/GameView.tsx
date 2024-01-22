@@ -3,7 +3,7 @@
 import { GameOptions } from "@/api/GameOptions";
 import { GameState } from "@/api/GameState";
 import { useEffect, useRef, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 import {
   PlayerSidebar,
   SidebarPlayer,
@@ -40,7 +40,12 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
 
   const router = useRouter();
 
-  const { sendMessage, lastMessage, readyState } = useWebSocket(wsUri);
+  const { sendMessage, lastMessage, readyState } = useWebSocket(wsUri, {
+    shouldReconnect: (closeEvent) => true,
+  });
+
+  const droppedConnection =
+    readyState === ReadyState.CLOSED || readyState === ReadyState.CLOSING;
 
   const initialized = useRef(false);
   const isNewGame = gameId === NEW_GAME_ID;
@@ -101,8 +106,10 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           })
         );
       }
+    } else if (droppedConnection) {
+      initialized.current = false;
     }
-  }, [gameId, isNewGame, sendMessage]);
+  }, [gameId, isNewGame, sendMessage, droppedConnection]);
 
   useEffect(() => {
     if (gameId.length !== 8) {
@@ -119,6 +126,10 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         <Button onClick={() => window.location.reload()}>Reload game</Button>
       </div>
     );
+  }
+
+  if (droppedConnection) {
+    return <div>Connection lost, retrying...</div>;
   }
 
   if (isNewGame) {
