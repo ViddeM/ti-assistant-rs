@@ -10,6 +10,7 @@
  - ✅ Multiple games
  - ✅ Multiple WS clients per game
  - ✅ Persist gamestate
+ - ✅ Handle loss of connection
 
 ## Gameplay
  - ✅ Track round number
