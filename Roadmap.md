@@ -15,13 +15,16 @@
 ## Gameplay
  - ✅ Track round number
  - ✅ Undo
+ - ❌ Player-specific view
  - ✅ Update setup to do all required tasks
    - ✅ Choose speaker at start of game
    - ✅ Reveal initial objectives
+   - ❌ UI for setting table order
    - ❌ Faction specific setups for planets & techs
      - ✅ planets
      - ❌ agents
      - ✅ techs
+     - ❌ show starting techs & units
  - ✅ Planets
    - ✅ Resource Tracking
    - ✅ Planet attachments (PoK)
@@ -30,6 +33,7 @@
    - ✅ Custodians (Mecatroll rex)
    - ✅ Manually adding score
    - ✅ Secret Objectives (normally up to 3)
+     - ❌ Buttons to score non-status phase objective when they happen.
    - ✅ Support for the Throne
    - ✅ Imperial
    - ❌ Agendas
@@ -46,12 +50,14 @@
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
+ - ❌ Tech actions.
  - ❌ Time tracking
    - ✅ Pause timekeeping
    - ✅ Time spent / player
    - ❌ Time spent / phase
    - ❌ Show breakdown while playing
    - ❌ Show breakdown in post-game view
+   - ❌ Make sure everything works and isn't horribly broken by undo
  - ✅ Take multiple turns
  - ❌ Separation between base/PoK/codexes
    - ❌ PoK
@@ -114,6 +120,7 @@
    - ✅ Reveal objectives
    - ❌ Display number of action cards to draw & tokens to receive.
  - ❌ Agenda Phase (see below)
+ - ❌ Handle game end
 
 ### Agenda Phase
 
@@ -190,6 +197,9 @@
 ## Prettify things
  - ❌ Make things pretty (FE)
    - ❌ Add ways of viewing full information in FE (e.g. seing what techs, action cards etc does rather than just their names)
+   - ❌ Add cheatsheets for things
+     - ❌ Strategy card abilities
+   - ❌ Add "current player/next player" view somehow
  - ❌ Make things pretty (BE)
 
 ## QA
