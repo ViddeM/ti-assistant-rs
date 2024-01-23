@@ -2,12 +2,12 @@ import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../../select_tech_view/SelectTechView";
 import { useState } from "react";
 import { useGameContext } from "@/hooks/GameContext";
+import styles from "./Primary.module.scss";
 
 export const TechnologyPrimaryView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const [firstTech, setFirstTech] = useState<string | null>(null);
-  const [secondTech, setSecondTech] = useState<string | null>(null);
   const progress = gameState.actionProgress?.Strategic?.primary;
 
   if (progress) {
@@ -23,9 +23,9 @@ export const TechnologyPrimaryView = () => {
   }
 
   return (
-    <div className="column">
+    <div className={`column ${styles.primaryContainer}`}>
       {firstTech === null ? (
-        <fieldset>
+        <fieldset className={styles.primaryContainer}>
           <legend>
             <h6>Pick a tech</h6>
           </legend>
@@ -37,20 +37,29 @@ export const TechnologyPrimaryView = () => {
       ) : (
         <>
           <p>{gameOptions.technologies[firstTech].name}</p>
-          {secondTech === null ? (
-            <fieldset>
-              <legend>
-                <h6>Take another?</h6>
-              </legend>
-              <SelectTechView
-                playerId={gameState.currentPlayer!!}
-                onSelect={setSecondTech}
-                filteredTechs={[firstTech]}
-              />
-            </fieldset>
-          ) : (
-            <p>{gameOptions.technologies[secondTech].name}</p>
-          )}
+          <fieldset className={styles.primaryContainer}>
+            <legend>
+              <h6>Take another?</h6>
+            </legend>
+            <SelectTechView
+              playerId={gameState.currentPlayer!!}
+              onSelect={(secondTech) => {
+                sendEvent({
+                  StrategicActionPrimary: {
+                    player: gameState.currentPlayer!!,
+                    action: {
+                      Technology: {
+                        tech: firstTech,
+                        extra: secondTech,
+                      },
+                    },
+                  },
+                });
+                setFirstTech(null);
+              }}
+              filteredTechs={[firstTech]}
+            />
+          </fieldset>
         </>
       )}
       <Button
@@ -62,13 +71,12 @@ export const TechnologyPrimaryView = () => {
               action: {
                 Technology: {
                   tech: firstTech,
-                  extra: secondTech,
+                  extra: null,
                 },
               },
             },
           });
           setFirstTech(null);
-          setSecondTech(null);
         }}
       >
         Done
