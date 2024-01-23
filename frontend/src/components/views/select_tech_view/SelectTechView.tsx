@@ -7,6 +7,7 @@ import { useState } from "react";
 import styles from "./SelectTechView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
+import { Icon, IconType } from "@/components/elements/icon/Icon";
 
 interface SelectTechViewProps {
   playerId: string;
@@ -14,15 +15,13 @@ interface SelectTechViewProps {
   filteredTechs?: string[];
 }
 
-const TECH_CATEGORIES: TechCategory[] = [
+const TECH_CATEGORIES: string[] = [
   "Biotic",
   "Cybernetic",
   "Propulsion",
   "Warfare",
+  "UnitUpgrade",
 ];
-
-const LABEL_COL_ALIGN = "right";
-const DROPDOWN_COL_ALIGN = "left";
 
 export const SelectTechView = ({
   playerId,
@@ -31,7 +30,9 @@ export const SelectTechView = ({
 }: SelectTechViewProps) => {
   const { gameState, gameOptions } = useGameContext();
 
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedTech, setSelectedTech] = useState<string>("");
+
   const playerTechs = getPlayerTechs(gameState, gameOptions, playerId);
   const availableTechs = getAvailableTechs(
     playerTechs,
@@ -40,79 +41,100 @@ export const SelectTechView = ({
     filteredTechs ?? []
   );
 
-  return (
-    <table className={styles.selectTechTable}>
-      <tbody>
-        <tr>
-          <td align={LABEL_COL_ALIGN}>
-            <label htmlFor="unit_upgrades">Unit Upgrades</label>
-          </td>
-          <td align={DROPDOWN_COL_ALIGN}>
-            <Dropdown
-              id="unit_upgrades"
-              value={selectedTech}
-              onChange={(e) => setSelectedTech(e.target.value)}
-            >
-              <option value="">-- Select --</option>
-              {availableTechs
-                .filter((t) => t.info.techType === "UnitUpgrade")
-                .map((t) => (
-                  <option key={t.tech} value={t.tech}>
-                    {t.info.name}
-                  </option>
-                ))}
-            </Dropdown>
-          </td>
-        </tr>
-        {TECH_CATEGORIES.map((category) => (
-          <tr key={category}>
-            <td align={LABEL_COL_ALIGN}>
-              <label htmlFor={category}>{category}</label>
-            </td>
-            <td align={DROPDOWN_COL_ALIGN}>
-              <Dropdown
-                id={category}
-                value={selectedTech}
-                onChange={(e) => setSelectedTech(e.target.value)}
-              >
-                <option value="">-- Select --</option>
+  const selectedTechs = availableTechs.filter((t) => {
+    const tt = t.info.techType;
+    if (tt === "UnitUpgrade") {
+      return selectedCategory === "UnitUpgrade";
+    } else {
+      return selectedCategory === tt.Category;
+    }
+  });
 
-                {availableTechs
-                  .filter((t) => t.info.techType !== "UnitUpgrade")
-                  .filter((t) => isOfCategory(t.info, category))
-                  .map((t) => (
-                    <option key={t.tech} value={t.tech}>
-                      {t.info.name}
-                    </option>
-                  ))}
-              </Dropdown>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th colSpan={2}>
-            <Button
-              disabled={selectedTech === ""}
-              onClick={() => onSelect(selectedTech)}
-            >
-              Take
-            </Button>
-          </th>
-        </tr>
-      </tfoot>
-    </table>
+  const setCat = (category: string) => {
+    setSelectedCategory(category);
+    setSelectedTech("");
+  };
+
+  return (
+    <div className="column">
+      {TECH_CATEGORIES.map((category) => (
+        <TechCategoryButton
+          key={category}
+          category={category}
+          isSelected={category === selectedCategory}
+          setSelected={() => setCat(category)}
+          selectedTech={selectedTech}
+          techOptions={selectedTechs}
+          setSelectedTech={setSelectedTech}
+        />
+      ))}
+      <Button
+        disabled={selectedTech === ""}
+        onClick={() => onSelect(selectedTech)}
+      >
+        Select tech
+      </Button>
+    </div>
   );
 };
 
-function isOfCategory(techInfo: TechInfo, category: TechCategory): boolean {
-  if (techInfo.techType === "UnitUpgrade") {
-    return false;
+interface TechCategoryButtonProps {
+  category: string;
+  isSelected: boolean;
+  setSelected: () => void;
+  selectedTech: string;
+  techOptions: {
+    tech: string;
+    info: TechInfo;
+  }[];
+  setSelectedTech: (tech: string) => void;
+}
+
+const TechCategoryButton = ({
+  category,
+  isSelected,
+  setSelected,
+  selectedTech,
+  techOptions,
+  setSelectedTech,
+}: TechCategoryButtonProps) => {
+  const rootStyles = `${styles.techCategoryButtonContainer} ${
+    styles[`color${category}`]
+  }`;
+
+  if (!isSelected) {
+    return (
+      <Button onClick={setSelected} className={rootStyles}>
+        {category}
+        {category !== "UnitUpgrade" && (
+          <Icon name={category.toLowerCase() as IconType} isFilled={true} />
+        )}
+      </Button>
+    );
   }
 
-  return techInfo.techType.Category === category;
-}
+  return (
+    <fieldset className={`${rootStyles} centerRow`}>
+      <legend>
+        {category}
+        {category !== "UnitUpgrade" && (
+          <Icon name={category.toLowerCase() as IconType} isFilled={true} />
+        )}
+      </legend>
+      <Dropdown
+        value={selectedTech}
+        onChange={(e) => setSelectedTech(e.target.value)}
+      >
+        <option value="">--Select Tech--</option>
+        {techOptions.map((t) => (
+          <option value={t.tech} key={t.tech}>
+            {t.info.name}
+          </option>
+        ))}
+      </Dropdown>
+    </fieldset>
+  );
+};
 
 function getPlayerTechs(
   gameState: GameState,

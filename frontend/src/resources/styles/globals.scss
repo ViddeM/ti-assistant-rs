@@ -103,6 +103,12 @@ fieldset {
   align-items: center;
 }
 
+.centerRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 .marginTop {
   margin-top: $marginLarge;
 }
