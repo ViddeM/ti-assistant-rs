@@ -29,8 +29,8 @@ use crate::{
             StrategicPrimaryAction, StrategicSecondaryAction,
         },
         game_state::{
-            ActionCardProgress, ActionPhaseProgress, FrontierCardProgress, RelicProgress,
-            StrategicPrimaryProgress, StrategicProgress,
+            ActionCardProgress, ActionPhaseProgress, FrontierCardProgress, LeaderProgress,
+            RelicProgress, StrategicPrimaryProgress, StrategicProgress,
         },
         player::PlayerId,
     },
@@ -710,7 +710,7 @@ fn try_update_game_state(
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
-        Event::LeaderAction { player, leader } => {
+        Event::LeaderActionBegin { player, leader } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
             ensure!(
@@ -719,7 +719,7 @@ fn try_update_game_state(
                 leader.info().name(),
             );
 
-            // TODO, the following leaders need special handling:
+            // TODO, the following leaders may need special handling:
             //   XxekirGrom - discard law from play (sure, absolutely)
             //   UlTheProgenitor - attach to planet (mhm)
             //   UnitDsgnFlayesh - take a planet (ok, easy enough)
@@ -729,7 +729,27 @@ fn try_update_game_state(
             //   MathisMathinus - perform a strategic action (WHAT)
             //   ZeuCxIII - any one player gets to take a tactical acton (WTF)
             //   HeshAndPrit - draw relic and do <=2 secondary strategy actions (NO! GOD NO!)
+            game_state.action_progress =
+                Some(ActionPhaseProgress::Leader(LeaderProgress::Nothing {
+                    leader,
+                }));
 
+            game_state.phase = Phase::LeaderAction;
+        }
+        Event::LeaderActionCommit { player, leader } => {
+            game_state.assert_phase(Phase::LeaderAction)?;
+            game_state.assert_player_turn(&player)?;
+            let Some(ActionPhaseProgress::Leader(LeaderProgress::Nothing {
+                leader: previous_leader,
+            })) = &game_state.action_progress
+            else {
+                bail!("action_progress not set to Leader, this is a bug");
+            };
+            if &leader != previous_leader {
+                bail!("invalid leader {leader:?}, expected {previous_leader:?}");
+            }
+
+            game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
         Event::FrontierCardActionBegin { player, card } => {
@@ -1579,6 +1599,7 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::StrategicAction
         | Phase::TacticalAction
         | Phase::EndActionTurn
+        | Phase::LeaderAction
         | Phase::FrontierCardAction
         | Phase::RelicAction
         | Phase::ActionCardAction => true,

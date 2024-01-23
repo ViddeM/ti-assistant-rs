@@ -159,7 +159,17 @@ pub enum Event {
         data: Option<ActionCardAction>,
     },
 
-    LeaderAction {
+    /// Bergin playing a leader.
+    LeaderActionBegin {
+        /// The player that is taking the action.
+        player: PlayerId,
+
+        /// The leader that is being played.
+        leader: Leader,
+    },
+
+    /// Finish a leader action.
+    LeaderActionCommit {
         /// The player that is taking the action.
         player: PlayerId,
 

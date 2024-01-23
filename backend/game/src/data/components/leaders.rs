@@ -33,7 +33,8 @@ pub enum LeaderInfo {
 }
 
 /// Information about a leader ability, i.e. if it's an Action, etc.
-#[derive(Clone, Copy, Debug, Serialize, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Serialize, PartialEq, Eq, TS)]
+#[ts(export)]
 pub enum LeaderAbilityKind {
     /// Leader ability is an Action.
     Action,

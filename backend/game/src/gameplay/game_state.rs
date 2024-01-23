@@ -15,6 +15,7 @@ use crate::{
             action_card::ActionCard,
             agenda::{Agenda, AgendaElect},
             frontier_card::FrontierCard,
+            leaders::Leader,
             objectives::Objective,
             phase::Phase,
             planet::Planet,
@@ -120,6 +121,8 @@ pub enum ActionPhaseProgress {
     Tactical(TacticalProgress),
     /// The progress of an action card.
     ActionCard(ActionCardProgress),
+    /// The progress of a leader action.
+    Leader(LeaderProgress),
     /// The progress of a frontier card.
     FrontierCard(FrontierCardProgress),
     /// The progress of a relic action.
@@ -232,6 +235,17 @@ pub struct TacticalProgress {
 pub struct ActionCardProgress {
     /// Which card is being played.
     pub card: ActionCard,
+}
+
+/// The progress of a leader action being played.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "action")]
+#[ts(export)]
+#[allow(missing_docs)]
+pub enum LeaderProgress {
+    /// This leader needs no special handling.
+    Nothing { leader: Leader },
 }
 
 /// The progress of a frontier card being played.
