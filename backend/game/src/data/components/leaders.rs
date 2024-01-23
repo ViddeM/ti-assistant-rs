@@ -6,6 +6,7 @@ pub use agent::*;
 pub use commander::*;
 pub use hero::*;
 use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
 
 use crate::{data::common::faction::Faction, gameplay::game_settings::Expansions};
 
@@ -96,6 +97,13 @@ impl Leader {
         }
 
         true
+    }
+
+    /// Returns an iterator over all leaders.
+    pub fn iter() -> impl Iterator<Item = Leader> {
+        (Agent::iter().map(Leader::from))
+            .chain(Commander::iter().map(Leader::from))
+            .chain(Hero::iter().map(Leader::from))
     }
 }
 

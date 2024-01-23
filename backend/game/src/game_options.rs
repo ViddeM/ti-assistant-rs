@@ -10,7 +10,7 @@ use crate::{
             action_card::{ActionCard, ActionCardInfo},
             agenda::{Agenda, AgendaInfo},
             frontier_card::{FrontierCard, FrontierCardInfo},
-            leaders::{Agent, Commander, Hero, Leader, LeaderInfo},
+            leaders::{Leader, LeaderInfo},
             objectives::{
                 public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo,
             },
@@ -65,10 +65,7 @@ pub struct GameOptions {
 impl GameOptions {
     /// Returns GameOptions for the specified expansions.
     pub fn new(expansions: &Expansions) -> Self {
-        let leaders: HashMap<_, _> = Agent::iter()
-            .map(Leader::from)
-            .chain(Commander::iter().map(Leader::from))
-            .chain(Hero::iter().map(Leader::from))
+        let leaders: HashMap<_, _> = Leader::iter()
             .filter(|leader| leader.is_enabled_in(expansions))
             .map(|leader| (leader, leader.info()))
             .collect();
