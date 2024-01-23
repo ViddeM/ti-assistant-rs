@@ -1564,9 +1564,11 @@ fn try_update_game_state(
     }
 
     // TODO: maybe not recalculate this all the time?
+    game_state.update_available_leaders();
     game_state
         .score
         .update_player_points(&game_state.table_order);
+
     Ok(())
 }
 

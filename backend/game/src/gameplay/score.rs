@@ -101,4 +101,12 @@ impl Score {
             self.player_points.insert(Arc::clone(player), player_points);
         }
     }
+
+    /// Get the number of scored objectives for this player (not the points).
+    pub fn scored_public_objectives_count(&self, player: &PlayerId) -> usize {
+        self.revealed_objectives
+            .iter()
+            .filter(|(_objective, has_scored)| has_scored.contains(player))
+            .count()
+    }
 }

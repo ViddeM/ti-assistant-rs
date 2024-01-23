@@ -15,7 +15,7 @@ use crate::{
             action_card::ActionCard,
             agenda::{Agenda, AgendaElect},
             frontier_card::FrontierCard,
-            leaders::Leader,
+            leaders::{Leader, LeaderAbilityKind},
             objectives::Objective,
             phase::Phase,
             planet::Planet,
@@ -94,6 +94,9 @@ pub struct GameState {
 
     /// State for the status phase.
     pub status_phase_state: Option<StatusPhaseState>,
+
+    /// Leaders available for play for each player.
+    pub available_leaders: HashMap<PlayerId, Vec<Leader>>,
 
     /// Weather or not time should be tracked.
     pub time_tracking_paused: bool,
@@ -525,5 +528,22 @@ impl GameState {
     /// The max number of players allowed for this game.
     pub fn max_players(&self) -> usize {
         self.game_settings.expansions.max_number_of_players()
+    }
+
+    /// Update [GameState::available_leaders].
+    pub fn update_available_leaders(&mut self) {
+        for (player_id, player) in self.players.iter() {
+            let can_play_hero = self.score.scored_public_objectives_count(player_id) >= 3;
+
+            let available_to_this_player = Leader::iter()
+                // TODO: there may be cases where players can use other players factions
+                .filter(|leader| leader.info().faction() == player.faction)
+                .filter(|leader| leader.info().ability_kind() == LeaderAbilityKind::Action)
+                .filter(|leader| can_play_hero || !matches!(leader, Leader::Hero(..)))
+                .collect();
+
+            self.available_leaders
+                .insert(player_id.clone(), available_to_this_player);
+        }
     }
 }
