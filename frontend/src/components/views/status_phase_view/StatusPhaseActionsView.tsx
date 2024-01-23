@@ -52,7 +52,8 @@ const ScoreObjectives = () => {
   );
 
   const revealStageII =
-    revealedObjectives.length >= state.expectedObjectivesBeforeStageTwo;
+    revealedObjectives.length - (state.revealedObjective === null ? 0 : 1) >=
+    state.expectedObjectivesBeforeStageTwo;
   const selectableObjectives = revealStageII
     ? unrevealedObjectives.filter((o) => o.kind === "StageII")
     : unrevealedObjectives.filter((o) => o.kind === "StageI");
