@@ -25,6 +25,9 @@ pub enum Phase {
     /// Performing an action card action
     ActionCardAction,
 
+    /// Performing a leader action
+    LeaderAction,
+
     /// Performing a frontier card action
     FrontierCardAction,
 
