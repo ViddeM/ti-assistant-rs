@@ -408,7 +408,7 @@ impl Agenda {
             },
             Agenda::MiscountDisclosed => base_directive! {
                 ident: MiscountDisclosed,
-                name: "Mount Disclosed",
+                name: "Miscount Disclosed",
                 elect: Law,
             },
             Agenda::Mutiny => base_directive! {
