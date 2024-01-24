@@ -29,7 +29,7 @@ const FrontierCardProgressView = ({
   switch (cardProgress.card) {
     case "EnigmaticDevice":
       return (
-        <div>
+        <div className={"screenContainer"}>
           <SelectTechView
             playerId={gameState.currentPlayer!!}
             onSelect={(tech) =>

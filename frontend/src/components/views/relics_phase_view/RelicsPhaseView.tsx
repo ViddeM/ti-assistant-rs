@@ -52,7 +52,7 @@ export const RelicsPhaseView = () => {
       {mawOfWorldsHolder && (
         <>
           <h2>Play maw of worlds?</h2>
-          <fieldset>
+          <fieldset className="screenContainer">
             <legend>{mawOfWorldsHolder.name}</legend>
             <SelectTechView
               playerId={mawOfWorldsHolder.id}
