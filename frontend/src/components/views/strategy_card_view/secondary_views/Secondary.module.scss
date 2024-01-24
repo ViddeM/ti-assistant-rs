@@ -52,3 +52,21 @@
 .genericPlayerContainer {
   margin-top: 0;
 }
+
+.techSecondaryFieldset {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.techSkipButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: $marginLarge;
+}
+
+.skipDivider {
+  margin-top: $marginLarge;
+  border-bottom: 4px dotted rgb(240, 240, 240);
+}
