@@ -21,6 +21,7 @@ import { GameContext, useGameContext } from "@/hooks/GameContext";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 
 const NEW_GAME_ID = "new";
 
@@ -158,6 +159,10 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
     return <div>Awaiting response from server</div>;
   }
 
+  const currentPlayer = gameState.currentPlayer
+    ? gameState.players[gameState.currentPlayer]
+    : null;
+
   return (
     <GameContext.Provider
       value={{
@@ -202,6 +207,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           </Button>
         </div>
         <p className="marginTop">Round {gameState?.round}</p>
+        {currentPlayer && <p>Current player: {currentPlayer.name}</p>}
         <div>
           <Button
             className="marginRight"
