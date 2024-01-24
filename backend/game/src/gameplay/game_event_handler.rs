@@ -1403,6 +1403,10 @@ pub fn update_game_state(
                     player.relics.insert(Relic::ShardOfTheThrone);
                 }
 
+                if planet == Planet::MecatolRex && game_state.score.custodians.is_none() {
+                    game_state.score.custodians = Some(p.clone())
+                }
+
                 player.planets.insert(planet, attachments);
             }
         }
