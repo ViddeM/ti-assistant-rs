@@ -6,7 +6,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 
 export const TacticalView = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, isActive } = useGameContext();
 
   const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
   const currentPlayerPlanets =
@@ -55,71 +55,77 @@ export const TacticalView = () => {
   return (
     <div className={`${styles.tacticalContainer} card`}>
       <h2>Tactical</h2>
-      {Object.keys(takenPlanets).length > 0 ? (
-        <div className={styles.column}>
-          {Object.keys(takenPlanets).map((p) => (
-            <fieldset key={p}>
-              <legend>{p}</legend>
+      {isActive ? (
+        <>
+          {Object.keys(takenPlanets).length > 0 ? (
+            <div className={styles.column}>
+              {Object.keys(takenPlanets).map((p) => (
+                <fieldset key={p}>
+                  <legend>{p}</legend>
 
-              <div className={styles.column}>
-                <SelectPlanetAttachment
-                  planet={p}
-                  attachment={attachments[p] ?? null}
-                  previousOwner={takenPlanets[p]}
-                />
-              </div>
-            </fieldset>
-          ))}
-          {availablePlanetsInSystem.length > 0 && (
-            <>
-              <fieldset>
-                <legend>Take another planet</legend>
-                <div className={styles.selectAnotherPlanetContainer}>
-                  {availablePlanetsInSystem.map((p) => (
-                    <Button key={p.id} onClick={() => takePlanet(p.id)}>
-                      {p.name}
-                    </Button>
-                  ))}
-                </div>
-              </fieldset>
-            </>
+                  <div className={styles.column}>
+                    <SelectPlanetAttachment
+                      planet={p}
+                      attachment={attachments[p] ?? null}
+                      previousOwner={takenPlanets[p]}
+                    />
+                  </div>
+                </fieldset>
+              ))}
+              {availablePlanetsInSystem.length > 0 && (
+                <>
+                  <fieldset>
+                    <legend>Take another planet</legend>
+                    <div className={styles.selectAnotherPlanetContainer}>
+                      {availablePlanetsInSystem.map((p) => (
+                        <Button key={p.id} onClick={() => takePlanet(p.id)}>
+                          {p.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </fieldset>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className={styles.takePlanetContainer}>
+              <label>Take planet:</label>
+              <Dropdown
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setSelectedPlanet(v === "" ? null : v);
+                }}
+              >
+                <option value={""}>--select a planet--</option>
+                {allPlanetsNotOwned.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </Dropdown>
+              <Button
+                disabled={!selectedPlanet}
+                onClick={() => takePlanet(selectedPlanet!!)}
+              >
+                Take
+              </Button>
+            </div>
           )}
-        </div>
-      ) : (
-        <div className={styles.takePlanetContainer}>
-          <label>Take planet:</label>
-          <Dropdown
-            onChange={(e) => {
-              const v = e.target.value;
-              setSelectedPlanet(v === "" ? null : v);
-            }}
-          >
-            <option value={""}>--select a planet--</option>
-            {allPlanetsNotOwned.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </Dropdown>
           <Button
-            disabled={!selectedPlanet}
-            onClick={() => takePlanet(selectedPlanet!!)}
+            onClick={() =>
+              sendEvent({
+                TacticalActionCommit: {
+                  player: gameState.currentPlayer,
+                },
+              })
+            }
           >
-            Take
+            End Tactical
           </Button>
-        </div>
+        </>
+      ) : (
+        <p>Not your turn, waiting for {gameState.currentPlayer}</p>
       )}
-      <Button
-        onClick={() =>
-          sendEvent({
-            TacticalActionCommit: {
-              player: gameState.currentPlayer,
-            },
-          })
-        }
-      >
-        End Tactical
-      </Button>
     </div>
   );
 };
