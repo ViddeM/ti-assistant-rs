@@ -144,44 +144,37 @@ const PlayerBox = ({
   );
 };
 
-function getNextPlayer(players: SidebarPlayer[]): string | undefined {
+const HIGH_NUMBER = 800;
+function getNextPlayer(
+  players: SidebarPlayer[],
+  currentPlayer: SidebarPlayer | undefined
+): string | undefined {
   if (!currentPlayer) {
     return undefined;
   }
 
-  const filteredPlayers = players.filter((p) => !p.hasPassed);
+  const activePlayers = players.filter((p) => !p.hasPassed);
+  const currentPlayerIndex = activePlayers.indexOf(currentPlayer);
 
-  const updatedIndexedPlayers = players
+  const indexedPlayers = activePlayers
     .filter((p) => !p.isActive)
     .map((p, index) => {
       return {
-        newIndex: (index + currentPlayer!!.index) % players.length,
+        index:
+          (index + activePlayers.length - currentPlayerIndex) %
+          activePlayers.length,
         ...p,
       };
     });
 
-  console.log(
-    "Updated indexed players",
-    updatedIndexedPlayers.map((p) => {
-      return {
-        n: p.name,
-        i: p.index,
-        ni: p.newIndex,
-      };
-    })
-  );
-
-  console.log("C", currentPlayer!!.index);
-
-  const nextPlayerIndex = updatedIndexedPlayers.reduce((acc, p) => {
-    if (p.newIndex < acc) {
-      return p.newIndex;
+  const nextPlayerIndex = indexedPlayers.reduce((acc, p) => {
+    if (p.index < acc) {
+      return p.index;
     }
     return acc;
-  }, 10);
+  }, HIGH_NUMBER);
 
-  return nextPlayerIndex !== undefined
-    ? updatedIndexedPlayers.filter((p) => p.newIndex === nextPlayerIndex)[0]
-        .name
+  return nextPlayerIndex < HIGH_NUMBER
+    ? indexedPlayers.filter((p) => p.index === nextPlayerIndex)[0].name
     : undefined;
 }
