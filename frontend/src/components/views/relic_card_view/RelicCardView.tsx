@@ -6,7 +6,7 @@ import { nameSort } from "@/utils/Utils";
 import { useState } from "react";
 
 export const RelicCardView = () => {
-  const { gameState, gameOptions } = useGameContext();
+  const { gameState, gameOptions, isActive } = useGameContext();
 
   const progress = gameState.actionProgress!!.Relic!!;
   const relic = gameOptions.relics[progress.relic];
@@ -14,7 +14,11 @@ export const RelicCardView = () => {
   return (
     <div className="card column">
       <h2>{relic.name}</h2>
-      <RelicProgressView progress={progress} />
+      {isActive ? (
+        <RelicProgressView progress={progress} />
+      ) : (
+        <p>Not your turn, currently {gameState.currentPlayer} is playing</p>
+      )}
     </div>
   );
 };

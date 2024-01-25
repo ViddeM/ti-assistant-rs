@@ -174,6 +174,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         isCurrentPlayer: playingAs === currentPlayer?.name,
         isGlobal: playingAs === null,
         isActive: playingAs === null || playingAs === currentPlayer?.name,
+        isSpeaker: playingAs === gameState.speaker,
         playingAs: playingAs,
         setPlayingAs: setPlayingAs,
       }}
