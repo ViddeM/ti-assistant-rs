@@ -13,6 +13,7 @@ import { Duration, Score } from "@/api/GameState";
 import { PlayerTimeInfo } from "./parts/PlayerTimeInfo";
 import { factionIconName } from "@/components/elements/factionIcon/FactionIcon";
 import { useGameContext } from "@/hooks/GameContext";
+import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 
 export interface SidebarPlayer {
   name: string;
@@ -63,28 +64,47 @@ export const PlayerSidebar = ({
   const nextPlayer = getNextPlayer(players, currentPlayer);
 
   return (
-    <div className={`${styles.playerSideBarCard} card`}>
-      {currentPlayer && (
-        <>
-          <fieldset className={styles.playerBoxContainer}>
-            <legend>Current player</legend>
-            {currentPlayer.name}
-          </fieldset>
-          <fieldset className={styles.playerBoxContainer}>
-            <legend>Next up</legend>
-            {nextPlayer ? nextPlayer : "None"}
-          </fieldset>
-        </>
-      )}
-      {players.map((p) => (
-        <PlayerBox
-          key={p.name}
-          player={p}
-          score={score}
-          isPaused={isPaused}
-          currentTurnStartTime={currentTurnStartTime}
-        />
-      ))}
+    <div className={`card`}>
+      <h2>Players</h2>
+      <label htmlFor="playing-as-dropdown">Select player view: </label>
+      <Dropdown
+        id="playing-as-dropdown"
+        value={playingAs ?? ""}
+        onChange={(e) => {
+          const val = e.target.value;
+          setPlayingAs(val === "" ? null : val);
+        }}
+      >
+        <option value="">Global view</option>
+        {players.map((p) => (
+          <option key={p.name} value={p.name}>
+            {p.name}
+          </option>
+        ))}
+      </Dropdown>
+      <div className={styles.playerSideBarCard}>
+        {currentPlayer && (
+          <>
+            <fieldset className={styles.playerBoxContainer}>
+              <legend>Current player</legend>
+              {currentPlayer.name}
+            </fieldset>
+            <fieldset className={styles.playerBoxContainer}>
+              <legend>Next up</legend>
+              {nextPlayer ? nextPlayer : "None"}
+            </fieldset>
+          </>
+        )}
+        {players.map((p) => (
+          <PlayerBox
+            key={p.name}
+            player={p}
+            score={score}
+            isPaused={isPaused}
+            currentTurnStartTime={currentTurnStartTime}
+          />
+        ))}
+      </div>
     </div>
   );
 };
