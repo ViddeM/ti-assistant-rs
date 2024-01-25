@@ -22,7 +22,6 @@ import { GameContext, useGameContext } from "@/hooks/GameContext";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
-import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 
 const NEW_GAME_ID = "new";
 
@@ -40,6 +39,8 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [currentViewMode, setCurrentViewMode] = useState<View>("Game");
   const [notFound, setNotFound] = useState<string | null>(null);
   const [infoObject, showInfo] = useState<InfoObject | null>(null);
+
+  const [playingAs, setPlayingAs] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -173,6 +174,8 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         sendEvent: sendEvent,
         sendUndo: sendUndo,
         showInfo: showInfo,
+        playingAs: playingAs,
+        setPlayingAs: setPlayingAs,
       }}
     >
       <InfoModal infoObject={infoObject} />
