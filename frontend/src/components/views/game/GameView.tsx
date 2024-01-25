@@ -212,6 +212,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         </div>
         <p className="marginTop">Round {gameState?.round}</p>
         {currentPlayer && <p>Current player: {currentPlayer.name}</p>}
+        Currently viewing: {playingAs ?? "Global"}
         <div>
           <Button
             className="marginRight"
