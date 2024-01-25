@@ -8,6 +8,9 @@ export interface GameContext {
   gameState: GameState;
   sendEvent: (data: any) => void;
   sendUndo: () => void;
+
+  playingAs: string | null;
+  setPlayingAs: (player: string | null) => void;
 }
 
 export const GameContext = React.createContext<GameContext | undefined>(

@@ -12,6 +12,7 @@ import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
 import { Duration, Score } from "@/api/GameState";
 import { PlayerTimeInfo } from "./parts/PlayerTimeInfo";
 import { factionIconName } from "@/components/elements/factionIcon/FactionIcon";
+import { useGameContext } from "@/hooks/GameContext";
 
 export interface SidebarPlayer {
   name: string;
@@ -53,8 +54,28 @@ export const PlayerSidebar = ({
   isPaused,
   currentTurnStartTime,
 }: PlayerSidebarProps) => {
+  const { playingAs, setPlayingAs } = useGameContext();
+
+  const currentPlayers = players.filter((p) => p.isActive);
+  const currentPlayer =
+    currentPlayers.length > 0 ? currentPlayers[0] : undefined;
+
+  const nextPlayer = getNextPlayer(players, currentPlayer);
+
   return (
     <div className={`${styles.playerSideBarCard} card`}>
+      {currentPlayer && (
+        <>
+          <fieldset className={styles.playerBoxContainer}>
+            <legend>Current player</legend>
+            {currentPlayer.name}
+          </fieldset>
+          <fieldset className={styles.playerBoxContainer}>
+            <legend>Next up</legend>
+            {nextPlayer ? nextPlayer : "None"}
+          </fieldset>
+        </>
+      )}
       {players.map((p) => (
         <PlayerBox
           key={p.name}
@@ -122,3 +143,45 @@ const PlayerBox = ({
     </fieldset>
   );
 };
+
+function getNextPlayer(players: SidebarPlayer[]): string | undefined {
+  if (!currentPlayer) {
+    return undefined;
+  }
+
+  const filteredPlayers = players.filter((p) => !p.hasPassed);
+
+  const updatedIndexedPlayers = players
+    .filter((p) => !p.isActive)
+    .map((p, index) => {
+      return {
+        newIndex: (index + currentPlayer!!.index) % players.length,
+        ...p,
+      };
+    });
+
+  console.log(
+    "Updated indexed players",
+    updatedIndexedPlayers.map((p) => {
+      return {
+        n: p.name,
+        i: p.index,
+        ni: p.newIndex,
+      };
+    })
+  );
+
+  console.log("C", currentPlayer!!.index);
+
+  const nextPlayerIndex = updatedIndexedPlayers.reduce((acc, p) => {
+    if (p.newIndex < acc) {
+      return p.newIndex;
+    }
+    return acc;
+  }, 10);
+
+  return nextPlayerIndex !== undefined
+    ? updatedIndexedPlayers.filter((p) => p.newIndex === nextPlayerIndex)[0]
+        .name
+    : undefined;
+}
