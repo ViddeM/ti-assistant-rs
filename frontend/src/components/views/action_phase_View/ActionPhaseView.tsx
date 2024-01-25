@@ -10,7 +10,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort, stringSort } from "@/utils/Utils";
 
 export const ActionPhaseView = () => {
-  const { gameState, sendEvent } = useGameContext();
+  const { gameState, sendEvent, isActive } = useGameContext();
 
   const [isComponent, setIsComponent] = useState<boolean>(false);
 
@@ -32,70 +32,74 @@ export const ActionPhaseView = () => {
   return (
     <div className={`card ${styles.actionPhaseViewContainer}`}>
       <h2>ACTION PHASE</h2>
-      <fieldset
-        className={`playerColorBorder${
-          gameState.players[currentPlayer!!].color
-        } ${styles.actionPlayerContainer}`}
-      >
-        <legend
+      {isActive ? (
+        <fieldset
           className={`playerColorBorder${
             gameState.players[currentPlayer!!].color
           } ${styles.actionPlayerContainer}`}
         >
-          <h4>{playerName}</h4>
-        </legend>
-        <div className={styles.actionsContainer}>
-          <Button
-            className={styles.actionButton}
-            disabled={playableStrategyCards.length > 0}
-            onClick={() =>
-              sendEvent({
-                PassAction: {
-                  player: gameState.currentPlayer,
-                },
-              })
-            }
+          <legend
+            className={`playerColorBorder${
+              gameState.players[currentPlayer!!].color
+            } ${styles.actionPlayerContainer}`}
           >
-            Pass
-          </Button>
-          {playableStrategyCards.map((c) => (
+            <h4>{playerName}</h4>
+          </legend>
+          <div className={styles.actionsContainer}>
             <Button
-              key={c}
               className={styles.actionButton}
+              disabled={playableStrategyCards.length > 0}
               onClick={() =>
                 sendEvent({
-                  StrategicActionBegin: {
-                    card: c,
-                    player: currentPlayer,
+                  PassAction: {
+                    player: gameState.currentPlayer,
                   },
                 })
               }
             >
-              {c}
+              Pass
             </Button>
-          ))}
-          <Button
-            className={styles.actionButton}
-            onClick={() =>
-              sendEvent({
-                TacticalActionBegin: {
-                  player: gameState.currentPlayer,
-                },
-              })
-            }
-          >
-            Tactical
-          </Button>
-          <Button
-            disabled={isComponent}
-            className={styles.actionButton}
-            onClick={() => setIsComponent(true)}
-          >
-            Component
-          </Button>
-        </div>
-        {isComponent && <ComponentSelectRow />}
-      </fieldset>
+            {playableStrategyCards.map((c) => (
+              <Button
+                key={c}
+                className={styles.actionButton}
+                onClick={() =>
+                  sendEvent({
+                    StrategicActionBegin: {
+                      card: c,
+                      player: currentPlayer,
+                    },
+                  })
+                }
+              >
+                {c}
+              </Button>
+            ))}
+            <Button
+              className={styles.actionButton}
+              onClick={() =>
+                sendEvent({
+                  TacticalActionBegin: {
+                    player: gameState.currentPlayer,
+                  },
+                })
+              }
+            >
+              Tactical
+            </Button>
+            <Button
+              disabled={isComponent}
+              className={styles.actionButton}
+              onClick={() => setIsComponent(true)}
+            >
+              Component
+            </Button>
+          </div>
+          {isComponent && <ComponentSelectRow />}
+        </fieldset>
+      ) : (
+        <p>Not your turn, currently {currentPlayer} is playing</p>
+      )}
     </div>
   );
 };
