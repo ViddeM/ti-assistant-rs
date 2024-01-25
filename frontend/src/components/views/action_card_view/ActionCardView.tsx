@@ -8,14 +8,18 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort, stringSort } from "@/utils/Utils";
 
 export const ActionCardView = () => {
-  const { gameState, gameOptions } = useGameContext();
+  const { gameState, gameOptions, isActive } = useGameContext();
 
   const progress = gameState.actionProgress!!.ActionCard!!;
   const card = gameOptions.actionCards[progress.card];
   return (
     <div className="card">
       <h2>{card.name}</h2>
-      <ActionCardProgressView cardProgress={progress} />
+      {isActive ? (
+        <ActionCardProgressView cardProgress={progress} />
+      ) : (
+        <p>Not your turn, currently {gameState.currentPlayer} is playing</p>
+      )}
     </div>
   );
 };

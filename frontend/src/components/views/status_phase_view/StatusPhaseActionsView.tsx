@@ -15,7 +15,8 @@ export const StatusPhaseActionsView = () => {
 };
 
 const ScoreObjectives = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, playingAs, isGlobal, isSpeaker } =
+    useGameContext();
 
   const [revealedObjective, setRevealedObjective] = useState<string>("");
 
@@ -61,16 +62,18 @@ const ScoreObjectives = () => {
   return (
     <div>
       <h2>Score Objectives</h2>
-      {players.map((p) => (
-        <PlayerObjectives key={p.id} player={p} />
-      ))}
+      {players
+        .filter((p) => p.name === playingAs || isGlobal)
+        .map((p) => (
+          <PlayerObjectives key={p.id} player={p} />
+        ))}
       <fieldset className={styles.revealObjectiveContainer}>
         <legend>
           <h3>Reveal Stage {revealStageII ? "II" : "I"} Objective</h3>
         </legend>
         {state.revealedObjective !== null ? (
           <p>{gameOptions.objectives[state.revealedObjective].name}</p>
-        ) : (
+        ) : isGlobal || isSpeaker ? (
           <>
             <Dropdown
               disabled={!revealUnlocked}
@@ -97,6 +100,11 @@ const ScoreObjectives = () => {
               Reveal
             </Button>
           </>
+        ) : (
+          <p>
+            Waiting for {gameState.speaker} to reveal a stage{" "}
+            {revealStageII ? "II" : "I"} objective
+          </p>
         )}
       </fieldset>
     </div>

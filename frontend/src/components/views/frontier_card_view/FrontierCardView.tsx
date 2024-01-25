@@ -4,7 +4,7 @@ import { SelectTechView } from "../select_tech_view/SelectTechView";
 import { Button } from "@/components/elements/button/Button";
 
 export const FrontierCardView = () => {
-  const { gameState, gameOptions } = useGameContext();
+  const { gameState, gameOptions, isActive } = useGameContext();
 
   const progress = gameState.actionProgress!!.FrontierCard!!;
   const card = gameOptions.frontierCards[progress.card];
@@ -12,7 +12,11 @@ export const FrontierCardView = () => {
   return (
     <div className="card column">
       <h2>{card.name}</h2>
-      <FrontierCardProgressView cardProgress={progress} />
+      {isActive ? (
+        <FrontierCardProgressView cardProgress={progress} />
+      ) : (
+        <p>Not your turn, currently {gameState.currentPlayer} is playing</p>
+      )}
     </div>
   );
 };
