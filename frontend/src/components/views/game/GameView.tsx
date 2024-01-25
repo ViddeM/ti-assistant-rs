@@ -45,7 +45,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const router = useRouter();
 
   const { sendMessage, lastMessage, readyState } = useWebSocket(wsUri, {
-    shouldReconnect: (closeEvent) => true,
+    shouldReconnect: (closeEvent) => error === null,
   });
 
   const droppedConnection =
@@ -217,7 +217,12 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           </Button>
         </div>
         <p className="marginTop">Round {gameState?.round}</p>
-        {currentPlayer && <p>Current player: {currentPlayer.name}</p>}
+        {currentPlayer && (
+          <p>
+            Current player:{" "}
+            {playingAs === currentPlayer.name ? "You!" : currentPlayer.name}
+          </p>
+        )}
         Currently viewing: {playingAs ?? "Global"}
         <div>
           <Button
