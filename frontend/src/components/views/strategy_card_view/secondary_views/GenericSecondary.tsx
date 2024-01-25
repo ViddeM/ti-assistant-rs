@@ -10,12 +10,13 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 
 export const GenericSecondary = () => {
-  const { gameState, sendEvent } = useGameContext();
+  const { gameState, sendEvent, playingAs, isGlobal } = useGameContext();
 
   const strategyCard = gameState.actionProgress?.Strategic?.card!!;
 
   const otherPlayers = Object.keys(gameState.players)
     .filter((p) => p !== gameState.currentPlayer)
+    .filter((p) => p === playingAs || isGlobal)
     .map((p) => {
       return {
         action: gameState.actionProgress?.Strategic?.otherPlayers[p],

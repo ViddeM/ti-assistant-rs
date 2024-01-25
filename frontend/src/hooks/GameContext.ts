@@ -10,6 +10,9 @@ export interface GameContext {
   sendEvent: (data: any) => void;
   sendUndo: () => void;
   showInfo: (object: InfoObject | null) => void;
+  isActive: boolean;
+  isCurrentPlayer: boolean;
+  isGlobal: boolean;
   playingAs: string | null;
   setPlayingAs: (player: string | null) => void;
 }

@@ -13,7 +13,8 @@ type Choice =
   | undefined;
 
 export const StrategyTechnologySecondaryView = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, playingAs, isGlobal } =
+    useGameContext();
 
   const donePlayers = gameState.actionProgress?.Strategic?.otherPlayers!!;
   const sendTechSecondaryMessage = (player: string, action: any) => {
