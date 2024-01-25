@@ -6,7 +6,8 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 
 export const StrategyTechnologySecondaryView = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, playingAs, isGlobal } =
+    useGameContext();
 
   const donePlayers = gameState.actionProgress?.Strategic?.otherPlayers!!;
   const sendTechSecondaryMessage = (player: string, action: any) => {
@@ -30,52 +31,54 @@ export const StrategyTechnologySecondaryView = () => {
 
   return (
     <div className={`column ${styles.genericSecondaryContainer}`}>
-      {players.map((p) => {
-        const choice = donePlayers[p.id] as
-          | "Skipped"
-          | { Technology: { tech: string } }
-          | undefined;
+      {players
+        .filter((p) => p.name === playingAs || isGlobal)
+        .map((p) => {
+          const choice = donePlayers[p.id] as
+            | "Skipped"
+            | { Technology: { tech: string } }
+            | undefined;
 
-        return (
-          <fieldset key={p.id} className={styles.techSecondaryFieldset}>
-            <legend className={styles.alignedLegend}>
-              <h6 className={styles.horizontalPadding}>{p.name}</h6>
-              <FactionIcon faction={p.faction} />
-            </legend>
-            {choice === undefined ? (
-              <>
-                <SelectTechView
-                  playerId={p.name}
-                  onSelect={(tech) =>
-                    sendTechSecondaryMessage(p.name, {
-                      Technology: { tech: tech },
-                    })
-                  }
-                />
-                <div className={styles.skipDivider} />
-                <div className={styles.techSkipButton}>
-                  <Button
-                    onClick={() => sendTechSecondaryMessage(p.name, "Skip")}
-                  >
-                    Skip
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                {choice === "Skipped" ? (
-                  <p>--Skipped--</p>
-                ) : (
-                  <p>
-                    Tech:{" "}
-                    {gameOptions.technologies[choice.Technology.tech].name}
-                  </p>
-                )}
-              </>
-            )}
-          </fieldset>
-        );
-      })}
+          return (
+            <fieldset key={p.id} className={styles.techSecondaryFieldset}>
+              <legend className={styles.alignedLegend}>
+                <h6 className={styles.horizontalPadding}>{p.name}</h6>
+                <FactionIcon faction={p.faction} />
+              </legend>
+              {choice === undefined ? (
+                <>
+                  <SelectTechView
+                    playerId={p.name}
+                    onSelect={(tech) =>
+                      sendTechSecondaryMessage(p.name, {
+                        Technology: { tech: tech },
+                      })
+                    }
+                  />
+                  <div className={styles.skipDivider} />
+                  <div className={styles.techSkipButton}>
+                    <Button
+                      onClick={() => sendTechSecondaryMessage(p.name, "Skip")}
+                    >
+                      Skip
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {choice === "Skipped" ? (
+                    <p>--Skipped--</p>
+                  ) : (
+                    <p>
+                      Tech:{" "}
+                      {gameOptions.technologies[choice.Technology.tech].name}
+                    </p>
+                  )}
+                </>
+              )}
+            </fieldset>
+          );
+        })}
     </div>
   );
 };

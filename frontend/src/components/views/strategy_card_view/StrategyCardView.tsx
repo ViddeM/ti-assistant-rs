@@ -6,7 +6,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { GameState } from "@/api/GameState";
 
 export const StrategyCardView = () => {
-  const { gameState, sendEvent } = useGameContext();
+  const { gameState, sendEvent, isActive, isCurrentPlayer } = useGameContext();
 
   const strategicAction = gameState.actionProgress?.Strategic!!;
   const secondaryDone =
@@ -18,17 +18,24 @@ export const StrategyCardView = () => {
     <div className={`card ${styles.strategyCardView}`}>
       <h2>{gameState.actionProgress?.Strategic?.card}</h2>
 
-      <div className={styles.partDivider} />
+      {isActive && (
+        <>
+          <div className={styles.partDivider} />
+          <h6>Primary</h6>
+          <StrategyCardPrimary />
+        </>
+      )}
 
-      <h6>Primary</h6>
-      <StrategyCardPrimary />
-
-      <div className={styles.partDivider} />
-
-      <h6>Secondary</h6>
-      <StrategyCardSecondary />
+      {!isCurrentPlayer && (
+        <>
+          <div className={styles.partDivider} />
+          <h6>Secondary</h6>
+          <StrategyCardSecondary />
+        </>
+      )}
 
       <Button
+        className="marginTop"
         disabled={!primaryDone || !secondaryDone}
         onClick={() => sendEvent("StrategicActionCommit")}
       >
