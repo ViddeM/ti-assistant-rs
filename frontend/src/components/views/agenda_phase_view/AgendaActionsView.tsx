@@ -13,7 +13,8 @@ export interface AgendaActionsViewProps {
 }
 
 export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, isSpeaker, isGlobal, playingAs } =
+    useGameContext();
 
   const [currentAgenda, setCurrentAgenda] = useState<string>("");
 
@@ -32,6 +33,7 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
 
   const speaker = gameState.players[gameState.speaker!!];
   const players = Object.keys(gameState.players)
+    .filter((p) => p === playingAs || isGlobal)
     .map((p) => {
       return {
         id: p,
@@ -71,41 +73,47 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
         <>
           {state.vote === null ? (
             <div>
-              <fieldset>
-                <legend>
-                  <h2 className={styles.revealAgendaTitle}>{speaker.name}</h2>
-                </legend>
-                <div className={styles.revealAgendaBox}>
-                  <label htmlFor="select-agenda-dropdown">
-                    Reveal an agenda
-                  </label>
-                  <Dropdown
-                    id="select-agenda-dropdown"
-                    value={currentAgenda}
-                    onChange={(e) => setCurrentAgenda(e.target.value)}
-                  >
-                    <option value="">--Select Agenda--</option>
-                    {availableAgendas.map((a) => (
-                      <option value={a.id} key={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </Dropdown>
-                  <Button
-                    disabled={currentAgenda === ""}
-                    onClick={() => {
-                      sendEvent({
-                        RevealAgenda: {
-                          agenda: currentAgenda,
-                        },
-                      });
-                      setCurrentAgenda("");
-                    }}
-                  >
-                    Reveal
-                  </Button>
+              {isSpeaker || isGlobal ? (
+                <fieldset>
+                  <legend>
+                    <h2 className={styles.revealAgendaTitle}>{speaker.name}</h2>
+                  </legend>
+                  <div className={styles.revealAgendaBox}>
+                    <label htmlFor="select-agenda-dropdown">
+                      Reveal an agenda
+                    </label>
+                    <Dropdown
+                      id="select-agenda-dropdown"
+                      value={currentAgenda}
+                      onChange={(e) => setCurrentAgenda(e.target.value)}
+                    >
+                      <option value="">--Select Agenda--</option>
+                      {availableAgendas.map((a) => (
+                        <option value={a.id} key={a.id}>
+                          {a.name}
+                        </option>
+                      ))}
+                    </Dropdown>
+                    <Button
+                      disabled={currentAgenda === ""}
+                      onClick={() => {
+                        sendEvent({
+                          RevealAgenda: {
+                            agenda: currentAgenda,
+                          },
+                        });
+                        setCurrentAgenda("");
+                      }}
+                    >
+                      Reveal
+                    </Button>
+                  </div>
+                </fieldset>
+              ) : (
+                <div style={{ textAlign: "center" }}>
+                  <h2>Waiting for {gameState.speaker} to reveal agenda</h2>
                 </div>
-              </fieldset>
+              )}
             </div>
           ) : (
             <div>
@@ -119,7 +127,6 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
                 </li>
                 <li>
                   After agenda is revealed <br />
-                  TODO
                 </li>
                 <li>
                   Vote:
@@ -134,12 +141,15 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
                     />
                   ))}
                 </li>
-                <li>
-                  <ResolveOutcome
-                    everyoneHasVoted={everyoneHasVoted}
-                    state={state}
-                  />
-                </li>
+                {isSpeaker ||
+                  (isGlobal && (
+                    <li>
+                      <ResolveOutcome
+                        everyoneHasVoted={everyoneHasVoted}
+                        state={state}
+                      />
+                    </li>
+                  ))}
               </ol>
             </div>
           )}
