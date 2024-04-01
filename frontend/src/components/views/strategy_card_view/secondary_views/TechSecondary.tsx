@@ -4,6 +4,13 @@ import { Button } from "@/components/elements/button/Button";
 import styles from "./Secondary.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
+import { Player } from "@/api/GameState";
+
+type Choice =
+  | "NekroVirus"
+  | "Skipped"
+  | { Technology: { tech: string } }
+  | undefined;
 
 export const StrategyTechnologySecondaryView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
@@ -28,13 +35,20 @@ export const StrategyTechnologySecondaryView = () => {
     })
     .sort(nameSort);
 
+  const getChoice: (player: Player & { id: string }) => Choice = (
+    player: Player & { id: string }
+  ) => {
+    if (player.faction === "NekroVirus") {
+      return "NekroVirus";
+    }
+
+    return donePlayers[player.id] as Choice;
+  };
+
   return (
     <div className={`column ${styles.genericSecondaryContainer}`}>
       {players.map((p) => {
-        const choice = donePlayers[p.id] as
-          | "Skipped"
-          | { Technology: { tech: string } }
-          | undefined;
+        const choice = getChoice(p);
 
         return (
           <fieldset key={p.id} className={styles.techSecondaryFieldset}>
@@ -42,7 +56,9 @@ export const StrategyTechnologySecondaryView = () => {
               <h6 className={styles.horizontalPadding}>{p.name}</h6>
               <FactionIcon faction={p.faction} />
             </legend>
-            {choice === undefined ? (
+            {choice === "NekroVirus" ? (
+              <p>--Nekro Virus cannot research technologies--</p>
+            ) : choice === undefined ? (
               <>
                 <SelectTechView
                   playerId={p.name}

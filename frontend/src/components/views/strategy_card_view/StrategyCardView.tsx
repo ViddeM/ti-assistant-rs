@@ -9,6 +9,9 @@ export const StrategyCardView = () => {
   const { gameState, sendEvent } = useGameContext();
 
   const strategicAction = gameState.actionProgress?.Strategic!!;
+
+  // const nekroVirusSecondary =
+
   const secondaryDone =
     Object.keys(strategicAction.otherPlayers).length ===
     Object.keys(gameState.players).length - 1;

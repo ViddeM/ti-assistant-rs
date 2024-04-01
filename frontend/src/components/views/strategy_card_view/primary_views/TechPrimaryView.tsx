@@ -8,6 +8,24 @@ export const TechnologyPrimaryView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const [firstTech, setFirstTech] = useState<string | null>(null);
+
+  const playerFaction = Object.keys(gameState.players)
+    .filter((p) => gameState.currentPlayer === p)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    });
+
+  if (playerFaction.length > 0 && playerFaction[0].faction === "NekroVirus") {
+    return (
+      <div className="column">
+        <p>-- Unable to research technologies --</p>
+      </div>
+    );
+  }
+
   const progress = gameState.actionProgress?.Strategic?.primary;
 
   if (progress) {

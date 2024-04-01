@@ -4,7 +4,7 @@ use std::{
 };
 
 use chrono::{DateTime, Utc};
-use eyre::{bail, ensure, OptionExt, Result};
+use eyre::{bail, ensure, ContextCompat, OptionExt, Result};
 use strum::IntoEnumIterator;
 
 use crate::{
@@ -474,9 +474,19 @@ fn try_update_game_state(
                 "we are already performing an action phase action",
             );
             game_state.phase = Phase::StrategicAction;
+
+            let player_faction = game_state
+                .players
+                .get(&player)
+                .wrap_err("Expected player to exist")?
+                .faction;
+
             game_state.action_progress = Some(ActionPhaseProgress::Strategic(StrategicProgress {
                 card,
-                primary: None,
+                primary: StrategicPrimaryProgress::default_for_card_and_faction(
+                    card,
+                    player_faction,
+                ),
                 other_players: Default::default(),
             }));
             game_state.spent_strategy_cards.insert(card);
@@ -506,7 +516,7 @@ fn try_update_game_state(
                 (StrategyCard::Technology, StrategicPrimaryAction::Technology { tech, extra }) => {
                     /* Set the progress */
                     progress.primary = Some(StrategicPrimaryProgress::Technology {
-                        tech: tech.clone(),
+                        tech: Some(tech.clone()),
                         extra: extra.clone(),
                     });
 
@@ -573,6 +583,12 @@ fn try_update_game_state(
                         action.is_for_card(progress.card),
                         "Mismatch between strategic progress {progress:?} and action {action:?}"
                     );
+
+                    if game_state.players.get(&player).unwrap().faction == Faction::NekroVirus
+                        && progress.card == StrategyCard::Technology
+                    {
+                        bail!("Nekro virus cannot perform secondary technology action");
+                    }
 
                     progress
                         .other_players

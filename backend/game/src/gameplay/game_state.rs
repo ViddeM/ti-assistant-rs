@@ -147,7 +147,7 @@ pub enum StrategicPrimaryProgress {
     /// Primary progress for the technology strategy card.
     Technology {
         /// What main technology was taken.
-        tech: Technology,
+        tech: Option<Technology>,
         /// What, if any, extra tech was taken (and paid for).
         extra: Option<Technology>,
     },
@@ -162,6 +162,23 @@ pub enum StrategicPrimaryProgress {
         /// What objective, if any, was scored.
         objective: Option<Objective>,
     },
+}
+
+impl StrategicPrimaryProgress {
+    /// Returns the default value for the provided strategy card and faction.
+    pub fn default_for_card_and_faction(
+        card: StrategyCard,
+        faction: Faction,
+    ) -> Option<StrategicPrimaryProgress> {
+        if card == StrategyCard::Technology && faction == Faction::NekroVirus {
+            return Some(StrategicPrimaryProgress::Technology {
+                tech: None,
+                extra: None,
+            });
+        }
+
+        None
+    }
 }
 
 /// The progress of the secondary portion of a strategy card.
