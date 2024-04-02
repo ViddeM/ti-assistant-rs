@@ -63,10 +63,7 @@
     },
     "2023-12-27T09:43:27.114727Z"
   ],
-  [
-    "CreationDone",
-    "2023-12-27T09:43:27.119838Z"
-  ],
+  ["CreationDone", "2023-12-27T09:43:27.119838Z"],
   [
     {
       "SetupSpeaker": {
@@ -84,10 +81,7 @@
     },
     "2023-12-27T09:43:28.144083Z"
   ],
-  [
-    "StartGame",
-    "2023-12-27T09:43:28.154083Z"
-  ],
+  ["StartGame", "2023-12-27T09:43:28.154083Z"],
   [
     {
       "TakeStrategyCard": {
@@ -160,10 +154,7 @@
     },
     "2023-12-27T09:43:33.493175Z"
   ],
-  [
-    "CompleteStrategyPhase",
-    "2023-12-27T09:43:40.326465Z"
-  ],
+  ["CompleteStrategyPhase", "2023-12-27T09:43:40.326465Z"],
   [
     {
       "StrategicActionBegin": {
@@ -200,17 +191,14 @@
     },
     "2023-12-27T09:43:46.423873Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:43:46.843662Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:43:46.843662Z"],
   [
     {
       "EndTurn": {
-          "player": "Palle"
+        "player": "Palle"
       }
-    },    
-    "2023-12-27T09:43:47.843662Z"  
+    },
+    "2023-12-27T09:43:47.843662Z"
   ],
   [
     {
@@ -248,16 +236,13 @@
     },
     "2023-12-27T09:43:50.053260Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:43:50.458466Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:43:50.458466Z"],
   [
     {
       "EndTurn": {
-          "player": "Kalle"
+        "player": "Kalle"
       }
-    },    
+    },
     "2023-12-27T09:43:51.458466Z"
   ],
   [
@@ -309,16 +294,13 @@
     },
     "2023-12-27T09:43:56.533780Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:43:56.961203Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:43:56.961203Z"],
   [
     {
       "EndTurn": {
-          "player": "Pelle"
+        "player": "Pelle"
       }
-    },    
+    },
     "2023-12-27T09:43:57.458466Z"
   ],
   [
@@ -370,16 +352,13 @@
     },
     "2023-12-27T09:44:02.181052Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:44:02.861269Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:44:02.861269Z"],
   [
     {
       "EndTurn": {
-          "player": "Dalle"
+        "player": "Dalle"
       }
-    },    
+    },
     "2023-12-27T09:44:03.000001Z"
   ],
   [
@@ -418,16 +397,13 @@
     },
     "2023-12-27T09:44:06.441199Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:44:06.890716Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:44:06.890716Z"],
   [
     {
       "EndTurn": {
-          "player": "Palle"
+        "player": "Palle"
       }
-    },    
+    },
     "2023-12-27T09:44:07.190716Z"
   ],
   [
@@ -466,16 +442,13 @@
     },
     "2023-12-27T09:44:10.078717Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:44:10.573144Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:44:10.573144Z"],
   [
     {
       "EndTurn": {
-          "player": "Kalle"
+        "player": "Kalle"
       }
-    },    
+    },
     "2023-12-27T09:44:10.673144Z"
   ],
   [
@@ -504,19 +477,6 @@
   [
     {
       "StrategicActionSecondary": {
-        "player": "Palle",
-        "action": {
-          "Technology": {
-            "tech": "AssaultCannon"
-          }
-        }
-      }
-    },
-    "2023-12-27T09:44:27.538924Z"
-  ],
-  [
-    {
-      "StrategicActionSecondary": {
         "player": "Dalle",
         "action": "Skip"
       }
@@ -532,16 +492,13 @@
     },
     "2023-12-27T09:44:31.906026Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:44:32.931854Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:44:32.931854Z"],
   [
     {
       "EndTurn": {
-          "player": "Pelle"
+        "player": "Pelle"
       }
-    },    
+    },
     "2023-12-27T09:44:33.673144Z"
   ],
   [
@@ -580,16 +537,13 @@
     },
     "2023-12-27T09:44:37.574173Z"
   ],
-  [
-    "StrategicActionCommit",
-    "2023-12-27T09:44:38.428753Z"
-  ],
+  ["StrategicActionCommit", "2023-12-27T09:44:38.428753Z"],
   [
     {
       "EndTurn": {
-          "player": "Dalle"
+        "player": "Dalle"
       }
-    },    
+    },
     "2023-12-27T09:44:39.428753Z"
   ],
   [
@@ -629,9 +583,9 @@
   [
     {
       "EndTurn": {
-          "player": "Palle"
+        "player": "Palle"
       }
-    },    
+    },
     "2023-12-27T09:44:43.658462Z"
   ],
   [
@@ -662,9 +616,9 @@
   [
     {
       "EndTurn": {
-          "player": "Kalle"
+        "player": "Kalle"
       }
-    },    
+    },
     "2023-12-27T09:44:46.838688Z"
   ],
   [
@@ -704,9 +658,9 @@
   [
     {
       "EndTurn": {
-          "player": "Pelle"
+        "player": "Pelle"
       }
-    },    
+    },
     "2023-12-27T09:44:51.488453Z"
   ],
   [
@@ -737,9 +691,9 @@
   [
     {
       "EndTurn": {
-          "player": "Dalle"
+        "player": "Dalle"
       }
-    },    
+    },
     "2023-12-27T09:44:56.418592Z"
   ],
   [
@@ -770,9 +724,9 @@
   [
     {
       "EndTurn": {
-          "player": "Palle"
+        "player": "Palle"
       }
-    },    
+    },
     "2023-12-27T09:45:00.856255Z"
   ],
   [
@@ -812,9 +766,9 @@
   [
     {
       "EndTurn": {
-          "player": "Kalle"
+        "player": "Kalle"
       }
-    },    
+    },
     "2023-12-27T09:45:07.313546Z"
   ],
   [
@@ -963,8 +917,5 @@
     },
     "2023-12-28T17:20:04.650429Z"
   ],
-  [
-    "CompleteStatusPhase",
-    "2023-12-28T17:20:06.127540Z"
-  ]
+  ["CompleteStatusPhase", "2023-12-28T17:20:06.127540Z"]
 ]

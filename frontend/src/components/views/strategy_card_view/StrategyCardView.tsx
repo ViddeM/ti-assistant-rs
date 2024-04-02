@@ -10,11 +10,21 @@ export const StrategyCardView = () => {
 
   const strategicAction = gameState.actionProgress?.Strategic!!;
 
-  // const nekroVirusSecondary =
+  const expectedSecondaries = Object.keys(gameState.players)
+    .filter((p) => p !== gameState.currentPlayer)
+    .map((p) => {
+      return {
+        id: p,
+        ...gameState.players[p],
+      };
+    })
+    .filter(
+      (p) =>
+        !(p.faction === "NekroVirus" && strategicAction.card === "Technology")
+    ).length;
 
   const secondaryDone =
-    Object.keys(strategicAction.otherPlayers).length ===
-    Object.keys(gameState.players).length - 1;
+    Object.keys(strategicAction.otherPlayers).length === expectedSecondaries;
   const primaryDone = isPrimaryDone(gameState);
 
   return (

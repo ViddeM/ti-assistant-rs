@@ -140,7 +140,7 @@ export const SetupPhase = () => {
           </>
         )}
       </div>
-
+      {/* TODO: Disable this button if faction-specific setup is not done */}
       <Button
         disabled={
           !gameState.speaker ||
