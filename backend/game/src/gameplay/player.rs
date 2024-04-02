@@ -65,6 +65,15 @@ impl Player {
         Ok(())
     }
 
+    /// Research a technology (for actions stating 'gain', use [`take_tech()`] instead), performing necessary checks for that action.
+    pub fn research_tech(&mut self, tech: Technology) -> Result<(), GameError> {
+        ensure!(
+            self.faction != Faction::NekroVirus,
+            "Nekro Virus cannot research techs"
+        );
+        self.take_tech(tech)
+    }
+
     /// Returns true if the player currently has the technology.
     pub fn has_tech(&self, tech: &Technology) -> bool {
         self.technologies.contains(tech)

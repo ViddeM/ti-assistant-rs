@@ -523,9 +523,9 @@ fn try_update_game_state(
                     /* Give the tech to the current player */
                     let current_player = game_state.get_current_player()?;
 
-                    current_player.take_tech(tech.clone())?;
+                    current_player.research_tech(tech.clone())?;
                     if let Some(t) = extra.clone() {
-                        current_player.take_tech(t.clone())?;
+                        current_player.research_tech(t.clone())?;
                     }
                 }
                 (StrategyCard::Politics, StrategicPrimaryAction::Politics { new_speaker }) => {
@@ -584,23 +584,15 @@ fn try_update_game_state(
                         "Mismatch between strategic progress {progress:?} and action {action:?}"
                     );
 
-                    if game_state.players.get(&player).unwrap().faction == Faction::NekroVirus
-                        && progress.card == StrategyCard::Technology
-                    {
-                        bail!("Nekro virus cannot perform secondary technology action");
-                    }
-
-                    progress
-                        .other_players
-                        .insert(player.clone(), action.clone().into());
-
-                    match action {
+                    match action.clone() {
                         StrategicSecondaryAction::Technology { tech } => {
                             let player = game_state.players.get_mut(&player).unwrap();
-                            player.take_tech(tech)?;
+                            player.research_tech(tech)?;
                         }
                         _ => {}
                     }
+
+                    progress.other_players.insert(player.clone(), action.into());
                 }
                 _ => bail!("cannot perform strategic actions during non-strategy actions"),
             };
@@ -669,9 +661,8 @@ fn try_update_game_state(
                 match data {
                     ActionCardAction::FocusedResearch { tech } => {
                         game_state.assert_expansion(&tech.info().expansion)?;
-
                         let current_player = game_state.get_current_player()?;
-                        current_player.take_tech(tech.clone())?;
+                        current_player.research_tech(tech.clone())?;
                     }
                     ActionCardAction::DivertFunding {
                         remove_tech,
@@ -697,8 +688,11 @@ fn try_update_game_state(
                             !matches!(remove_tech_info.tech_type, TechType::UnitUpgrade),
                             "Cannot remove unit upgrade technologies"
                         );
-                        current_player.technologies.remove(&remove_tech);
-                        current_player.take_tech(take_tech.clone())?;
+
+                        if take_tech != remove_tech {
+                            current_player.research_tech(take_tech.clone())?;
+                            current_player.technologies.remove(&remove_tech);
+                        }
                     }
                     ActionCardAction::Plagiarize { tech } => {
                         let available_techs = get_plagiarize_available_techs(game_state)?;
@@ -759,7 +753,7 @@ fn try_update_game_state(
                         game_state.assert_expansion(&tech.info().expansion)?;
 
                         let current_player = game_state.get_current_player()?;
-                        current_player.take_tech(tech.clone())?;
+                        current_player.research_tech(tech.clone())?;
                     }
                 }
             }
