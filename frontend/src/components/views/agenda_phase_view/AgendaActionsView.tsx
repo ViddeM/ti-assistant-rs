@@ -41,7 +41,8 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
     .sort(nameSort);
 
   const everyoneHasVoted =
-    Object.keys(state.vote?.playerVotes ?? {}).length === players.length;
+    Object.keys(state.vote?.playerVotes ?? {}).length ===
+    players.filter((p) => p.faction !== "NekroVirus").length;
 
   const castVote = (
     player: string,
@@ -172,7 +173,9 @@ const PlayerVoteView = ({
   return (
     <fieldset className={styles.agendaActionsContainer}>
       <legend>{player.name}</legend>
-      {playerVote === undefined ? (
+      {player.faction === "NekroVirus" ? (
+        <p>Nekro Virus cannot vote</p>
+      ) : playerVote === undefined ? (
         <div className={styles.castVoteContainer}>
           <Dropdown
             value={voteOption}

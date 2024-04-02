@@ -1176,6 +1176,17 @@ fn try_update_game_state(
             votes,
         } => {
             game_state.assert_phase(Phase::Agenda)?;
+
+            ensure!(
+                game_state
+                    .players
+                    .get(&player)
+                    .wrap_err("Player doesn't exist?")?
+                    .faction
+                    != Faction::NekroVirus,
+                "Nekro Virus cannot vote on agendas"
+            );
+
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
             };
