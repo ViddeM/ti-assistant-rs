@@ -53,6 +53,19 @@ pub fn update_game_state(
     event: Event,
     timestamp: DateTime<Utc>,
 ) -> Result<(), GameError> {
+    let mut new_game_state = game_state.clone();
+
+    try_update_game_state(&mut new_game_state, event, timestamp)?;
+
+    *game_state = new_game_state;
+    Ok(())
+}
+
+fn try_update_game_state(
+    game_state: &mut GameState,
+    event: Event,
+    timestamp: DateTime<Utc>,
+) -> Result<(), GameError> {
     match event {
         Event::SetSettings { settings } => {
             game_state.assert_phase(Phase::Creation)?;
