@@ -369,7 +369,7 @@ function getPlayableStrategyCards(
 function playerEmoji(name: string): string {
   switch (name.toLocaleLowerCase()) {
     case "portals":
-      return "❤️";
+      return "👑";
     case "potholes":
       return "❤️";
     case "tux":
@@ -378,6 +378,14 @@ function playerEmoji(name: string): string {
       return "🦤";
     case "vidde":
       return "⌨️";
+    case "swexbe":
+      return "🇪🇸";
+    case "håll":
+      return "🖱️";
+    case "hoidi":
+      return "🍰";
+    case "gurr":
+      return "🦁";
     default:
       return "";
   }
