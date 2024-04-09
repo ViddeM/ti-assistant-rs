@@ -514,21 +514,19 @@ fn try_update_game_state(
 
             match (progress.card, action) {
                 (StrategyCard::Technology, StrategicPrimaryAction::Technology { tech, extra }) => {
-                    {
-                        /* Give the tech(s) to the current player */
-                        let current_player = game_state.get_current_player()?;
-
-                        current_player.research_tech(tech.clone())?;
-                        if let Some(t) = extra.clone() {
-                            current_player.research_tech(t.clone())?;
-                        }
-                    }
-
                     /* Set the progress */
                     progress.primary = Some(StrategicPrimaryProgress::Technology {
                         tech: Some(tech.clone()),
                         extra: extra.clone(),
                     });
+
+                    /* Give the tech(s) to the current player */
+                    let current_player = game_state.get_current_player()?;
+
+                    current_player.research_tech(tech.clone())?;
+                    if let Some(t) = extra.clone() {
+                        current_player.research_tech(t.clone())?;
+                    }
                 }
                 (StrategyCard::Politics, StrategicPrimaryAction::Politics { new_speaker }) => {
                     progress.primary = Some(StrategicPrimaryProgress::Politics {
