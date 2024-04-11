@@ -7,7 +7,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 
 export const ScoreTableView = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, showInfo } = useGameContext();
 
   const revealedStageOneObjectives = Object.keys(
     gameState.score.revealedObjectives
@@ -99,6 +99,10 @@ export const ScoreTableView = () => {
               <th
                 colSpan={playerCount}
                 className={index === 0 ? "" : styles.borderTop}
+                onClick={() => {
+                    showInfo({"Objective": obj});
+                    console.log("lmao", obj);
+                }}
               >
                 {obj.name}
               </th>

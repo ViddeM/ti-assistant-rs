@@ -1,0 +1,36 @@
+.infoModalBg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  justify-content: center;
+  padding-top: 4rem;
+  background: #603040a0;
+  z-index: 99;
+
+  animation-duration: 0.3s;
+  animation-name: infoModalBgAppear;
+}
+
+.infoModal {
+  padding: 2rem;
+  max-width: 35rem;
+  margin-bottom: auto;
+  background: black;
+  border: solid 0.2rem white;
+  border-radius: 2rem;
+
+  animation-duration: 0.5s;
+  animation-name: infoModalAppear;
+}
+
+@keyframes infoModalBgAppear {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+@keyframes infoModalAppear {
+  0% { scale: 0.8; }
+  100% { scale: 1; }
+}

@@ -10,7 +10,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort, stringSort } from "@/utils/Utils";
 
 export const SecretObjectivesView = () => {
-  const { gameState } = useGameContext();
+  const { gameState, showInfo } = useGameContext();
 
   const players = Object.keys(gameState.players)
     .map((p) => {
@@ -57,7 +57,7 @@ const PlayerSecretView = ({
   player,
   playerSecrets,
 }: PlayerSecretViewProps) => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, showInfo } = useGameContext();
 
   const [secret, setSecret] = useState<string>("");
 
@@ -85,7 +85,8 @@ const PlayerSecretView = ({
       </div>
       {playerSecrets.map((secret) => (
         <div key={secret} className={styles.secretObjectiveRow}>
-          <p>{secret}</p>
+          <p onClick = {() => showInfo({"Objective": gameOptions.objectives[secret]})}
+          >{secret}</p>
           <Button
             className={styles.deleteSecretObjectiveButton}
             onClick={() =>

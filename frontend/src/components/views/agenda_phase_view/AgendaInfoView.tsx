@@ -7,7 +7,7 @@ export interface AgendaInfoViewProps {
 }
 
 export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
-  const { gameState, gameOptions } = useGameContext();
+  const { gameState, gameOptions, showInfo } = useGameContext();
 
   const previousVotesThisRound = gameState.agendaVoteHistory.filter(
     (vote) => vote.round === gameState.round
@@ -22,7 +22,9 @@ export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
           <h3>Previous agendas</h3>
         </legend>
         {previousVotesThisRound.map((vote) => (
-          <div key={vote.vote.agenda}>
+          <div key={vote.vote.agenda}
+               onClick = {() => showInfo({Agenda: gameOptions.agendas[vote.vote.agenda]})}
+          >
             <h6>{gameOptions.agendas[vote.vote.agenda].name}</h6>
             <p>
               {electKindToString(vote.vote.elect)}:
@@ -39,7 +41,8 @@ export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
 
         {state.vote && (
           <div>
-            <h6>{gameOptions.agendas[state.vote.agenda].name}</h6>
+            <h6 onClick = {() => showInfo({Agenda: gameOptions.agendas[state.vote.agenda]})}
+            >{gameOptions.agendas[state.vote.agenda].name}</h6>
             <p>Votes</p>
             <ol>
               {state.vote.outcomesByVotes.map((v) => (

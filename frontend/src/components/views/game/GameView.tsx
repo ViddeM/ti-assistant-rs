@@ -13,6 +13,7 @@ import styles from "./GameView.module.scss";
 import { useRouter } from "next/navigation";
 import { PhaseView } from "../phase_view/PhaseView";
 import { Button } from "@/components/elements/button/Button";
+import { InfoModal, InfoObject } from "../info_modal/InfoModal";
 import { ScoreViewMode } from "../score_view_mode/ScoreViewMode";
 import { TechViewMode } from "../tech_view_mode/TechViewMode";
 import { PlanetViewMode } from "../planet_view_mode/PlanetViewMode";
@@ -38,6 +39,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [currentViewMode, setCurrentViewMode] = useState<View>("Game");
   const [notFound, setNotFound] = useState<string | null>(null);
+  const [infoObject, showInfo] = useState<InfoObject>(null);
 
   const router = useRouter();
 
@@ -170,8 +172,10 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         gameState: gameState,
         sendEvent: sendEvent,
         sendUndo: sendUndo,
+        showInfo: showInfo,
       }}
     >
+      <InfoModal infoObject={infoObject} />
       <div className={`card ${styles.gameInfoCard}`}>
         <h4>Game: {gameId}</h4>
         <div className={styles.viewModeButtonGroup}>
