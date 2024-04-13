@@ -1,42 +1,27 @@
-import { ObjectiveInfo } from "@/api/GameOptions";
-import { GameContext, useGameContext } from "@/hooks/GameContext";
+import { AgendaInfo, ObjectiveInfo, ObjectiveKind } from "@/api/GameOptions";
+import { useGameContext } from "@/hooks/GameContext";
 import styles from "./InfoModal.module.scss";
 
-type InfoObject = { Agenda: AgendaInfo }
-                | { Objective: ObjectiveInfo }
-                | null;
+type InfoObject = { Agenda: AgendaInfo } | { Objective: ObjectiveInfo };
 
-export const InfoModal = ({infoObject}) => {
+interface InfoModalProps {
+  infoObject: InfoObject | null;
+}
+
+interface InfoFields {
+  title: string;
+  subtitle: string;
+  description: string;
+}
+
+export const InfoModal = ({ infoObject }: InfoModalProps) => {
   const { showInfo } = useGameContext();
 
   if (!infoObject) {
     return null;
   }
-  let [infoKind, info] = Object.entries(infoObject)[0];
 
-  let title = "";
-  let subtitle = "";
-  let description = "";
-
-  switch (infoKind) {
-    case "Agenda":
-      title = info.name;
-      subtitle = info.kind; // TODO: show elect kind
-      description = info.description;
-      break;
-
-    case "Objective":
-      title = info.name;
-      description = info.condition;
-      switch (info.kind) {
-        case "StageI":  subtitle = "Objective, Stage I"; break;
-        case "StageII": subtitle = "Objective, Stage II"; break;
-        default:        subtitle = "Secret Objective"; break;
-      }
-      break;
-
-    default: // TODO: error?
-  }
+  const info = getInfo(infoObject);
 
   return (
     <div // transparent background
@@ -47,14 +32,45 @@ export const InfoModal = ({infoObject}) => {
         className={`${styles.infoModal}`}
         // don't dismiss the modal when the modal itself is clicked
         onClick={(e) => e.stopPropagation()}
-       >
-        <h1>{title}</h1>
+      >
+        <h1>{info.title}</h1>
         <hr />
-        <h2>{subtitle}</h2>
-        <p>{description}</p>
+        <h2>{info.subtitle}</h2>
+        <p>{info.description}</p>
       </div>
     </div>
   );
 };
 
+function getInfo(info: InfoObject): InfoFields {
+  if ("Agenda" in info) {
+    const agenda = info["Agenda"];
+    return {
+      title: agenda.name,
+      subtitle: agenda.kind, // TODO: show elect kind
+      description: agenda.description,
+    };
+  }
 
+  if ("Objective" in info) {
+    const objective = info["Objective"];
+    return {
+      title: objective.name,
+      subtitle: objectiveKindToString(objective.kind),
+      description: objective.condition,
+    };
+  }
+
+  throw "Type error, invalid object!";
+}
+
+function objectiveKindToString(kind: ObjectiveKind): string {
+  switch (kind) {
+    case "StageI":
+      return "Objective, Stage I";
+    case "StageII":
+      return "Objective, Stage II";
+    default:
+      return "Secret Objective";
+  }
+}
