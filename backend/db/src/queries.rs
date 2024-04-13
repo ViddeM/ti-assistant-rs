@@ -21,6 +21,14 @@ pub async fn create_game(db_pool: &DbPool, id: GameId, name: String) -> eyre::Re
     Ok(())
 }
 
+/// Get a list of ALL [GameId]s in the database. Use with care.
+pub async fn get_all_game_ids(db_pool: &DbPool) -> eyre::Result<Vec<GameId>> {
+    let mut db = db_pool.get().await?;
+
+    use crate::schema::game::dsl;
+    Ok(dsl::game.select(dsl::id).load(&mut db).await?)
+}
+
 /// Retrieves the game with the provided game id.
 pub async fn get_game_by_id(db_pool: &DbPool, id: &GameId) -> eyre::Result<db::Game> {
     let mut db = db_pool.get().await?;

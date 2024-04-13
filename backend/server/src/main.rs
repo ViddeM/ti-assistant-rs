@@ -108,6 +108,12 @@ pub async fn main() -> eyre::Result<()> {
         insert_demo_games::insert_demo_games(&opt, db_pool).await?;
     }
 
+    if cfg!(debug_assertions) {
+        if let Some(db_pool) = &db_pool {
+            print_all_games(db_pool).await;
+        }
+    }
+
     let shared = Arc::new(Shared {
         opt,
         lobbies,
@@ -339,4 +345,26 @@ async fn handle_undo(shared: &Shared, id: GameId, lobby: &RwLock<Lobby>) -> eyre
     lobby.state_updates.send(lobby.game.current.clone())?;
 
     Ok(())
+}
+
+async fn print_all_games(pool: &DbPool) {
+    let game_ids = match queries::get_all_game_ids(pool)
+        .await
+        .wrap_err("Failed to query list of GameIds")
+    {
+        Ok(game_ids) => game_ids,
+        Err(e) => {
+            log::error!("{e:#}");
+            return;
+        }
+    };
+
+    if game_ids.is_empty() {
+        log::info!("No games in database");
+    } else {
+        log::info!("Games in database:");
+        for game_id in game_ids {
+            log::info!("{game_id}");
+        }
+    }
 }
