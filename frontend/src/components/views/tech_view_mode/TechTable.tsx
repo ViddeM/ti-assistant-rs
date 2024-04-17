@@ -4,6 +4,7 @@ import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./TechViewMode.module.scss";
 import React from "react";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 import { Icon } from "@/components/elements/icon/Icon";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
@@ -284,7 +285,12 @@ const TechRows = ({ techs, players, toggleTechForPlayer }: TechRowsProps) => {
               colSpan={players.length}
               className={index === 0 ? "" : styles.borderTop}
             >
+              <InfoButton
+                info={{ Tech: t }}
+                style={{ visibility: "hidden" }}
+              />
               {t.name}
+              <InfoButton info={{ Tech: t }} />
             </th>
           </tr>
           <tr>

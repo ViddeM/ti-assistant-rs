@@ -74,6 +74,7 @@ function getTechCategoryCount(
   technologies: Tech[],
   category: TechCategory
 ): number {
+  console.log("foo", technologies);
   return technologies.filter((t) => {
     if (t.info.techType === "UnitUpgrade") {
       return false;

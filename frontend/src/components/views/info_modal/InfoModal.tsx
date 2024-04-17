@@ -1,8 +1,11 @@
-import { AgendaInfo, ObjectiveInfo, ObjectiveKind } from "@/api/GameOptions";
+import { AgendaInfo, ObjectiveInfo, ObjectiveKind, TechInfo } from "@/api/GameOptions";
 import { useGameContext } from "@/hooks/GameContext";
 import styles from "./InfoModal.module.scss";
 
-export type InfoObject = { Agenda: AgendaInfo } | { Objective: ObjectiveInfo };
+export type InfoObject = { Agenda: AgendaInfo } 
+    | { Objective: ObjectiveInfo }
+    | { Strategy: TechInfo }
+    | { Tech: TechInfo };
 
 interface InfoModalProps {
   infoObject: InfoObject | null;
@@ -61,6 +64,15 @@ function getInfo(info: InfoObject): InfoFields {
     };
   }
 
+  if ("Tech" in info) {
+    const tech = info["Tech"];
+    return {
+        title: tech.name,
+        subtitle: techTypeToString(tech.techType),
+        description: tech.effects.join("\n"),
+    };
+  }
+
   throw "Type error, invalid object!";
 }
 
@@ -73,4 +85,12 @@ function objectiveKindToString(kind: ObjectiveKind): string {
     default:
       return "Secret Objective";
   }
+}
+
+function techTypeToString(techType: TechType) {
+    if (techType === "UnitUpgrade") {
+        return "Unit Upgrade";
+    }
+
+    return `Technology, ${techType.Category}`;
 }

@@ -43,6 +43,7 @@ export interface TechInfo {
   techType: TechType;
   origin: TechOrigin;
   requirements: { [key: string]: number };
+  effects: string[];
 }
 
 export type TechType =

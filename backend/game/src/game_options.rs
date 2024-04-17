@@ -106,8 +106,8 @@ impl GameOptions {
                 .filter(|(_, o)| expansions.is_enabled(&o.expansion))
                 .collect(),
             technologies: Technology::iter()
+                .filter(|tech| tech.is_enabled_in(expansions))
                 .map(|t| (t.clone(), t.info()))
-                .filter(|(_, t)| expansions.is_enabled(&t.expansion))
                 .collect(),
             action_cards: ActionCard::iter()
                 .map(|card| (card.clone(), card.info()))
