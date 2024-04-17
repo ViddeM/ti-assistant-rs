@@ -167,7 +167,7 @@ const FactionSpecificSetup = ({ player }: FactionSpecificSetupProps) => {
     case "CouncilKeleres":
       return <CouncilKeleresSetup player={player} />;
     default:
-      return <div>Pelle</div>;
+      return <div>No faction specific setup</div>;
   }
 };
 
