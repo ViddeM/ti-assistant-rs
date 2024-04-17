@@ -2,7 +2,7 @@ import { AgendaInfo, ObjectiveInfo, ObjectiveKind } from "@/api/GameOptions";
 import { useGameContext } from "@/hooks/GameContext";
 import styles from "./InfoModal.module.scss";
 
-type InfoObject = { Agenda: AgendaInfo } | { Objective: ObjectiveInfo };
+export type InfoObject = { Agenda: AgendaInfo } | { Objective: ObjectiveInfo };
 
 interface InfoModalProps {
   infoObject: InfoObject | null;

@@ -34,3 +34,27 @@
   color: white;
   min-width: 60px;
 }
+
+.infoButton {
+  background: none;
+  color: inherit;
+  border: none;
+  font: inherit;
+  outline: inherit;
+
+  background-color: white;
+  border-radius: 50%;
+  height: 1.4rem;
+  width: 1.4rem;
+  margin-left: 1em;
+  margin-right: 1em;
+  color: black;
+
+  padding: 4px;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: #cacaca;
+  }
+}

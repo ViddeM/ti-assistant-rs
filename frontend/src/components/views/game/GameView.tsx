@@ -39,7 +39,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [currentViewMode, setCurrentViewMode] = useState<View>("Game");
   const [notFound, setNotFound] = useState<string | null>(null);
-  const [infoObject, showInfo] = useState<InfoObject>(null);
+  const [infoObject, showInfo] = useState<InfoObject | null>(null);
 
   const router = useRouter();
 
