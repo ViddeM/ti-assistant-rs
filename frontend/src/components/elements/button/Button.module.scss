@@ -42,19 +42,20 @@
   font: inherit;
   outline: inherit;
 
-  background-color: white;
+  border: 2px solid white;
   border-radius: 50%;
   height: 1.4rem;
   width: 1.4rem;
   margin-left: 1em;
   margin-right: 1em;
-  color: black;
+  color: white;
 
   padding: 4px;
+  padding-top: 0;
 
   cursor: pointer;
 
   &:hover {
-    background-color: #cacaca;
+    background-color: rgba(0, 0, 0, 0.6);
   }
 }
