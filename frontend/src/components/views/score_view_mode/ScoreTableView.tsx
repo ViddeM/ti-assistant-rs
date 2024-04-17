@@ -5,6 +5,7 @@ import { Button } from "@/components/elements/button/Button";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 
 export const ScoreTableView = () => {
   const { gameState, gameOptions, sendEvent, showInfo } = useGameContext();
@@ -99,12 +100,13 @@ export const ScoreTableView = () => {
               <th
                 colSpan={playerCount}
                 className={index === 0 ? "" : styles.borderTop}
-                onClick={() => {
-                    showInfo({"Objective": obj});
-                    console.log("lmao", obj);
-                }}
               >
+                <InfoButton
+                  info={{ Objective: obj }}
+                  style={{ visibility: "hidden" }}
+                />
                 {obj.name}
+                <InfoButton info={{ Objective: obj }} />
               </th>
             </tr>
             <tr>
