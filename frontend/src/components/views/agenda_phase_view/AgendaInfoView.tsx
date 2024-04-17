@@ -1,6 +1,8 @@
 import { AgendaState } from "@/api/GameState";
 import { electKindToString } from "./AgendaUtils";
 import { useGameContext } from "@/hooks/GameContext";
+import { InfoButton } from "@/components/elements/button/InfoButton";
+import styles from "./AgendaPhaseView.module.scss";
 
 export interface AgendaInfoViewProps {
   state: AgendaState;
@@ -22,10 +24,13 @@ export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
           <h3>Previous agendas</h3>
         </legend>
         {previousVotesThisRound.map((vote) => (
-          <div key={vote.vote.agenda}
-               onClick = {() => showInfo({Agenda: gameOptions.agendas[vote.vote.agenda]})}
-          >
-            <h6>{gameOptions.agendas[vote.vote.agenda].name}</h6>
+          <div key={vote.vote.agenda}>
+            <div className={styles.agendaInfoRow}>
+              <h6>{gameOptions.agendas[vote.vote.agenda].name}</h6>
+              <InfoButton
+                info={{ Agenda: gameOptions.agendas[vote.vote.agenda] }}
+              />
+            </div>
             <p>
               {electKindToString(vote.vote.elect)}:
               {vote.outcome?.value ?? "Discarded"}
@@ -41,8 +46,12 @@ export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
 
         {state.vote && (
           <div>
-            <h6 onClick = {() => showInfo({Agenda: gameOptions.agendas[state.vote.agenda]})}
-            >{gameOptions.agendas[state.vote.agenda].name}</h6>
+            <div className={styles.agendaInfoRow}>
+              <h6>{gameOptions.agendas[state.vote.agenda].name}</h6>
+              <InfoButton
+                info={{ Agenda: gameOptions.agendas[state.vote.agenda] }}
+              />
+            </div>
             <p>Votes</p>
             <ol>
               {state.vote.outcomesByVotes.map((v) => (
