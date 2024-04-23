@@ -121,6 +121,12 @@
    - ❌ Display number of action cards to draw & tokens to receive.
  - ❌ Agenda Phase (see below)
  - ❌ Handle game end
+ - ❌ Personal views
+   - ✅ Frontend only personal views
+     - ✅ URL stored views
+     - ✅ Limit views to the current person
+   - ❌ Backend tracked personal views
+     - ❌ Personal undo
 
 ### Agenda Phase
 
