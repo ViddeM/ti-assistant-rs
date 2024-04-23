@@ -1,14 +1,16 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::data::components::objectives::{secret::SecretObjective, Objective};
 
 use super::player::PlayerId;
 
 /// State for the status phase.
-#[derive(Clone, Default, Debug, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct StatusPhaseState {
     /// What each player scored, or didn't score, for their public objective slot.
     pub scored_public_objectives: HashMap<PlayerId, Option<Objective>>,

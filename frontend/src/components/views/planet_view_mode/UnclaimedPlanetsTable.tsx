@@ -1,3 +1,4 @@
+import { Planet } from "@/api/bindings/Planet";
 import { FactionButton } from "@/components/elements/factionButton/FactionButton";
 import React, { useState } from "react";
 import styles from "./PlanetViewMode.module.scss";
@@ -22,6 +23,9 @@ export const UnclaimedPlanetsTable = () => {
 
   const claimedPlanets = players.flatMap((p) => Object.keys(p.planets));
   const unclaimedPlanets = Object.keys(gameOptions.planetInfos)
+    .map((p) => {
+      return p as Planet;
+    })
     .filter((p) => !claimedPlanets.includes(p))
     .map((p) => {
       return {

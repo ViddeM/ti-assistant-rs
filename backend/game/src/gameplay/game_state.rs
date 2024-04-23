@@ -6,22 +6,26 @@ use std::{
 use chrono::{DateTime, Utc};
 use eyre::{bail, eyre, Context};
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-use crate::data::{
-    common::{expansions::Expansion, faction::Faction},
-    components::{
-        action_card::ActionCard,
-        agenda::{Agenda, AgendaElect},
-        frontier_card::FrontierCard,
-        objectives::Objective,
-        phase::Phase,
-        planet::Planet,
-        planet_attachment::PlanetAttachment,
-        relic::Relic,
-        strategy_card::StrategyCard,
-        system::SystemId,
-        tech::Technology,
+use crate::{
+    data::{
+        common::{expansions::Expansion, faction::Faction},
+        components::{
+            action_card::ActionCard,
+            agenda::{Agenda, AgendaElect},
+            frontier_card::FrontierCard,
+            objectives::Objective,
+            phase::Phase,
+            planet::Planet,
+            planet_attachment::PlanetAttachment,
+            relic::Relic,
+            strategy_card::StrategyCard,
+            system::SystemId,
+            tech::Technology,
+        },
     },
+    enum_map::EnumMap,
 };
 
 use super::{
@@ -35,7 +39,8 @@ use super::{
 };
 
 /// A snapshot of the game state.
-#[derive(Clone, Default, Debug, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GameState {
     /// The current round number of the game.
@@ -60,7 +65,7 @@ pub struct GameState {
     pub turn_order: Vec<PlayerId>,
 
     /// Which players hold which strategy cards.
-    pub strategy_card_holders: HashMap<StrategyCard, PlayerId>,
+    pub strategy_card_holders: EnumMap<StrategyCard, PlayerId>,
 
     /// The current player, if any.
     pub current_player: Option<PlayerId>,
@@ -84,7 +89,7 @@ pub struct GameState {
     pub agenda_vote_history: Vec<AgendaRecord>,
 
     /// Laws in play.
-    pub laws: HashMap<Agenda, AgendaElect>,
+    pub laws: EnumMap<Agenda, AgendaElect>,
 
     /// State for the status phase.
     pub status_phase_state: Option<StatusPhaseState>,
@@ -96,14 +101,18 @@ pub struct GameState {
     ///
     /// This does not include the time taken for the current round, that will be calculated and
     /// included when the current player ends their turn.
+    #[ts(type = "{ [playerId: string]: { secs: number, nanos: number } }")]
     pub players_play_time: HashMap<PlayerId, Duration>,
 
     /// When the current player started their turn.
+    #[ts(type = "string | null")]
     pub current_turn_start_time: Option<DateTime<Utc>>,
 }
 
 /// The current progress of an action-phase action.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(tag = "t")]
+#[ts(export)]
 pub enum ActionPhaseProgress {
     /// The progress of a strategy card.
     Strategic(StrategicProgress),
@@ -130,8 +139,9 @@ impl ActionPhaseProgress {
 }
 
 /// Progress of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct StrategicProgress {
     /// The strategy card being played.
     pub card: StrategyCard,
@@ -142,7 +152,8 @@ pub struct StrategicProgress {
 }
 
 /// The progress of the primary section of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export)]
 pub enum StrategicPrimaryProgress {
     /// Primary progress for the technology strategy card.
     Technology {
@@ -182,7 +193,8 @@ impl StrategicPrimaryProgress {
 }
 
 /// The progress of the secondary portion of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum StrategicSecondaryProgress {
     Leadership,
@@ -200,37 +212,41 @@ pub enum StrategicSecondaryProgress {
 }
 
 /// Progress during a tactical action.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TacticalProgress {
     /// What system was activated, if any.
     pub activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
     /// Which planets have been taken this far and the player who owned them previously (if any).
-    pub taken_planets: HashMap<Planet, Option<PlayerId>>,
+    pub taken_planets: EnumMap<Planet, Option<PlayerId>>,
     /// What planet attachments have been selected for the taken planets.
     /// NOTE: Does not include attachments kept when taken from another player.
-    pub planet_attachments: HashMap<Planet, PlanetAttachment>,
+    pub planet_attachments: EnumMap<Planet, PlanetAttachment>,
 }
 
 /// The progress of an action card being played.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ActionCardProgress {
     /// Which card is being played.
     pub card: ActionCard,
 }
 
 /// The progress of a frontier card being played.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct FrontierCardProgress {
     /// Which card is being played.
     pub card: FrontierCard,
 }
 
 /// The progress of a frontier card being played.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct RelicProgress {
     /// The relic whose action is being taken.
     pub relic: Relic,

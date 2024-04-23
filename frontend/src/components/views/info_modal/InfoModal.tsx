@@ -1,10 +1,8 @@
-import {
-  AgendaInfo,
-  ObjectiveInfo,
-  ObjectiveKind,
-  TechInfo,
-  TechType,
-} from "@/api/GameOptions";
+import { AgendaInfo } from "@/api/bindings/AgendaInfo";
+import { ObjectiveInfo } from "@/api/bindings/ObjectiveInfo";
+import { ObjectiveKind } from "@/api/bindings/ObjectiveKind";
+import { TechInfo } from "@/api/bindings/TechInfo";
+import { TechType } from "@/api/bindings/TechType";
 import { useGameContext } from "@/hooks/GameContext";
 import styles from "./InfoModal.module.scss";
 

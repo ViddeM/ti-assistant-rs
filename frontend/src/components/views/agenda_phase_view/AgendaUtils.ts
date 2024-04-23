@@ -1,4 +1,4 @@
-import { AgendaElectKind } from "@/api/Agenda";
+import { AgendaElectKind } from "@/api/bindings/AgendaElectKind";
 
 export function electKindToString(kind: AgendaElectKind): string {
   switch (kind) {

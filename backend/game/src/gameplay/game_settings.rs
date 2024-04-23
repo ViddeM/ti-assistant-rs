@@ -1,10 +1,12 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::data::common::expansions::Expansion;
 
 /// Settings for a game.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 #[allow(missing_docs)]
 pub struct GameSettings {
     pub max_points: u32,
@@ -21,8 +23,9 @@ impl Default for GameSettings {
 }
 
 /// Which expansions are in use.
-#[derive(Clone, Default, Debug, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 #[allow(missing_docs)]
 pub struct Expansions {
     pub prophecy_of_kings: bool,

@@ -1,5 +1,6 @@
-import { TechInfo } from "@/api/GameOptions";
-import { Player } from "@/api/GameState";
+import { TechInfo } from "@/api/bindings/TechInfo";
+import { Technology } from "@/api/bindings/Technology";
+import { Player } from "@/api/bindings/Player";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import styles from "./TechViewMode.module.scss";
 import React from "react";
@@ -24,6 +25,9 @@ export const TechTable = () => {
 
   const techs = Object.keys(gameOptions.technologies)
     .map((t) => {
+      return t as Technology;
+    })
+    .map((t) => {
       return {
         id: t,
         ...gameOptions.technologies[t],
@@ -32,44 +36,44 @@ export const TechTable = () => {
     .sort(nameSort);
 
   const unitUpgrades = techs.filter(
-    (t) => t.techType === "UnitUpgrade" && t.origin === "Base"
+    (t) => t.techType === "UnitUpgrade" && t.origin === "Base",
   );
   const warfare = techs.filter(
     (t) =>
       t.techType !== "UnitUpgrade" &&
       t.techType.Category === "Warfare" &&
-      t.origin === "Base"
+      t.origin === "Base",
   );
   const biotic = techs.filter(
     (t) =>
       t.techType !== "UnitUpgrade" &&
       t.techType.Category === "Biotic" &&
-      t.origin === "Base"
+      t.origin === "Base",
   );
   const propulsion = techs.filter(
     (t) =>
       t.techType !== "UnitUpgrade" &&
       t.techType.Category === "Propulsion" &&
-      t.origin === "Base"
+      t.origin === "Base",
   );
   const cybernetic = techs.filter(
     (t) =>
       t.techType !== "UnitUpgrade" &&
       t.techType.Category === "Cybernetic" &&
-      t.origin === "Base"
+      t.origin === "Base",
   );
 
-  let playerTechs: { [player: string]: (TechInfo & { id: string })[] } = {};
+  let playerTechs: { [player: string]: (TechInfo & { id: Technology })[] } = {};
   players.forEach((p) => {
     playerTechs[p.id] = techs.filter(
-      (t) => t.origin !== "Base" && t.origin.Faction === p.faction
+      (t) => t.origin !== "Base" && t.origin.Faction === p.faction,
     );
   });
 
   const toggleTechForPlayer = (
     playerId: string,
     player: Player,
-    tech: string
+    tech: Technology,
   ) => {
     if (player.technologies.includes(tech)) {
       sendEvent({
@@ -270,9 +274,13 @@ const TableSectionHeading = ({
 };
 
 interface TechRowsProps {
-  techs: ({ id: string } & TechInfo)[];
+  techs: ({ id: Technology } & TechInfo)[];
   players: ({ id: string } & Player)[];
-  toggleTechForPlayer: (playerId: string, player: Player, tech: string) => void;
+  toggleTechForPlayer: (
+    playerId: string,
+    player: Player,
+    tech: Technology,
+  ) => void;
 }
 
 const TechRows = ({ techs, players, toggleTechForPlayer }: TechRowsProps) => {
@@ -285,10 +293,7 @@ const TechRows = ({ techs, players, toggleTechForPlayer }: TechRowsProps) => {
               colSpan={players.length}
               className={index === 0 ? "" : styles.borderTop}
             >
-              <InfoButton
-                info={{ Tech: t }}
-                style={{ visibility: "hidden" }}
-              />
+              <InfoButton info={{ Tech: t }} style={{ visibility: "hidden" }} />
               {t.name}
               <InfoButton info={{ Tech: t }} />
             </th>

@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 use crate::{
     data::components::{
@@ -15,7 +16,8 @@ use crate::{
 use super::expansions::Expansion;
 
 /// A playable faction in the game.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum Faction {
     // Vanilla

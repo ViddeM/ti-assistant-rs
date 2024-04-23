@@ -6,6 +6,8 @@
 
 /// General game data.
 pub mod data;
+/// HashMap wrapper type for generating typescript bindings.
+pub mod enum_map;
 /// All the general game information.
 pub mod game_options;
 /// Game logic.

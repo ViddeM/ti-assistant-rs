@@ -1,12 +1,14 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 use crate::data::common::expansions::Expansion;
 
 use super::tech::TechCategory;
 
 /// A planetary trait.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum PlanetTrait {
     Cultural,
@@ -15,8 +17,9 @@ pub enum PlanetTrait {
 }
 
 /// All relevant information for a planet.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct PlanetInfo {
     /// The name of the planet.
     pub name: String,
@@ -60,7 +63,10 @@ macro_rules! p {
 }
 
 /// A planet
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, PartialOrd, Ord, Hash, TS,
+)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum Planet {
     Nestphar,

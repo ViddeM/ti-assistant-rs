@@ -1,3 +1,4 @@
+import { Technology } from "@/api/bindings/Technology";
 import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../../select_tech_view/SelectTechView";
 import { useState } from "react";
@@ -7,7 +8,7 @@ import styles from "./Primary.module.scss";
 export const TechnologyPrimaryView = () => {
   const { gameState, gameOptions, sendEvent, isActive } = useGameContext();
 
-  const [firstTech, setFirstTech] = useState<string | null>(null);
+  const [firstTech, setFirstTech] = useState<Technology | null>(null);
 
   const playerFaction = Object.keys(gameState.players)
     .filter((p) => gameState.currentPlayer === p)
@@ -26,13 +27,19 @@ export const TechnologyPrimaryView = () => {
     );
   }
 
-  const progress = gameState.actionProgress?.Strategic?.primary;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
 
-  if (progress) {
-    const techProgress = progress!!.Technology!!;
+  if (progress.primary && "Technology" in progress.primary) {
+    const techProgress = progress.primary.Technology!!;
+
     return (
       <div className="column">
-        <p>{gameOptions.technologies[techProgress.tech].name}</p>
+        {techProgress.tech && (
+          <p>{gameOptions.technologies[techProgress.tech].name}</p>
+        )}
         {techProgress.extra && (
           <p>{gameOptions.technologies[techProgress.extra].name}</p>
         )}

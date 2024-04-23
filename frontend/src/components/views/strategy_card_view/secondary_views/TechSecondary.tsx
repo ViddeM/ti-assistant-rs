@@ -4,19 +4,26 @@ import { Button } from "@/components/elements/button/Button";
 import styles from "./Secondary.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
-import { Player } from "@/api/GameState";
+import { Player } from "@/api/bindings/Player";
+import { Technology } from "@/api/bindings/Technology";
 
 type Choice =
   | "NekroVirus"
   | "Skipped"
   | "OtherPlayer"
-  | { Technology: { tech: string } }
+  | { Technology: { tech: Technology } }
   | "YetToChoose";
 
 export const StrategyTechnologySecondaryView = () => {
   const { gameState, playingAs, isGlobal } = useGameContext();
 
-  const donePlayers = gameState.actionProgress?.Strategic?.otherPlayers!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
+
+  const donePlayers = progress.otherPlayers;
+
   const players = Object.keys(gameState.players)
     .filter((p) => p !== gameState.currentPlayer)
     .map((p) => {
@@ -28,7 +35,7 @@ export const StrategyTechnologySecondaryView = () => {
     .sort(nameSort);
 
   const getChoice: (player: Player & { id: string }) => Choice = (
-    player: Player & { id: string }
+    player: Player & { id: string },
   ) => {
     if (player.faction === "NekroVirus") {
       return "NekroVirus";

@@ -6,9 +6,12 @@ import { useGameContext } from "@/hooks/GameContext";
 export const StrategyCardPrimary = () => {
   const { gameState } = useGameContext();
 
-  const strategyProgress = gameState.actionProgress?.Strategic!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
 
-  switch (strategyProgress.card) {
+  switch (progress.card) {
     case "Technology":
       return <TechnologyPrimaryView />;
     case "Politics":

@@ -16,7 +16,7 @@ export interface StrategyCardInfoProps {
 
 export const StrategyCardInfo = ({ cards }: StrategyCardInfoProps) => {
   const sortedCards = cards.sort(
-    (a, b) => StrategyCardNumber[a.name] - StrategyCardNumber[b.name]
+    (a, b) => StrategyCardNumber[a.name] - StrategyCardNumber[b.name],
   );
 
   return (

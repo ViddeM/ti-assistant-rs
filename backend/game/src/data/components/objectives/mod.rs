@@ -4,6 +4,7 @@ pub mod public;
 pub mod secret;
 
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::data::common::expansions::Expansion;
 
@@ -12,8 +13,9 @@ use self::{public::PublicObjective, secret::SecretObjective};
 use super::phase::Phase;
 
 /// An objective in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, TS)]
 #[serde(untagged)] // crimes
+#[ts(export)]
 pub enum Objective {
     /// A public objective.
     Public(PublicObjective),
@@ -22,8 +24,9 @@ pub enum Objective {
 }
 
 /// All relevant information about an objective.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct ObjectiveInfo {
     /// Name of the objective.
     pub name: String,
@@ -42,7 +45,8 @@ pub struct ObjectiveInfo {
 }
 
 /// What type of objective this is.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
+#[ts(export)]
 pub enum ObjectiveKind {
     /// A stage I objective.
     StageI,

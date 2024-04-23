@@ -1,3 +1,5 @@
+import { Planet } from "@/api/bindings/Planet";
+import { PlanetAttachment } from "@/api/bindings/PlanetAttachment";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import styles from "./PlanetViewMode.module.scss";
@@ -15,8 +17,8 @@ const ADDED_ATTACHMENTS = [
 
 export const AddPlanetAttachment = () => {
   const [player, setPlayer] = useState<string>("");
-  const [planet, setPlanet] = useState<string>("");
-  const [attachment, setAttachment] = useState<string>("");
+  const [planet, setPlanet] = useState<Planet | "">("");
+  const [attachment, setAttachment] = useState<PlanetAttachment | "">("");
 
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
@@ -34,8 +36,11 @@ export const AddPlanetAttachment = () => {
       player === ""
         ? []
         : Object.keys(
-            availablePlayers.filter((p) => p.id === player)[0].planets
+            availablePlayers.filter((p) => p.id === player)[0].planets,
           )
+            .map((p) => {
+              return p as Planet;
+            })
             .map((p) => {
               return {
                 id: p,
@@ -43,14 +48,14 @@ export const AddPlanetAttachment = () => {
               };
             })
             .sort(nameSort),
-    [availablePlayers, gameOptions.planetInfos, player]
+    [availablePlayers, gameOptions.planetInfos, player],
   );
 
   const homePlanets = Object.values(gameOptions.systems)
     .filter(
       (s) =>
         typeof s.systemType === "object" &&
-        Object.keys(s.systemType).includes("HomeSystem")
+        Object.keys(s.systemType).includes("HomeSystem"),
     )
     .flatMap((s) => s.planets)
     .sort(stringSort);
@@ -61,6 +66,9 @@ export const AddPlanetAttachment = () => {
         ? []
         : Object.keys(gameOptions.planetAttachments)
             .map((a) => {
+              return a as PlanetAttachment;
+            })
+            .map((a) => {
               return {
                 id: a,
                 ...gameOptions.planetAttachments[a],
@@ -70,13 +78,14 @@ export const AddPlanetAttachment = () => {
             .filter(
               (a) =>
                 a.planetTrait === null ||
-                gameOptions.planetInfos[planet].planetTrait === a.planetTrait
+                gameOptions.planetInfos[planet].planetTrait === a.planetTrait,
             )
             .filter(
-              (a) => !gameState.players[player]?.planets[planet]?.includes(a.id)
+              (a) =>
+                !gameState.players[player]?.planets[planet]?.includes(a.id),
             )
             .filter(
-              (a) => !(a.id === "UITheProgenitor" && planet !== "Elysium")
+              (a) => !(a.id === "UITheProgenitor" && planet !== "Elysium"),
             )
             .filter(
               (a) =>
@@ -84,14 +93,14 @@ export const AddPlanetAttachment = () => {
                   a.id === "Terraform" &&
                   (planet === "MecatolRex" ||
                     gameOptions.planetInfos[planet].isLegendary)
-                )
+                ),
             )
             .filter(
               (a) =>
                 !(
                   (a.id === "Terraform" || a.id === "NanoForge") &&
                   homePlanets.includes(planet)
-                )
+                ),
             )
             .sort(nameSort),
     [
@@ -101,7 +110,7 @@ export const AddPlanetAttachment = () => {
       homePlanets,
       planet,
       player,
-    ]
+    ],
   );
 
   useEffect(() => {
@@ -133,7 +142,7 @@ export const AddPlanetAttachment = () => {
       <Dropdown
         value={planet}
         disabled={player === ""}
-        onChange={(e) => setPlanet(e.target.value)}
+        onChange={(e) => setPlanet(e.target.value as Planet)}
       >
         <option value="">--Select Planet--</option>
         {availablePlanets.map((p) => (
@@ -145,7 +154,7 @@ export const AddPlanetAttachment = () => {
       <Dropdown
         value={attachment}
         disabled={planet === "" || availableAttachments.length === 0}
-        onChange={(e) => setAttachment(e.target.value)}
+        onChange={(e) => setAttachment(e.target.value as PlanetAttachment)}
       >
         {availableAttachments.length === 0 ? (
           <option value="">No attachments available</option>

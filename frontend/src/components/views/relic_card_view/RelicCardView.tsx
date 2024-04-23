@@ -1,4 +1,5 @@
-import { RelicProgress } from "@/api/GameState";
+import { Planet } from "@/api/bindings/Planet";
+import { RelicProgress } from "@/api/bindings/RelicProgress";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useGameContext } from "@/hooks/GameContext";
@@ -8,7 +9,10 @@ import { useState } from "react";
 export const RelicCardView = () => {
   const { gameState, gameOptions, isActive } = useGameContext();
 
-  const progress = gameState.actionProgress!!.Relic!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Relic") {
+    return;
+  }
   const relic = gameOptions.relics[progress.relic];
 
   return (
@@ -58,6 +62,9 @@ const StellarConvertersView = () => {
   const [planet, setPlanet] = useState<string>("");
 
   const availablePlanets = Object.keys(gameOptions.planetInfos)
+    .map((p) => {
+      return p as Planet;
+    })
     .filter((p) => p !== "MecatolRex")
     .map((p) => {
       return {
@@ -73,8 +80,8 @@ const StellarConvertersView = () => {
           .map((player) => player.planets[p.id])
           .filter((p) => p !== undefined)
           .flat()
-          .filter((a) => gameOptions.planetAttachments[a].makeLegendary)
-          .length === 0
+          .filter((a) => gameOptions.planetAttachments[a].setLegendary)
+          .length === 0,
     )
     .filter((p) => {
       let type = gameOptions.systems.filter((s) => s.planets.includes(p.id))[0]
@@ -126,8 +133,11 @@ const NanoForgeView = () => {
   const [planet, setPlanet] = useState<string>("");
 
   const availablePlanets = Object.keys(
-    gameState.players[gameState.currentPlayer!!].planets
+    gameState.players[gameState.currentPlayer!!].planets,
   )
+    .map((p) => {
+      return p as Planet;
+    })
     .map((p) => {
       return {
         id: p,

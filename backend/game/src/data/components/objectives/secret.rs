@@ -3,6 +3,7 @@ use crate::data::{common::expansions::Expansion, components::phase::Phase};
 use super::{ObjectiveInfo, ObjectiveKind};
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 macro_rules! s {
     ($phase:expr, $name:literal, $condition: literal, $expansion: expr) => {
@@ -18,8 +19,9 @@ macro_rules! s {
 
 /// A secret objective.
 #[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq, PartialOrd, Ord, EnumIter,
+    Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq, PartialOrd, Ord, EnumIter, TS,
 )]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum SecretObjective {
     // Action phase base cards

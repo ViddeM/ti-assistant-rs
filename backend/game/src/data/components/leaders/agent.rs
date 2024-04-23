@@ -1,10 +1,12 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 use crate::data::common::faction::Faction;
 
 /// Information about an agent leader.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, TS)]
+#[ts(export)]
 pub struct AgentInfo {
     /// [Agent] variant for this agent.
     pub tag: Agent,
@@ -24,6 +26,8 @@ pub struct AgentInfo {
     Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, EnumIter,
 )]
 #[allow(missing_docs)]
+#[derive(ts_rs::TS)]
+#[ts(export)]
 pub enum Agent {
     Acamar,
     ArtunoTheBetrayer,

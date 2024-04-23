@@ -1,3 +1,5 @@
+import { Planet } from "@/api/bindings/Planet";
+import { PlanetAttachment } from "@/api/bindings/PlanetAttachment";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
@@ -8,11 +10,15 @@ import { nameSort } from "@/utils/Utils";
 export const TacticalView = () => {
   const { gameState, gameOptions, sendEvent, isActive } = useGameContext();
 
-  const [selectedPlanet, setSelectedPlanet] = useState<string | null>(null);
+  const [selectedPlanet, setSelectedPlanet] = useState<Planet | null>(null);
   const currentPlayerPlanets =
     gameState.players[gameState.currentPlayer!!].planets;
 
-  const tactical = gameState.actionProgress?.Tactical!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Tactical") {
+    return;
+  }
+  const tactical = progress;
   const activatedSystem = tactical.activatedSystem;
   const takenPlanets = tactical.takenPlanets;
   const attachments = tactical.planetAttachments;
@@ -23,7 +29,7 @@ export const TacticalView = () => {
     .filter(
       (p) =>
         !Object.keys(currentPlayerPlanets).includes(p) &&
-        !Object.keys(takenPlanets).includes(p)
+        !Object.keys(takenPlanets).includes(p),
     )
     .map((p) => {
       return {
@@ -34,6 +40,9 @@ export const TacticalView = () => {
     .sort(nameSort);
 
   const allPlanetsNotOwned = Object.keys(gameOptions.planetInfos)
+    .map((p) => {
+      return p as Planet;
+    })
     .filter((p) => !Object.keys(currentPlayerPlanets).includes(p))
     .map((p) => {
       return {
@@ -59,19 +68,24 @@ export const TacticalView = () => {
         <>
           {Object.keys(takenPlanets).length > 0 ? (
             <div className={styles.column}>
-              {Object.keys(takenPlanets).map((p) => (
-                <fieldset key={p}>
-                  <legend>{p}</legend>
+              {Object.keys(takenPlanets)
 
-                  <div className={styles.column}>
-                    <SelectPlanetAttachment
-                      planet={p}
-                      attachment={attachments[p] ?? null}
-                      previousOwner={takenPlanets[p]}
-                    />
-                  </div>
-                </fieldset>
-              ))}
+                .map((p) => {
+                  return p as Planet;
+                })
+                .map((p) => (
+                  <fieldset key={p}>
+                    <legend>{p}</legend>
+
+                    <div className={styles.column}>
+                      <SelectPlanetAttachment
+                        planet={p}
+                        attachment={attachments[p] ?? null}
+                        previousOwner={takenPlanets[p]}
+                      />
+                    </div>
+                  </fieldset>
+                ))}
               {availablePlanetsInSystem.length > 0 && (
                 <>
                   <fieldset>
@@ -93,7 +107,7 @@ export const TacticalView = () => {
               <Dropdown
                 onChange={(e) => {
                   const v = e.target.value;
-                  setSelectedPlanet(v === "" ? null : v);
+                  setSelectedPlanet(v === "" ? null : (v as Planet));
                 }}
               >
                 <option value={""}>--select a planet--</option>
@@ -131,8 +145,8 @@ export const TacticalView = () => {
 };
 
 interface SelectPlanetAttachmentProps {
-  planet: string;
-  attachment: string | null;
+  planet: Planet;
+  attachment: PlanetAttachment | null;
   previousOwner: string | null;
 }
 
@@ -159,9 +173,12 @@ const SelectPlanetAttachment = ({
   }
 
   const availableAttachments = Object.keys(gameOptions.planetAttachments)
+    .map((a) => {
+      return a as PlanetAttachment;
+    })
     .filter(
       (a) =>
-        gameOptions.planetAttachments[a].planetTrait === planetInfo.planetTrait
+        gameOptions.planetAttachments[a].planetTrait === planetInfo.planetTrait,
     )
     .filter((a) => !a.toLocaleLowerCase().endsWith("resources"))
     .map((a) => {

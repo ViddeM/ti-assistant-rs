@@ -10,15 +10,20 @@ export const PoliticsPrimaryView = () => {
 
   const [nextSpeaker, setNextSpeaker] = useState<string>("");
 
-  const progress = gameState.actionProgress?.Strategic?.primary;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
+  const primary = progress.primary;
+
   const nonSpeakerPlayers = Object.keys(gameState.players)
     .filter((p) => p !== gameState.speaker)
     .sort(stringSort);
 
   return (
     <div>
-      {progress ? (
-        <p>Next speaker: {progress?.Politics?.newSpeaker}</p>
+      {primary && "Politics" in primary ? (
+        <p>Next speaker: {primary.Politics.newSpeaker}</p>
       ) : isActive ? (
         <fieldset>
           <legend>Select next speaker</legend>

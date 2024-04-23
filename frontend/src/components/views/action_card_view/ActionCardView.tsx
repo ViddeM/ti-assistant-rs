@@ -1,4 +1,5 @@
-import { ActionCardProgress } from "@/api/GameState";
+import { ActionCardProgress } from "@/api/bindings/ActionCardProgress";
+import { Technology } from "@/api/bindings/Technology";
 import { Button } from "@/components/elements/button/Button";
 import { SelectTechView } from "../select_tech_view/SelectTechView";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
@@ -10,7 +11,11 @@ import { nameSort, stringSort } from "@/utils/Utils";
 export const ActionCardView = () => {
   const { gameState, gameOptions, isActive } = useGameContext();
 
-  const progress = gameState.actionProgress!!.ActionCard!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "ActionCard") {
+    return;
+  }
+
   const card = gameOptions.actionCards[progress.card];
   return (
     <div className="card">
@@ -77,8 +82,8 @@ interface DivertFundingViewProps {
 const DivertFundingView = ({ sendCommitMessage }: DivertFundingViewProps) => {
   const { gameState, gameOptions } = useGameContext();
 
-  const [removeTech, setRemoveTech] = useState<string | null>(null);
-  const [gainTech, setGainTech] = useState<string | null>(null);
+  const [removeTech, setRemoveTech] = useState<Technology | null>(null);
+  const [gainTech, setGainTech] = useState<Technology | null>(null);
 
   const deletableTechs = gameState.players[
     gameState.currentPlayer!!
@@ -105,7 +110,7 @@ const DivertFundingView = ({ sendCommitMessage }: DivertFundingViewProps) => {
             if (v === "") {
               setRemoveTech(null);
             } else {
-              setRemoveTech(v);
+              setRemoveTech(v as Technology);
             }
           }}
         >
@@ -127,7 +132,7 @@ const DivertFundingView = ({ sendCommitMessage }: DivertFundingViewProps) => {
         {gainTech === null ? (
           <SelectTechView
             playerId={gameState.currentPlayer!!}
-            onSelect={(tech) => setGainTech(tech)}
+            onSelect={(tech) => setGainTech(tech as Technology)}
           />
         ) : (
           <p>{gameOptions.technologies[gainTech].name}</p>
@@ -240,8 +245,8 @@ const PlagiarizePlayerRow = ({
     .filter(
       (tech) =>
         !gameState.players[gameState.currentPlayer!!].technologies.includes(
-          tech.id
-        )
+          tech.id,
+        ),
     )
     .sort(nameSort);
 

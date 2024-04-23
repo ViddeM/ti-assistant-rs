@@ -31,10 +31,10 @@ export const PhaseView = () => {
                 card: strategyCard as StrategyCard,
                 faction: gameState.players[playerId].faction,
               };
-            }
+            },
           )}
           expectedStrategyCards={getExpectedStrategyCards(
-            Object.keys(gameState.players).length
+            Object.keys(gameState.players).length,
           )}
           selectCard={(card) => {
             sendEvent({

@@ -1,16 +1,17 @@
-use std::{
-    collections::{HashMap, HashSet},
-    sync::Arc,
-};
+use std::{collections::HashSet, sync::Arc};
 
 use eyre::ensure;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-use crate::data::{
-    common::{color::Color, faction::Faction},
-    components::{
-        planet::Planet, planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
+use crate::{
+    data::{
+        common::{color::Color, faction::Faction},
+        components::{
+            planet::Planet, planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
+        },
     },
+    enum_map::EnumMap,
 };
 
 use super::{error::GameError, game_settings::Expansions};
@@ -20,8 +21,9 @@ use super::{error::GameError, game_settings::Expansions};
 pub type PlayerId = Arc<str>;
 
 /// A new player that is currently being created.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct NewPlayer {
     /// The name of the player.
     pub name: String,
@@ -32,8 +34,9 @@ pub struct NewPlayer {
 }
 
 /// A player in a running game.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Player {
     /// The name of the player.
     pub name: String,
@@ -42,7 +45,7 @@ pub struct Player {
     /// Which color the player has.
     pub color: Color,
     /// Which planets the player controls and their attachments.
-    pub planets: HashMap<Planet, HashSet<PlanetAttachment>>,
+    pub planets: EnumMap<Planet, HashSet<PlanetAttachment>>,
     /// Which technologies the player has.
     pub technologies: HashSet<Technology>,
     /// Which relics the player currently owns.

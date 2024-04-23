@@ -3,7 +3,8 @@
 import { Button } from "@/components/elements/button/Button";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./ActionPhaseView.module.scss";
-import { GameState } from "@/api/GameState";
+import { GameState } from "@/api/bindings/GameState";
+import { ActionCard } from "@/api/bindings/ActionCard";
 import { useEffect, useState } from "react";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useGameContext } from "@/hooks/GameContext";
@@ -24,7 +25,7 @@ export const ActionPhaseView = () => {
 
   const playableStrategyCards = getPlayableStrategyCards(
     gameState,
-    currentPlayer
+    currentPlayer,
   );
 
   const playerName = `${currentPlayer} ${playerEmoji(currentPlayer)}`;
@@ -182,12 +183,12 @@ const DisplayComponentMode = ({ mode }: DisplayComponentModeProps) => {
 const ActionCardSelectView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
-  const [card, setCard] = useState<string>("");
+  const [card, setCard] = useState<ActionCard | "">("");
 
   useEffect(() => setCard(""), [gameState]);
 
   const playableActionCards = Object.keys(gameOptions.actionCards)
-    .map((card) => gameOptions.actionCards[card])
+    .map((card) => gameOptions.actionCards[card as ActionCard])
     .filter((card) => {
       return card.play === "Action";
     })
@@ -196,7 +197,10 @@ const ActionCardSelectView = () => {
   return (
     <fieldset className={styles.playActionCardContainer}>
       <legend>Play Action Card</legend>
-      <Dropdown value={card} onChange={(e) => setCard(e.target.value)}>
+      <Dropdown
+        value={card}
+        onChange={(e) => setCard(e.target.value as ActionCard)}
+      >
         <option value={""}>--Select an Action Card--</option>
         {playableActionCards.map((card) => (
           <option key={card.card} value={card.card}>
@@ -353,7 +357,7 @@ const FrontierCardView = () => {
 
 function getPlayableStrategyCards(
   gameState: GameState,
-  currentPlayer: string
+  currentPlayer: string,
 ): StrategyCard[] {
   return Object.entries(gameState.strategyCardHolders)
     .map(([strategyCard, player]) => {
@@ -363,7 +367,7 @@ function getPlayableStrategyCards(
       };
     })
     .filter(
-      (v) => !gameState.spentStrategyCards.includes(v.card as StrategyCard)
+      (v) => !gameState.spentStrategyCards.includes(v.card as StrategyCard),
     )
     .filter((v) => v.player === `${currentPlayer}`)
     .map((v) => v.card as StrategyCard)

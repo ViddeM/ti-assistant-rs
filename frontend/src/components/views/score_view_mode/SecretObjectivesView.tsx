@@ -1,4 +1,6 @@
-import { Player } from "@/api/GameState";
+import { Player } from "@/api/bindings/Player";
+import { Objective } from "@/api/bindings/Objective";
+import { SecretObjective } from "@/api/bindings/SecretObjective";
 import styles from "./ScoreViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
@@ -49,7 +51,7 @@ export const SecretObjectivesView = () => {
 interface PlayerSecretViewProps {
   playerId: string;
   player: Player;
-  playerSecrets: string[];
+  playerSecrets: SecretObjective[];
 }
 
 const PlayerSecretView = ({
@@ -59,13 +61,16 @@ const PlayerSecretView = ({
 }: PlayerSecretViewProps) => {
   const { gameState, gameOptions, sendEvent, showInfo } = useGameContext();
 
-  const [secret, setSecret] = useState<string>("");
+  const [secret, setSecret] = useState<SecretObjective | "">("");
 
   const allTakenSecrets = Object.values(
-    gameState.score.secretObjectives
+    gameState.score.secretObjectives,
   ).flat();
 
   const unrevealedSecrets = Object.keys(gameOptions.objectives)
+    .map((o) => {
+      return o as Objective;
+    })
     .map((o) => {
       return {
         id: o,
@@ -73,7 +78,7 @@ const PlayerSecretView = ({
       };
     })
     .filter((o) => o.kind !== "StageI" && o.kind !== "StageII")
-    .filter((o) => !allTakenSecrets.includes(o.id))
+    .filter((o) => !allTakenSecrets.includes(o.id as SecretObjective))
     .sort(nameSort);
 
   return (
@@ -85,8 +90,13 @@ const PlayerSecretView = ({
       </div>
       {playerSecrets.map((secret) => (
         <div key={secret} className={styles.secretObjectiveRow}>
-          <p onClick = {() => showInfo({"Objective": gameOptions.objectives[secret]})}
-          >{secret}</p>
+          <p
+            onClick={() =>
+              showInfo({ Objective: gameOptions.objectives[secret] })
+            }
+          >
+            {secret}
+          </p>
           <Button
             className={styles.deleteSecretObjectiveButton}
             onClick={() =>
@@ -102,7 +112,10 @@ const PlayerSecretView = ({
           </Button>
         </div>
       ))}
-      <Dropdown value={secret} onChange={(e) => setSecret(e.target.value)}>
+      <Dropdown
+        value={secret}
+        onChange={(e) => setSecret(e.target.value as SecretObjective | "")}
+      >
         <option value="">--Select secret objective--</option>
         {unrevealedSecrets.map((o) => (
           <option value={o.id} key={o.id}>

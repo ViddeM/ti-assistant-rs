@@ -1,11 +1,15 @@
-import { AgendaElect, AgendaElectKind } from "@/api/Agenda";
-import { AgendaState, Player, Vote } from "@/api/GameState";
+import { Agenda } from "@/api/bindings/Agenda";
+import { AgendaElect } from "@/api/bindings/AgendaElect";
+import { AgendaElectKind } from "@/api/bindings/AgendaElectKind";
+import { AgendaState } from "@/api/bindings/AgendaState";
+import { Player } from "@/api/bindings/Player";
+import { Vote } from "@/api/bindings/Vote";
+import { GameOptions } from "@/api/bindings/GameOptions";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useEffect, useState } from "react";
 import styles from "./AgendaPhaseView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
-import { GameOptions } from "@/api/GameOptions";
 import { nameSort } from "@/utils/Utils";
 
 export interface AgendaActionsViewProps {
@@ -18,17 +22,21 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
 
   const [currentAgenda, setCurrentAgenda] = useState<string>("");
 
-  const allAgendas = Object.keys(gameOptions.agendas).map((a) => {
-    return {
-      id: a,
-      ...gameOptions.agendas[a],
-    };
-  });
+  const allAgendas = Object.keys(gameOptions.agendas)
+    .map((a) => {
+      return a as Agenda;
+    })
+    .map((a) => {
+      return {
+        id: a,
+        ...gameOptions.agendas[a],
+      };
+    });
   const usedAgendas = gameState.agendaVoteHistory.map((a) => a.vote.agenda);
   const availableAgendas = allAgendas
     .filter((a) => !usedAgendas.includes(a.id))
     .sort((a, b) =>
-      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase())
+      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()),
     );
 
   const speaker = gameState.players[gameState.speaker!!];
@@ -48,7 +56,7 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
   const castVote = (
     player: string,
     outcome: AgendaElect | null,
-    votes: number = 0
+    votes: number = 0,
   ) => {
     sendEvent({
       CastAgendaVote: {
@@ -236,8 +244,8 @@ const PlayerVoteActionsView = ({
                   {
                     electKind: voteKind,
                     value: voteOption,
-                  },
-                  voteCount
+                  } as AgendaElect,
+                  voteCount,
                 )
               }
             >
@@ -323,7 +331,7 @@ const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
 
 function getElectDisplayValue(
   candidate: AgendaElect,
-  gameOptions: GameOptions
+  gameOptions: GameOptions,
 ): string {
   switch (candidate.electKind) {
     case "CulturalPlanet":

@@ -4,14 +4,19 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-use crate::data::components::objectives::{secret::SecretObjective, Objective};
+use crate::{
+    data::components::objectives::{secret::SecretObjective, Objective},
+    enum_map::EnumMap,
+};
 
 use super::player::PlayerId;
 
 /// Everything game state that to player points.
-#[derive(Clone, Default, Debug, Serialize, Deserialize)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct Score {
     /// The amount of points required to win the game.
     pub max_points: i8,
@@ -20,7 +25,7 @@ pub struct Score {
     pub player_points: HashMap<PlayerId, i8>,
 
     /// Map from revealed objectives to the players that have scored them.
-    pub revealed_objectives: HashMap<Objective, HashSet<PlayerId>>,
+    pub revealed_objectives: EnumMap<Objective, HashSet<PlayerId>>,
 
     /// Completed secret objectives, by player.
     pub secret_objectives: HashMap<PlayerId, HashSet<SecretObjective>>,

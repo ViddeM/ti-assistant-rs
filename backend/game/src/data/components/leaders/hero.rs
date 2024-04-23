@@ -1,10 +1,12 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 use crate::data::common::faction::Faction;
 
 /// Information about a hero leader.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, TS)]
+#[ts(export)]
 pub struct HeroInfo {
     /// [Hero] variant for this hero.
     pub tag: Hero,
@@ -27,6 +29,8 @@ pub struct HeroInfo {
     Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, EnumIter,
 )]
 #[allow(missing_docs)]
+#[derive(ts_rs::TS)]
+#[ts(export)]
 pub enum Hero {
     AdjudicatorBaal,
     AhkSylSiven,

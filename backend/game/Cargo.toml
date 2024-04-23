@@ -12,3 +12,4 @@ strum_macros = "0.25"
 eyre = "0.6.8"
 chrono = { version = "0.4.31", features = ["serde"] }
 log = "0.4.20"
+ts-rs = "8.1.0"

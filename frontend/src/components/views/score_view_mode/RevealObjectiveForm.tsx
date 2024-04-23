@@ -1,3 +1,4 @@
+import { Objective } from "@/api/bindings/Objective";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
@@ -12,10 +13,13 @@ export const RevealObjectiveForm = () => {
   const [selectedStageII, setSelectedStageII] = useState<string>("");
 
   const revealedObjectives = Object.keys(
-    gameState.score.revealedObjectives
+    gameState.score.revealedObjectives,
   ).sort(stringSort);
 
   const stageOneObjectives = Object.keys(gameOptions.objectives)
+    .map((o) => {
+      return o as Objective;
+    })
     .map((o) => {
       return {
         id: o,
@@ -26,6 +30,9 @@ export const RevealObjectiveForm = () => {
     .filter((o) => !revealedObjectives.includes(o.id))
     .sort(nameSort);
   const stageTwoObjectives = Object.keys(gameOptions.objectives)
+    .map((o) => {
+      return o as Objective;
+    })
     .map((o) => {
       return {
         id: o,

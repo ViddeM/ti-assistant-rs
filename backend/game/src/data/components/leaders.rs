@@ -6,13 +6,15 @@ pub use agent::*;
 pub use commander::*;
 pub use hero::*;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::{data::common::faction::Faction, gameplay::game_settings::Expansions};
 
 /// A leader, i.e. an agent, commander, or hero.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, TS)]
 #[serde(untagged)]
 #[allow(missing_docs)]
+#[ts(export)]
 pub enum Leader {
     Agent(Agent),
     Commander(Commander),
@@ -20,8 +22,9 @@ pub enum Leader {
 }
 
 /// Information about a leader, i.e. an agent, commander, or hero.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, TS)]
 #[serde(tag = "type")]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum LeaderInfo {
     Agent(AgentInfo),

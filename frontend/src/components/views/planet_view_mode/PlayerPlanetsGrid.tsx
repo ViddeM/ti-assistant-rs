@@ -1,5 +1,7 @@
-import { PlanetInfo } from "@/api/GameOptions";
-import { Player } from "@/api/GameState";
+import { PlanetInfo } from "@/api/bindings/PlanetInfo";
+import { Player } from "@/api/bindings/Player";
+import { Planet } from "@/api/bindings/Planet";
+import { PlanetAttachment } from "@/api/bindings/PlanetAttachment";
 import { Icon, IconType } from "@/components/elements/icon/Icon";
 import styles from "./PlanetViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
@@ -47,88 +49,99 @@ const NUM_COLUMNS = 6;
 const PlayerPlanetsCard = ({ playerId, player }: PlayerPlanetsCardProps) => {
   const { gameOptions } = useGameContext();
 
-  const playerTotals = Object.keys(player.planets).reduce(
-    (tot, p) => {
-      let planet = gameOptions.planetInfos[p];
-      let attachments = player.planets[p].map(
-        (a) => gameOptions.planetAttachments[a]
-      );
-      return {
-        cultural:
-          tot.cultural +
-          (planet.planetTrait === "Cultural" ||
-          attachments.filter((a) => a.addedPlanetTraits.includes("Cultural"))
-            .length > 0
-            ? 1
-            : 0),
-        industrial:
-          tot.industrial +
-          (planet.planetTrait === "Industrial" ||
-          attachments.filter((a) => a.addedPlanetTraits.includes("Industrial"))
-            .length > 0
-            ? 1
-            : 0),
-        hazardous:
-          tot.hazardous +
-          (planet.planetTrait === "Hazardous" ||
-          attachments.filter((a) => a.addedPlanetTraits.includes("Hazardous"))
-            .length > 0
-            ? 1
-            : 0),
-        resources:
-          tot.resources +
-          planet.resources +
-          attachments.reduce((acc, a) => acc + a.resources, 0),
-        influence:
-          tot.influence +
-          planet.influence +
-          attachments.reduce((acc, a) => acc + a.influence, 0),
-        warfare:
-          tot.warfare +
-          (planet.techSpecialty === "Warfare" ||
-          attachments.filter((a) => a.techSpecialty === "Warfare").length > 0
-            ? 1
-            : 0),
-        propulsion:
-          tot.propulsion +
-          (planet.techSpecialty === "Propulsion" ||
-          attachments.filter((a) => a.techSpecialty === "Propulsion").length > 0
-            ? 1
-            : 0),
-        cybernetic:
-          tot.cybernetic +
-          (planet.techSpecialty === "Cybernetic" ||
-          attachments.filter((a) => a.techSpecialty === "Cybernetic").length > 0
-            ? 1
-            : 0),
-        biotic:
-          tot.biotic +
-          (planet.techSpecialty === "Biotic" ||
-          attachments.filter((a) => a.techSpecialty === "Biotic").length > 0
-            ? 1
-            : 0),
-      };
-    },
-    {
-      cultural: 0,
-      industrial: 0,
-      hazardous: 0,
-      resources: 0,
-      influence: 0,
-      warfare: 0,
-      propulsion: 0,
-      cybernetic: 0,
-      biotic: 0,
-    }
-  );
+  const playerTotals = Object.keys(player.planets)
+    .map((p) => {
+      return p as Planet;
+    })
+    .reduce(
+      (tot, p) => {
+        let planet = gameOptions.planetInfos[p];
+        let attachments = player.planets[p].map(
+          (a) => gameOptions.planetAttachments[a],
+        );
+        return {
+          cultural:
+            tot.cultural +
+            (planet.planetTrait === "Cultural" ||
+            attachments.filter((a) => a.addedPlanetTraits.includes("Cultural"))
+              .length > 0
+              ? 1
+              : 0),
+          industrial:
+            tot.industrial +
+            (planet.planetTrait === "Industrial" ||
+            attachments.filter((a) =>
+              a.addedPlanetTraits.includes("Industrial"),
+            ).length > 0
+              ? 1
+              : 0),
+          hazardous:
+            tot.hazardous +
+            (planet.planetTrait === "Hazardous" ||
+            attachments.filter((a) => a.addedPlanetTraits.includes("Hazardous"))
+              .length > 0
+              ? 1
+              : 0),
+          resources:
+            tot.resources +
+            planet.resources +
+            attachments.reduce((acc, a) => acc + a.resources, 0),
+          influence:
+            tot.influence +
+            planet.influence +
+            attachments.reduce((acc, a) => acc + a.influence, 0),
+          warfare:
+            tot.warfare +
+            (planet.techSpecialty === "Warfare" ||
+            attachments.filter((a) => a.techSpecialty === "Warfare").length > 0
+              ? 1
+              : 0),
+          propulsion:
+            tot.propulsion +
+            (planet.techSpecialty === "Propulsion" ||
+            attachments.filter((a) => a.techSpecialty === "Propulsion").length >
+              0
+              ? 1
+              : 0),
+          cybernetic:
+            tot.cybernetic +
+            (planet.techSpecialty === "Cybernetic" ||
+            attachments.filter((a) => a.techSpecialty === "Cybernetic").length >
+              0
+              ? 1
+              : 0),
+          biotic:
+            tot.biotic +
+            (planet.techSpecialty === "Biotic" ||
+            attachments.filter((a) => a.techSpecialty === "Biotic").length > 0
+              ? 1
+              : 0),
+        };
+      },
+      {
+        cultural: 0,
+        industrial: 0,
+        hazardous: 0,
+        resources: 0,
+        influence: 0,
+        warfare: 0,
+        propulsion: 0,
+        cybernetic: 0,
+        biotic: 0,
+      },
+    );
 
-  const planets = Object.keys(player.planets).map((p) => {
-    return {
-      id: p,
-      attachments: player.planets[p].sort(stringSort),
-      ...gameOptions.planetInfos[p],
-    };
-  });
+  const planets = Object.keys(player.planets)
+    .map((p) => {
+      return p as Planet;
+    })
+    .map((p) => {
+      return {
+        id: p,
+        attachments: player.planets[p].sort(stringSort),
+        ...gameOptions.planetInfos[p],
+      };
+    });
 
   return (
     <div className={`card ${styles.playerPlanetsTableContainer}`}>
@@ -230,9 +243,9 @@ const PlayerPlanetsCard = ({ playerId, player }: PlayerPlanetsCardProps) => {
 
 interface PlayerPlanetRowProps {
   playerId: string;
-  planetId: string;
+  planetId: Planet;
   planet: PlanetInfo;
-  attachments: string[];
+  attachments: PlanetAttachment[];
 }
 
 const PlayerPlanetRow = ({
@@ -292,8 +305,8 @@ const PlayerPlanetRow = ({
 
 interface AttachmentRowProps {
   playerId: string;
-  planetId: string;
-  attachment: string;
+  planetId: Planet;
+  attachment: PlanetAttachment;
 }
 
 const AttachmentRow = ({

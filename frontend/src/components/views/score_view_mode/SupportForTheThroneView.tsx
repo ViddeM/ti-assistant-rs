@@ -1,4 +1,4 @@
-import { Player } from "@/api/GameState";
+import { Player } from "@/api/bindings/Player";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
@@ -61,7 +61,7 @@ const PlayerSupportForTheThroneView = ({
   const currentSelectedPlayer =
     gameState.score.supportForTheThrone[player.id] ?? "";
   const [selectedPlayer, setSelectedPlayer] = useState<string>(
-    currentSelectedPlayer
+    currentSelectedPlayer,
   );
 
   return (

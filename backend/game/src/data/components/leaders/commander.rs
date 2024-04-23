@@ -1,10 +1,12 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 use crate::data::common::faction::Faction;
 
 /// Information about a commander leader.
-#[derive(Clone, Debug, Serialize)]
+#[derive(Clone, Debug, Serialize, TS)]
+#[ts(export)]
 pub struct CommanderInfo {
     /// [Commander] variant for this commander.
     pub tag: Commander,
@@ -27,6 +29,8 @@ pub struct CommanderInfo {
     Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, EnumIter,
 )]
 #[allow(missing_docs)]
+#[derive(ts_rs::TS)]
+#[ts(export)]
 pub enum Commander {
     BrotherOmar,
     BrotherOmarCxIII, // patch of Brother Omar from Codex III

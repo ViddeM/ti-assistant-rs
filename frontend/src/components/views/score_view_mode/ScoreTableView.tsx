@@ -1,3 +1,4 @@
+import { Objective } from "@/api/bindings/Objective";
 import styles from "./ScoreViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import React from "react";
@@ -11,8 +12,11 @@ export const ScoreTableView = () => {
   const { gameState, gameOptions, sendEvent, showInfo } = useGameContext();
 
   const revealedStageOneObjectives = Object.keys(
-    gameState.score.revealedObjectives
+    gameState.score.revealedObjectives,
   )
+    .map((obj) => {
+      return obj as Objective;
+    })
     .map((obj) => {
       return {
         id: obj,
@@ -23,8 +27,11 @@ export const ScoreTableView = () => {
     .sort(nameSort);
 
   const revealedStageTwoObjectives = Object.keys(
-    gameState.score.revealedObjectives
+    gameState.score.revealedObjectives,
   )
+    .map((obj) => {
+      return obj as Objective;
+    })
     .map((obj) => {
       return {
         id: obj,
@@ -116,13 +123,13 @@ export const ScoreTableView = () => {
                     faction={p.faction}
                     selected={
                       gameState.score.revealedObjectives[obj.id]?.includes(
-                        p.id
+                        p.id,
                       ) ?? false
                     }
                     onClick={() => {
                       if (
                         gameState.score.revealedObjectives[obj.id]?.includes(
-                          p.id
+                          p.id,
                         ) ??
                         false
                       ) {
@@ -171,13 +178,13 @@ export const ScoreTableView = () => {
                     faction={p.faction}
                     selected={
                       gameState.score.revealedObjectives[obj.id]?.includes(
-                        p.id
+                        p.id,
                       ) ?? false
                     }
                     onClick={() => {
                       if (
                         gameState.score.revealedObjectives[obj.id]?.includes(
-                          p.id
+                          p.id,
                         ) ??
                         false
                       ) {
@@ -280,7 +287,7 @@ export const ScoreTableView = () => {
             <td key={p.id} align="center">
               {
                 Object.values(gameState.score.supportForTheThrone).filter(
-                  (rec) => rec == p.id
+                  (rec) => rec == p.id,
                 ).length
               }
             </td>

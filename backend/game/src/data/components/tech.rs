@@ -1,15 +1,16 @@
-use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 use crate::{
     data::common::{expansions::Expansion, faction::Faction},
+    enum_map::EnumMap,
     gameplay::game_settings::Expansions,
 };
 
 /// What category the tech belongs to.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum TechCategory {
     Biotic,
@@ -18,8 +19,9 @@ pub enum TechCategory {
     Warfare,
 }
 
-/// What type of tech this is.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+/// What type of tech this is.TS_RS_EXPORT_DIR
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum TechType {
     Category(TechCategory),
@@ -27,7 +29,8 @@ pub enum TechType {
 }
 
 /// Weather the game is general or faction specific.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum TechOrigin {
     Base,
@@ -35,7 +38,8 @@ pub enum TechOrigin {
 }
 
 /// Technologies in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum Technology {
     // Biotic
@@ -137,8 +141,9 @@ pub enum Technology {
 }
 
 /// All relevant information about a tech.
-#[derive(Debug, Clone, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct TechInfo {
     /// The name of the tech in 'pretty' format.
     pub name: &'static str,
@@ -147,7 +152,7 @@ pub struct TechInfo {
     /// Weather the tech is general or belongs to a faction.
     pub origin: TechOrigin,
     /// What requirements there are for the technology.
-    pub requirements: HashMap<TechCategory, u32>,
+    pub requirements: EnumMap<TechCategory, u32>,
     /// Which expansion this tech belongs to.
     pub expansion: Expansion,
     /// The effects of the technology. Each element corresponds to a s
@@ -179,10 +184,10 @@ macro_rules! t {
 
 macro_rules! tr {
     () => {
-        HashMap::new()
+        Default::default()
     };
     ($e:expr) => {
-        HashMap::from($e)
+        From::from($e)
     };
 }
 

@@ -1,15 +1,15 @@
 import styles from "./PlayersSidebar.module.scss";
-import { Faction } from "@/resources/types/factions";
+import { Faction } from "@/api/bindings/Faction";
+import { Planet } from "@/api/bindings/Planet";
+import { PlanetInfo } from "@/api/bindings/PlanetInfo";
+import { PlanetAttachmentInfo } from "@/api/bindings/PlanetAttachmentInfo";
+import { TechInfo } from "@/api/bindings/TechInfo";
+import { Score } from "@/api/bindings/Score";
+import { Color } from "@/api/bindings/Color";
+import { Duration } from "@/api/bindings/Duration";
 import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
-import {
-  Color,
-  PlanetAttachmentInfo,
-  PlanetInfo,
-  TechInfo,
-} from "@/api/GameOptions";
 import { PlayerResources } from "./parts/PlayerResources";
 import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
-import { Duration, Score } from "@/api/GameState";
 import { PlayerTimeInfo } from "./parts/PlayerTimeInfo";
 import { factionIconName } from "@/components/elements/factionIcon/FactionIcon";
 import { useGameContext } from "@/hooks/GameContext";
@@ -37,7 +37,7 @@ export interface Tech {
 }
 
 export interface PlayerPlanetInfo {
-  planet: string;
+  planet: Planet;
   info: PlanetInfo;
   attachments: PlanetAttachmentInfo[];
 }
@@ -136,8 +136,8 @@ const PlayerBox = ({
         player.isActive
           ? styles.activePlayer
           : player.hasPassed
-          ? styles.passedPlayer
-          : ""
+            ? styles.passedPlayer
+            : ""
       }`}
     >
       <legend
@@ -167,7 +167,7 @@ const PlayerBox = ({
 const HIGH_NUMBER = 800;
 function getNextPlayer(
   players: SidebarPlayer[],
-  currentPlayer: SidebarPlayer | undefined
+  currentPlayer: SidebarPlayer | undefined,
 ): string | undefined {
   if (!currentPlayer) {
     return undefined;

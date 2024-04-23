@@ -1,14 +1,16 @@
 "use client";
 
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
+import { GameOptions } from "@/api/bindings/GameOptions";
+import { GameState } from "@/api/bindings/GameState";
+import { StrategyCard } from "@/api/bindings/StrategyCard";
+import { Planet } from "@/api/bindings/Planet";
 import { useEffect, useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import {
   PlayerSidebar,
   SidebarPlayer,
+  PlayerPlanetInfo,
 } from "../players_sidebar/PlayersSidebar";
-import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./GameView.module.scss";
 import { useRouter } from "next/navigation";
 import { PhaseView } from "../phase_view/PhaseView";
@@ -43,7 +45,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
 
   const [playingAs, setPlayingAs] = useQueryParam(
     "playing_as",
-    withDefault(StringParam, null)
+    withDefault(StringParam, null),
   );
 
   const router = useRouter();
@@ -111,7 +113,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         sendMessage(
           JSON.stringify({
             JoinGame: gameId,
-          })
+          }),
         );
       }
     } else if (droppedConnection) {
@@ -369,7 +371,7 @@ const DisplayViewMode = ({ viewMode }: DisplayViewModeProps) => {
 
 function getPlayersFromGame(
   gameState: GameState,
-  gameOptions: GameOptions
+  gameOptions: GameOptions,
 ): SidebarPlayer[] {
   return gameState.turnOrder.map((id) => {
     const p = gameState.players[id];
@@ -384,22 +386,28 @@ function getPlayersFromGame(
         .map(([card]) => {
           const stratCard = card as StrategyCard;
           const played = gameState.spentStrategyCards.includes(stratCard);
-          const isActive = gameState.actionProgress?.Strategic?.card === card;
+          const isActive =
+            gameState.actionProgress?.t === "Strategic" &&
+            gameState.actionProgress?.card === card;
           return {
             name: stratCard,
             played: played,
             isActive: isActive,
           };
         }),
-      planets: Object.keys(p.planets).map((planet) => {
-        return {
-          planet: planet,
-          info: gameOptions.planetInfos[planet],
-          attachments: p.planets[planet].map(
-            (attachment) => gameOptions.planetAttachments[attachment]
-          ),
-        };
-      }),
+      planets: Object.keys(p.planets)
+        .map((planet) => {
+          return planet as Planet;
+        })
+        .map((planet) => {
+          return {
+            planet: planet,
+            info: gameOptions.planetInfos[planet],
+            attachments: p.planets[planet].map(
+              (attachment) => gameOptions.planetAttachments[attachment],
+            ),
+          } as PlayerPlanetInfo;
+        }),
       technologies: p.technologies.map((t) => {
         return {
           tech: t,

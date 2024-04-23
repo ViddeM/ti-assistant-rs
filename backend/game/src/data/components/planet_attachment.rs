@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 use crate::data::common::expansions::Expansion;
 
@@ -9,7 +10,10 @@ use super::{
 };
 
 /// A planet attachment.
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, PartialOrd, Ord, Hash, TS,
+)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum PlanetAttachment {
     DemilitarizedZone,
@@ -34,7 +38,8 @@ pub enum PlanetAttachment {
 }
 
 /// All relevant information about this planet attachment.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
+#[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PlanetAttachmentInfo {
     /// The 'pretty' name of the attachment.

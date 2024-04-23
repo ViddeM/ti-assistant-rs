@@ -1,13 +1,15 @@
 "use client";
 
-import { Color, FactionResponse, GameOptions } from "@/api/GameOptions";
+import { Color } from "@/api/bindings/Color";
+import { FactionResponse } from "@/api/bindings/FactionResponse";
+import { GameOptions } from "@/api/bindings/GameOptions";
+import { Player } from "@/api/bindings/Player";
+import { Faction } from "@/api/bindings/Faction";
 import { Button } from "@/components/elements/button/Button";
 import styles from "./CreationPhase.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
-import { Faction } from "@/resources/types/factions";
-import { Player } from "@/api/GameState";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 
@@ -23,7 +25,7 @@ export const CreationPhase = () => {
 
   const availableFactions = getAvailableFactions(
     gameOptions.factions,
-    Object.values(gameState.players)
+    Object.values(gameState.players),
   );
 
   const takenColors = Object.values(gameState.players).map((p) => p.color);
@@ -84,7 +86,7 @@ const DisplayPlayer = ({ player }: DisplayPlayerProps) => {
   const { gameOptions } = useGameContext();
 
   const faction = gameOptions.factions.filter(
-    (f) => f.faction === player.faction
+    (f) => f.faction === player.faction,
   )[0];
 
   return (
@@ -113,7 +115,7 @@ const AddPlayer = ({
 }: AddPlayerProps) => {
   const [newPlayerName, setNewPlayerName] = useState<string>("");
   const [newPlayerFaction, setNewPlayerFaction] = useState<Faction | null>(
-    null
+    null,
   );
   const [color, setColor] = useState<Color>(colors[0]);
 
@@ -204,7 +206,7 @@ const AddPlayer = ({
 
 function getAvailableFactions(
   allFactions: FactionResponse[],
-  players: Player[]
+  players: Player[],
 ): FactionResponse[] {
   const takenFactions = players.map((p) => p.faction);
   return allFactions

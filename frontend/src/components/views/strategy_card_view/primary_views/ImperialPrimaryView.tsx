@@ -4,17 +4,26 @@ import { useState } from "react";
 import { Button } from "@/components/elements/button/Button";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
+import { PublicObjective } from "@/api/bindings/PublicObjective";
 
 export const ImperialPrimaryView = () => {
   const { gameState, gameOptions, sendEvent, isActive } = useGameContext();
 
   const [objective, setObjective] = useState<string>("");
 
-  const progress = gameState.actionProgress?.Strategic?.primary?.Imperial;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
+  const primary = progress.primary;
+
   const objectives = Object.keys(gameState.score.revealedObjectives)
+    .map((o) => {
+      return o as PublicObjective;
+    })
     .filter((o) => {
       return !gameState.score.revealedObjectives[o].includes(
-        gameState.currentPlayer!!
+        gameState.currentPlayer!!,
       );
     })
     .map((o) => {
@@ -40,11 +49,11 @@ export const ImperialPrimaryView = () => {
 
   return (
     <div className={styles.primaryContainer}>
-      {progress ? (
+      {primary && "Imperial" in primary ? (
         <div className={styles.primaryChoiceContainer}>
           <p>
-            {progress.objective
-              ? gameOptions.objectives[progress.objective].name
+            {primary.Imperial.objective
+              ? gameOptions.objectives[primary.Imperial.objective].name
               : "No objective taken"}
           </p>
         </div>

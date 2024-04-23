@@ -3,12 +3,17 @@ import styles from "./StrategyCardView.module.scss";
 import { StrategyCardSecondary } from "./StrategyCardSecondary";
 import { StrategyCardPrimary } from "./StrategyCardPrimary";
 import { useGameContext } from "@/hooks/GameContext";
-import { GameState } from "@/api/GameState";
+import { GameState } from "@/api/bindings/GameState";
+import { StrategicProgress } from "@/api/bindings/StrategicProgress";
 
 export const StrategyCardView = () => {
   const { gameState, sendEvent, isActive } = useGameContext();
 
-  const strategicAction = gameState.actionProgress?.Strategic!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
+  const strategicAction = progress;
 
   const expectedSecondaries = Object.keys(gameState.players)
     .filter((p) => p !== gameState.currentPlayer)
@@ -20,16 +25,16 @@ export const StrategyCardView = () => {
     })
     .filter(
       (p) =>
-        !(p.faction === "NekroVirus" && strategicAction.card === "Technology")
+        !(p.faction === "NekroVirus" && strategicAction.card === "Technology"),
     ).length;
 
   const secondaryDone =
     Object.keys(strategicAction.otherPlayers).length === expectedSecondaries;
-  const primaryDone = isPrimaryDone(gameState);
+  const primaryDone = isPrimaryDone(strategicAction);
 
   return (
     <div className={`card ${styles.strategyCardView}`}>
-      <h2>{gameState.actionProgress?.Strategic?.card}</h2>
+      <h2>{strategicAction.card}</h2>
 
       <>
         <div className={styles.partDivider} />
@@ -56,9 +61,7 @@ export const StrategyCardView = () => {
   );
 };
 
-function isPrimaryDone(gameState: GameState): boolean {
-  const strategic = gameState.actionProgress?.Strategic!!;
-
+function isPrimaryDone(strategic: StrategicProgress): boolean {
   if (
     strategic.card === "Technology" ||
     strategic.card === "Politics" ||

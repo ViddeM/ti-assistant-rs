@@ -1,7 +1,4 @@
-use std::{
-    borrow::BorrowMut,
-    collections::{HashMap, HashSet},
-};
+use std::{borrow::BorrowMut, collections::HashSet};
 
 use chrono::{DateTime, Utc};
 use eyre::{bail, ensure, ContextCompat, OptionExt, Result};
@@ -309,8 +306,8 @@ fn try_update_game_state(
             game_state.phase = Phase::TacticalAction;
             game_state.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress {
                 activated_system: None,
-                taken_planets: HashMap::new(),
-                planet_attachments: HashMap::new(),
+                taken_planets: Default::default(),
+                planet_attachments: Default::default(),
             }));
         }
         Event::TacticalActionTakePlanet { player, planet } => {
@@ -1080,9 +1077,9 @@ fn try_update_game_state(
             );
 
             // Reset state
-            game_state.strategy_card_holders = HashMap::new();
-            game_state.passed_players = HashSet::new();
-            game_state.spent_strategy_cards = HashSet::new();
+            game_state.strategy_card_holders = Default::default();
+            game_state.passed_players = Default::default();
+            game_state.spent_strategy_cards = Default::default();
 
             let phase = if game_state.score.custodians.is_some() {
                 if game_state.players.values().any(|p| {

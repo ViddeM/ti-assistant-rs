@@ -1,5 +1,5 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
+import { GameOptions } from "@/api/bindings/GameOptions";
+import { GameState } from "@/api/bindings/GameState";
 import React from "react";
 import { useContext } from "react";
 import { InfoObject } from "@/components/views/info_modal/InfoModal";
@@ -19,7 +19,7 @@ export interface GameContext {
 }
 
 export const GameContext = React.createContext<GameContext | undefined>(
-  undefined
+  undefined,
 );
 
 export const useGameContext = (): GameContext => {

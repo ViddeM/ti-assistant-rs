@@ -1,4 +1,5 @@
-import { PlanetTrait, TechCategory } from "@/api/GameOptions";
+import { TechCategory } from "@/api/bindings/TechCategory";
+import { PlanetTrait } from "@/api/bindings/PlanetTrait";
 import { PlayerPlanetInfo, SidebarPlayer, Tech } from "../PlayersSidebar";
 import { Icon } from "@/components/elements/icon/Icon";
 import styles from "./PlayerResources.module.scss";
@@ -10,14 +11,14 @@ export const PlayerResources = ({ player }: { player: SidebarPlayer }) => {
       acc +
       curr.info.resources +
       curr.attachments.reduce((acc, curr) => acc + curr.resources, 0),
-    0
+    0,
   );
   const influence = player.planets.reduce(
     (acc, curr) =>
       acc +
       curr.info.influence +
       curr.attachments.reduce((acc, curr) => acc + curr.influence, 0),
-    0
+    0,
   );
   const numCultural = getPlanetTraitCount(player.planets, "Cultural");
   const numHazardous = getPlanetTraitCount(player.planets, "Hazardous");
@@ -72,7 +73,7 @@ export const PlayerResources = ({ player }: { player: SidebarPlayer }) => {
 
 function getTechCategoryCount(
   technologies: Tech[],
-  category: TechCategory
+  category: TechCategory,
 ): number {
   console.log("foo", technologies);
   return technologies.filter((t) => {
@@ -90,12 +91,12 @@ function getTechCategoryCount(
 
 function getPlanetTraitCount(
   planets: PlayerPlanetInfo[],
-  trait: PlanetTrait
+  trait: PlanetTrait,
 ): number {
   return planets.filter(
     (p) =>
       p.info.planetTrait === trait ||
       p.attachments.filter((p) => p.addedPlanetTraits.includes(trait)).length >
-        0
+        0,
   ).length;
 }

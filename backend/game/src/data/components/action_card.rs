@@ -8,6 +8,8 @@ use super::phase::Phase;
 /// An action card.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 #[allow(missing_docs)]
+#[derive(ts_rs::TS)]
+#[ts(export)]
 pub enum ActionCard {
     /* Base */
     AncientBurialSites,
@@ -110,6 +112,8 @@ pub enum ActionCard {
 /// When an action card can be played.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[allow(missing_docs)]
+#[derive(ts_rs::TS)]
+#[ts(export)]
 pub enum ActionCardPlay {
     StartOfPhase(Phase),
     Agenda(AgendaStagePlay),
@@ -123,6 +127,8 @@ pub enum ActionCardPlay {
 /// When, during the agenda phase, an action card can be played.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[allow(missing_docs)]
+#[derive(ts_rs::TS)]
+#[ts(export)]
 pub enum AgendaStagePlay {
     WhenReveal,
     AfterReveal,
@@ -135,6 +141,8 @@ pub enum AgendaStagePlay {
 /// All relevant information for an action card.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
+#[derive(ts_rs::TS)]
+#[ts(export)]
 pub struct ActionCardInfo {
     /// Which action card this is in regards to.
     pub card: ActionCard,

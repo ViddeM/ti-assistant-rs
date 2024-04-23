@@ -1,5 +1,6 @@
-import { GameOptions } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
+import { GameOptions } from "@/api/bindings/GameOptions";
+import { GameState } from "@/api/bindings/GameState";
+import { Agenda } from "@/api/bindings/Agenda";
 import { Button } from "@/components/elements/button/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,6 +13,9 @@ export const LawsViewMode = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const laws = Object.keys(gameState.laws)
+    .map((l) => {
+      return l as Agenda;
+    })
     .map((l) => {
       return {
         id: l,

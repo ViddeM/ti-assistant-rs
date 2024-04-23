@@ -1,5 +1,8 @@
-import { GameOptions, TechCategory, TechInfo } from "@/api/GameOptions";
-import { GameState } from "@/api/GameState";
+import { GameOptions } from "@/api/bindings/GameOptions";
+import { Technology } from "@/api/bindings/Technology";
+import { TechCategory } from "@/api/bindings/TechCategory";
+import { TechInfo } from "@/api/bindings/TechInfo";
+import { GameState } from "@/api/bindings/GameState";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { Faction } from "@/resources/types/factions";
@@ -11,7 +14,7 @@ import { Icon, IconType } from "@/components/elements/icon/Icon";
 
 interface SelectTechViewProps {
   playerId: string;
-  onSelect: (tech: string) => void;
+  onSelect: (tech: Technology) => void;
   filteredTechs?: string[];
 }
 
@@ -38,7 +41,7 @@ export const SelectTechView = ({
     playerTechs,
     gameOptions,
     gameState.players[playerId].faction,
-    filteredTechs ?? []
+    filteredTechs ?? [],
   );
 
   const selectedTechs = availableTechs.filter((t) => {
@@ -70,7 +73,7 @@ export const SelectTechView = ({
       ))}
       <Button
         disabled={selectedTech === ""}
-        onClick={() => onSelect(selectedTech)}
+        onClick={() => onSelect(selectedTech as Technology)}
       >
         Select tech
       </Button>
@@ -139,7 +142,7 @@ const TechCategoryButton = ({
 function getPlayerTechs(
   gameState: GameState,
   gameOptions: GameOptions,
-  player: string
+  player: string,
 ): Tech[] {
   return gameState.players[player].technologies.map((t) => {
     return {
@@ -158,9 +161,12 @@ function getAvailableTechs(
   taken: Tech[],
   gameOptions: GameOptions,
   playerFaction: Faction,
-  filterTechs: string[]
+  filterTechs: string[],
 ): Tech[] {
   return Object.keys(gameOptions.technologies)
+    .map((t) => {
+      return t as Technology;
+    })
     .filter((t) => !taken.map((t) => t.tech).includes(t))
     .map((t) => {
       return {

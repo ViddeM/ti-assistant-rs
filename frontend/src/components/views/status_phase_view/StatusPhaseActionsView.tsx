@@ -1,4 +1,7 @@
-import { Player } from "@/api/GameState";
+import { Player } from "@/api/bindings/Player";
+import { Objective } from "@/api/bindings/Objective";
+import { PublicObjective } from "@/api/bindings/PublicObjective";
+import { SecretObjective } from "@/api/bindings/SecretObjective";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import React, { useState } from "react";
@@ -42,14 +45,18 @@ const ScoreObjectives = () => {
 
   const revealedObjectives = Object.keys(gameState.score.revealedObjectives);
 
-  const allObjectives = Object.keys(gameOptions.objectives).map((o) => {
-    return {
-      id: o,
-      ...gameOptions.objectives[o],
-    };
-  });
+  const allObjectives = Object.keys(gameOptions.objectives)
+    .map((o) => {
+      return o as Objective;
+    })
+    .map((o) => {
+      return {
+        id: o,
+        ...gameOptions.objectives[o],
+      };
+    });
   const unrevealedObjectives = allObjectives.filter(
-    (o) => !revealedObjectives.includes(o.id)
+    (o) => !revealedObjectives.includes(o.id),
   );
 
   const revealStageII =
@@ -121,6 +128,9 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
   const pub = gameState.statusPhaseState!!.scoredPublicObjectives[player.id];
   const sec = gameState.statusPhaseState!!.scoredSecretObjectives[player.id];
   const availablePubs = Object.keys(gameState.score.revealedObjectives)
+    .map((o) => {
+      return o as PublicObjective;
+    })
     .filter((o) => !gameState.score.revealedObjectives[o].includes(player.id))
     .map((o) => {
       return {
@@ -133,17 +143,20 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
   const playerScoredSecrets = gameState.score.secretObjectives[player.id] ?? [];
   const availableSecs = Object.keys(gameOptions.objectives)
     .map((o) => {
+      return o as Objective;
+    })
+    .map((o) => {
       return {
         id: o,
         ...gameOptions.objectives[o],
       };
     })
     .filter((o) => o.kind !== "StageI" && o.kind !== "StageII")
-    .filter((o) => !playerScoredSecrets.includes(o.id))
+    .filter((o) => !playerScoredSecrets.includes(o.id as SecretObjective))
     .sort(nameSort);
 
-  const [selectedPub, setSelectedPub] = useState<string>("");
-  const [selectedSec, setSelectedSec] = useState<string>("");
+  const [selectedPub, setSelectedPub] = useState<PublicObjective | "">("");
+  const [selectedSec, setSelectedSec] = useState<SecretObjective | "">("");
 
   const scorePublic = (obj: string | null) => {
     sendEvent({
@@ -174,7 +187,9 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
           <Dropdown
             disabled={availablePubs.length === 0}
             value={selectedPub}
-            onChange={(e) => setSelectedPub(e.target.value)}
+            onChange={(e) =>
+              setSelectedPub(e.target.value as PublicObjective | "")
+            }
           >
             {availablePubs.length === 0 ? (
               <option>--No public objectives available--</option>
@@ -206,7 +221,9 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
         <div className={styles.scoreObjectivesContainer}>
           <Dropdown
             value={selectedSec}
-            onChange={(e) => setSelectedSec(e.target.value)}
+            onChange={(e) =>
+              setSelectedSec(e.target.value as SecretObjective | "")
+            }
           >
             <option value="">--Select secret objective--</option>
             {availableSecs.map((o) => (

@@ -1,4 +1,7 @@
-import { Player } from "@/api/GameState";
+import { Player } from "@/api/bindings/Player";
+import { Objective } from "@/api/bindings/Objective";
+import { Technology } from "@/api/bindings/Technology";
+import { PublicObjective } from "@/api/bindings/PublicObjective";
 import { Button } from "@/components/elements/button/Button";
 import styles from "./Setup.module.scss";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
@@ -24,6 +27,9 @@ export const SetupPhase = () => {
 
   const availableObjectives = Object.keys(gameOptions.objectives)
     .map((o) => {
+      return o as Objective;
+    })
+    .map((o) => {
       return {
         id: o,
         ...gameOptions.objectives[o],
@@ -33,6 +39,9 @@ export const SetupPhase = () => {
     .sort(nameSort);
 
   const revealedObjectives = Object.keys(gameState.score.revealedObjectives)
+    .map((o) => {
+      return o as PublicObjective;
+    })
     .map((o) => {
       return {
         id: o,
@@ -178,6 +187,9 @@ const WinnuSetup = ({ player }: FactionSpecificSetupProps) => {
 
   const availableTechs = Object.keys(gameOptions.technologies)
     .map((t) => {
+      return t as Technology;
+    })
+    .map((t) => {
       return {
         id: t,
         ...gameOptions.technologies[t],
@@ -226,8 +238,8 @@ const WinnuSetup = ({ player }: FactionSpecificSetupProps) => {
 const ArgentFlightSetup = ({ player }: FactionSpecificSetupProps) => {
   const { gameOptions, sendEvent } = useGameContext();
 
-  const [firstTech, setFirstTech] = useState<string>("");
-  const [secondTech, setSecondTech] = useState<string>("");
+  const [firstTech, setFirstTech] = useState<Technology | "">("");
+  const [secondTech, setSecondTech] = useState<Technology | "">("");
 
   const takenTechs = player.technologies
     .map((t) => {
@@ -238,6 +250,9 @@ const ArgentFlightSetup = ({ player }: FactionSpecificSetupProps) => {
     })
     .sort(nameSort);
   const possibleTechs = ["NeuralMotivator", "SarweenTools", "PlasmaScoring"]
+    .map((t) => {
+      return t as Technology;
+    })
     .map((t) => {
       return { id: t, ...gameOptions.technologies[t] };
     })
@@ -255,7 +270,7 @@ const ArgentFlightSetup = ({ player }: FactionSpecificSetupProps) => {
         <>
           <Dropdown
             value={firstTech}
-            onChange={(e) => setFirstTech(e.target.value)}
+            onChange={(e) => setFirstTech(e.target.value as Technology | "")}
           >
             <option value="">--Select technology--</option>
             {possibleTechs
@@ -268,7 +283,7 @@ const ArgentFlightSetup = ({ player }: FactionSpecificSetupProps) => {
           </Dropdown>
           <Dropdown
             value={secondTech}
-            onChange={(e) => setSecondTech(e.target.value)}
+            onChange={(e) => setSecondTech(e.target.value as Technology | "")}
           >
             <option value="">--Select technology--</option>
             {possibleTechs
@@ -325,7 +340,7 @@ const CouncilKeleresSetup = ({ player }: FactionSpecificSetupProps) => {
       (f) =>
         f.faction === "MentakCoalition" ||
         f.faction === "XxchaKingdom" ||
-        f.faction === "ArgentFlight"
+        f.faction === "ArgentFlight",
     )
     .filter((f) => !takenFactions.includes(f.faction))
     .sort(nameSort);

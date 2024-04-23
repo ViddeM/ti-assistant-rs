@@ -1,7 +1,7 @@
 import { Icon } from "@/components/elements/icon/Icon";
 import styles from "./PlayerScoreInfo.module.scss";
 import { SidebarPlayer } from "../PlayersSidebar";
-import { Score } from "@/api/GameState";
+import { Score } from "@/api/bindings/Score";
 import { useGameContext } from "@/hooks/GameContext";
 
 export interface PlayerScoreInfoProps {

@@ -12,13 +12,17 @@ import { nameSort } from "@/utils/Utils";
 export const GenericSecondary = () => {
   const { gameState, sendEvent, playingAs, isGlobal } = useGameContext();
 
-  const strategyCard = gameState.actionProgress?.Strategic?.card!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
+  const strategyCard = progress.card;
 
   const otherPlayers = Object.keys(gameState.players)
     .filter((p) => p !== gameState.currentPlayer)
     .map((p) => {
       return {
-        action: gameState.actionProgress?.Strategic?.otherPlayers[p],
+        action: progress.otherPlayers[p],
         ...gameState.players[p]!!,
       };
     })

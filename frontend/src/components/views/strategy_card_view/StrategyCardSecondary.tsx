@@ -5,9 +5,12 @@ import { useGameContext } from "@/hooks/GameContext";
 export const StrategyCardSecondary = () => {
   const { gameState } = useGameContext();
 
-  const strategyCard = gameState.actionProgress?.Strategic?.card!!;
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "Strategic") {
+    return;
+  }
 
-  if (strategyCard === "Technology") {
+  if (progress.card === "Technology") {
     return <StrategyTechnologySecondaryView />;
   }
 

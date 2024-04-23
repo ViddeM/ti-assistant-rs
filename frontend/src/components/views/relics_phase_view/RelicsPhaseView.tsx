@@ -24,8 +24,8 @@ export const RelicsPhaseView = () => {
       .filter(
         (p) =>
           Object.values(p.planets).filter((attachments) =>
-            attachments.includes("TombOfEmphidia")
-          ).length > 0
+            attachments.includes("TombOfEmphidia"),
+          ).length > 0,
       )[0] ?? null;
 
   return (

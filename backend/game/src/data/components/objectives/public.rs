@@ -3,6 +3,7 @@ use crate::data::common::expansions::Expansion;
 use super::{ObjectiveInfo, ObjectiveKind};
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
+use ts_rs::TS;
 
 macro_rules! o {
     ($stage:ident, $name:literal, $condition: literal, $expansion: expr) => {
@@ -20,7 +21,8 @@ macro_rules! o {
 }
 
 /// A public objective.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, TS)]
+#[ts(export)]
 #[allow(missing_docs)]
 pub enum PublicObjective {
     // Base 1 point objectives

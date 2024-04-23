@@ -1,4 +1,4 @@
-import { AgendaState } from "@/api/GameState";
+import { AgendaState } from "@/api/bindings/AgendaState";
 import { electKindToString } from "./AgendaUtils";
 import { useGameContext } from "@/hooks/GameContext";
 import { InfoButton } from "@/components/elements/button/InfoButton";
@@ -12,7 +12,7 @@ export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
   const { gameState, gameOptions, showInfo } = useGameContext();
 
   const previousVotesThisRound = gameState.agendaVoteHistory.filter(
-    (vote) => vote.round === gameState.round
+    (vote) => vote.round === gameState.round,
   );
 
   return (

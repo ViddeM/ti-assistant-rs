@@ -1,4 +1,4 @@
-import { FrontierCardProgress } from "@/api/GameState";
+import { FrontierCardProgress } from "@/api/bindings/FrontierCardProgress";
 import { useGameContext } from "@/hooks/GameContext";
 import { SelectTechView } from "../select_tech_view/SelectTechView";
 import { Button } from "@/components/elements/button/Button";
@@ -6,9 +6,12 @@ import { Button } from "@/components/elements/button/Button";
 export const FrontierCardView = () => {
   const { gameState, gameOptions, isActive } = useGameContext();
 
-  const progress = gameState.actionProgress!!.FrontierCard!!;
-  const card = gameOptions.frontierCards[progress.card];
+  const progress = gameState.actionProgress!!;
+  if (progress.t !== "FrontierCard") {
+    return;
+  }
 
+  const card = gameOptions.frontierCards[progress.card];
   return (
     <div className="card column">
       <h2>{card.name}</h2>

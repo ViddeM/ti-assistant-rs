@@ -1,7 +1,6 @@
-use std::collections::HashMap;
-
 use serde::Serialize;
 use strum::IntoEnumIterator;
+use ts_rs::TS;
 
 use crate::{
     data::{
@@ -22,13 +21,15 @@ use crate::{
         },
     },
     gameplay::game_settings::Expansions,
+    enum_map::EnumMap,
 };
 
 const MIN_PLAYER_COUNT: usize = 3;
 
 /// All information that is static for a game of TI4.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct GameOptions {
     /// The minimum number of players allowed for the game.
     min_players: usize,
@@ -41,31 +42,31 @@ pub struct GameOptions {
     /// What systems exists in the game.
     systems: Vec<System>,
     /// What technologies exist in the game.
-    technologies: HashMap<Technology, TechInfo>,
+    technologies: EnumMap<Technology, TechInfo>,
     /// What planets exist in the game.
-    planet_infos: HashMap<Planet, PlanetInfo>,
+    planet_infos: EnumMap<Planet, PlanetInfo>,
     /// What planet attachments exist in the game.
-    planet_attachments: HashMap<PlanetAttachment, PlanetAttachmentInfo>,
+    planet_attachments: EnumMap<PlanetAttachment, PlanetAttachmentInfo>,
     /// What objectives exist in the game.
-    objectives: HashMap<Objective, ObjectiveInfo>,
+    objectives: EnumMap<Objective, ObjectiveInfo>,
     /// What action cards exist in the game.
-    action_cards: HashMap<ActionCard, ActionCardInfo>,
+    action_cards: EnumMap<ActionCard, ActionCardInfo>,
     /// What agendas exist in the game.
-    agendas: HashMap<Agenda, AgendaInfo>,
+    agendas: EnumMap<Agenda, AgendaInfo>,
     /// What leaders exist in the game.
-    leaders: HashMap<Leader, LeaderInfo>,
+    leaders: EnumMap<Leader, LeaderInfo>,
     /// Map from all factions in the game to the leaders of that faction.
-    leaders_by_faction: HashMap<Faction, Vec<Leader>>,
+    leaders_by_faction: EnumMap<Faction, Vec<Leader>>,
     /// What frontier cards exists in the game.
-    frontier_cards: HashMap<FrontierCard, FrontierCardInfo>,
+    frontier_cards: EnumMap<FrontierCard, FrontierCardInfo>,
     /// What relics exists in the game.
-    relics: HashMap<Relic, RelicInfo>,
+    relics: EnumMap<Relic, RelicInfo>,
 }
 
 impl GameOptions {
     /// Returns GameOptions for the specified expansions.
     pub fn new(expansions: &Expansions) -> Self {
-        let leaders: HashMap<_, _> = Agent::iter()
+        let leaders: EnumMap<_, _> = Agent::iter()
             .map(Leader::from)
             .chain(Commander::iter().map(Leader::from))
             .chain(Hero::iter().map(Leader::from))
@@ -121,7 +122,7 @@ impl GameOptions {
             leaders_by_faction: leaders
                 .iter()
                 .map(|(leader, info)| (info.faction(), leader))
-                .fold(HashMap::new(), |mut acc, (faction, leader)| {
+                .fold(EnumMap::new(), |mut acc, (faction, leader)| {
                     acc.entry(faction).or_default().push(*leader);
                     acc
                 }),
@@ -139,8 +140,9 @@ impl GameOptions {
 }
 
 /// A faction in the game.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
+#[ts(export)]
 pub struct FactionResponse {
     /// The faction ID.
     faction: Faction,
