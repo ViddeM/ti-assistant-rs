@@ -97,7 +97,9 @@ fn try_update_game_state(
             );
 
             game_state.table_order.push(id.clone());
-            game_state.players.insert(id, player.into());
+            game_state
+                .players
+                .insert(id, player.setup(&game_state.game_settings.expansions));
         }
         Event::CreationDone => {
             game_state.assert_phase(Phase::Creation)?;

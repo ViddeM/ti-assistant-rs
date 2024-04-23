@@ -3,10 +3,13 @@ use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
 
-use crate::data::components::{
-    planet::Planet,
-    system::{systems, SystemType},
-    tech::Technology,
+use crate::{
+    data::components::{
+        planet::Planet,
+        system::{systems, SystemType},
+        tech::Technology,
+    },
+    gameplay::game_settings::Expansions,
 };
 
 use super::expansions::Expansion;
@@ -123,9 +126,12 @@ impl Faction {
     }
 
     /// Returns a set of the technologies the faction starts with.
-    pub fn get_starting_techs(&self) -> HashSet<Technology> {
+    pub fn get_starting_techs(&self, expansions: &Expansions) -> HashSet<Technology> {
         match self {
-            Faction::Arborec => vec![Technology::MagenDefenceGrid],
+            Faction::Arborec => vec![
+                Technology::MagenDefenceGrid,
+                Technology::MagenDefenceGridOmega,
+            ],
             Faction::BaronyOfLetnev => {
                 vec![Technology::AntimassDeflectors, Technology::PlasmaScoring]
             }
@@ -171,6 +177,7 @@ impl Faction {
             Faction::CouncilKeleres => vec![], // Choose 2 non-faction technologies owned by other players.
         }
         .into_iter()
+        .filter(|tech| tech.is_enabled_in(expansions))
         .collect()
     }
 }

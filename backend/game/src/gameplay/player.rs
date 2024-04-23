@@ -13,7 +13,7 @@ use crate::data::{
     },
 };
 
-use super::error::GameError;
+use super::{error::GameError, game_settings::Expansions};
 
 // TODO: maybe make this be not a string...
 /// A (per-game) unique ID for a player.
@@ -49,6 +49,28 @@ pub struct Player {
     pub relics: HashSet<Relic>,
 }
 
+impl NewPlayer {
+    /// Create a [Player] with the corrent starting techs and planets for [NewPlayer::faction].
+    pub fn setup(self, expansions: &Expansions) -> Player {
+        let planets = self
+            .faction
+            .get_starting_planets()
+            .into_iter()
+            .map(|p| (p, HashSet::new()))
+            .collect();
+
+        let techs = self.faction.get_starting_techs(expansions);
+        Player {
+            name: self.name,
+            faction: self.faction,
+            color: self.color,
+            planets,
+            technologies: techs,
+            relics: HashSet::new(),
+        }
+    }
+}
+
 impl Player {
     /// Remove a planet from the players planet list.
     pub fn remove_planet(&mut self, planet: &Planet) {
@@ -80,22 +102,9 @@ impl Player {
     }
 }
 
+/*
 impl From<NewPlayer> for Player {
     fn from(new: NewPlayer) -> Self {
-        let planets = new
-            .faction
-            .get_starting_planets()
-            .into_iter()
-            .map(|p| (p, HashSet::new()))
-            .collect();
-        let techs = new.faction.get_starting_techs();
-        Player {
-            name: new.name,
-            faction: new.faction,
-            color: new.color,
-            planets,
-            technologies: techs,
-            relics: HashSet::new(),
-        }
     }
 }
+*/

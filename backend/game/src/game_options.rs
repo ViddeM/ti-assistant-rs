@@ -78,9 +78,9 @@ impl GameOptions {
             max_players: expansions.max_number_of_players(),
             factions: Faction::iter()
                 .filter(|f| expansions.is_enabled(&f.expansion()))
-                .map(|f| FactionResponse {
-                    faction: f.clone(),
-                    name: f.name(),
+                .map(|faction| FactionResponse {
+                    faction,
+                    name: faction.name(),
                 })
                 .collect::<Vec<FactionResponse>>(),
             colors: Color::iter().collect(),
