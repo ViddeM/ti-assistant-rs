@@ -523,7 +523,7 @@ impl Planet {
                 Some(PlanetTrait::Hazardous),
                 None,
                 2,
-                1,
+                0,
                 Expansion::ProphecyOfKings
             ),
             Planet::Everra => p!(
