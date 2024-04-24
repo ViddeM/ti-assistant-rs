@@ -132,7 +132,7 @@ pub enum Planet {
     HopesEnd,
     Cormund,
     Everra,
-    JoelIr,
+    JeolIr,
     Accoen,
     Kraag,
     Siig,
@@ -534,8 +534,8 @@ impl Planet {
                 1,
                 Expansion::ProphecyOfKings
             ),
-            Planet::JoelIr => p!(
-                "Joel Ir",
+            Planet::JeolIr => p!(
+                "Jeol Ir",
                 Some(PlanetTrait::Industrial),
                 None,
                 2,

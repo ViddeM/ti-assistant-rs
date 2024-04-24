@@ -505,7 +505,7 @@ pub fn systems() -> HashMap<String, System> {
         s!(
             "69",
             SystemType::Normal,
-            vec![Planet::Accoen, Planet::JoelIr],
+            vec![Planet::Accoen, Planet::JeolIr],
             Expansion::ProphecyOfKings
         ),
         s!(
