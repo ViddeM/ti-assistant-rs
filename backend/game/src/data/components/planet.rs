@@ -414,7 +414,7 @@ impl Planet {
             ),
             Planet::TequRan => p!(
                 "Tequ'ran",
-                Some(PlanetTrait::Industrial),
+                Some(PlanetTrait::Hazardous),
                 None,
                 2,
                 0,
