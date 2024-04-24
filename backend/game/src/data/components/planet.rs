@@ -100,7 +100,7 @@ pub enum Planet {
     LirtaIV,
     Centauri,
     Gral,
-    Coorneeq,
+    Corneeq,
     Resculon,
     DalBootha,
     Xxehan,
@@ -276,8 +276,8 @@ impl Planet {
                 1,
                 Expansion::Base
             ),
-            Planet::Coorneeq => p!(
-                "Coorneeq",
+            Planet::Corneeq => p!(
+                "Corneeq",
                 Some(PlanetTrait::Cultural),
                 None,
                 1,

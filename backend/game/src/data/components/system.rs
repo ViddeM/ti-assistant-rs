@@ -315,7 +315,7 @@ pub fn systems() -> HashMap<String, System> {
         s!(
             "33",
             SystemType::Normal,
-            vec![Planet::Coorneeq, Planet::Resculon],
+            vec![Planet::Corneeq, Planet::Resculon],
             Expansion::Base
         ),
         s!(
