@@ -6,7 +6,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { GameState } from "@/api/GameState";
 
 export const StrategyCardView = () => {
-  const { gameState, sendEvent } = useGameContext();
+  const { gameState, sendEvent, isActive } = useGameContext();
 
   const strategicAction = gameState.actionProgress?.Strategic!!;
 
@@ -45,7 +45,7 @@ export const StrategyCardView = () => {
 
       <Button
         className="marginTop"
-        disabled={!primaryDone || !secondaryDone}
+        disabled={!primaryDone || !secondaryDone || !isActive}
         onClick={() => sendEvent("StrategicActionCommit")}
       >
         Submit
