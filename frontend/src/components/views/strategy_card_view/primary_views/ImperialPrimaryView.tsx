@@ -6,7 +6,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 
 export const ImperialPrimaryView = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, isActive } = useGameContext();
 
   const [objective, setObjective] = useState<string>("");
 
@@ -51,29 +51,33 @@ export const ImperialPrimaryView = () => {
       ) : (
         <fieldset>
           <legend>Score objective</legend>
-          <div className={styles.selectPrimaryContainer}>
-            <Dropdown
-              value={objective}
-              disabled={objectives.length === 0}
-              onChange={(e) => setObjective(e.target.value)}
-            >
-              <option value={""}>--No objective--</option>
-              {objectives.map((o) => (
-                <option value={o.id} key={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </Dropdown>
-            <div className={styles.actionButtonsContainer}>
-              <Button onClick={() => performAction(null)}>Skip</Button>
-              <Button
-                onClick={() => performAction(objective)}
-                disabled={objective === ""}
+          {isActive ? (
+            <div className={styles.selectPrimaryContainer}>
+              <Dropdown
+                value={objective}
+                disabled={objectives.length === 0}
+                onChange={(e) => setObjective(e.target.value)}
               >
-                Score
-              </Button>
+                <option value={""}>--No objective--</option>
+                {objectives.map((o) => (
+                  <option value={o.id} key={o.id}>
+                    {o.name}
+                  </option>
+                ))}
+              </Dropdown>
+              <div className={styles.actionButtonsContainer}>
+                <Button onClick={() => performAction(null)}>Skip</Button>
+                <Button
+                  onClick={() => performAction(objective)}
+                  disabled={objective === ""}
+                >
+                  Score
+                </Button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <p>Has yet to choose</p>
+          )}
         </fieldset>
       )}
     </div>
