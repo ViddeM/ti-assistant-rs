@@ -43,13 +43,15 @@ export const StrategyCardView = () => {
         <StrategyCardSecondary />
       </>
 
-      <Button
-        className="marginTop"
-        disabled={!primaryDone || !secondaryDone || !isActive}
-        onClick={() => sendEvent("StrategicActionCommit")}
-      >
-        Submit
-      </Button>
+      {isActive && (
+        <Button
+          className="marginTop"
+          disabled={!primaryDone || !secondaryDone || !isActive}
+          onClick={() => sendEvent("StrategicActionCommit")}
+        >
+          Submit
+        </Button>
+      )}
     </div>
   );
 };
