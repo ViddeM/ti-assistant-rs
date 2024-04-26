@@ -22,6 +22,7 @@ import { GameContext, useGameContext } from "@/hooks/GameContext";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { StringParam, useQueryParam, withDefault } from "use-query-params";
 
 const NEW_GAME_ID = "new";
 
@@ -40,7 +41,10 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [notFound, setNotFound] = useState<string | null>(null);
   const [infoObject, showInfo] = useState<InfoObject | null>(null);
 
-  const [playingAs, setPlayingAs] = useState<string | null>(null);
+  const [playingAs, setPlayingAs] = useQueryParam(
+    "playing_as",
+    withDefault(StringParam, null)
+  );
 
   const router = useRouter();
 
@@ -120,6 +124,13 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
       setNotFound(gameId);
     }
   }, [gameId, setNotFound]);
+
+  /* Ensure playingAs is valid */
+  useEffect(() => {
+    if (playingAs !== null && !gameState?.players[playingAs]) {
+      setPlayingAs(null);
+    }
+  }, [playingAs, gameState?.players, setPlayingAs]);
 
   if (error) {
     return (
