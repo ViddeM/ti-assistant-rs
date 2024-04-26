@@ -5,7 +5,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import styles from "./Primary.module.scss";
 
 export const TechnologyPrimaryView = () => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions, sendEvent, isActive } = useGameContext();
 
   const [firstTech, setFirstTech] = useState<string | null>(null);
 
@@ -38,6 +38,10 @@ export const TechnologyPrimaryView = () => {
         )}
       </div>
     );
+  }
+
+  if (!isActive) {
+    return <p>Waiting for {gameState.currentPlayer} to pick</p>;
   }
 
   return (
