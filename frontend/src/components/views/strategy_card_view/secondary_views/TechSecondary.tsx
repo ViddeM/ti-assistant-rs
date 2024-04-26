@@ -9,23 +9,14 @@ import { Player } from "@/api/GameState";
 type Choice =
   | "NekroVirus"
   | "Skipped"
+  | "OtherPlayer"
   | { Technology: { tech: string } }
-  | undefined;
+  | "YetToChoose";
 
 export const StrategyTechnologySecondaryView = () => {
-  const { gameState, gameOptions, sendEvent, playingAs, isGlobal } =
-    useGameContext();
+  const { gameState, playingAs, isGlobal } = useGameContext();
 
   const donePlayers = gameState.actionProgress?.Strategic?.otherPlayers!!;
-  const sendTechSecondaryMessage = (player: string, action: any) => {
-    sendEvent({
-      StrategicActionSecondary: {
-        player: player,
-        action: action,
-      },
-    });
-  };
-
   const players = Object.keys(gameState.players)
     .filter((p) => p !== gameState.currentPlayer)
     .map((p) => {
@@ -43,7 +34,16 @@ export const StrategyTechnologySecondaryView = () => {
       return "NekroVirus";
     }
 
-    return donePlayers[player.id] as Choice;
+    const choice = donePlayers[player.id];
+    if (choice !== undefined) {
+      return choice as Choice;
+    }
+
+    if (player.id !== playingAs && !isGlobal) {
+      return "OtherPlayer";
+    }
+
+    return "YetToChoose";
   };
 
   return (
@@ -57,42 +57,64 @@ export const StrategyTechnologySecondaryView = () => {
               <h6 className={styles.horizontalPadding}>{p.name}</h6>
               <FactionIcon faction={p.faction} />
             </legend>
-            {choice === "NekroVirus" ? (
-              <p>--Nekro Virus cannot research technologies--</p>
-            ) : choice === undefined ? (
-              <>
-                <SelectTechView
-                  playerId={p.name}
-                  onSelect={(tech) =>
-                    sendTechSecondaryMessage(p.name, {
-                      Technology: { tech: tech },
-                    })
-                  }
-                />
-                <div className={styles.skipDivider} />
-                <div className={styles.techSkipButton}>
-                  <Button
-                    onClick={() => sendTechSecondaryMessage(p.name, "Skip")}
-                  >
-                    Skip
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                {choice === "Skipped" ? (
-                  <p>--Skipped--</p>
-                ) : (
-                  <p>
-                    Tech:{" "}
-                    {gameOptions.technologies[choice.Technology.tech].name}
-                  </p>
-                )}
-              </>
-            )}
+            <RenderChoice player={p} choice={choice} />
           </fieldset>
         );
       })}
     </div>
   );
+};
+
+const RenderChoice = ({
+  choice,
+  player,
+}: {
+  choice: Choice;
+  player: Player & { id: string };
+}) => {
+  const { gameOptions, sendEvent } = useGameContext();
+
+  const sendTechSecondaryMessage = (player: string, action: any) => {
+    sendEvent({
+      StrategicActionSecondary: {
+        player: player,
+        action: action,
+      },
+    });
+  };
+
+  if (choice === "NekroVirus") {
+    return <p>--Nekro Virus cannot research technologies--</p>;
+  }
+
+  if (choice === "OtherPlayer") {
+    return <p>Yet to choose</p>;
+  }
+
+  if (choice === "YetToChoose") {
+    return (
+      <>
+        <SelectTechView
+          playerId={player.name}
+          onSelect={(tech) =>
+            sendTechSecondaryMessage(player.name, {
+              Technology: { tech: tech },
+            })
+          }
+        />
+        <div className={styles.skipDivider} />
+        <div className={styles.techSkipButton}>
+          <Button onClick={() => sendTechSecondaryMessage(player.name, "Skip")}>
+            Skip
+          </Button>
+        </div>
+      </>
+    );
+  }
+
+  if (choice === "Skipped") {
+    return <p>--Skipped--</p>;
+  }
+
+  return <p>Tech: {gameOptions.technologies[choice.Technology.tech].name}</p>;
 };
