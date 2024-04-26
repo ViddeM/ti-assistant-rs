@@ -33,7 +33,6 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
 
   const speaker = gameState.players[gameState.speaker!!];
   const players = Object.keys(gameState.players)
-    .filter((p) => p === playingAs || isGlobal)
     .map((p) => {
       return {
         id: p,
@@ -138,6 +137,7 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
                       candidates={state.vote!!.candidates}
                       playerVote={state.vote?.playerVotes[p.id]}
                       voteKind={state.vote!!.elect}
+                      isCurrentOrGlobal={p.id === playingAs || isGlobal}
                     />
                   ))}
                 </li>
@@ -165,14 +165,25 @@ interface PlayerVoteViewProps {
   candidates: AgendaElect[];
   playerVote?: Vote | null;
   voteKind: AgendaElectKind;
+  isCurrentOrGlobal: boolean; // Weather the player should be able to perform actions in the current playing as view
 }
 
-const PlayerVoteView = ({
+const PlayerVoteView = ({ player, ...props }: PlayerVoteViewProps) => {
+  return (
+    <fieldset className={styles.agendaActionsContainer}>
+      <legend>{player.name}</legend>
+      <PlayerVoteActionsView player={player} {...props} />
+    </fieldset>
+  );
+};
+
+const PlayerVoteActionsView = ({
   player,
   castVote,
   candidates,
   playerVote,
   voteKind,
+  isCurrentOrGlobal,
 }: PlayerVoteViewProps) => {
   const { gameOptions } = useGameContext();
   const [voteOption, setVoteOption] = useState<string>("");
@@ -180,12 +191,15 @@ const PlayerVoteView = ({
 
   const voteCount = votes === "" ? 0 : parseInt(votes);
 
-  return (
-    <fieldset className={styles.agendaActionsContainer}>
-      <legend>{player.name}</legend>
-      {player.faction === "NekroVirus" ? (
-        <p>Nekro Virus cannot vote</p>
-      ) : playerVote === undefined ? (
+  if (player.faction === "NekroVirus") {
+    return <p>Nekro Virus cannot vote</p>;
+  }
+  if (playerVote === undefined) {
+    if (!isCurrentOrGlobal) {
+      return <p>Has not voted yet</p>;
+    }
+    return (
+      <>
         <div className={styles.castVoteContainer}>
           <Dropdown
             value={voteOption}
@@ -231,18 +245,20 @@ const PlayerVoteView = ({
             </Button>
           </div>
         </div>
+      </>
+    );
+  }
+
+  return (
+    <div>
+      {playerVote === null ? (
+        <p>Abstained</p>
       ) : (
-        <div>
-          {playerVote === null ? (
-            <p>Abstained</p>
-          ) : (
-            <p>
-              {playerVote.outcome.value} - {playerVote.votes}
-            </p>
-          )}
-        </div>
+        <p>
+          {playerVote.outcome.value} - {playerVote.votes}
+        </p>
       )}
-    </fieldset>
+    </div>
   );
 };
 
