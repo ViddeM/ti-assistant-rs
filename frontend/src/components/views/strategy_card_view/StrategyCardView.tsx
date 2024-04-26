@@ -6,7 +6,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { GameState } from "@/api/GameState";
 
 export const StrategyCardView = () => {
-  const { gameState, sendEvent, isActive, isCurrentPlayer } = useGameContext();
+  const { gameState, sendEvent } = useGameContext();
 
   const strategicAction = gameState.actionProgress?.Strategic!!;
 
@@ -31,21 +31,17 @@ export const StrategyCardView = () => {
     <div className={`card ${styles.strategyCardView}`}>
       <h2>{gameState.actionProgress?.Strategic?.card}</h2>
 
-      {isActive && (
-        <>
-          <div className={styles.partDivider} />
-          <h6>Primary</h6>
-          <StrategyCardPrimary />
-        </>
-      )}
+      <>
+        <div className={styles.partDivider} />
+        <h6>Primary</h6>
+        <StrategyCardPrimary />
+      </>
 
-      {!isCurrentPlayer && (
-        <>
-          <div className={styles.partDivider} />
-          <h6>Secondary</h6>
-          <StrategyCardSecondary />
-        </>
-      )}
+      <>
+        <div className={styles.partDivider} />
+        <h6>Secondary</h6>
+        <StrategyCardSecondary />
+      </>
 
       <Button
         className="marginTop"

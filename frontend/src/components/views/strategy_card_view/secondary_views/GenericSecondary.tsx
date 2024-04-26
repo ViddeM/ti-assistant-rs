@@ -16,7 +16,6 @@ export const GenericSecondary = () => {
 
   const otherPlayers = Object.keys(gameState.players)
     .filter((p) => p !== gameState.currentPlayer)
-    .filter((p) => p === playingAs || isGlobal)
     .map((p) => {
       return {
         action: gameState.actionProgress?.Strategic?.otherPlayers[p],
@@ -44,7 +43,7 @@ export const GenericSecondary = () => {
           </legend>
           {p.action ? (
             <RenderAction performed={p.action === "Skipped"} />
-          ) : (
+          ) : p.name === playingAs || isGlobal ? (
             <div className={styles.buttonsContainer}>
               <Button onClick={() => sendSecondaryMessage(p.name, "Skip")}>
                 Skip
@@ -55,6 +54,8 @@ export const GenericSecondary = () => {
                 Play
               </Button>
             </div>
+          ) : (
+            <p>Has yet to choose</p>
           )}
         </fieldset>
       ))}
