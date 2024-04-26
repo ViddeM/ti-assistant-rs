@@ -6,7 +6,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { stringSort } from "@/utils/Utils";
 
 export const PoliticsPrimaryView = () => {
-  const { gameState, sendEvent } = useGameContext();
+  const { gameState, sendEvent, isActive } = useGameContext();
 
   const [nextSpeaker, setNextSpeaker] = useState<string>("");
 
@@ -19,7 +19,7 @@ export const PoliticsPrimaryView = () => {
     <div>
       {progress ? (
         <p>Next speaker: {progress?.Politics?.newSpeaker}</p>
-      ) : (
+      ) : isActive ? (
         <fieldset>
           <legend>Select next speaker</legend>
           <div className={styles.selectPrimaryContainer}>
@@ -51,6 +51,8 @@ export const PoliticsPrimaryView = () => {
             </Button>
           </div>
         </fieldset>
+      ) : (
+        <p>Waiting for {gameState.currentPlayer} to pick</p>
       )}
     </div>
   );
