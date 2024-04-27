@@ -14,6 +14,11 @@ $git-color: #f14e32;
   height: 2rem;
   box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 
+  & > * {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
   &:hover {
     background-color: $git-color;
     color: $main-color;
