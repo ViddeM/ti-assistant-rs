@@ -9,7 +9,7 @@ export default function Home() {
 
   return (
     <div className="card">
-      <h1>TI-Assistant (RS)</h1>
+      <h1 className={styles.titleText}>TI Helper</h1>
 
       <div className={styles.newGameContainer}>
         <Link href={"/game/new"} className={styles.newGameLink}>
