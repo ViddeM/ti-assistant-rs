@@ -4,6 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 import styles from "./page.module.scss";
 import { useRouter } from "next/navigation";
+import localFont from "next/font/local";
+
+const sourceCodeProFont = localFont({
+  src: "../resources/fonts/source-code-pro/static/SourceCodePro-Medium.ttf",
+  display: "swap",
+  variable: "--source-code-pro",
+});
 
 export default function Home() {
   const [gameId, setGameId] = useState<string>("");
@@ -37,7 +44,9 @@ export default function Home() {
         }}
       >
         <div className={styles.inputContainer}>
-          <div className={styles.inputContainerContent}>
+          <div
+            className={`${styles.inputContainerContent} ${sourceCodeProFont.variable}`}
+          >
             <input
               id="game_id_input"
               type="text"
