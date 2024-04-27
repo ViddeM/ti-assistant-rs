@@ -3,39 +3,62 @@
 import Link from "next/link";
 import { useState } from "react";
 import styles from "./page.module.scss";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [gameId, setGameId] = useState<string>("");
 
+  const router = useRouter();
+
+  const gameUrl = `/game/${gameId}`;
+
   return (
-    <div className="card">
-      <h1 className={styles.titleText}>TI Helper</h1>
-
-      <div className={styles.newGameContainer}>
-        <Link href={"/game/new"} className={styles.newGameLink}>
-          <h2>New Game</h2>
-        </Link>
+    <div className={`card ${styles.mainMenuCard}`}>
+      <div className={styles.titleText}>
+        <h1>TI Helper</h1>
+        <p>
+          Made with ❤️ by{" "}
+          <Link href={"https://radicle.vidarmagnusson.com/"}>Vidde</Link>
+          {" & "}
+          <Link href={"https://app.radicle.xyz/nodes/seed.nubo.sh/"}>Tux</Link>
+        </p>
       </div>
 
-      <div>
-        <label htmlFor="join_game_input">Game ID: </label>
-        <input
-          id="join_game_input"
-          className={styles.gameIdInput}
-          value={gameId}
-          onChange={(e) => setGameId(e.target.value ?? "")}
-          maxLength={8}
-        />
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
+      <Link href={"/game/new"} className={styles.newGameLink}>
+        <h2>New Game</h2>
+      </Link>
+
+      <form
+        className={styles.gameIdInputContent}
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          router.push(gameUrl);
         }}
       >
-        <Link href={`/game/${gameId}`}>Join Game</Link>
-      </div>
+        <div className={styles.inputContainer}>
+          <div className={styles.inputContainerContent}>
+            <input
+              id="game_id_input"
+              type="text"
+              required
+              maxLength={8}
+              value={gameId}
+              onChange={(e) => setGameId(e.target.value ?? "")}
+            />
+            <label htmlFor="game_id_input">Game ID (8)</label>
+            <span className={styles.inputUnderline}></span>
+          </div>
+        </div>
+      </form>
+
+      {gameId.length === 8 ? (
+        <Link href={gameUrl}>
+          <h2>JOIN GAME</h2>
+        </Link>
+      ) : (
+        <h2 className={styles.newGameLinkDisabled}>JOIN GAME</h2>
+      )}
     </div>
   );
 }
