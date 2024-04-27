@@ -31,7 +31,7 @@ export default function Home() {
         </p>
       </div>
 
-      <Link href={"/game/new"} className={styles.newGameLink}>
+      <Link href={"/game/new"} className={styles.mainMenuLink}>
         <h2>New Game</h2>
       </Link>
 
@@ -58,11 +58,11 @@ export default function Home() {
       </form>
 
       {gameId.length === 8 ? (
-        <Link href={gameUrl}>
+        <Link href={gameUrl} className={styles.mainMenuLink}>
           <h2>JOIN GAME</h2>
         </Link>
       ) : (
-        <h2 className={styles.newGameLinkDisabled}>JOIN GAME</h2>
+        <h2 className={styles.mainMenuLinkDisabled}>JOIN GAME</h2>
       )}
     </div>
   );

@@ -19,7 +19,7 @@
 
 // NEW GAME
 
-.newGameLink {
+.mainMenuLink {
   position: relative;
   text-decoration: none;
   margin-bottom: $margin;
@@ -33,6 +33,7 @@
     left: 0;
     width: 0;
     transition: width 200ms ease;
+    border-radius: 4px;
 
     background: linear-gradient(
       to right,
@@ -63,13 +64,13 @@
   }
 
   h2 {
-    margin: 0;
     overflow: hidden;
     text-transform: uppercase;
+    margin-bottom: 0;
   }
 }
 
-.newGameLinkDisabled {
+.mainMenuLinkDisabled {
   color: gray;
   cursor: default;
 }
@@ -104,77 +105,8 @@ $underline-color: white;
 
 .gameIdInputContent {
   position: relative;
-  z-index: 10;
   color: white;
   max-width: 150px;
   align-self: center;
   margin-top: 1em;
-}
-
-.inputContainer {
-  overflow: hidden;
-  position: relative;
-  padding: 2px;
-  padding-top: 1em;
-}
-.inputContainerContent {
-  position: relative;
-  width: 100%;
-
-  input {
-    display: block;
-    width: $in-w;
-    height: 30px;
-    line-height: 30px;
-    font-size: 14px;
-
-    border: 0;
-    color: white;
-    border-bottom: 1px solid #ccc;
-    outline: none;
-    border-radius: 0;
-    appearance: none;
-    -webkit-appearance: none;
-    font-family: var(--source-code-pro);
-
-    &:focus,
-    &:valid {
-      & ~ label {
-        color: skyblue;
-        transform: translateY(-20px);
-        font-size: 0.825em;
-        cursor: default;
-      }
-    }
-
-    &:focus {
-      & ~ .inputUnderline {
-        width: 100%;
-      }
-    }
-  }
-
-  label {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 30px;
-    line-height: 30px;
-    color: #ccc;
-    cursor: text;
-    transition: all 200ms ease-out;
-    z-index: 10;
-  }
-}
-
-.inputUnderline {
-  content: "";
-  display: block;
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(to right, #223a98 0%, #2b67b0 51%, #9ad0d8 100%);
-  transition: all 200ms ease-out;
 }
