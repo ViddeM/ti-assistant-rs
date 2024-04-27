@@ -1,6 +1,92 @@
+@import "../resources/styles/vars.scss";
+
 .gameLinks {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
+}
+
+.newGameContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.newGameLink {
+  position: relative;
+  text-decoration: none;
+  margin-bottom: $margin;
+
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    text-decoration: none;
+
+    &::before {
+      transform: scaleX(1);
+    }
+
+    h2 {
+      background-image: linear-gradient(
+        to bottom right,
+        #9ad0d8 0%,
+        #2b67b0 51%,
+        #223a98 100%
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      // -webkit-text-stroke-color: #c0c0c0;
+    }
+  }
+
+  h2 {
+    margin: 0;
+    overflow: hidden;
+    text-transform: uppercase;
+    -webkit-text-stroke: 1px #ffffff;
+    -webkit-text-fill-color: rgba(0, 0, 0, 1);
+  }
+}
+
+$char-w: 1ch;
+$gap: 0.5 * $char-w;
+$n-char: 8;
+$in-w: $n-char * ($char-w + $gap);
+$underline-color: white;
+
+.gameIdInput {
+  display: block;
+  border: none;
+  padding: 0;
+  width: $in-w;
+  color: white;
+  background: repeating-linear-gradient(
+      90deg,
+      $underline-color 0,
+      $underline-color $char-w,
+      transparent 0,
+      transparent $char-w + $gap
+    )
+    0 100% / #{$in-w - $gap} 2px no-repeat;
+  letter-spacing: $gap;
+  font-size: 2ch;
+
+  &:focus {
+    outline: none;
+    color: dodgerblue;
+  }
 }
