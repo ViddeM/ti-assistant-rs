@@ -149,15 +149,18 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
                     />
                   ))}
                 </li>
-                {isSpeaker ||
-                  (isGlobal && (
-                    <li>
-                      <ResolveOutcome
-                        everyoneHasVoted={everyoneHasVoted}
-                        state={state}
-                      />
-                    </li>
-                  ))}
+                {isSpeaker || isGlobal ? (
+                  <li>
+                    <ResolveOutcome
+                      everyoneHasVoted={everyoneHasVoted}
+                      state={state}
+                    />
+                  </li>
+                ) : (
+                  <li>
+                    Waiting for speaker ({gameState.speaker}) to resolve outcome
+                  </li>
+                )}
               </ol>
             </div>
           )}
