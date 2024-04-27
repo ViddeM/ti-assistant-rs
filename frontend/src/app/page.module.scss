@@ -76,6 +76,32 @@
 
 // JOIN GAME
 
+$char-w: 1ch;
+$gap: 0.5 * $char-w;
+$n-char: 8;
+$in-w: $n-char * ($char-w + $gap);
+$underline-color: white;
+
+.gameIdContainer {
+  & > input {
+    display: block;
+    border: none;
+    padding: 0;
+    width: $in-w;
+    color: white;
+    background: repeating-linear-gradient(
+        90deg,
+        $underline-color 0,
+        $underline-color $char-w,
+        transparent 0,
+        transparent $char-w + $gap
+      )
+      0 100% / #{$in-w - $gap} 2px no-repeat;
+    font-family: var(--source-code-pro);
+    letter-spacing: $gap;
+  }
+}
+
 .gameIdInputContent {
   position: relative;
   z-index: 10;
@@ -91,19 +117,18 @@
   padding: 2px;
   padding-top: 1em;
 }
-
 .inputContainerContent {
   position: relative;
   width: 100%;
 
   input {
-    width: 100%;
+    display: block;
+    width: $in-w;
     height: 30px;
-    box-sizing: border-box;
     line-height: 30px;
     font-size: 14px;
+
     border: 0;
-    background: none;
     color: white;
     border-bottom: 1px solid #ccc;
     outline: none;

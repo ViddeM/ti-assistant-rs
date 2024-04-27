@@ -20,7 +20,7 @@ export default function Home() {
   const gameUrl = `/game/${gameId}`;
 
   return (
-    <div className={`card ${styles.mainMenuCard}`}>
+    <div className={`${styles.mainMenuCard}`}>
       <div className={styles.titleText}>
         <h1>TI Helper</h1>
         <p>
@@ -43,21 +43,17 @@ export default function Home() {
           router.push(gameUrl);
         }}
       >
-        <div className={styles.inputContainer}>
-          <div
-            className={`${styles.inputContainerContent} ${sourceCodeProFont.variable}`}
-          >
-            <input
-              id="game_id_input"
-              type="text"
-              required
-              maxLength={8}
-              value={gameId}
-              onChange={(e) => setGameId(e.target.value ?? "")}
-            />
-            <label htmlFor="game_id_input">Game ID (8)</label>
-            <span className={styles.inputUnderline}></span>
-          </div>
+        <div
+          className={`${sourceCodeProFont.variable} ${styles.gameIdContainer}`}
+        >
+          <input
+            id="game_id_input"
+            type="text"
+            required
+            maxLength={8}
+            value={gameId}
+            onChange={(e) => setGameId(e.target.value ?? "")}
+          />
         </div>
       </form>
 
