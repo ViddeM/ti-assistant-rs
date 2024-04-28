@@ -4,7 +4,6 @@ import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./Button.module.scss";
 import { ButtonHTMLAttributes, FC } from "react";
-import { ButtonBaseProps } from "./Button";
 
 export type InfoButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   info: InfoObject;

@@ -3,8 +3,8 @@ import styles from "./StrategyCardView.module.scss";
 import { StrategyCardSecondary } from "./StrategyCardSecondary";
 import { StrategyCardPrimary } from "./StrategyCardPrimary";
 import { useGameContext } from "@/hooks/GameContext";
-import { GameState } from "@/api/bindings/GameState";
 import { StrategicProgress } from "@/api/bindings/StrategicProgress";
+import Image from "next/image";
 
 export const StrategyCardView = () => {
   const { gameState, sendEvent, isActive } = useGameContext();
@@ -25,16 +25,26 @@ export const StrategyCardView = () => {
     })
     .filter(
       (p) =>
-        !(p.faction === "NekroVirus" && strategicAction.card === "Technology"),
+        !(p.faction === "NekroVirus" && strategicAction.card === "Technology")
     ).length;
 
   const secondaryDone =
     Object.keys(strategicAction.otherPlayers).length === expectedSecondaries;
   const primaryDone = isPrimaryDone(strategicAction);
 
+  const card = strategicAction.card;
+  const cardImageName = "leadership.webp";
+
   return (
     <div className={`card ${styles.strategyCardView}`}>
-      <h2>{strategicAction.card}</h2>
+      <h2>{card}</h2>
+
+      <Image
+        className={styles.strategyCardImage}
+        alt={`Strategy card ${card}`}
+        src={`/images/strat_cards/${cardImageName}`}
+        fill={true}
+      />
 
       <>
         <div className={styles.partDivider} />

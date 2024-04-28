@@ -5,11 +5,14 @@ import { TechInfo } from "@/api/bindings/TechInfo";
 import { TechType } from "@/api/bindings/TechType";
 import { useGameContext } from "@/hooks/GameContext";
 import styles from "./InfoModal.module.scss";
+import { StrategyCard } from "@/resources/types/strategyCards";
+import { ReactNode } from "react";
+import Image from "next/image";
 
 export type InfoObject =
   | { Agenda: AgendaInfo }
   | { Objective: ObjectiveInfo }
-  | { Strategy: TechInfo }
+  | { Strategy: StrategyCard }
   | { Tech: TechInfo };
 
 interface InfoModalProps {
@@ -19,7 +22,9 @@ interface InfoModalProps {
 interface InfoFields {
   title: string;
   subtitle: string;
-  description: string;
+  description:
+    | { type: "description"; description: string }
+    | { type: "custom"; content: ReactNode };
 }
 
 export const InfoModal = ({ infoObject }: InfoModalProps) => {
@@ -30,6 +35,15 @@ export const InfoModal = ({ infoObject }: InfoModalProps) => {
   }
 
   const info = getInfo(infoObject);
+  const description = info.description;
+  const renderDescription = () => {
+    switch (description.type) {
+      case "description":
+        return <p>{description.description}</p>;
+      case "custom":
+        return description.content;
+    }
+  };
 
   return (
     <div // transparent background
@@ -44,7 +58,7 @@ export const InfoModal = ({ infoObject }: InfoModalProps) => {
         <h1>{info.title}</h1>
         <hr />
         <h2>{info.subtitle}</h2>
-        <p>{info.description}</p>
+        {renderDescription()}
       </div>
     </div>
   );
@@ -65,7 +79,10 @@ function getInfo(info: InfoObject): InfoFields {
     return {
       title: objective.name,
       subtitle: objectiveKindToString(objective.kind),
-      description: objective.condition,
+      description: {
+        type: "description",
+        description: objective.condition,
+      },
     };
   }
 
@@ -74,7 +91,24 @@ function getInfo(info: InfoObject): InfoFields {
     return {
       title: tech.name,
       subtitle: techTypeToString(tech.techType),
-      description: tech.effects.join("\n"),
+      description: {
+        type: "description",
+        description: tech.effects.join("\n"),
+      },
+    };
+  }
+
+  if ("Strategy" in info) {
+    const strategy = info["Strategy"];
+    return {
+      title: strategy,
+      subtitle: "",
+      description: {
+        type: "custom",
+        content: (
+          // <Image alt=/>
+        )
+      },
     };
   }
 
