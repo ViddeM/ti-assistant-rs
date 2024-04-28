@@ -1,7 +1,7 @@
 ##################
 ### BASE STAGE ###
 ##################
-FROM rust:1.73 as base
+FROM rust:1.77 as base
 
 # Install build dependencies
 RUN cargo install --locked strip_cargo_version
