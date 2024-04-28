@@ -168,7 +168,12 @@ export const ScoreTableView = () => {
                 colSpan={playerCount}
                 className={index === 0 ? "" : styles.borderTop}
               >
+                <InfoButton
+                  info={{ Objective: obj }}
+                  style={{ visibility: "hidden" }}
+                />
                 {obj.name}
+                <InfoButton info={{ Objective: obj }} />
               </th>
             </tr>
             <tr>
