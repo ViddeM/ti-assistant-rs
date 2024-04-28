@@ -1,86 +1,86 @@
 @import "../../../resources/styles/vars.scss";
 
 .scoreViewContainer {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    & > * {
-        margin-bottom: $marginLarge;
-    }
+  & > * {
+    margin-bottom: $marginLarge;
+  }
 }
 
 .revealObjectiveForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .revealObjectiveRow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    
-    &:not(:last-child) {
-        margin-bottom: $marginLarge;
-    }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 
-    > :first-child {
-        flex: 1;
-        margin-right: $marginLarge;
-    }
+  &:not(:last-child) {
+    margin-bottom: $marginLarge;
+  }
+
+  > :first-child {
+    flex: 1;
+    margin-right: $marginLarge;
+  }
 }
 
 .borderTop {
-    border-top: 1px solid black; 
-    padding: $padding 0;
+  border-top: 1px solid black;
+  padding: $padding 0;
 }
 
 .borderBottom {
-    border-bottom: 1px solid black;
+  border-bottom: 1px solid black;
 }
 
 .scoreViewTableWrapper {
-    max-width: 100%;
-    overflow-x: scroll;
+  max-width: 100%;
+  overflow-x: scroll;
 }
 
 .scoreViewTable {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .revealObjectiveColumn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .scoreViewTableHeader {
-    padding: 4px;
+  padding: 4px;
 }
 
 .stageContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 
 .horizontalLine {
-    height: 4px;
-    flex: 1;
+  height: 4px;
+  flex: 1;
 }
 
 .stageText {
-    min-width: 300px;
-    border-width: 4px;
-    border-style: solid;
-    border-radius: $border-radius;
+  min-width: 300px;
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
 }
 
 $stage-one-color: orange;
@@ -88,180 +88,180 @@ $stage-two-color: rgb(110, 110, 255);
 $secret-color: rgb(240, 50, 50);
 $custodians-color: rgb(0, 0, 0);
 $imperial-color: rgb(181, 0, 181);
-$spftt-color:  #a74551;
+$spftt-color: #a74551;
 $extra-color: green;
 $shard-color: white;
 $crown-color: gold;
 
 .stageOneColor {
-    color: $stage-one-color;
+  color: $stage-one-color;
 }
 
 .stageTwoColor {
-    color: $stage-two-color;
+  color: $stage-two-color;
 }
 
 .secretColor {
-    color: $secret-color;
+  color: $secret-color;
 }
 
 .custodiansColor {
-    color: $custodians-color;
+  color: $custodians-color;
 }
 
 .imperialColor {
-    color: $imperial-color;
+  color: $imperial-color;
 }
 
 .spfttColor {
-    color: $spftt-color;
+  color: $spftt-color;
 }
 
 .extraColor {
-    color: $extra-color;
+  color: $extra-color;
 }
 
 .shardColor {
-    color: $shard-color;
+  color: $shard-color;
 }
 
 .crownColor {
-    color: $crown-color;
+  color: $crown-color;
 }
 
 .stageOneBackgroundColor {
-    background-color: $stage-one-color;
+  background-color: $stage-one-color;
 }
 
 .stageTwoBackgroundColor {
-    background-color: $stage-two-color;
+  background-color: $stage-two-color;
 }
 
 .secretBackgroundColor {
-    background-color: $secret-color;
+  background-color: $secret-color;
 }
 
 .custodiansBackgroundColor {
-    background-color: $custodians-color;
+  background-color: $custodians-color;
 }
 
 .imperialBackgroundColor {
-    background-color: $imperial-color;
+  background-color: $imperial-color;
 }
 
 .spfttBackgroundColor {
-    background-color: $spftt-color;
+  background-color: $spftt-color;
 }
 
 .extraBackgroundColor {
-    background-color: $extra-color;
+  background-color: $extra-color;
 }
 
 .shardBackgroundColor {
-    background-color: $shard-color;
+  background-color: $shard-color;
 }
 
 .crownBackgroundColor {
-    background-color: $crown-color;
+  background-color: $crown-color;
 }
 
 .factionButton {
-    filter: brightness(0.3) contrast(0.5);
-    background: none;
-    border: none;
-    cursor: pointer;
-    border-radius: 50%;
-    padding: 0;
+  filter: brightness(0.3) contrast(0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
 
-    &:hover {
-        filter: brightness(0.6) contrast(0.85);
-    }
+  &:hover {
+    filter: brightness(0.6) contrast(0.85);
+  }
 }
 
 .factionButtonSelected {
-    filter: brightness(1) contrast(1);
-    &:hover {
-        filter: brightness(0.9) contrast(0.8);
-    }
+  filter: brightness(1) contrast(1);
+  &:hover {
+    filter: brightness(0.9) contrast(0.8);
+  }
 }
 
 .playerSecretTitleRow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    
-    & > h6 {
-        margin-left: $marginLarge;
-        margin-right: $marginLarge;
-    }
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 
-    & > :last-child {
-        flex: 1;
-        background-color: $primaryTextColor;
-        height: 2px;
-    }
+  & > h6 {
+    margin-left: $marginLarge;
+    margin-right: $marginLarge;
+  }
+
+  & > :last-child {
+    flex: 1;
+    background-color: $primaryTextColor;
+    height: 2px;
+  }
 }
 
 .supportForTheThroneTable {
-    width: 100%;
+  width: 100%;
 
-    & tr {
-        td:nth-child(1) {
-            width: 35px;
-        }
-
-        td:nth-child(2) {            
-            > * {
-                width: 100%;
-            }
-        }
-
-        td:nth-child(3) {
-            width: 1.5rem;
-        }
-
-        td:nth-child(4) {
-            > * {
-                width: 100%;
-            }
-        }
-
-        td:nth-child(5) {
-            width: 50px;
-
-            > * {
-                width: 100%;
-            }
-        }
+  & tr {
+    td:nth-child(1) {
+      width: 35px;
     }
+
+    td:nth-child(2) {
+      > * {
+        width: 100%;
+      }
+    }
+
+    td:nth-child(3) {
+      width: 1.5rem;
+    }
+
+    td:nth-child(4) {
+      > * {
+        width: 100%;
+      }
+    }
+
+    td:nth-child(5) {
+      width: 50px;
+
+      > * {
+        width: 100%;
+      }
+    }
+  }
 }
 
 .incDecButton {
-    border: none;
+  border: none;
+  background-color: inherit;
+  font-size: 1.2rem;
+  padding: 0;
+  margin: 0;
+
+  &:disabled {
     background-color: inherit;
-    font-size: 1.2rem;
-    padding: 0;
-    margin: 0;
+    filter: brightness(0.3);
 
-    &:disabled {
-        background-color: inherit;
-        filter: brightness(0.3);
-
-        &:hover {
-           filter: brightness(0.3);
-        }
+    &:hover {
+      filter: brightness(0.3);
     }
+  }
 }
 
 .secretObjectiveRow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .deleteSecretObjectiveButton {
-    background-color: inherit;
-    border: none;
-    color: white;
-    margin-left: 0.5rem;
+  background-color: inherit;
+  border: none;
+  color: white;
+  margin-left: 0.5rem;
 }

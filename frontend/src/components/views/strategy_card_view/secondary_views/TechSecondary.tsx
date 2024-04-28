@@ -35,7 +35,7 @@ export const StrategyTechnologySecondaryView = () => {
     .sort(nameSort);
 
   const getChoice: (player: Player & { id: string }) => Choice = (
-    player: Player & { id: string }
+    player: Player & { id: string },
   ) => {
     if (player.faction === "NekroVirus") {
       return "NekroVirus";

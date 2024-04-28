@@ -46,7 +46,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
 
   const [playingAs, setPlayingAs] = useQueryParam(
     "playing_as",
-    withDefault(StringParam, null)
+    withDefault(StringParam, null),
   );
 
   const router = useRouter();
@@ -114,7 +114,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         sendMessage(
           JSON.stringify({
             JoinGame: gameId,
-          })
+          }),
         );
       }
     } else if (droppedConnection) {
@@ -382,7 +382,7 @@ const DisplayViewMode = ({ viewMode }: DisplayViewModeProps) => {
 
 function getPlayersFromGame(
   gameState: GameState,
-  gameOptions: GameOptions
+  gameOptions: GameOptions,
 ): SidebarPlayer[] {
   return gameState.turnOrder.map((id) => {
     const p = gameState.players[id];
@@ -415,7 +415,7 @@ function getPlayersFromGame(
             planet: planet,
             info: gameOptions.planetInfos[planet],
             attachments: p.planets[planet].map(
-              (attachment) => gameOptions.planetAttachments[attachment]
+              (attachment) => gameOptions.planetAttachments[attachment],
             ),
           } as PlayerPlanetInfo;
         }),

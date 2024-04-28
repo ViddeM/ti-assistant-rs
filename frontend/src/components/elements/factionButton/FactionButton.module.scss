@@ -1,19 +1,19 @@
 .factionButton {
-    filter: brightness(0.3) contrast(0.5);
-    background: none;
-    border: none;
-    cursor: pointer;
-    border-radius: 50%;
-    padding: 0;
+  filter: brightness(0.3) contrast(0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
 
-    &:hover {
-        filter: brightness(0.6) contrast(0.85);
-    }
+  &:hover {
+    filter: brightness(0.6) contrast(0.85);
+  }
 }
 
 .factionButtonSelected {
-    filter: brightness(1) contrast(1);
-    &:hover {
-        filter: brightness(0.9) contrast(0.8);
-    }
+  filter: brightness(1) contrast(1);
+  &:hover {
+    filter: brightness(0.9) contrast(0.8);
+  }
 }

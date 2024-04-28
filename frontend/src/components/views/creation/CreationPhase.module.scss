@@ -1,80 +1,79 @@
 @import "../../../resources/styles/vars.scss";
 
 .setupCard {
-    display: flex;
-    flex-direction: column;
-    justify-self: center;
-    align-items: center;
-    min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-self: center;
+  align-items: center;
+  min-width: 260px;
 }
 
 .displayPlayerContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-    padding-bottom: $paddingLarge;
-    border-top: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: $paddingLarge;
+  border-top: 1px solid black;
 }
 
 .factionRow {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .factionName {
-    margin-left: $margin;
+  margin-left: $margin;
 }
 
 .addPlayerForm {
-    width: 100%;
-    padding: $paddingLarge 0;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  padding: $paddingLarge 0;
+  border-top: 1px solid black;
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .colorsContainer {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .colorButton {
-    border-radius: $border-radius;
-    min-width: 2rem;
-    min-height: 2rem;
-    margin: $margin;
-    border: 2px solid white;
+  border-radius: $border-radius;
+  min-width: 2rem;
+  min-height: 2rem;
+  margin: $margin;
+  border: 2px solid white;
 
-    &:hover {
-        filter: brightness(0.5);
-        cursor: pointer;
-    }
+  &:hover {
+    filter: brightness(0.5);
+    cursor: pointer;
+  }
 }
 
 .disabledColorButton {
-    background-color: gray;
-    cursor: default;
-    
+  background-color: gray;
+  cursor: default;
 
-    &:hover {
-        filter: none;
-        cursor: default;
-    }
+  &:hover {
+    filter: none;
+    cursor: default;
+  }
 }
 
 .colorContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: $margin 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: $margin 0;
 }
 
 .startGameButton {
-    margin-top: $margin;
+  margin-top: $margin;
 }

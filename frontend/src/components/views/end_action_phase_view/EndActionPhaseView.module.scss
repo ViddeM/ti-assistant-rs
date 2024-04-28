@@ -1,11 +1,11 @@
 @import "../../../resources/styles/vars";
 
 .endActionPhaseViewContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 
-    & > *:not(:last-child) {
-        margin-bottom: $marginLarge;
-    }
+  & > *:not(:last-child) {
+    margin-bottom: $marginLarge;
+  }
 }

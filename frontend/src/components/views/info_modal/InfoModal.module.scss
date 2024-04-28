@@ -27,10 +27,18 @@
 }
 
 @keyframes infoModalBgAppear {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 @keyframes infoModalAppear {
-  0% { scale: 0.8; }
-  100% { scale: 1; }
+  0% {
+    scale: 0.8;
+  }
+  100% {
+    scale: 1;
+  }
 }

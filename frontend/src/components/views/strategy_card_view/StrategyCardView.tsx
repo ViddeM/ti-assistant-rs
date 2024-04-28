@@ -26,7 +26,7 @@ export const StrategyCardView = () => {
     })
     .filter(
       (p) =>
-        !(p.faction === "NekroVirus" && strategicAction.card === "Technology")
+        !(p.faction === "NekroVirus" && strategicAction.card === "Technology"),
     ).length;
 
   const secondaryDone =

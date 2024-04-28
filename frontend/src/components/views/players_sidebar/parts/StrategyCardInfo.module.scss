@@ -1,25 +1,25 @@
 @import "../../../../resources/styles/vars.scss";
 
 .strategyCardsContainer {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .cardContainer {
-    color: white;
-    background-color: $backgroundColor;
-    border-width: 2px;
-    border-style: solid;
-    padding: $padding;
-    border-radius: $border-radius;
-    margin-bottom: 4px;
-    min-width: 7rem;
+  color: white;
+  background-color: $backgroundColor;
+  border-width: 2px;
+  border-style: solid;
+  padding: $padding;
+  border-radius: $border-radius;
+  margin-bottom: 4px;
+  min-width: 7rem;
 }
 
 .cardPlayed {
-    filter: brightness(0.5) saturate(0.3)
+  filter: brightness(0.5) saturate(0.3);
 }
 
 .cardActive {
-    background-color: #a08000;
+  background-color: #a08000;
 }

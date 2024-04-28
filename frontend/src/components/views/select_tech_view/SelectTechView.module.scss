@@ -1,35 +1,35 @@
 @import "../../../resources/styles/vars.scss";
 
 .selectTechTable {
-    & select {
-        width: 100%;
-    }
+  & select {
+    width: 100%;
+  }
 }
 
 .techCategoryButtonContainer {
-    margin-top: $marginLarge;
-    margin-bottom: $marginLarge;
-    width: 100%;
-    border-width: 4px;
-    border-style: solid;
+  margin-top: $marginLarge;
+  margin-bottom: $marginLarge;
+  width: 100%;
+  border-width: 4px;
+  border-style: solid;
 }
 
 .colorBiotic {
-    border-color: #97c669;
+  border-color: #97c669;
 }
 
 .colorCybernetic {
-    border-color: yellow;
+  border-color: yellow;
 }
 
 .colorPropulsion {
-    border-color: #37b7e0;
+  border-color: #37b7e0;
 }
 
 .colorWarfare {
-    border-color: #d95e60;
+  border-color: #d95e60;
 }
 
 .colorUnitUpgrade {
-    border-color: #010101;
+  border-color: #010101;
 }

@@ -1,60 +1,60 @@
 @import "../../../resources/styles/vars.scss";
 
 .techViewContainer {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    & > :first-child {
-        margin-bottom: $marginLarge;
-    }
+  & > :first-child {
+    margin-bottom: $marginLarge;
+  }
 }
 
 .techLedgerList {
-    & > li > a {
-        margin-left: $padding;
-    }
+  & > li > a {
+    margin-left: $padding;
+  }
 }
 
 .techViewTable {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: $marginLarge;
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: $marginLarge;
 }
 
 .techViewTableHeader {
-    padding: 4px;
+  padding: 4px;
 }
 
 .borderTop {
-    border-top: 1px solid black; 
-    padding: $padding 0;
+  border-top: 1px solid black;
+  padding: $padding 0;
 }
 
 .stageContainer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
 }
 
 .horizontalLine {
-    height: 4px;
-    flex: 1;
+  height: 4px;
+  flex: 1;
 }
 
 .techGroupText {
-    min-width: 300px;
-    border-width: 4px;
-    border-style: solid;
-    border-radius: $border-radius;
+  min-width: 300px;
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
 }
 
 .centerText {
-    text-align: center;
-    margin-bottom: $marginLarge;
+  text-align: center;
+  margin-bottom: $marginLarge;
 }
 
 $unit-upgrade-color: lightgray;
@@ -64,86 +64,86 @@ $cybernetic-color: yellow;
 $biotic-color: limegreen;
 
 .unitUpgradeColor {
-    color: $unit-upgrade-color;
+  color: $unit-upgrade-color;
 }
 .warfareColor {
-    color: $warfare-color;
+  color: $warfare-color;
 }
 .propulsionColor {
-    color: $propulsion-color;
+  color: $propulsion-color;
 }
 .cyberneticColor {
-    color: $cybernetic-color;
+  color: $cybernetic-color;
 }
 .bioticColor {
-    color: $biotic-color;
+  color: $biotic-color;
 }
 
 .playerBlackColor {
-    background-color: white;
-    color: $playerColorBlack;
+  background-color: white;
+  color: $playerColorBlack;
 }
 .playerBlueColor {
-    background-color: white;
-    color: $playerColorBlue;
+  background-color: white;
+  color: $playerColorBlue;
 }
 .playerGreenColor {
-    color: $playerColorGreen;
+  color: $playerColorGreen;
 }
 .playerRedColor {
-    color: $playerColorRed;
+  color: $playerColorRed;
 }
 .playerYellowColor {
-    color: $playerColorYellow;
+  color: $playerColorYellow;
 }
 .playerPurpleColor {
-    background-color: white;
-    color: $playerColorPurple;
+  background-color: white;
+  color: $playerColorPurple;
 }
 .playerOrangeColor {
-    color: $playerColorOrange;
+  color: $playerColorOrange;
 }
 .playerPinkColor {
-    color: $playerColorPink;
+  color: $playerColorPink;
 }
 
 .unitUpgradeBackgroundColor {
-    background-color: $unit-upgrade-color;
+  background-color: $unit-upgrade-color;
 }
 .warfareBackgroundColor {
-    background-color: $warfare-color;
+  background-color: $warfare-color;
 }
 .propulsionBackgroundColor {
-    background-color: $propulsion-color;
+  background-color: $propulsion-color;
 }
 .cyberneticBackgroundColor {
-    background-color: $cybernetic-color;
+  background-color: $cybernetic-color;
 }
 .bioticBackgroundColor {
-    background-color: $biotic-color;
+  background-color: $biotic-color;
 }
 
 .playerBlackBackgroundColor {
-    background-color: $playerColorBlack;
+  background-color: $playerColorBlack;
 }
 .playerBlueBackgroundColor {
-    background-color: $playerColorBlue;
+  background-color: $playerColorBlue;
 }
 .playerGreenBackgroundColor {
-    background-color: $playerColorGreen;
+  background-color: $playerColorGreen;
 }
 .playerRedBackgroundColor {
-    background-color: $playerColorRed;
+  background-color: $playerColorRed;
 }
 .playerYellowBackgroundColor {
-    background-color: $playerColorYellow;
+  background-color: $playerColorYellow;
 }
 .playerPurpleBackgroundColor {
-    background-color: $playerColorPurple;
+  background-color: $playerColorPurple;
 }
 .playerOrangeBackgroundColor {
-    background-color: $playerColorOrange;
+  background-color: $playerColorOrange;
 }
 .playerPinkBackgroundColor {
-    background-color: $playerColorPink;
+  background-color: $playerColorPink;
 }
