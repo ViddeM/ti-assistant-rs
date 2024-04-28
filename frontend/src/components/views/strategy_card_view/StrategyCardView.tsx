@@ -5,6 +5,7 @@ import { StrategyCardPrimary } from "./StrategyCardPrimary";
 import { useGameContext } from "@/hooks/GameContext";
 import { StrategicProgress } from "@/api/bindings/StrategicProgress";
 import Image from "next/image";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 
 export const StrategyCardView = () => {
   const { gameState, sendEvent, isActive } = useGameContext();
@@ -39,11 +40,10 @@ export const StrategyCardView = () => {
     <div className={`card ${styles.strategyCardView}`}>
       <h2>{card}</h2>
 
-      <Image
-        className={styles.strategyCardImage}
-        alt={`Strategy card ${card}`}
-        src={`/images/strat_cards/${cardImageName}`}
-        fill={true}
+      <InfoButton
+        info={{
+          Strategy: card,
+        }}
       />
 
       <>

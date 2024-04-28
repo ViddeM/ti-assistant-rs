@@ -131,6 +131,14 @@ fieldset {
   margin-left: $marginLarge;
 }
 
+.warningText {
+  margin: $margin;
+  margin-top: 0;
+  font-weight: bold;
+  border: 4px dotted yellow;
+  padding: $padding;
+}
+
 .styleLeadership {
   color: $leadershipColor;
   border-color: $leadershipColor;

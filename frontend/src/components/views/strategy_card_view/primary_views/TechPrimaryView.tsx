@@ -70,6 +70,7 @@ export const TechnologyPrimaryView = () => {
             <legend>
               <h6>Take another?</h6>
             </legend>
+            <p className="warningText">Remember: pay 6 resources</p>
             <SelectTechView
               playerId={gameState.currentPlayer!!}
               onSelect={(secondTech) => {

@@ -70,7 +70,10 @@ function getInfo(info: InfoObject): InfoFields {
     return {
       title: agenda.name,
       subtitle: agenda.kind, // TODO: show elect kind
-      description: agenda.description,
+      description: {
+        type: "description",
+        description: agenda.description,
+      },
     };
   }
 
@@ -100,14 +103,22 @@ function getInfo(info: InfoObject): InfoFields {
 
   if ("Strategy" in info) {
     const strategy = info["Strategy"];
+    const imagePath = getStrategyCardImagePath(strategy);
+
     return {
       title: strategy,
       subtitle: "",
       description: {
         type: "custom",
         content: (
-          // <Image alt=/>
-        )
+          <Image
+            alt={`Strategy card ${strategy}`}
+            src={imagePath}
+            style={{ objectFit: "contain" }}
+            width={400}
+            height={400}
+          />
+        ),
       },
     };
   }
@@ -132,4 +143,27 @@ function techTypeToString(techType: TechType) {
   }
 
   return `Technology, ${techType.Category}`;
+}
+
+function getStrategyCardImagePath(card: StrategyCard): string {
+  const basePath = "/images/strat_cards";
+
+  switch (card) {
+    case "Leadership":
+      return `${basePath}/leadership.webp`;
+    case "Diplomacy":
+      return `${basePath}/diplomacy_codex.webp`;
+    case "Politics":
+      return `${basePath}/politics.webp`;
+    case "Construction":
+      return `${basePath}/construction_pok.webp`;
+    case "Trade":
+      return `${basePath}/trade.webp`;
+    case "Warfare":
+      return `${basePath}/warfare.webp`;
+    case "Technology":
+      return `${basePath}/technology.webp`;
+    case "Imperial":
+      return `${basePath}/imperial.webp`;
+  }
 }

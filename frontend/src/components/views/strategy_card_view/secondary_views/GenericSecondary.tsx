@@ -8,6 +8,7 @@ import {
 } from "@fortawesome/free-regular-svg-icons";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
+import { StrategyCard } from "@/api/bindings/StrategyCard";
 
 export const GenericSecondary = () => {
   const { gameState, sendEvent, playingAs, isGlobal } = useGameContext();
@@ -16,7 +17,7 @@ export const GenericSecondary = () => {
   if (progress.t !== "Strategic") {
     return;
   }
-  const strategyCard = progress.card;
+  const card = progress.card;
 
   const otherPlayers = Object.keys(gameState.players)
     .filter((p) => p !== gameState.currentPlayer)
@@ -28,7 +29,7 @@ export const GenericSecondary = () => {
     })
     .sort(nameSort);
 
-  const sendSecondaryMessage = (player: string, val: string) => {
+  const sendSecondaryMessage = (player: string, val: "Skip" | StrategyCard) => {
     sendEvent({
       StrategicActionSecondary: {
         player: player,
@@ -46,18 +47,12 @@ export const GenericSecondary = () => {
             <FactionIcon faction={p.faction} />
           </legend>
           {p.action ? (
-            <RenderAction performed={p.action === "Skipped"} />
+            <RenderPerformedAction performed={p.action === "Skipped"} />
           ) : p.name === playingAs || isGlobal ? (
-            <div className={styles.buttonsContainer}>
-              <Button onClick={() => sendSecondaryMessage(p.name, "Skip")}>
-                Skip
-              </Button>
-              <Button
-                onClick={() => sendSecondaryMessage(p.name, strategyCard)}
-              >
-                Play
-              </Button>
-            </div>
+            <RenderAction
+              card={card}
+              sendSecondaryMessage={(val) => sendSecondaryMessage(p.name, val)}
+            />
           ) : (
             <p>Has yet to choose</p>
           )}
@@ -67,7 +62,29 @@ export const GenericSecondary = () => {
   );
 };
 
-const RenderAction = ({ performed }: { performed: boolean }) => {
+const RenderAction = ({
+  card,
+  sendSecondaryMessage,
+}: {
+  card: StrategyCard;
+  sendSecondaryMessage: (val: "Skip" | StrategyCard) => void;
+}) => {
+  const costWarning = getCostWarning(card);
+
+  return (
+    <>
+      {costWarning !== null && (
+        <p className={"warningText"}>Remember: {costWarning}</p>
+      )}
+      <div className={styles.buttonsContainer}>
+        <Button onClick={() => sendSecondaryMessage("Skip")}>Skip</Button>
+        <Button onClick={() => sendSecondaryMessage(card)}>Play</Button>
+      </div>
+    </>
+  );
+};
+
+const RenderPerformedAction = ({ performed }: { performed: boolean }) => {
   return (
     <div className={styles.actionContainer}>
       {performed ? (
@@ -78,3 +95,24 @@ const RenderAction = ({ performed }: { performed: boolean }) => {
     </div>
   );
 };
+
+function getCostWarning(card: StrategyCard): string | null {
+  switch (card) {
+    case "Leadership":
+      return "pay 3 influence / token";
+    case "Diplomacy":
+      return "pay 1 token";
+    case "Politics":
+      return "pay 1 token";
+    case "Construction":
+      return "place token in system";
+    case "Trade":
+      return "pay 1 token";
+    case "Warfare":
+      return "pay 1 token";
+    case "Imperial":
+      return "pay 1 token";
+    default:
+      return null;
+  }
+}
