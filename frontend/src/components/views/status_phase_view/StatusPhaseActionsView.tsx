@@ -4,6 +4,7 @@ import { PublicObjective } from "@/api/bindings/PublicObjective";
 import { SecretObjective } from "@/api/bindings/SecretObjective";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 import React, { useState } from "react";
 import styles from "./StatusPhaseView.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
@@ -21,7 +22,9 @@ const ScoreObjectives = () => {
   const { gameState, gameOptions, sendEvent, playingAs, isGlobal, isSpeaker } =
     useGameContext();
 
-  const [revealedObjective, setRevealedObjective] = useState<string>("");
+  const [revealedObjective, setRevealedObjective] = useState<Objective | "">(
+    "",
+  );
 
   const players = Object.keys(gameState.players).map((p) => {
     return {
@@ -85,7 +88,9 @@ const ScoreObjectives = () => {
             <Dropdown
               disabled={!revealUnlocked}
               value={revealedObjective}
-              onChange={(e) => setRevealedObjective(e.target.value)}
+              onChange={(e) =>
+                setRevealedObjective(e.target.value as Objective)
+              }
             >
               <option value="">--Select Objective to Reveal--</option>
               {selectableObjectives.map((o) => (
@@ -175,13 +180,26 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
     });
   };
 
+  const pubInfo = pub ? gameOptions.objectives[pub] : null;
+  const secInfo = sec ? gameOptions.objectives[sec] : null;
+
   return (
     <fieldset>
       <legend>
         <h4>{player.name}</h4>
       </legend>
       {pub !== undefined ? (
-        <p>Public: {pub ? gameOptions.objectives[pub].name : "Skipped"}</p>
+        <p>
+          Public:{" "}
+          {pubInfo ? (
+            <>
+              {pubInfo.name}
+              <InfoButton info={{ Objective: pubInfo }} />
+            </>
+          ) : (
+            "Skipped"
+          )}
+        </p>
       ) : (
         <div className={styles.scoreObjectivesContainer}>
           <Dropdown
@@ -216,7 +234,17 @@ const PlayerObjectives = ({ player }: PlayerObjectivesProps) => {
         </div>
       )}
       {sec !== undefined ? (
-        <p>Secret: {sec ? gameOptions.objectives[sec].name : "Skipped"}</p>
+        <p>
+          Secret:{" "}
+          {secInfo ? (
+            <>
+              {secInfo.name}
+              <InfoButton info={{ Objective: secInfo }} />
+            </>
+          ) : (
+            "Skipped"
+          )}
+        </p>
       ) : (
         <div className={styles.scoreObjectivesContainer}>
           <Dropdown
