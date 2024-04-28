@@ -5,6 +5,7 @@ import styles from "./ScoreViewMode.module.scss";
 import { FactionIcon } from "@/components/elements/factionIcon/FactionIcon";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { Button } from "@/components/elements/button/Button";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -90,13 +91,8 @@ const PlayerSecretView = ({
       </div>
       {playerSecrets.map((secret) => (
         <div key={secret} className={styles.secretObjectiveRow}>
-          <p
-            onClick={() =>
-              showInfo({ Objective: gameOptions.objectives[secret] })
-            }
-          >
-            {secret}
-          </p>
+          {secret}
+          <InfoButton info={{ Objective: gameOptions.objectives[secret] }} />
           <Button
             className={styles.deleteSecretObjectiveButton}
             onClick={() =>
