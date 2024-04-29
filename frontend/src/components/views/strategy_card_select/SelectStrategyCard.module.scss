@@ -3,6 +3,10 @@
 .selectStrategyCardCard {
   width: 100%;
   max-width: 400px;
+
+  & > h2 {
+    text-align: center;
+  }
 }
 
 .strategyCardsContainer {
