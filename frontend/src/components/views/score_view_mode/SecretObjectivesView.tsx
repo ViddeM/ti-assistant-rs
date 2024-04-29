@@ -91,7 +91,7 @@ const PlayerSecretView = ({
       </div>
       {playerSecrets.map((secret) => (
         <div key={secret} className={styles.secretObjectiveRow}>
-          {secret}
+          {gameOptions.objectives[secret].name}
           <InfoButton info={{ Objective: gameOptions.objectives[secret] }} />
           <Button
             className={styles.deleteSecretObjectiveButton}
