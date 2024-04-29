@@ -56,7 +56,9 @@ export const LawsViewMode = () => {
                       </Button>
                     </td>
                     <td>{l.name}</td>
-                    <td><InfoButton info={{Agenda: l}} /></td>
+                    <td>
+                      <InfoButton info={{ Agenda: l }} />
+                    </td>
                   </tr>
                 </React.Fragment>
               ))}

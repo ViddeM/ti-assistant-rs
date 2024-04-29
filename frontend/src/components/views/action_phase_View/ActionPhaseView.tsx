@@ -123,9 +123,13 @@ const ComponentSelectRow = () => {
   useEffect(() => setComponentMode(""), [gameState]);
 
   const currentPlayer = gameState.currentPlayer;
-  const availableLeaders = currentPlayer ? gameState.availableLeaders[currentPlayer] : []
-  const actionLeaders = availableLeaders.filter((l) => gameOptions.leaders[l].kind === "Action")
-  const canPlayLeaders = actionLeaders.length > 0
+  const availableLeaders = currentPlayer
+    ? gameState.availableLeaders[currentPlayer]
+    : [];
+  const actionLeaders = availableLeaders.filter(
+    (l) => gameOptions.leaders[l].kind === "Action",
+  );
+  const canPlayLeaders = actionLeaders.length > 0;
 
   return (
     <>
@@ -164,9 +168,7 @@ const ComponentSelectRow = () => {
           Frontier Card
         </Button>
         <Button
-          disabled={
-            componentMode === "PLAY_LEADER" || !canPlayLeaders
-          }
+          disabled={componentMode === "PLAY_LEADER" || !canPlayLeaders}
           onClick={() => setComponentMode("PLAY_LEADER")}
         >
           Play Leader
@@ -379,33 +381,35 @@ const PlayLeaderView = () => {
   const [selected, setSelected] = useState<Leader | "">("");
 
   const currentPlayer = gameState.currentPlayer;
-  const availableLeaders = currentPlayer ? gameState.availableLeaders[currentPlayer] : []
+  const availableLeaders = currentPlayer
+    ? gameState.availableLeaders[currentPlayer]
+    : [];
   const actionLeaders = availableLeaders
-    .map((l) => ({ id: l, info: gameOptions.leaders[l]}))
-    .filter((leader) => leader.info.kind === "Action")
+    .map((l) => ({ id: l, info: gameOptions.leaders[l] }))
+    .filter((leader) => leader.info.kind === "Action");
 
   return (
     <div>
       <fieldset className={styles.playActionCardContainer}>
         <legend>Play Leader</legend>
         <table>
-        {actionLeaders.map((leader) => (
-          <tr key={leader.id}>
-            <Button
-              onClick={() =>
-                sendEvent({
-                  LeaderActionBegin: {
-                    player: gameState.currentPlayer,
-                    leader: leader.id,
-                  },
-                })
-              }
-            >
-              {leader.info.name}
-            </Button>
-            <InfoButton info={{Leader: leader.info}}/>
-          </tr>
-        ))}
+          {actionLeaders.map((leader) => (
+            <tr key={leader.id}>
+              <Button
+                onClick={() =>
+                  sendEvent({
+                    LeaderActionBegin: {
+                      player: gameState.currentPlayer,
+                      leader: leader.id,
+                    },
+                  })
+                }
+              >
+                {leader.info.name}
+              </Button>
+              <InfoButton info={{ Leader: leader.info }} />
+            </tr>
+          ))}
         </table>
       </fieldset>
     </div>
