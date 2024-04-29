@@ -94,7 +94,10 @@ const DisplayPlayer = ({ player }: DisplayPlayerProps) => {
       <h3>{player.name}</h3>
       <div className={styles.factionRow}>
         <FactionIcon faction={player.faction} />
-        <p className={styles.factionName}>{faction.name}</p>
+        <p className={styles.factionName}>{faction.name}:</p>
+        <p className={`marginLeft`}>
+          <span className={`playerColor${player.color}`}>{player.color}</span>
+        </p>
       </div>
     </div>
   );
