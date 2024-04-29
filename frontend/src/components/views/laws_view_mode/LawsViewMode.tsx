@@ -2,6 +2,7 @@ import { GameOptions } from "@/api/bindings/GameOptions";
 import { GameState } from "@/api/bindings/GameState";
 import { Agenda } from "@/api/bindings/Agenda";
 import { Button } from "@/components/elements/button/Button";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
@@ -29,7 +30,7 @@ export const LawsViewMode = () => {
       <table className={styles.lawsTable}>
         <thead>
           <tr>
-            <th colSpan={2} align="center">
+            <th colSpan={3} align="center">
               <h2>Laws</h2>
             </th>
           </tr>
@@ -55,13 +56,14 @@ export const LawsViewMode = () => {
                       </Button>
                     </td>
                     <td>{l.name}</td>
+                    <td><InfoButton info={{Agenda: l}} /></td>
                   </tr>
                 </React.Fragment>
               ))}
             </>
           ) : (
             <tr>
-              <td colSpan={2} align="center">
+              <td colSpan={3} align="center">
                 No laws in play
               </td>
             </tr>
