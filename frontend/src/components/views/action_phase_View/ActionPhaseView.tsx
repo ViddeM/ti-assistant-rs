@@ -438,19 +438,19 @@ function playerEmoji(name: string): string {
     case "potholes":
       return "❤️";
     case "tux":
-      return "🐧";
+      return "🐢";
     case "sponken":
-      return "🦤";
+      return "👺";
     case "vidde":
-      return "⌨️";
+      return "🛸";
     case "swexbe":
-      return "🇪🇸";
+      return "💥";
     case "håll":
-      return "🖱️";
+      return "🧬";
     case "hoidi":
-      return "🍰";
+      return "🐦";
     case "gurr":
-      return "🦁";
+      return "⛴️️";
     default:
       return "";
   }
