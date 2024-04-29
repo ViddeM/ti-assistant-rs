@@ -116,9 +116,10 @@ function getInfo(info: InfoObject): InfoFields {
           <Image
             alt={`Strategy card ${strategy}`}
             src={imagePath}
-            style={{ objectFit: "contain" }}
-            width={300}
-            height={300}
+            width={0}
+            height={0}
+            style={{ width: "100%", objectFit: "contain", height: "auto" }}
+            sizes="100vw"
           />
         ),
       },
