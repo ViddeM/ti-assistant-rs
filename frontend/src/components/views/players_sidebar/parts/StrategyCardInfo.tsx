@@ -3,6 +3,7 @@ import {
   StrategyCardNumber,
 } from "@/resources/types/strategyCards";
 import styles from "./StrategyCardInfo.module.scss";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 
 export interface StrategicCardInfo {
   name: StrategyCard;
@@ -29,6 +30,11 @@ export const StrategyCardInfo = ({ cards }: StrategyCardInfoProps) => {
           }`}
         >
           <p key={c.name}>{c.name}</p>
+          <InfoButton
+            info={{
+              Strategy: c.name,
+            }}
+          />
         </div>
       ))}
     </div>
