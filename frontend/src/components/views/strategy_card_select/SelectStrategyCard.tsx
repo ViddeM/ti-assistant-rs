@@ -6,6 +6,7 @@ import {
   ALL_STRATEGY_CARDS,
   StrategyCard,
 } from "@/resources/types/strategyCards";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 
 export type SelectedCard = {
   card: StrategyCard;
@@ -26,21 +27,27 @@ export const SelectStrategyCardView = ({
   startActionPhase,
 }: SelectedCardProps) => {
   return (
-    <div className="card">
+    <div className={`card ${styles.selectStrategyCardCard}`}>
       <h2>Select a strategy card</h2>
       <div className={styles.strategyCardsContainer}>
         {ALL_STRATEGY_CARDS.map((card) => (
-          <StrategyCardButton
-            key={card}
-            strategyCard={card}
-            selectedByFaction={
-              selectedCards.filter((c) => c.card === card)[0]?.faction ?? null
-            }
-            setSelected={() => selectCard(card)}
-            finishedSelectingCards={
-              selectedCards.length === expectedStrategyCards
-            }
-          />
+          <div key={card} className={styles.selectCardRow}>
+            <InfoButton
+              info={{
+                Strategy: card,
+              }}
+            />
+            <StrategyCardButton
+              strategyCard={card}
+              selectedByFaction={
+                selectedCards.filter((c) => c.card === card)[0]?.faction ?? null
+              }
+              setSelected={() => selectCard(card)}
+              finishedSelectingCards={
+                selectedCards.length === expectedStrategyCards
+              }
+            />
+          </div>
         ))}
 
         <Button

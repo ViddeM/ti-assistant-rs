@@ -1,5 +1,10 @@
 @import "../../../resources/styles/vars";
 
+.selectStrategyCardCard {
+  width: 100%;
+  max-width: 400px;
+}
+
 .strategyCardsContainer {
   display: flex;
   flex-direction: column;
@@ -16,9 +21,20 @@
   border-style: solid;
   font-weight: bold;
   font-size: 24px;
+  flex: 1;
 
   & > p {
     margin: 0 auto;
+  }
+}
+
+.selectCardRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  > :first-child {
+    margin: 0 $marginLarge;
   }
 }
 
