@@ -3,4 +3,4 @@
 /**
  * A phase of the game (including some that exist only for technical reasons).
  */
-export type Phase = "Creation" | "Setup" | "Strategy" | "Action" | "StrategicAction" | "TacticalAction" | "ActionCardAction" | "FrontierCardAction" | "RelicAction" | "EndActionTurn" | "Status" | "Relics" | "Agenda";
+export type Phase = "Creation" | "Setup" | "Strategy" | "Action" | "StrategicAction" | "TacticalAction" | "ActionCardAction" | "LeaderAction" | "FrontierCardAction" | "RelicAction" | "EndActionTurn" | "Status" | "Relics" | "Agenda";

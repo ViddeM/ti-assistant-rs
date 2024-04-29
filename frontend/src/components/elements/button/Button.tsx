@@ -11,6 +11,6 @@ export const ButtonBase: FC<ButtonBaseProps> = ({ className, ...props }) => {
 export type ButtonProps = ButtonBaseProps;
 
 export const Button: FC<ButtonProps> = ({ className, ...props }) => {
-  const style = `${className} ${styles.button}`;
+  const style = `${className?className:""} ${styles.button}`;
   return <ButtonBase className={style} {...props} />;
 };

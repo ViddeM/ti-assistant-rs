@@ -103,10 +103,23 @@ impl Score {
     }
 
     /// Get the number of scored objectives for this player (not the points).
+    pub fn scored_objectives_count(&self, player: &PlayerId) -> usize {
+        self.scored_public_objectives_count(player) + self.scored_secret_objectives_count(player)
+    }
+
+    /// Get the number of scored public objectives for this player (not the points).
     pub fn scored_public_objectives_count(&self, player: &PlayerId) -> usize {
         self.revealed_objectives
             .iter()
             .filter(|(_objective, has_scored)| has_scored.contains(player))
             .count()
+    }
+
+    /// Get the number of scored secret objectives for this player (not the points).
+    pub fn scored_secret_objectives_count(&self, player: &PlayerId) -> usize {
+        self.secret_objectives
+            .get(player)
+            .map(|secrets| secrets.len())
+            .unwrap_or(0)
     }
 }

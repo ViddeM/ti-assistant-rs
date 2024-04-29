@@ -5,8 +5,10 @@ import { StrategyCard } from "@/resources/types/strategyCards";
 import styles from "./ActionPhaseView.module.scss";
 import { GameState } from "@/api/bindings/GameState";
 import { ActionCard } from "@/api/bindings/ActionCard";
+import { Leader } from "@/api/bindings/Leader";
 import { useEffect, useState } from "react";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
+import { InfoButton } from "@/components/elements/button/InfoButton";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort, stringSort } from "@/utils/Utils";
 
@@ -110,6 +112,7 @@ type ComponentMode =
   | "PLAY_RELIC"
   | "GAIN_RELIC"
   | "FRONTIER_CARD"
+  | "PLAY_LEADER"
   | "";
 
 const ComponentSelectRow = () => {
@@ -118,6 +121,11 @@ const ComponentSelectRow = () => {
   const [componentMode, setComponentMode] = useState<ComponentMode>("");
 
   useEffect(() => setComponentMode(""), [gameState]);
+
+  const currentPlayer = gameState.currentPlayer;
+  const availableLeaders = currentPlayer ? gameState.availableLeaders[currentPlayer] : []
+  const actionLeaders = availableLeaders.filter((l) => gameOptions.leaders[l].kind === "Action")
+  const canPlayLeaders = actionLeaders.length > 0
 
   return (
     <>
@@ -155,6 +163,14 @@ const ComponentSelectRow = () => {
         >
           Frontier Card
         </Button>
+        <Button
+          disabled={
+            componentMode === "PLAY_LEADER" || !canPlayLeaders
+          }
+          onClick={() => setComponentMode("PLAY_LEADER")}
+        >
+          Play Leader
+        </Button>
       </div>
       {componentMode !== "" && <DisplayComponentMode mode={componentMode} />}
     </>
@@ -175,6 +191,8 @@ const DisplayComponentMode = ({ mode }: DisplayComponentModeProps) => {
       return <PlayRelicCardView />;
     case "FRONTIER_CARD":
       return <FrontierCardView />;
+    case "PLAY_LEADER":
+      return <PlayLeaderView />;
     default:
       return <p>Invalid display mode {mode}</p>;
   }
@@ -350,6 +368,45 @@ const FrontierCardView = () => {
         >
           Play
         </Button>
+      </fieldset>
+    </div>
+  );
+};
+
+const PlayLeaderView = () => {
+  const { gameState, gameOptions, sendEvent } = useGameContext();
+
+  const [selected, setSelected] = useState<Leader | "">("");
+
+  const currentPlayer = gameState.currentPlayer;
+  const availableLeaders = currentPlayer ? gameState.availableLeaders[currentPlayer] : []
+  const actionLeaders = availableLeaders
+    .map((l) => ({ id: l, info: gameOptions.leaders[l]}))
+    .filter((leader) => leader.info.kind === "Action")
+
+  return (
+    <div>
+      <fieldset className={styles.playActionCardContainer}>
+        <legend>Play Leader</legend>
+        <table>
+        {actionLeaders.map((leader) => (
+          <tr key={leader.id}>
+            <Button
+              onClick={() =>
+                sendEvent({
+                  LeaderActionBegin: {
+                    player: gameState.currentPlayer,
+                    leader: leader.id,
+                  },
+                })
+              }
+            >
+              {leader.info.name}
+            </Button>
+            <InfoButton info={{Leader: leader.info}}/>
+          </tr>
+        ))}
+        </table>
       </fieldset>
     </div>
   );

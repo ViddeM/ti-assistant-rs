@@ -5,6 +5,7 @@ import type { AgendaElect } from "./AgendaElect";
 import type { AgendaRecord } from "./AgendaRecord";
 import type { AgendaState } from "./AgendaState";
 import type { GameSettings } from "./GameSettings";
+import type { Leader } from "./Leader";
 import type { Phase } from "./Phase";
 import type { Player } from "./Player";
 import type { Score } from "./Score";
@@ -80,6 +81,10 @@ laws: { [key in Agenda]: AgendaElect },
  * State for the status phase.
  */
 statusPhaseState: StatusPhaseState | null, 
+/**
+ * Leaders available for play for each player.
+ */
+availableLeaders: { [key: string]: Array<Leader> }, 
 /**
  * Weather or not time should be tracked.
  */

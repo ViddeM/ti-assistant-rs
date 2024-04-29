@@ -533,7 +533,7 @@ impl GameState {
     /// Update [GameState::available_leaders].
     pub fn update_available_leaders(&mut self) {
         for (player_id, player) in self.players.iter() {
-            let can_play_hero = self.score.scored_public_objectives_count(player_id) >= 3;
+            let can_play_hero = self.score.scored_objectives_count(player_id) >= 3;
 
             let available_to_this_player = Leader::iter()
                 // TODO: there may be cases where players can use other players factions

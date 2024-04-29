@@ -1,4 +1,5 @@
 import { AgendaInfo } from "@/api/bindings/AgendaInfo";
+import { LeaderInfo } from "@/api/bindings/LeaderInfo";
 import { ObjectiveInfo } from "@/api/bindings/ObjectiveInfo";
 import { ObjectiveKind } from "@/api/bindings/ObjectiveKind";
 import { TechInfo } from "@/api/bindings/TechInfo";
@@ -11,6 +12,7 @@ import Image from "next/image";
 
 export type InfoObject =
   | { Agenda: AgendaInfo }
+  | { Leader: LeaderInfo }
   | { Objective: ObjectiveInfo }
   | { Strategy: StrategyCard }
   | { Tech: TechInfo };
@@ -77,6 +79,18 @@ function getInfo(info: InfoObject): InfoFields {
     };
   }
 
+  if ("Leader" in info) {
+    const leader = info["Leader"];
+    return {
+      title: leader.name,
+      subtitle: leader.type,
+      description: {
+        type: "description",
+        description: leader.description,
+      },
+    };
+  }
+
   if ("Objective" in info) {
     const objective = info["Objective"];
     return {
@@ -85,18 +99,6 @@ function getInfo(info: InfoObject): InfoFields {
       description: {
         type: "description",
         description: objective.condition,
-      },
-    };
-  }
-
-  if ("Tech" in info) {
-    const tech = info["Tech"];
-    return {
-      title: tech.name,
-      subtitle: techTypeToString(tech.techType),
-      description: {
-        type: "description",
-        description: tech.effects.join("\n"),
       },
     };
   }
@@ -119,6 +121,18 @@ function getInfo(info: InfoObject): InfoFields {
             height={400}
           />
         ),
+      },
+    };
+  }
+
+  if ("Tech" in info) {
+    const tech = info["Tech"];
+    return {
+      title: tech.name,
+      subtitle: techTypeToString(tech.techType),
+      description: {
+        type: "description",
+        description: tech.effects.join("\n"),
       },
     };
   }

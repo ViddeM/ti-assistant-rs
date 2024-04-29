@@ -16,7 +16,7 @@ export const InfoButton: FC<InfoButtonProps> = ({
 }) => {
   const { showInfo } = useGameContext();
 
-  const style = `${className} ${styles.infoButton}`;
+  const style = `${className?className:""} ${styles.infoButton}`;
 
   return (
     <button onClick={() => showInfo(info)} className={style} {...props}>

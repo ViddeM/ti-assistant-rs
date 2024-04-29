@@ -719,7 +719,7 @@ fn try_update_game_state(
                 leader.info().name(),
             );
 
-            // TODO, the following leaders may need special handling:
+            // TODO: the following leaders may need special handling:
             //   XxekirGrom - discard law from play (sure, absolutely)
             //   UlTheProgenitor - attach to planet (mhm)
             //   UnitDsgnFlayesh - take a planet (ok, easy enough)
@@ -729,12 +729,14 @@ fn try_update_game_state(
             //   MathisMathinus - perform a strategic action (WHAT)
             //   ZeuCxIII - any one player gets to take a tactical acton (WTF)
             //   HeshAndPrit - draw relic and do <=2 secondary strategy actions (NO! GOD NO!)
-            game_state.action_progress =
-                Some(ActionPhaseProgress::Leader(LeaderProgress::Nothing {
-                    leader,
-                }));
-
-            game_state.phase = Phase::LeaderAction;
+            //
+            // TODO: when implementing this, add a LeaderAction phase
+            //game_state.action_progress =
+            //    Some(ActionPhaseProgress::Leader(LeaderProgress::Nothing {
+            //        leader,
+            //    }));
+            //game_state.phase = Phase::LeaderAction;
+            game_state.phase = Phase::EndActionTurn
         }
         Event::LeaderActionCommit { player, leader } => {
             game_state.assert_phase(Phase::LeaderAction)?;
