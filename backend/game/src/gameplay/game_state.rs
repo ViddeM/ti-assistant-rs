@@ -535,9 +535,24 @@ impl GameState {
         for (player_id, player) in self.players.iter() {
             let can_play_hero = self.score.scored_objectives_count(player_id) >= 3;
 
+            // Yssaril can play everyones agents
+            let yssaril_agent = |leader: &Leader| {
+                if player.faction != Faction::YssarilTribes {
+                    return false;
+                }
+
+                if !matches!(leader, Leader::Agent(..)) {
+                    return false;
+                }
+
+                self.players
+                    .values()
+                    .any(|player| player.faction == leader.info().faction())
+            };
+
             let available_to_this_player = Leader::iter()
                 // TODO: there may be cases where players can use other players factions
-                .filter(|leader| leader.info().faction() == player.faction)
+                .filter(|leader| leader.info().faction() == player.faction || yssaril_agent(leader))
                 .filter(|leader| leader.info().ability_kind() == LeaderAbilityKind::Action)
                 .filter(|leader| can_play_hero || !matches!(leader, Leader::Hero(..)))
                 .collect();
