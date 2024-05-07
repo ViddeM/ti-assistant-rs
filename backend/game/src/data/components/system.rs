@@ -8,6 +8,9 @@ use crate::data::common::{expansions::Expansion, faction::Faction};
 
 use super::planet::Planet;
 
+/// The system ID for the mecatol rex system.
+pub const MECATOL_REX_ID: &'static str = "18";
+
 /// What type of wormhole this is.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
 #[ts(export)]

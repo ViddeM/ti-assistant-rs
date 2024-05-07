@@ -12,6 +12,8 @@ pub mod game_event_handler;
 pub mod game_settings;
 /// The game state.
 pub mod game_state;
+/// The galactic map
+pub mod map;
 /// A player.
 pub mod player;
 /// Score keeping.
