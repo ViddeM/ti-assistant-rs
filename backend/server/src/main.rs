@@ -13,7 +13,7 @@ use ti_helper_db::{
     game_id::GameId,
     queries,
 };
-use ti_helper_game::gameplay::{error::GameError, event::Event, game::Game};
+use ti_helper_game::gameplay::{error::GameError, event::Event, game::Game, map::HexMap};
 use ti_helper_websocket::{
     websocket_client::WsClient,
     ws_message::{WsMessageIn, WsMessageOut},
@@ -127,6 +127,11 @@ pub async fn main() -> eyre::Result<()> {
         .await
         .wrap_err_with(|| format!("Failed to listen on {}:{}", opt.host, opt.port))?;
     log::info!("Listening on {}:{}", opt.host, opt.port);
+
+    let milty_string = "87A1 89B3 47 87A4 89B0 78 37 64 46 29 72 22 24 63 44 40 23 76 50 30 48 28 43 83B2 67 69 34 27 77 26 36 74 83B2 79 19 38 53 42 59 7 0 0 14 21 0 4 39 71 15 80 68 52 0 0 17 75 0 58 41 60";
+    log::info!("Trying out milty string {milty_string}");
+    let hex_map = HexMap::from_milty_string(milty_string).expect("failed to parse milty string");
+    log::info!("hex_map: {hex_map:#?}");
 
     loop {
         // TODO: figure out if this error should really be fatal

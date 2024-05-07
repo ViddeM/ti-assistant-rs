@@ -1,8 +1,11 @@
-use eyre::ContextCompat;
+use std::str::FromStr;
+
+use eyre::{Context, ContextCompat};
 
 use crate::data::components::system::{systems, System, SystemId, MECATOL_REX_ID};
 
 /// The galactic map.
+#[derive(Debug, Clone)]
 pub struct HexMap {
     tiles: Vec<Tile>,
     ring_count: u32,
@@ -28,11 +31,15 @@ impl HexMap {
         let mut map: Vec<Option<&System>> = milty_string
             .split(' ')
             .map(|s| {
-                if s == "0" {
-                    return Ok(None);
-                }
+                let milty_system: MiltySystemId = s
+                    .parse()
+                    .wrap_err_with(|| format!("Milty system ID does not exist ({s:?})?"))?;
 
-                Ok(Some(systems.get(s).wrap_err_with(|| {
+                let Some(system_id) = milty_system.to_system_id() else {
+                    return Ok(None);
+                };
+
+                Ok(Some(systems.get(&system_id).wrap_err_with(|| {
                     format!("Milty system ID does not exist ({s:?})?")
                 })?))
             })
@@ -45,13 +52,13 @@ impl HexMap {
 
         let mut ring = 0;
         let mut ring_pos = 0;
-        for (index, system) in map.into_iter().enumerate() {
+        for (index, system) in map.iter().enumerate() {
             let coord = Coordinate {
                 ring,
                 position: ring_pos,
             };
 
-            if Self::RING_STARTING_INDICES.contains(&index) {
+            if Self::RING_STARTING_INDICES.contains(&(index + 1)) {
                 ring += 1;
                 ring_pos = 0;
             } else {
@@ -74,7 +81,8 @@ impl HexMap {
             system: systems
                 .get(Self::WORMHOLE_NEXUS_TILE_ID)
                 .wrap_err("Wormhole nexus not in list of systems?")?
-                .id,
+                .id
+                .clone(),
             position: HexPosition::OutsideGalaxy,
         });
 
@@ -86,20 +94,28 @@ impl HexMap {
             let creuss_home_system = systems
                 .get(Self::CREUSS_HOME_SYSTEM)
                 .wrap_err("Creuss homesystem not in list of systems?")?;
-            tiles.push(creuss_home_system);
+            tiles.push(Tile {
+                system: creuss_home_system.id.clone(),
+                position: HexPosition::OutsideGalaxy,
+            });
         }
 
-        todo!("NOT IMPLEMENTED");
+        Ok(HexMap {
+            tiles,
+            ring_count: ring,
+        })
     }
 }
 
 /// A tile in play.
+#[derive(Debug, Clone)]
 pub struct Tile {
     system: SystemId,
     position: HexPosition,
 }
 
 /// A position of a tile in the game.
+#[derive(Debug, Clone)]
 pub enum HexPosition {
     /// Outside of the galaxy, e.g. Creuss home system and Mallice.
     OutsideGalaxy,
@@ -108,9 +124,67 @@ pub enum HexPosition {
 }
 
 /// A coordinate of a tile in the system.
+#[derive(Debug, Clone)]
 pub struct Coordinate {
     /// Which ring the coordinate is in (starting with mecatol rex on 0).
     ring: u32,
     /// Which position the tile is on starting from the column "above" mecatol rex at 0 and going clockwise around the galaxy.
     position: u32,
+}
+
+enum MiltySystemId {
+    Number(u32),
+    Hyperlane(HyperLaneTile),
+    Empty,
+}
+
+impl FromStr for MiltySystemId {
+    type Err = eyre::Report;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if let Ok(n) = s.parse::<u32>() {
+            if n == 0 {
+                return Ok(MiltySystemId::Empty);
+            }
+
+            return Ok(MiltySystemId::Number(n));
+        }
+
+        let mut chars = s.chars().collect::<Vec<char>>();
+        let number = chars
+            .pop()
+            .wrap_err("Failed to extract number from milty system ID")?;
+
+        let variant = chars
+            .pop()
+            .wrap_err("Failed to extract variant from system ID")?;
+
+        let system_id = chars
+            .into_iter()
+            .collect::<String>()
+            .parse::<u32>()
+            .wrap_err("Failed to parse system id from milty")?;
+
+        Ok(MiltySystemId::Hyperlane(HyperLaneTile {
+            system_id,
+            variant: variant.to_string(),
+            number: number.into(),
+        }))
+    }
+}
+
+impl MiltySystemId {
+    fn to_system_id(&self) -> Option<SystemId> {
+        match self {
+            MiltySystemId::Number(n) => Some(n.to_string()),
+            MiltySystemId::Hyperlane(h) => Some(format!("{}{}", h.system_id, h.variant)),
+            MiltySystemId::Empty => None,
+        }
+    }
+}
+
+struct HyperLaneTile {
+    system_id: u32,
+    variant: String,
+    number: u32,
 }
