@@ -7,13 +7,15 @@ use crate::data::components::system::{systems, System, SystemId, MECATOL_REX_ID}
 /// The galactic map.
 #[derive(Debug, Clone)]
 pub struct HexMap {
-    tiles: Vec<Tile>,
-    ring_count: u32,
+    /// All tiles that are in the game (at start).
+    pub tiles: Vec<Tile>,
+    /// How many rings there are in the galactic map (does not include tiles that are 'outside the galaxy').
+    pub ring_count: u32,
 }
 
 impl HexMap {
     const RING_STARTING_INDICES: [usize; 7] = [0, 1, 7, 19, 37, 61, 91];
-    const WORMHOLE_NEXUS_TILE_ID: &'static str = "80";
+    const WORMHOLE_NEXUS_TILE_ID: &'static str = "82";
     const CREUSS_WORMHILE_ID: &'static str = "17";
     const CREUSS_HOME_SYSTEM: &'static str = "51";
 
@@ -110,8 +112,10 @@ impl HexMap {
 /// A tile in play.
 #[derive(Debug, Clone)]
 pub struct Tile {
-    system: SystemId,
-    position: HexPosition,
+    /// The id of the system.
+    pub system: SystemId,
+    /// Where it exists on the galactic map.
+    pub position: HexPosition,
 }
 
 /// A position of a tile in the game.
@@ -127,9 +131,9 @@ pub enum HexPosition {
 #[derive(Debug, Clone)]
 pub struct Coordinate {
     /// Which ring the coordinate is in (starting with mecatol rex on 0).
-    ring: u32,
+    pub ring: u32,
     /// Which position the tile is on starting from the column "above" mecatol rex at 0 and going clockwise around the galaxy.
-    position: u32,
+    pub position: u32,
 }
 
 enum MiltySystemId {
