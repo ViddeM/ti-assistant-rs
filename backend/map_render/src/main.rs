@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, ops::Div};
+use std::ops::Div;
 
 use bevy::prelude::*;
 use ti_helper_game::gameplay::map::{Coordinate, HexMap, HexPosition};
@@ -10,11 +10,18 @@ fn main() {
         .run();
 }
 
+const TILE_WIDTH: f32 = 364.0;
+const TILE_HEIGHT: f32 = 317.0;
+
+const TILE_QUARTER_WIDTH: f32 = TILE_WIDTH * 0.25;
+const TILE_THREE_QUARTER_WIDTH: f32 = TILE_QUARTER_WIDTH * 3.0;
+const TILE_HALF_HEIGHT: f32 = TILE_HEIGHT * 0.5;
+
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("slider_regular.ttf");
     let text_style = TextStyle {
         font: font.clone(),
-        font_size: 18.0,
+        font_size: 32.0,
         color: Color::WHITE,
     };
 
@@ -26,24 +33,25 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     let mut outside_galaxy_count = 0;
 
     for tile in hex_map.tiles {
-        let position = match tile.position {
+        let tile_pos = match tile.position {
             HexPosition::OutsideGalaxy => {
-                let transform = Transform::from_translation(Vec3::new(
-                    450.0,
-                    150.0 - (outside_galaxy_count as f32 * 300.0),
-                    1.0,
-                ));
-
                 outside_galaxy_count += 1;
-                transform
-            }
-            HexPosition::Pos(coord) => {
-                let dist = 330.0;
-                let tile_pos = get_tile_position(coord) * Vec2::new(dist, dist);
 
-                Transform::from_translation(Vec3::new(tile_pos.x, tile_pos.y, 1.0))
+                Vec2::new(-5.5, -2.0 + 4.0 * outside_galaxy_count as f32)
             }
+            HexPosition::Pos(coord) => get_tile_position(coord),
         };
+
+        let position = Transform::from_translation(Vec3::new(
+            tile_pos.x * TILE_THREE_QUARTER_WIDTH,
+            tile_pos.y * TILE_HEIGHT + (TILE_HEIGHT.div(2.0))
+                - if (tile_pos.x as i32) % 2 == 0 {
+                    TILE_HALF_HEIGHT
+                } else {
+                    0.0
+                },
+            1.0,
+        ));
 
         commands.spawn(SpriteBundle {
             texture: asset_server.load(format!("tiles/{}.png", tile.system)),
@@ -51,57 +59,158 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             ..default()
         });
 
-        // commands.spawn(Text2dBundle {
-        //     text: Text::from_section(tile.system, text_style.clone())
-        //         .with_justify(JustifyText::Left),
-        //     transform: position,
-        //     ..default()
-        // });
+        commands.spawn(Text2dBundle {
+            text: Text::from_section(tile.system, text_style.clone())
+                .with_justify(JustifyText::Left),
+            transform: position,
+            ..default()
+        });
     }
 }
 
-const RING_TOTAL_ANGLE: f32 = 360.0;
 fn get_tile_position(coord: Coordinate) -> Vec2 {
-    let tiles_in_ring = num_tiles_in_ring(coord.ring);
-    let half = (tiles_in_ring as f32).div(2.0) as i32;
-    let quarter = (half as f32).div(2.0).floor() as i32;
-
-    let coord_x = coord.position as i32;
-    let x_val = coord_x % quarter;
-    let x_val_2 = if coord_x <= half {
-        x_val
-    } else {
-        quarter - x_val
-    };
-    let x = if coord_x >= half { -x_val_2 } else { x_val_2 };
-
-    let coord_y = coord.ring * 2;
-
-    let angle = (RING_TOTAL_ANGLE.div(tiles_in_ring as f32) * coord.position as f32).to_radians()
-        - (PI * 3.0).div(2.0);
-
-    Vec2::from_angle(angle) * Vec2::new(coord.ring as f32, coord.ring as f32)
-}
-
-fn num_tiles_in_ring(ring: u32) -> u32 {
-    if ring == 0 {
-        return 1;
+    if coord.ring == 0 {
+        return Vec2::ZERO;
     }
 
-    ring * 6
+    let radius = coord.ring as i32;
+    let ring_pos = coord.position as i32;
+
+    let full = (radius * 6) as i32;
+    let half = (radius * 3) as i32;
+    let quarter = ((radius as f32) * 1.5).ceil() as i32;
+
+    let x_right_half = ring_pos % half;
+    let x_offset = if x_right_half >= quarter {
+        half - x_right_half
+    } else {
+        x_right_half
+    };
+
+    let x_absolute = x_offset.min(radius); // The x value increases for each position in the top-right quadrant until we reach the 'radius' width, then it goes down from there.
+    let x = if ring_pos <= half {
+        x_absolute
+    } else {
+        -x_absolute
+    };
+
+    // Lets start by transforming everything into the top-right quadrant.
+    let y_right_half = if ring_pos > half {
+        full - ring_pos
+    } else {
+        ring_pos
+    };
+
+    let half_steps_top = y_right_half.min(radius);
+    let half_steps_bottom = (radius - (half - y_right_half)).max(0).min(radius);
+    let half_steps = half_steps_bottom + half_steps_top;
+
+    let full_steps = (y_right_half - half_steps).max(0);
+
+    let y_steps = (half_steps as f32).div(2.0).ceil() as i32 + full_steps;
+
+    let y = radius - y_steps;
+
+    //     println!(
+    //         "
+    // \t ({radius}, {ring_pos})
+    // \t {full} -> {half} -> {quarter}
+    // \t Right half: {y_right_half}
+    // \t half_steps: {half_steps} + (top) {half_steps_top} + (bottom) {half_steps_bottom}
+    // \t full_steps: {full_steps}
+    // \t y_steps: {y_steps}
+    // \t y: {y}
+    //     "
+    //     );
+
+    Vec2::new(x as f32, y as f32)
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+mod test {
+    use bevy::math::Vec2;
+    use ti_helper_game::gameplay::map::Coordinate;
 
-    const EXPECTED_OUTCOMES: [(u32, u32); 7] =
-        [(0, 1), (1, 6), (2, 12), (3, 18), (4, 24), (5, 30), (6, 36)];
+    use super::get_tile_position;
 
     #[test]
-    fn rings_return_expected_number() {
-        for (ring, expected) in EXPECTED_OUTCOMES.iter() {
-            assert_eq!(num_tiles_in_ring(*ring), *expected);
-        }
+    fn center_maps_correctly() {
+        test_tile(0, 0, 0, 0)
+    }
+
+    #[test]
+    fn spokes_maps_correctly() {
+        // Above center
+        test_tile(1, 0, 0, 1);
+        test_tile(2, 0, 0, 2);
+        test_tile(3, 0, 0, 3);
+        test_tile(4, 0, 0, 4);
+        test_tile(5, 0, 0, 5);
+
+        // Below center
+        test_tile(1, 3, 0, -1);
+        test_tile(2, 6, 0, -2);
+        test_tile(3, 9, 0, -3);
+        test_tile(4, 12, 0, -4);
+        test_tile(5, 15, 0, -5);
+
+        // Up-right
+        test_tile(1, 1, 1, 0);
+        test_tile(2, 2, 2, 1);
+        test_tile(3, 3, 3, 1);
+        test_tile(4, 4, 4, 2);
+        test_tile(5, 5, 5, 2);
+
+        // Down-right
+        test_tile(1, 2, 1, -1);
+        test_tile(2, 4, 2, -1);
+        test_tile(3, 6, 3, -2);
+        test_tile(4, 8, 4, -2);
+        test_tile(5, 10, 5, -3);
+
+        // Down-left
+        test_tile(1, 4, -1, -1);
+        test_tile(2, 8, -2, -1);
+        test_tile(3, 12, -3, -2);
+        test_tile(4, 16, -4, -2);
+        test_tile(5, 20, -5, -3);
+
+        // Up-left
+        test_tile(1, 5, -1, 0);
+        test_tile(2, 10, -2, 1);
+        test_tile(3, 15, -3, 1);
+        test_tile(4, 20, -4, 2);
+        test_tile(5, 25, -5, 2);
+    }
+
+    #[test]
+    fn off_spoke_maps_correctly() {
+        test_tile(2, 1, 1, 1);
+        test_tile(2, 5, 1, -2);
+        test_tile(3, 7, 2, -2);
+        test_tile(4, 18, -4, 0);
+    }
+
+    #[test]
+    fn top_right_quadrant_maps_correctly() {
+        test_tile(1, 0, 0, 1);
+        test_tile(1, 1, 1, 0);
+        test_tile(2, 0, 0, 2);
+        test_tile(2, 1, 1, 1);
+        test_tile(2, 2, 2, 1);
+        test_tile(2, 3, 2, 0);
+        test_tile(3, 0, 0, 3);
+        test_tile(3, 1, 1, 2);
+        test_tile(3, 3, 3, 1);
+        test_tile(3, 4, 3, 0);
+    }
+
+    fn test_tile(ring: u32, position: u32, expected_x: i32, expected_y: i32) {
+        let t = get_tile_position(Coordinate { ring, position });
+        assert_eq!(
+            Vec2::new(expected_x as f32, expected_y as f32),
+            t,
+            "testing ring {ring} position {position} expected ({expected_x}, {expected_y})"
+        );
     }
 }
