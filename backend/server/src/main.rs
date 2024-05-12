@@ -13,7 +13,7 @@ use ti_helper_db::{
     game_id::GameId,
     queries,
 };
-use ti_helper_game::gameplay::{error::GameError, event::Event, game::Game, map::HexMap};
+use ti_helper_game::gameplay::{error::GameError, event::Event, game::Game};
 use ti_helper_websocket::{
     websocket_client::WsClient,
     ws_message::{WsMessageIn, WsMessageOut},

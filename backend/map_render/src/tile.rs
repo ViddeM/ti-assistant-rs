@@ -1,6 +1,6 @@
-use std::ops::Div;
+use std::{f32::consts::PI, ops::Div};
 
-use bevy::prelude::*;
+use bevy::{core::Zeroable, prelude::*};
 use ti_helper_game::gameplay::map::{Coordinate, HexMap, HexPosition};
 
 const TILE_WIDTH: f32 = 364.0;
@@ -10,7 +10,9 @@ const TILE_QUARTER_WIDTH: f32 = TILE_WIDTH * 0.25;
 const TILE_THREE_QUARTER_WIDTH: f32 = TILE_QUARTER_WIDTH * 3.0;
 const TILE_HALF_HEIGHT: f32 = TILE_HEIGHT * 0.5;
 
-pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+const ROTATION_STEP: f32 = -PI / 3.0;
+
+pub fn setup_map(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("slider_regular.ttf");
     let text_style = TextStyle {
         font: font.clone(),
@@ -18,21 +20,27 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         color: Color::WHITE,
     };
 
-    commands.spawn(Camera2dBundle::default());
-
+    // TODO: Handle rotation of tiles
     let milty_string = "87A1 89B3 47 87A4 89B0 78 37 64 46 29 72 22 24 63 44 40 23 76 50 30 48 28 43 83B2 67 69 34 27 77 26 36 74 83B2 79 19 38 53 42 59 7 0 0 14 21 0 4 39 71 15 80 68 52 0 0 17 75 0 58 41 60";
     let hex_map = HexMap::from_milty_string(milty_string).expect("failed to parse milty string");
 
     let mut outside_galaxy_count = 0;
 
     for tile in hex_map.tiles {
-        let tile_pos = match tile.position {
+        let (tile_pos, rotation) = match tile.position {
             HexPosition::OutsideGalaxy => {
+                let pos = Vec2::new(-5.5, -2.0 + 4.0 * outside_galaxy_count as f32);
+
                 outside_galaxy_count += 1;
 
-                Vec2::new(-5.5, -2.0 + 4.0 * outside_galaxy_count as f32)
+                (pos, 0.0)
             }
-            HexPosition::Pos(coord) => get_tile_position(coord),
+            HexPosition::Pos(coord) => {
+                let rot = coord.rotation as f32;
+                let pos = get_tile_position(coord);
+
+                (pos, rot)
+            }
         };
 
         let position = Transform::from_translation(Vec3::new(
@@ -44,7 +52,8 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     0.0
                 },
             1.0,
-        ));
+        ))
+        .with_rotation(Quat::from_rotation_z(rotation * ROTATION_STEP));
 
         commands.spawn(SpriteBundle {
             texture: asset_server.load(format!("tiles/{}.png", tile.system)),
@@ -55,7 +64,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn(Text2dBundle {
             text: Text::from_section(tile.system, text_style.clone())
                 .with_justify(JustifyText::Left),
-            transform: position,
+            transform: position.with_rotation(Quat::zeroed()),
             ..default()
         });
     }
@@ -187,7 +196,11 @@ mod test {
     }
 
     fn test_tile(ring: u32, position: u32, expected_x: i32, expected_y: i32) {
-        let t = get_tile_position(Coordinate { ring, position });
+        let t = get_tile_position(Coordinate {
+            ring,
+            position,
+            rotation: 0,
+        });
         assert_eq!(
             Vec2::new(expected_x as f32, expected_y as f32),
             t,
