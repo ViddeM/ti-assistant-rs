@@ -18,7 +18,7 @@ export const Spinner = () => {
             x2="219.978"
             y2="139"
             stroke="#fff"
-            stroke-width="4"
+            strokeWidth="4"
           />
           <circle cx="60" cy="140" r="5" fill="#fff" />
           <circle cx="220" cy="139" r="5" fill="#fff" />
@@ -27,7 +27,7 @@ export const Spinner = () => {
           className={styles.circle}
           d="M109.957 122.655L140 105.309L170.043 122.655V157.345L140 174.691L109.957 157.345V122.655Z"
           stroke="#fff"
-          stroke-width="4"
+          strokeWidth="4"
         />
         <circle
           className={styles.circle}
@@ -35,7 +35,7 @@ export const Spinner = () => {
           cy="140"
           r="13"
           stroke="#f5f779"
-          stroke-width="4"
+          strokeWidth="4"
         />
         <circle
           className={styles.circle}
@@ -43,7 +43,7 @@ export const Spinner = () => {
           cy="192"
           r="13"
           stroke="#f7a78f"
-          stroke-width="4"
+          strokeWidth="4"
         />
         <circle
           className={styles.circle}
@@ -51,7 +51,7 @@ export const Spinner = () => {
           cy="232"
           r="8"
           stroke="#82c7c5"
-          stroke-width="4"
+          strokeWidth="4"
         />
         <circle
           className={styles.circle}
@@ -59,7 +59,7 @@ export const Spinner = () => {
           cy="88"
           r="13"
           stroke="#82c7c5"
-          stroke-width="4"
+          strokeWidth="4"
         />
         <circle
           className={`${styles.circle} ${styles.circleS}`}
