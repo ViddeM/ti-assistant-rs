@@ -26,6 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPause, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { StringParam, useQueryParam, withDefault } from "use-query-params";
 import { Spinner } from "@/components/elements/spinner/Spinner";
+import { MapViewMode } from "../map_view_mode/MapViewMode";
 
 const NEW_GAME_ID = "new";
 
@@ -34,7 +35,7 @@ interface GameViewProps {
   gameId: string;
 }
 
-type View = "Game" | "Score" | "Planets" | "Techs" | "Laws";
+type View = "Game" | "Score" | "Planets" | "Techs" | "Laws" | "Map";
 
 export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   const [error, setError] = useState<string | null>(null);
@@ -240,6 +241,12 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
           >
             Laws
           </Button>
+          <Button
+            onClick={() => setCurrentViewMode("Map")}
+            disabled={currentViewMode === "Map"}
+          >
+            Map
+          </Button>
         </div>
         <p className="marginTop">Round {gameState?.round}</p>
         {currentPlayer && (
@@ -375,6 +382,8 @@ const DisplayViewMode = ({ viewMode }: DisplayViewModeProps) => {
       return <PlanetViewMode />;
     case "Laws":
       return <LawsViewMode />;
+    case "Map":
+      return <MapViewMode />;
     default:
       return <p>Unknown view mode ({viewMode})?</p>;
   }

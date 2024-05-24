@@ -1,5 +1,3 @@
-import { GameOptions } from "@/api/bindings/GameOptions";
-import { GameState } from "@/api/bindings/GameState";
 import { Agenda } from "@/api/bindings/Agenda";
 import { Button } from "@/components/elements/button/Button";
 import { InfoButton } from "@/components/elements/button/InfoButton";

@@ -1,7 +1,10 @@
 use std::{f32::consts::PI, ops::Div};
 
 use bevy::{core::Zeroable, prelude::*};
-use ti_helper_game::gameplay::map::{Coordinate, HexMap, HexPosition};
+use ti_helper_game::{
+    data::components::system::SystemId,
+    gameplay::map::{Coordinate, HexMap, HexPosition},
+};
 
 const TILE_WIDTH: f32 = 364.0;
 const TILE_HEIGHT: f32 = 317.0;
@@ -11,6 +14,12 @@ const TILE_THREE_QUARTER_WIDTH: f32 = TILE_QUARTER_WIDTH * 3.0;
 const TILE_HALF_HEIGHT: f32 = TILE_HEIGHT * 0.5;
 
 const ROTATION_STEP: f32 = -PI / 3.0;
+
+#[derive(Component, Clone, Debug)]
+pub struct SystemVisuals {
+    pub system_id: SystemId,
+    pub tile_pos: Vec2,
+}
 
 pub fn setup_map(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("slider_regular.ttf");
@@ -43,31 +52,47 @@ pub fn setup_map(mut commands: Commands, asset_server: Res<AssetServer>) {
             }
         };
 
-        let position = Transform::from_translation(Vec3::new(
-            tile_pos.x * TILE_THREE_QUARTER_WIDTH,
-            tile_pos.y * TILE_HEIGHT + (TILE_HEIGHT / 2.0)
-                - if (tile_pos.x as i32) % 2 == 0 {
-                    TILE_HALF_HEIGHT
-                } else {
-                    0.0
-                },
-            1.0,
-        ))
-        .with_rotation(Quat::from_rotation_z(rotation * ROTATION_STEP));
+        let position = Transform::from_translation(tile_pos_to_visual_pos(tile_pos))
+            .with_rotation(Quat::from_rotation_z(rotation * ROTATION_STEP));
 
-        commands.spawn(SpriteBundle {
-            texture: asset_server.load(format!("tiles/{}.png", tile.system)),
-            transform: position,
-            ..default()
-        });
+        let system_visuals = SystemVisuals {
+            system_id: tile.system.clone(),
+            tile_pos,
+        };
 
-        commands.spawn(Text2dBundle {
+        commands.spawn((
+            SpriteBundle {
+                texture: asset_server.load(format!("tiles/{}.png", tile.system)),
+                transform: position,
+                ..default()
+            },
+            system_visuals,
+        ));
+
+        commands.spawn((Text2dBundle {
             text: Text::from_section(tile.system, text_style.clone())
                 .with_justify(JustifyText::Left),
             transform: position.with_rotation(Quat::zeroed()),
             ..default()
-        });
+        },));
     }
+}
+
+pub fn tile_pos_to_visual_pos(tile_pos: Vec2) -> Vec3 {
+    Vec3::new(
+        tile_pos.x * TILE_THREE_QUARTER_WIDTH,
+        tile_pos.y * TILE_HEIGHT + (TILE_HEIGHT / 2.0)
+            - if (tile_pos.x as i32) % 2 == 0 {
+                TILE_HALF_HEIGHT
+            } else {
+                0.0
+            },
+        1.0,
+    )
+}
+
+pub fn tile_offset_to_visual_pos(tile_pos: Vec2) -> Vec3 {
+    Vec3::new(tile_pos.x * TILE_WIDTH, tile_pos.y * TILE_HEIGHT, 0.0)
 }
 
 fn get_tile_position(coord: Coordinate) -> Vec2 {
