@@ -16,6 +16,7 @@ export interface GameContext {
   isSpeaker: boolean;
   playingAs: string | null;
   setPlayingAs: (player: string | null) => void;
+  gameId: string;
 }
 
 export const GameContext = React.createContext<GameContext | undefined>(

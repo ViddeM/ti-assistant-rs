@@ -205,6 +205,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         isSpeaker: playingAs === gameState.speaker,
         playingAs: playingAs,
         setPlayingAs: setPlayingAs,
+        gameId: gameId,
       }}
     >
       <InfoModal infoObject={infoObject} />
