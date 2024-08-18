@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use bevy::{input::mouse::MouseWheel, prelude::*};
+use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
 use chrono::Utc;
 use system_planets::planet_offset;
 use ti_helper_game::{
@@ -90,13 +90,14 @@ pub fn run_game() {
     let game_info_res = GameInfo { game };
 
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                canvas: Some("#map_render_canvas".into()),
-                ..default()
-            }),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin::default())
+                .set(AssetPlugin {
+                    meta_check: AssetMetaCheck::Never,
+                    ..default()
+                }),
+        )
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(game_info_res)
         .add_systems(
@@ -114,8 +115,7 @@ fn setup_camera(mut commands: Commands) {
     commands.spawn((Camera2dBundle::default(), MainCamera));
 }
 
-// const SCROLL_STEP: f32 = 0.0005;
-const SCROLL_STEP: f32 = 0.05;
+const SCROLL_STEP: f32 = 0.001;
 const MAX_SCALE: f32 = 5.0;
 const MIN_SCALE: f32 = 0.2;
 
@@ -124,14 +124,14 @@ fn zooming(
     mut scroll_evr: EventReader<MouseWheel>,
 ) {
     let mut projection = camera_query.single_mut();
-
     let steps: f32 = scroll_evr.read().map(|e| e.y).sum();
+    if steps == 0. {
+        return;
+    }
 
-    let new_scale = (projection.scale - steps * SCROLL_STEP)
-        .max(MIN_SCALE)
-        .min(MAX_SCALE);
-
-    projection.scale = new_scale;
+    let new_projection =
+        (projection.scale - SCROLL_STEP * steps * projection.scale).clamp(MIN_SCALE, MAX_SCALE);
+    projection.scale = new_projection;
 }
 
 fn display_planet_ownership(
