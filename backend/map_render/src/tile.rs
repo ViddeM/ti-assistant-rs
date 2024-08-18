@@ -1,6 +1,6 @@
 use std::{f32::consts::PI, ops::Div};
 
-use bevy::{core::Zeroable, prelude::*};
+use bevy::prelude::*;
 use ti_helper_game::{
     data::components::system::SystemId,
     gameplay::map::{Coordinate, HexMap, HexPosition},
@@ -72,12 +72,11 @@ pub fn setup_map(mut commands: Commands, asset_server: Res<AssetServer>) {
         commands.spawn((Text2dBundle {
             text: Text::from_section(tile.system, text_style.clone())
                 .with_justify(JustifyText::Left),
-            transform: position.with_rotation(Quat::zeroed()),
+            transform: position.with_rotation(Quat::IDENTITY),
             ..default()
         },));
     }
 }
-
 pub fn tile_pos_to_visual_pos(tile_pos: Vec2) -> Vec3 {
     Vec3::new(
         tile_pos.x * TILE_THREE_QUARTER_WIDTH,
