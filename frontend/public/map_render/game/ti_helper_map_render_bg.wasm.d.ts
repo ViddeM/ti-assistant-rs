@@ -1,7 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export function run_game(): void;
+export function start_game(a: number, b: number): void;
 export function main(a: number, b: number): number;
 export function wgpu_render_bundle_set_pipeline(a: number, b: number): void;
 export function wgpu_render_bundle_set_bind_group(a: number, b: number, c: number, d: number, e: number): void;

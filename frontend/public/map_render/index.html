@@ -1,20 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <body style="margin: 0px">
+    <script type="module">
+      // import init from './game/ti_helper_map_render.js'
+      import init, { start_game } from "./game/ti_helper_map_render.js";
 
-<body style="margin: 0px;">
-  <script type="module">
-    import init from './game/ti_helper_map_render.js'
+      const urlParams = new URLSearchParams(window.location.search);
+      const gameId = urlParams.get("gameId");
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const gameId = urlParams.get("gameId");
-    console.log("I got the game id ", gameId);
+      const handleErr = function (error) {
+        if (
+          !error.message.startsWith(
+            "Using exceptions for control flow, don't mind me. This isn't actually an error!",
+          )
+        ) {
+          throw error;
+        }
+      };
 
-    init().catch((error) => {
-      if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
-        throw error;
-      }
-    });
-  </script>
-</body>
-
+      init()
+        .catch(handleErr)
+        .then(() => {
+          console.log("I got the game id ", gameId);
+          start_game(gameId).catch(handleErr);
+        });
+    </script>
+  </body>
 </html>

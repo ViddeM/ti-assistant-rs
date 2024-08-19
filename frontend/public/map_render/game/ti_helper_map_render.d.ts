@@ -1,14 +1,15 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+* @param {string} gameId
 */
-export function run_game(): void;
+export function start_game(gameId: string): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly run_game: () => void;
+  readonly start_game: (a: number, b: number) => void;
   readonly main: (a: number, b: number) => number;
   readonly wgpu_render_bundle_set_pipeline: (a: number, b: number) => void;
   readonly wgpu_render_bundle_set_bind_group: (a: number, b: number, c: number, d: number, e: number) => void;
