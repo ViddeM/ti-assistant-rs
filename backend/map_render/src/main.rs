@@ -21,14 +21,23 @@ use ti_helper_game::{
 };
 use tile::{setup_map, tile_pos_to_visual_pos, SystemVisuals};
 use wasm_bindgen::prelude::*;
+use web_sys::WebSocket;
 
 use crate::tile::tile_offset_to_visual_pos;
 
 pub mod system_planets;
 pub mod tile;
 
+#[wasm_bindgen]
+extern "C" {
+    // Use `js_namespace` here to bind `console.log(..)` instead of just
+    // `log(..)`
+    #[wasm_bindgen(js_namespace = console)]
+    fn log(s: &str);
+}
+
 fn main() {
-    run_game();
+    /* TODO: Figure out how to run the game from outside webassembly (currently requires calling the start_game method after this). If main runs the game it never returns and which is a problem... */
 }
 
 #[derive(Resource)]
@@ -55,7 +64,16 @@ macro_rules! ev {
 }
 
 #[wasm_bindgen]
-pub fn run_game() {
+pub fn start_game(game_id: &str) -> Result<(), JsValue> {
+    run_game(game_id)?;
+
+    Ok(())
+}
+
+pub fn run_game(game_id: &str) -> Result<(), String> {
+    let ws = WebSocket::new("ws://localhost:5555")
+        .map_err(|err| format!("Failed to setup ws connection, err: {err:?}"))?;
+
     let game_state = GameState::default();
 
     let mut game = Game {
@@ -106,6 +124,8 @@ pub fn run_game() {
         )
         .add_systems(Update, zooming)
         .run();
+
+    Ok(())
 }
 
 #[derive(Component)]

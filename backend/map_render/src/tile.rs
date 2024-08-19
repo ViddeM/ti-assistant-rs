@@ -62,7 +62,7 @@ pub fn setup_map(mut commands: Commands, asset_server: Res<AssetServer>) {
 
         commands.spawn((
             SpriteBundle {
-                texture: asset_server.load(format!("tiles/{}.png", tile.system)),
+                texture: asset_server.load(format!("tiles/webp/{}.webp", tile.system)),
                 transform: position,
                 ..default()
             },

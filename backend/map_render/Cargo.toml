@@ -6,11 +6,21 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bevy = { version = "0.14.1", features = ["wayland"] }
+bevy = { version = "0.14.1", features = ["wayland", "webp"] }
 chrono = { version = "0.4.38", features = ["serde"] }
 eyre = "0.6.8"
 log = "0.4.20"
 wasm-bindgen = "0.2.92"
+js-sys = "0.3.70"
+web-sys = { version = "0.3.70", features = [
+  "BinaryType",
+  "Blob",
+  "ErrorEvent",
+  "FileReader",
+  "MessageEvent",
+  "ProgressEvent",
+  "WebSocket",
+]}
 
 [dependencies.ti_helper_game]
 path = "../game"
