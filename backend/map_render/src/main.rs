@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
 use chrono::Utc;
+use serde::Deserialize;
 use system_planets::planet_offset;
 use ti_helper_game::{
     data::{
@@ -11,6 +12,7 @@ use ti_helper_game::{
             system::{systems, SystemId},
         },
     },
+    game_options::GameOptions,
     gameplay::{
         event::Event,
         game::Game,
@@ -21,7 +23,7 @@ use ti_helper_game::{
 };
 use tile::{setup_map, tile_pos_to_visual_pos, SystemVisuals};
 use wasm_bindgen::prelude::*;
-use web_sys::WebSocket;
+use web_sys::{MessageEvent, WebSocket};
 
 use crate::tile::tile_offset_to_visual_pos;
 
@@ -32,8 +34,11 @@ pub mod tile;
 extern "C" {
     // Use `js_namespace` here to bind `console.log(..)` instead of just
     // `log(..)`
-    #[wasm_bindgen(js_namespace = console)]
-    fn log(s: &str);
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn console_log(s: &str);
+
+    #[wasm_bindgen(js_namespace = console, js_name = error)]
+    fn console_error(s: &str);
 }
 
 fn main() {
@@ -70,9 +75,69 @@ pub fn start_game(game_id: &str) -> Result<(), JsValue> {
     Ok(())
 }
 
+#[derive(Default)]
+struct WsClient {
+    game_state: Option<GameState>,
+    game_options: Option<GameOptions>,
+}
+
+#[derive(Debug, Clone, Deserialize, serde::Serialize)]
+enum WsResponse {
+    GameOptions(GameOptions),
+    JoinedGame(String),
+    GameState(GameState),
+}
+
+impl WsClient {
+    fn handle_message(&mut self, e: MessageEvent) -> Result<(), String> {
+        let data = e.data();
+        let Some(data) = data.as_string() else {
+            return Err(format!(
+                "Data was not string, not sure what to do. Data: {data:?}"
+            ));
+        };
+
+        let message: WsResponse = serde_json::from_str(&data)
+            .map_err(|err| format!("Failed to deserialize message, err: {err:?}"))?;
+
+        console_log(&format!("HELLO message: {:?}", message));
+
+        match message {
+            WsResponse::GameOptions(opts) => self.game_options = Some(opts),
+            WsResponse::JoinedGame(_) => console_log("Joined game successfully"),
+            WsResponse::GameState(state) => self.game_state = Some(state),
+        }
+
+        Ok(())
+    }
+}
+
 pub fn run_game(game_id: &str) -> Result<(), String> {
-    let ws = WebSocket::new("ws://localhost:5555")
-        .map_err(|err| format!("Failed to setup ws connection, err: {err:?}"))?;
+    // let ws = WebSocket::new("ws://localhost:5555")
+    //     .map_err(|err| format!("Failed to setup ws connection, err: {err:?}"))?;
+
+    // let mut ws_client = WsClient::default();
+
+    // let on_message_callback = Closure::<dyn FnMut(_)>::new(move |e: MessageEvent| {
+    //     if let Err(err) = ws_client.handle_message(e) {
+    //         console_error(&format!("Failed to handle websocket message, err: {err:?}"))
+    //     }
+    // });
+    // ws.set_onmessage(Some(on_message_callback.as_ref().unchecked_ref()));
+
+    // let ws_clone = ws.clone();
+    // let game_id_clone = game_id.to_string();
+
+    // let on_open_callback = Closure::<dyn FnMut()>::new(move || {
+    //     let data = format!("{{\"JoinGame\": \"{game_id_clone}\"}}");
+    //     if let Err(err) = ws_clone.send_with_str(&data) {
+    //         console_error(&format!(
+    //             "Failed to send join message to server, err: {err:?}"
+    //         ));
+    //     }
+    // });
+    // ws.set_onopen(Some(on_open_callback.as_ref().unchecked_ref()));
+    // on_open_callback.forget();
 
     let game_state = GameState::default();
 
@@ -191,13 +256,9 @@ fn display_planet_ownership(
         if let Some(planets) = system_planets.get(&visuals.system_id) {
             for planet in planets.iter() {
                 if let Some(owner) = owned_planets.get(planet) {
-                    println!("OWNER MATCHING PLANET! {planet:?} {owner:?}");
-
                     let base_pos = tile_pos_to_visual_pos(visuals.tile_pos);
                     let offset = tile_offset_to_visual_pos(planet_offset(planet));
-
                     let position = base_pos + offset;
-                    println!("\tPOSITION: {base_pos:?}, {offset:?}, {position:?}");
 
                     commands.spawn((Text2dBundle {
                         text: Text::from_section(owner.name.clone(), text_style.clone())

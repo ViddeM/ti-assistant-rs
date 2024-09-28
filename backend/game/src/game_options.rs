@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use ts_rs::TS;
 
@@ -27,7 +27,7 @@ use crate::{
 const MIN_PLAYER_COUNT: usize = 3;
 
 /// All information that is static for a game of TI4.
-#[derive(Debug, Clone, Serialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct GameOptions {
@@ -137,7 +137,7 @@ impl GameOptions {
 }
 
 /// A faction in the game.
-#[derive(Debug, Clone, Serialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct FactionResponse {

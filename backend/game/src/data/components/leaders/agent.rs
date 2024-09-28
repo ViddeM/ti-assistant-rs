@@ -7,7 +7,7 @@ use crate::data::common::faction::Faction;
 use super::LeaderAbilityKind;
 
 /// Information about an agent leader.
-#[derive(Clone, Debug, Serialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct AgentInfo {
     /// [Agent] variant for this agent.
@@ -17,10 +17,10 @@ pub struct AgentInfo {
     pub faction: Faction,
 
     /// Name of the agent.
-    pub name: &'static str,
+    pub name: String,
 
     /// Description of the agents ability.
-    pub description: &'static str,
+    pub description: String,
 
     /// The kind of ability, i.e. whether it's an action or something else.
     pub kind: LeaderAbilityKind,
@@ -70,8 +70,8 @@ macro_rules! info {
         AgentInfo {
             tag: Agent::$agent,
             faction: Faction::$faction,
-            name: $name,
-            description: include_str!(concat!("description/", stringify!($agent))),
+            name: $name.to_string(),
+            description: include_str!(concat!("description/", stringify!($agent))).to_string(),
             kind: LeaderAbilityKind::$kind,
         }
     };
@@ -79,7 +79,7 @@ macro_rules! info {
 
 impl Agent {
     /// Get the [AgentInfo] of this [Agent].
-    pub const fn info(&self) -> AgentInfo {
+    pub fn info(&self) -> AgentInfo {
         match self {
             Agent::LetaniOspha => info! {
                 tag: LetaniOspha,

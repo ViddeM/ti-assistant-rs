@@ -7,7 +7,7 @@ use crate::data::common::faction::Faction;
 use super::LeaderAbilityKind;
 
 /// Information about a commander leader.
-#[derive(Clone, Debug, Serialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct CommanderInfo {
     /// [Commander] variant for this commander.
@@ -17,13 +17,13 @@ pub struct CommanderInfo {
     pub faction: Faction,
 
     /// Name of the commander.
-    pub name: &'static str,
+    pub name: String,
 
     /// Description of the commanders unlock condition.
-    pub unlock: &'static str,
+    pub unlock: String,
 
     /// Description of the commanders ability.
-    pub description: &'static str,
+    pub description: String,
 
     /// The kind of ability, i.e. whether it's an action or something else.
     pub kind: LeaderAbilityKind,
@@ -70,9 +70,9 @@ macro_rules! info {
         CommanderInfo {
             tag: Commander::$commander,
             faction: Faction::$faction,
-            name: $name,
-            unlock: $unlock,
-            description: include_str!(concat!("description/", stringify!($commander))),
+            name: $name.to_string(),
+            unlock: $unlock.to_string(),
+            description: include_str!(concat!("description/", stringify!($commander))).to_string(),
             kind: LeaderAbilityKind::Other, // No commanders have an ACTION ability.
         }
     };

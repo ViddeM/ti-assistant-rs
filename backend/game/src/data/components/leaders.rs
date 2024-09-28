@@ -23,7 +23,7 @@ pub enum Leader {
 }
 
 /// Information about a leader, i.e. an agent, commander, or hero.
-#[derive(Clone, Debug, Serialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(tag = "type")]
 #[ts(export)]
 #[allow(missing_docs)]
@@ -34,7 +34,7 @@ pub enum LeaderInfo {
 }
 
 /// Information about a leader ability, i.e. if it's an Action, etc.
-#[derive(Clone, Copy, Debug, Serialize, PartialEq, Eq, TS)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, TS)]
 #[ts(export)]
 pub enum LeaderAbilityKind {
     /// Leader ability is an Action.
@@ -113,12 +113,13 @@ impl Leader {
 
 impl LeaderInfo {
     /// Get the pretty name of this leader.
-    pub fn name(&self) -> &'static str {
+    pub fn name(&self) -> String {
         match self {
-            LeaderInfo::Agent(l) => l.name,
-            LeaderInfo::Commander(l) => l.name,
-            LeaderInfo::Hero(l) => l.name,
+            LeaderInfo::Agent(l) => &l.name,
+            LeaderInfo::Commander(l) => &l.name,
+            LeaderInfo::Hero(l) => &l.name,
         }
+        .to_string()
     }
 
     /// Get the [Faction] that this [Leader] is a part of.

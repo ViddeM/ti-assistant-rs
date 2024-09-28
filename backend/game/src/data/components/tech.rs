@@ -141,12 +141,12 @@ pub enum Technology {
 }
 
 /// All relevant information about a tech.
-#[derive(Debug, Clone, Serialize, PartialEq, Eq, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TechInfo {
     /// The name of the tech in 'pretty' format.
-    pub name: &'static str,
+    pub name: String,
     /// What type of tech this is.
     pub tech_type: TechType,
     /// Weather the tech is general or belongs to a faction.
@@ -155,29 +155,29 @@ pub struct TechInfo {
     pub requirements: EnumMap<TechCategory, u32>,
     /// Which expansion this tech belongs to.
     pub expansion: Expansion,
-    /// The effects of the technology. Each element corresponds to a s
-    pub effects: &'static [&'static str],
+    /// The effects of the technology. Each element corresponds to an effect of the technology.
+    pub effects: Vec<String>,
 }
 
 macro_rules! t {
     ($name: expr, $t:expr, $orig:expr, $reqs: expr, $expansion: expr,) => {
         TechInfo {
-            name: $name,
+            name: $name.to_string(),
             tech_type: $t,
             origin: $orig,
             requirements: $reqs,
             expansion: $expansion,
-            effects: &[],
+            effects: Vec::new(),
         }
     };
     ($name: expr, $t:expr, $orig:expr, $reqs: expr, $expansion: expr, $effects: expr,) => {
         TechInfo {
-            name: $name,
+            name: $name.to_string(),
             tech_type: $t,
             origin: $orig,
             requirements: $reqs,
             expansion: $expansion,
-            effects: $effects,
+            effects: $effects.into_iter().map(|s| s.to_string()).collect(),
         }
     };
 }

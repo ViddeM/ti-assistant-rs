@@ -7,13 +7,13 @@ use crate::{data::common::expansions::Expansion, gameplay::player::PlayerId};
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
 /// All information concerning an agenda.
-#[derive(Clone, Copy, Debug, Serialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct AgendaInfo {
     /// The name of the agenda card.
-    pub name: &'static str,
+    pub name: String,
     /// A description of what the agenda is about.
-    pub description: &'static str,
+    pub description: String,
     /// What type of agenda this is.
     pub kind: AgendaKind,
     /// What is to be elected for this agenda.
@@ -166,8 +166,9 @@ impl Agenda {
         macro_rules! info {
             ($ident:ident, $name:literal, $kind:ident, $elect:ident, $expansion:ident) => {
                 AgendaInfo {
-                    name: $name,
-                    description: include_str!(concat!("./description/", stringify!($ident))),
+                    name: $name.to_string(),
+                    description: include_str!(concat!("./description/", stringify!($ident)))
+                        .to_string(),
                     kind: AgendaKind::$kind,
                     elect: AgendaElectKind::$elect,
                     expansion: Expansion::$expansion,

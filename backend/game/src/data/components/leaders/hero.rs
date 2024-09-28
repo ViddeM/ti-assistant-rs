@@ -7,7 +7,7 @@ use crate::data::common::faction::Faction;
 use super::LeaderAbilityKind;
 
 /// Information about a hero leader.
-#[derive(Clone, Debug, Serialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
 pub struct HeroInfo {
     /// [Hero] variant for this hero.
@@ -17,13 +17,13 @@ pub struct HeroInfo {
     pub faction: Faction,
 
     /// Name of the hero.
-    pub name: &'static str,
+    pub name: String,
 
     /// Name of the heros ability.
-    pub ability: &'static str,
+    pub ability: String,
 
     /// Description of the heros ability.
-    pub description: &'static str,
+    pub description: String,
 
     /// The kind of ability, i.e. whether it's an action or something else.
     pub kind: LeaderAbilityKind,
@@ -73,9 +73,9 @@ macro_rules! info {
         HeroInfo {
             tag: Hero::$tag,
             faction: Faction::$faction,
-            name: $name,
-            ability: $ability,
-            description: include_str!(concat!("description/", stringify!($tag))),
+            name: $name.to_string(),
+            ability: $ability.to_string(),
+            description: include_str!(concat!("description/", stringify!($tag))).to_string(),
             kind: LeaderAbilityKind::$kind,
         }
     };
