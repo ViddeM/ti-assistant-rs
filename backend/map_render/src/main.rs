@@ -1,6 +1,24 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{
+        mpsc::{self, sync_channel, Receiver, Sender, SyncSender, TryRecvError},
+        Arc, Mutex,
+    },
+    thread::yield_now,
+    time::Duration,
+};
 
-use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
+use bevy::{
+    a11y::AccessibilityPlugin,
+    app::{PanicHandlerPlugin, PluginGroupBuilder},
+    asset::AssetMetaCheck,
+    diagnostic::DiagnosticsPlugin,
+    ecs::system::EntityCommands,
+    input::{mouse::MouseWheel, InputPlugin},
+    log::LogPlugin,
+    prelude::*,
+    time::TimePlugin,
+};
 use chrono::Utc;
 use serde::Deserialize;
 use system_planets::planet_offset;
@@ -17,7 +35,7 @@ use ti_helper_game::{
         event::Event,
         game::Game,
         game_settings::{Expansions, GameSettings},
-        game_state::GameState,
+        game_state::{self, GameState},
         player::{NewPlayer, Player},
     },
 };
@@ -43,42 +61,28 @@ extern "C" {
 
 fn main() {
     /* TODO: Figure out how to run the game from outside webassembly (currently requires calling the start_game method after this). If main runs the game it never returns and which is a problem... */
+    // TODO: READ game id from query param
+    run_game("9f4c4174").expect("Failed to start game");
 }
 
-#[derive(Resource)]
+#[derive(Resource, Debug)]
 struct GameInfo {
-    game: Game,
+    rx: Mutex<Receiver<GameState>>,
+    map_info: Option<MapInfo>,
 }
 
-macro_rules! ev {
-    ($game: expr, $event: expr) => {
-        $game.apply($event, Utc::now())
-    };
-    ($game: expr, $name: literal, $faction: ident, $color: ident) => {
-        ev!(
-            $game,
-            Event::AddPlayer {
-                player: NewPlayer {
-                    name: $name.into(),
-                    faction: Faction::$faction,
-                    color: color::Color::$color,
-                }
-            }
-        )
-    };
+impl GameInfo {
+    fn new(rx: Receiver<GameState>) -> Self {
+        Self {
+            rx: Mutex::new(rx),
+            map_info: None,
+        }
+    }
 }
 
-#[wasm_bindgen]
-pub fn start_game(game_id: &str) -> Result<(), JsValue> {
-    run_game(game_id)?;
-
-    Ok(())
-}
-
-#[derive(Default)]
-struct WsClient {
-    game_state: Option<GameState>,
-    game_options: Option<GameOptions>,
+#[derive(Debug)]
+struct MapInfo {
+    last_game_state: GameState,
 }
 
 #[derive(Debug, Clone, Deserialize, serde::Serialize)]
@@ -88,106 +92,85 @@ enum WsResponse {
     GameState(GameState),
 }
 
-impl WsClient {
-    fn handle_message(&mut self, e: MessageEvent) -> Result<(), String> {
-        let data = e.data();
-        let Some(data) = data.as_string() else {
-            return Err(format!(
-                "Data was not string, not sure what to do. Data: {data:?}"
-            ));
-        };
-
-        let message: WsResponse = serde_json::from_str(&data)
-            .map_err(|err| format!("Failed to deserialize message, err: {err:?}"))?;
-
-        console_log(&format!("HELLO message: {:?}", message));
-
-        match message {
-            WsResponse::GameOptions(opts) => self.game_options = Some(opts),
-            WsResponse::JoinedGame(_) => console_log("Joined game successfully"),
-            WsResponse::GameState(state) => self.game_state = Some(state),
-        }
-
-        Ok(())
-    }
-}
-
-pub fn run_game(game_id: &str) -> Result<(), String> {
-    // let ws = WebSocket::new("ws://localhost:5555")
-    //     .map_err(|err| format!("Failed to setup ws connection, err: {err:?}"))?;
-
-    // let mut ws_client = WsClient::default();
-
-    // let on_message_callback = Closure::<dyn FnMut(_)>::new(move |e: MessageEvent| {
-    //     if let Err(err) = ws_client.handle_message(e) {
-    //         console_error(&format!("Failed to handle websocket message, err: {err:?}"))
-    //     }
-    // });
-    // ws.set_onmessage(Some(on_message_callback.as_ref().unchecked_ref()));
-
-    // let ws_clone = ws.clone();
-    // let game_id_clone = game_id.to_string();
-
-    // let on_open_callback = Closure::<dyn FnMut()>::new(move || {
-    //     let data = format!("{{\"JoinGame\": \"{game_id_clone}\"}}");
-    //     if let Err(err) = ws_clone.send_with_str(&data) {
-    //         console_error(&format!(
-    //             "Failed to send join message to server, err: {err:?}"
-    //         ));
-    //     }
-    // });
-    // ws.set_onopen(Some(on_open_callback.as_ref().unchecked_ref()));
-    // on_open_callback.forget();
-
-    let game_state = GameState::default();
-
-    let mut game = Game {
-        players: vec![],
-        current: game_state.into(),
-        history: vec![],
+fn handle_message(e: MessageEvent, tx: SyncSender<GameState>) -> Result<(), String> {
+    let data = e.data();
+    let Some(data) = data.as_string() else {
+        return Err(format!(
+            "Data was not string, not sure what to do. Data: {data:?}"
+        ));
     };
 
-    ev!(
-        game,
-        Event::SetSettings {
-            settings: GameSettings {
-                max_points: 14,
-                expansions: Expansions {
-                    codex_1: false,
-                    codex_2: false,
-                    codex_3: false,
-                    prophecy_of_kings: true,
-                }
-            }
-        }
-    );
-    ev!(game, "Gurr", Nomad, Purple);
-    ev!(game, "Portals", Winnu, Pink);
-    ev!(game, "Tux", XxchaKingdom, Green);
-    ev!(game, "Swexbe", EmbersOfMuaat, Red);
-    ev!(game, "Sponken", YssarilTribes, Black);
-    ev!(game, "Håll", MahactGeneSorcerers, Yellow);
-    ev!(game, "Vidde", GhostsOfCreuss, Blue);
-    ev!(game, "Hoidi", ArgentFlight, Orange);
+    let message: WsResponse = serde_json::from_str(&data)
+        .map_err(|err| format!("Failed to deserialize message, err: {err:?}"))?;
 
-    let game_info_res = GameInfo { game };
+    console_log(&format!("HELLO message: {:?}", message));
+
+    match message {
+        WsResponse::GameOptions(opts) => console_log(&format!("Got game options, opts: {opts:?}")), // self.game_options = Some(opts),
+        WsResponse::JoinedGame(_) => console_log("Joined game successfully"),
+        WsResponse::GameState(state) => {
+            console_log("Got game state response");
+            tx.send(state)
+                .map_err(|err| format!("Failed to send game_state over channel, err: {err:?}"))?;
+            console_log("SENT");
+        }
+    }
+
+    Ok(())
+}
+
+fn run_game(game_id: &str) -> Result<(), String> {
+    console_log(&format!("Running game with game_id: {game_id}"));
+    let ws = WebSocket::new("ws://localhost:5555")
+        .map_err(|err| format!("Failed to setup ws connection, err: {err:?}"))?;
+
+    let (tx, rx) = sync_channel::<GameState>(2);
+
+    let on_message_callback = Closure::<dyn FnMut(_)>::new(move |e: MessageEvent| {
+        let tx = tx.clone();
+        if let Err(err) = handle_message(e, tx) {
+            console_error(&format!("Failed to handle websocket message, err: {err:?}"))
+        }
+    });
+    ws.set_onmessage(Some(on_message_callback.as_ref().unchecked_ref()));
+    on_message_callback.forget();
+
+    let ws_clone = ws.clone();
+    let game_id_clone = game_id.to_string();
+
+    let onopen_callback = Closure::<dyn FnMut()>::new(move || {
+        console_log("Socket opened !");
+        let data = format!("{{\"JoinGame\": \"{game_id_clone}\"}}");
+        match ws_clone.send_with_str(&data) {
+            Ok(_) => console_log("Message sent successfully"),
+            Err(err) => console_error(&format!(
+                "Failed to send join game message to server, err: {err:?}"
+            )),
+        }
+    });
+    ws.set_onopen(Some(onopen_callback.as_ref().unchecked_ref()));
+    onopen_callback.forget();
+
+    let game_info = GameInfo::new(rx);
 
     App::new()
-        .add_plugins(
-            DefaultPlugins
-                .set(WindowPlugin::default())
-                .set(AssetPlugin {
-                    meta_check: AssetMetaCheck::Never,
-                    ..default()
-                }),
-        )
+        .add_plugins(DefaultPlugins.set(AssetPlugin {
+            meta_check: AssetMetaCheck::Never,
+            ..default()
+        }))
         .insert_resource(ClearColor(Color::BLACK))
-        .insert_resource(game_info_res)
+        .insert_resource(game_info)
         .add_systems(
             Startup,
-            (setup_camera, setup_map, display_planet_ownership).chain(),
+            (
+                setup_camera,
+                setup_loading_text,
+                // setup_map,
+                // display_planet_ownership
+            )
+                .chain(),
         )
-        .add_systems(Update, zooming)
+        .add_systems(Update, (zooming, update_map_from_channel))
         .run();
 
     Ok(())
@@ -219,55 +202,117 @@ fn zooming(
     projection.scale = new_projection;
 }
 
-fn display_planet_ownership(
+fn update_map_from_channel(
+    mut game_info: ResMut<GameInfo>,
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    game_info: Res<GameInfo>,
-    system_visuals_query: Query<&SystemVisuals>,
+    asset_server: ResMut<AssetServer>,
+    loading_text: Query<Entity, With<LoadingText>>,
 ) {
-    let owned_planets = game_info
-        .game
-        .current
-        .players
-        .values()
-        .map(|player| {
-            player
-                .planets
-                .keys()
-                .cloned()
-                .map(move |planet| (planet, player))
-        })
-        .flatten()
-        .collect::<HashMap<Planet, &Player>>();
+    let receiver = game_info.rx.get_mut().expect("Failed to get mutex");
+    let Some(game_state) = receiver.try_iter().last() else {
+        // If we haven't received a new gamestate there's not much to do
+        return;
+    };
 
-    let system_planets: HashMap<SystemId, Vec<Planet>> = systems()
-        .into_iter()
-        .map(|(system_id, system)| (system_id, system.planets))
-        .collect();
+    if game_info.map_info.is_none() {
+        // This was the first time we got a game_state, delete the loading text.
+        let entity = loading_text.single();
+        commands.entity(entity).despawn();
 
+        let font = asset_server.load("slider_regular.ttf");
+        let text_style = TextStyle {
+            font: font.clone(),
+            font_size: 48.0,
+            color: Color::WHITE,
+        };
+        commands.spawn((
+            Text2dBundle {
+                text: Text::from_section("LOADED!", text_style).with_justify(JustifyText::Center),
+                ..default()
+            },
+            LoadingText,
+        ));
+    }
+
+    game_info.map_info = Some(MapInfo {
+        last_game_state: game_state,
+    });
+
+    // Update the gamestate
+
+    // If map exists, do nothing for now
+    // Otherwise, create the map.
+}
+
+#[derive(Component)]
+struct LoadingText;
+
+fn setup_loading_text(mut commands: Commands, asset_server: ResMut<AssetServer>) {
     let font = asset_server.load("slider_regular.ttf");
     let text_style = TextStyle {
         font: font.clone(),
-        font_size: 24.0,
-        color: Color::BLACK,
+        font_size: 48.0,
+        color: Color::WHITE,
     };
 
-    for visuals in system_visuals_query.iter() {
-        if let Some(planets) = system_planets.get(&visuals.system_id) {
-            for planet in planets.iter() {
-                if let Some(owner) = owned_planets.get(planet) {
-                    let base_pos = tile_pos_to_visual_pos(visuals.tile_pos);
-                    let offset = tile_offset_to_visual_pos(planet_offset(planet));
-                    let position = base_pos + offset;
-
-                    commands.spawn((Text2dBundle {
-                        text: Text::from_section(owner.name.clone(), text_style.clone())
-                            .with_justify(JustifyText::Center),
-                        transform: Transform::from_translation(position),
-                        ..default()
-                    },));
-                }
-            }
-        }
-    }
+    commands.spawn((
+        Text2dBundle {
+            text: Text::from_section("Loading...", text_style).with_justify(JustifyText::Center),
+            ..default()
+        },
+        LoadingText,
+    ));
 }
+
+// fn display_planet_ownership(
+//     mut commands: Commands,
+//     asset_server: Res<AssetServer>,
+//     game_info: Res<GameInfo>,
+//     system_visuals_query: Query<&SystemVisuals>,
+// ) {
+//     let owned_planets = game_info
+//         .game
+//         .current
+//         .players
+//         .values()
+//         .map(|player| {
+//             player
+//                 .planets
+//                 .keys()
+//                 .cloned()
+//                 .map(move |planet| (planet, player))
+//         })
+//         .flatten()
+//         .collect::<HashMap<Planet, &Player>>();
+
+//     let system_planets: HashMap<SystemId, Vec<Planet>> = systems()
+//         .into_iter()
+//         .map(|(system_id, system)| (system_id, system.planets))
+//         .collect();
+
+//     let font = asset_server.load("slider_regular.ttf");
+//     let text_style = TextStyle {
+//         font: font.clone(),
+//         font_size: 24.0,
+//         color: Color::BLACK,
+//     };
+
+//     for visuals in system_visuals_query.iter() {
+//         if let Some(planets) = system_planets.get(&visuals.system_id) {
+//             for planet in planets.iter() {
+//                 if let Some(owner) = owned_planets.get(planet) {
+//                     let base_pos = tile_pos_to_visual_pos(visuals.tile_pos);
+//                     let offset = tile_offset_to_visual_pos(planet_offset(planet));
+//                     let position = base_pos + offset;
+
+//                     commands.spawn((Text2dBundle {
+//                         text: Text::from_section(owner.name.clone(), text_style.clone())
+//                             .with_justify(JustifyText::Center),
+//                         transform: Transform::from_translation(position),
+//                         ..default()
+//                     },));
+//                 }
+//             }
+//         }
+//     }
+// }
