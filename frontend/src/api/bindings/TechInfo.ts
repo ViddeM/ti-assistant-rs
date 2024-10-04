@@ -26,6 +26,6 @@ requirements: { [key in TechCategory]: number },
  */
 expansion: Expansion, 
 /**
- * The effects of the technology. Each element corresponds to a s
+ * The effects of the technology. Each element corresponds to an effect of the technology.
  */
 effects: Array<string>, };

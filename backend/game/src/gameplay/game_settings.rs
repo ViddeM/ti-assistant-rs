@@ -7,10 +7,13 @@ use crate::data::common::expansions::Expansion;
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
-#[allow(missing_docs)]
 pub struct GameSettings {
+    /// The points required to trigger win-condition for this game.
     pub max_points: u32,
+    /// Which expansions are in play this game.
     pub expansions: Expansions,
+    /// The milty draft map string for this game, if one was used, or none.
+    pub milty_string: Option<String>,
 }
 
 impl Default for GameSettings {
@@ -18,6 +21,7 @@ impl Default for GameSettings {
         Self {
             max_points: 10,
             expansions: Default::default(),
+            milty_string: None,
         }
     }
 }

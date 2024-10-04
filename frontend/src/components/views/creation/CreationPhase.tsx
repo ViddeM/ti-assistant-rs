@@ -2,7 +2,6 @@
 
 import { Color } from "@/api/bindings/Color";
 import { FactionResponse } from "@/api/bindings/FactionResponse";
-import { GameOptions } from "@/api/bindings/GameOptions";
 import { Player } from "@/api/bindings/Player";
 import { Faction } from "@/api/bindings/Faction";
 import { Button } from "@/components/elements/button/Button";

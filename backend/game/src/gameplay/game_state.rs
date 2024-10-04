@@ -34,6 +34,7 @@ use super::{
     error::GameError,
     event::{StrategicPrimaryAction, StrategicSecondaryAction},
     game_settings::GameSettings,
+    map::HexMap,
     player::{Player, PlayerId},
     score::Score,
     status::StatusPhaseState,
@@ -49,6 +50,9 @@ pub struct GameState {
 
     /// The settings for the game.
     pub game_settings: GameSettings,
+
+    /// The hex map for the game.
+    pub hex_map: Option<HexMap>,
 
     /// The current phase of the game.
     pub phase: Phase,

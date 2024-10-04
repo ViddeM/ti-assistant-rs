@@ -1,6 +1,8 @@
 use bevy::math::Vec2;
 use ti_helper_game::data::components::{planet::Planet, system::SystemId};
 
+use crate::console_error;
+
 pub struct PlanetVisuals {
     planet: Planet,
     offset: Vec2,
@@ -31,15 +33,25 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Nestphar
         | Planet::ZeroZeroZero
         | Planet::Winnu
-        | Planet::MordaiII => Vec2::ZERO,
-        Planet::Maaluuk | Planet::ArcPrime | Planet::LisisII | Planet::Nar | Planet::TrenLak => {
-            Vec2::new(-0.25, 0.25)
-        }
-        Planet::Druaa | Planet::WrenTerra | Planet::Ragh | Planet::Jol | Planet::Quinarra => {
-            Vec2::new(0.25, -0.25)
-        }
+        | Planet::MordaiII
+        | Planet::Elysium => Vec2::new(0.0, 0.08),
+        Planet::Maaluuk
+        | Planet::ArcPrime
+        | Planet::LisisII
+        | Planet::Nar
+        | Planet::TrenLak
+        | Planet::Retillion => Vec2::new(-0.12, 0.25),
+        Planet::Druaa
+        | Planet::WrenTerra
+        | Planet::Ragh
+        | Planet::Jol
+        | Planet::Quinarra
+        | Planet::Shalloq => Vec2::new(0.15, -0.20),
         // TODO
-        _ => Vec2::new(100.0, 100.0),
+        _ => {
+            console_error(&format!("ERROR: NOT IMPLEMENTED FOR PLANET: {planet:?}"));
+            Vec2::new(25.0, 25.0)
+        }
     }
 }
 

@@ -6,7 +6,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     data::{
-        common::faction::Faction,
+        common::faction::{self, Faction},
         components::{
             action_card::{ActionCard, ActionCardPlay},
             agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
@@ -18,7 +18,7 @@ use crate::{
             planet_attachment::PlanetAttachment,
             relic::{Relic, RelicPlay},
             strategy_card::StrategyCard,
-            system::{System, SystemType},
+            system::{systems, System, SystemType},
             tech::{TechOrigin, TechType, Technology},
         },
     },
@@ -41,6 +41,7 @@ use super::{
     error::GameError,
     event::{action_matches_frontier_card, ActionCardAction, Event},
     game_state::{GameState, TacticalProgress},
+    map::HexMap,
 };
 
 const MIN_PLAYER_COUNT: usize = 3;
@@ -68,6 +69,13 @@ fn try_update_game_state(
         Event::SetSettings { settings } => {
             game_state.assert_phase(Phase::Creation)?;
 
+            if let Some(milty) = settings.milty_string.as_ref() {
+                match HexMap::from_milty_string(milty) {
+                    Ok(v) => game_state.hex_map = Some(v),
+                    Err(err) => bail!("Invalid milty string, err: {err:?}"),
+                }
+            }
+
             game_state.game_settings = settings;
         }
 
@@ -79,6 +87,7 @@ fn try_update_game_state(
                 "can't have more than {} players",
                 game_state.max_players()
             );
+
             let id: PlayerId = player.name.clone().into();
 
             ensure!(
@@ -94,6 +103,25 @@ fn try_update_game_state(
                 "two players can't play the same faction",
             );
 
+            if let Some(hex_map) = game_state.hex_map.as_ref() {
+                // Ensure that this faction was included in the milty string import.
+                let faction_starting_system_id: Vec<String> = systems()
+                    .into_iter()
+                    .filter(|(_, system)| match system.system_type {
+                        SystemType::HomeSystem(faction) => faction == player.faction,
+                        _ => false,
+                    })
+                    .map(|(id, _)| id)
+                    .collect();
+                ensure!(
+                    hex_map
+                        .tiles
+                        .iter()
+                        .all(|tile| faction_starting_system_id.contains(&tile.system)),
+                    "The selected faction was not included in the milty draft map!"
+                );
+            }
+
             game_state.table_order.push(id.clone());
             game_state
                 .players
@@ -105,6 +133,27 @@ fn try_update_game_state(
                 game_state.players.len() >= MIN_PLAYER_COUNT,
                 "can't have less than {MIN_PLAYER_COUNT} players"
             );
+            let systems = systems();
+            if let Some(hex_map) = game_state.hex_map.as_ref() {
+                let selected_factions: Vec<Faction> = game_state
+                    .players
+                    .iter()
+                    .map(|(_, player)| player.faction)
+                    .collect();
+
+                ensure!(
+                    hex_map
+                        .tiles
+                        .iter()
+                        .filter_map(|tile| systems.get(&tile.system))
+                        .filter_map(|system| match system.system_type {
+                            SystemType::HomeSystem(faction) => Some(faction),
+                            _ => None,
+                        })
+                        .all(|faction| selected_factions.contains(&faction)),
+                    "Factions from the milty draft map have not yet been picked"
+                );
+            }
 
             // We do not call change_phase here as we should not track time / calculate turn order here.
             game_state.phase = Phase::Setup;

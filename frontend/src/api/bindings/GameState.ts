@@ -5,6 +5,7 @@ import type { AgendaElect } from "./AgendaElect";
 import type { AgendaRecord } from "./AgendaRecord";
 import type { AgendaState } from "./AgendaState";
 import type { GameSettings } from "./GameSettings";
+import type { HexMap } from "./HexMap";
 import type { Leader } from "./Leader";
 import type { Phase } from "./Phase";
 import type { Player } from "./Player";
@@ -21,6 +22,10 @@ round: number,
  * The settings for the game.
  */
 gameSettings: GameSettings, 
+/**
+ * The hex map for the game.
+ */
+hexMap: HexMap | null, 
 /**
  * The current phase of the game.
  */

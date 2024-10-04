@@ -26,12 +26,14 @@ pub enum WsMessageIn {
 
 /// information required for a new game.
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct NewGame {
     points: u32,
     pok: bool,
     cod1: bool,
     cod2: bool,
     cod3: bool,
+    milty_string: String,
 }
 
 impl From<NewGame> for GameSettings {
@@ -44,6 +46,7 @@ impl From<NewGame> for GameSettings {
                 codex_2: value.cod2,
                 codex_3: value.cod3,
             },
+            milty_string: Some(value.milty_string),
         }
     }
 }

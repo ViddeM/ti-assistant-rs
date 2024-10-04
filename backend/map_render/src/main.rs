@@ -1,49 +1,16 @@
-use std::{
-    collections::HashMap,
-    sync::{
-        mpsc::{self, sync_channel, Receiver, Sender, SyncSender, TryRecvError},
-        Arc, Mutex,
-    },
-    thread::yield_now,
-    time::Duration,
+use std::sync::{
+    mpsc::{sync_channel, Receiver, SyncSender},
+    Mutex,
 };
 
-use bevy::{
-    a11y::AccessibilityPlugin,
-    app::{PanicHandlerPlugin, PluginGroupBuilder},
-    asset::AssetMetaCheck,
-    diagnostic::DiagnosticsPlugin,
-    ecs::system::EntityCommands,
-    input::{mouse::MouseWheel, InputPlugin},
-    log::LogPlugin,
-    prelude::*,
-    time::TimePlugin,
-};
-use chrono::Utc;
+use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
 use serde::Deserialize;
-use system_planets::planet_offset;
 use ti_helper_game::{
-    data::{
-        common::{color, faction::Faction},
-        components::{
-            planet::Planet,
-            system::{systems, SystemId},
-        },
-    },
-    game_options::GameOptions,
-    gameplay::{
-        event::Event,
-        game::Game,
-        game_settings::{Expansions, GameSettings},
-        game_state::{self, GameState},
-        player::{NewPlayer, Player},
-    },
+    data::components::phase::Phase, game_options::GameOptions, gameplay::game_state::GameState,
 };
-use tile::{setup_map, tile_pos_to_visual_pos, SystemVisuals};
+use tile::{update_map, PlanetOwnerVisuals, SystemVisuals};
 use wasm_bindgen::prelude::*;
 use web_sys::{MessageEvent, WebSocket};
-
-use crate::tile::tile_offset_to_visual_pos;
 
 pub mod system_planets;
 pub mod tile;
@@ -62,7 +29,7 @@ extern "C" {
 fn main() {
     /* TODO: Figure out how to run the game from outside webassembly (currently requires calling the start_game method after this). If main runs the game it never returns and which is a problem... */
     // TODO: READ game id from query param
-    run_game("9f4c4174").expect("Failed to start game");
+    run_game("905b8e94").expect("Failed to start game");
 }
 
 #[derive(Resource, Debug)]
@@ -82,7 +49,8 @@ impl GameInfo {
 
 #[derive(Debug)]
 struct MapInfo {
-    last_game_state: GameState,
+    game_state: GameState,
+    previous_game_state: Option<GameState>,
 }
 
 #[derive(Debug, Clone, Deserialize, serde::Serialize)]
@@ -205,8 +173,11 @@ fn zooming(
 fn update_map_from_channel(
     mut game_info: ResMut<GameInfo>,
     mut commands: Commands,
-    asset_server: ResMut<AssetServer>,
-    loading_text: Query<Entity, With<LoadingText>>,
+    asset_server: Res<AssetServer>,
+    loading_text_query: Query<Entity, With<LoadingText>>,
+    // TODO: Update the map in real time
+    mut planet_owner_query: Query<(&mut Text, &mut PlanetOwnerVisuals)>,
+    mut tile_visual_query: Query<(&mut SystemVisuals, &mut Handle<Image>, &mut Transform)>,
 ) {
     let receiver = game_info.rx.get_mut().expect("Failed to get mutex");
     let Some(game_state) = receiver.try_iter().last() else {
@@ -214,34 +185,50 @@ fn update_map_from_channel(
         return;
     };
 
-    if game_info.map_info.is_none() {
-        // This was the first time we got a game_state, delete the loading text.
-        let entity = loading_text.single();
-        commands.entity(entity).despawn();
+    let font = asset_server.load("slider_regular.ttf");
+    let text_style = TextStyle {
+        font: font.clone(),
+        font_size: 48.0,
+        color: Color::WHITE,
+    };
 
-        let font = asset_server.load("slider_regular.ttf");
-        let text_style = TextStyle {
-            font: font.clone(),
-            font_size: 48.0,
-            color: Color::WHITE,
-        };
-        commands.spawn((
-            Text2dBundle {
-                text: Text::from_section("LOADED!", text_style).with_justify(JustifyText::Center),
-                ..default()
-            },
-            LoadingText,
-        ));
+    if let Ok(e) = loading_text_query.get_single() {
+        commands.entity(e).despawn();
     }
 
-    game_info.map_info = Some(MapInfo {
-        last_game_state: game_state,
-    });
+    let Some(hex_map) = game_state.hex_map.as_ref() else {
+        commands.spawn(Text2dBundle {
+            text: Text::from_section(
+                "No milty string specified for game, unable to render map",
+                text_style,
+            )
+            .with_justify(JustifyText::Center),
+            ..default()
+        });
+        return;
+    };
 
-    // Update the gamestate
+    if matches!(game_state.phase, Phase::Creation | Phase::Setup) {
+        commands.spawn(Text2dBundle {
+            text: Text::from_section("Setup must be finalized to view the map.", text_style)
+                .with_justify(JustifyText::Center),
+            ..default()
+        });
+        return;
+    }
 
-    // If map exists, do nothing for now
-    // Otherwise, create the map.
+    if let Some(map_info) = game_info.map_info.as_mut() {
+        let prev = map_info.game_state.clone();
+        map_info.game_state = game_state.clone();
+        map_info.previous_game_state = Some(prev);
+    } else {
+        game_info.map_info = Some(MapInfo {
+            game_state: game_state.clone(),
+            previous_game_state: None,
+        });
+    }
+
+    update_map(commands, asset_server, hex_map, &game_state);
 }
 
 #[derive(Component)]
@@ -263,56 +250,3 @@ fn setup_loading_text(mut commands: Commands, asset_server: ResMut<AssetServer>)
         LoadingText,
     ));
 }
-
-// fn display_planet_ownership(
-//     mut commands: Commands,
-//     asset_server: Res<AssetServer>,
-//     game_info: Res<GameInfo>,
-//     system_visuals_query: Query<&SystemVisuals>,
-// ) {
-//     let owned_planets = game_info
-//         .game
-//         .current
-//         .players
-//         .values()
-//         .map(|player| {
-//             player
-//                 .planets
-//                 .keys()
-//                 .cloned()
-//                 .map(move |planet| (planet, player))
-//         })
-//         .flatten()
-//         .collect::<HashMap<Planet, &Player>>();
-
-//     let system_planets: HashMap<SystemId, Vec<Planet>> = systems()
-//         .into_iter()
-//         .map(|(system_id, system)| (system_id, system.planets))
-//         .collect();
-
-//     let font = asset_server.load("slider_regular.ttf");
-//     let text_style = TextStyle {
-//         font: font.clone(),
-//         font_size: 24.0,
-//         color: Color::BLACK,
-//     };
-
-//     for visuals in system_visuals_query.iter() {
-//         if let Some(planets) = system_planets.get(&visuals.system_id) {
-//             for planet in planets.iter() {
-//                 if let Some(owner) = owned_planets.get(planet) {
-//                     let base_pos = tile_pos_to_visual_pos(visuals.tile_pos);
-//                     let offset = tile_offset_to_visual_pos(planet_offset(planet));
-//                     let position = base_pos + offset;
-
-//                     commands.spawn((Text2dBundle {
-//                         text: Text::from_section(owner.name.clone(), text_style.clone())
-//                             .with_justify(JustifyText::Center),
-//                         transform: Transform::from_translation(position),
-//                         ..default()
-//                     },));
-//                 }
-//             }
-//         }
-//     }
-// }

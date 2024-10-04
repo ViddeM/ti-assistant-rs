@@ -282,6 +282,7 @@ const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
   const [cod2, setCod2] = useState<boolean>(false);
   const [cod3, setCod3] = useState<boolean>(false);
   const [points, setPoints] = useState<number>(10);
+  const [miltyString, setMiltyString] = useState<string | null>(null);
 
   return (
     <div className={`card ${styles.createGameContainer}`}>
@@ -334,6 +335,23 @@ const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
         />
         <p>{points}</p>
       </div>
+      <div className={styles.createGameRow}>
+        <label>Milty string:</label>
+        <br />
+        <input
+          type="text"
+          id="milty-string-input"
+          value={miltyString ?? ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (!v || v.length === 0) {
+              setMiltyString(null);
+            } else {
+              setMiltyString(v);
+            }
+          }}
+        />
+      </div>
       <Button
         onClick={() =>
           startGame({
@@ -342,6 +360,7 @@ const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
             cod1: cod1,
             cod2: cod2,
             cod3: cod3,
+            miltyString: miltyString,
           })
         }
       >
