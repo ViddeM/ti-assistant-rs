@@ -8,7 +8,7 @@ use serde::Deserialize;
 use ti_helper_game::{
     data::components::phase::Phase, game_options::GameOptions, gameplay::game_state::GameState,
 };
-use tile::{update_map, PlanetOwnerVisuals, SystemVisuals};
+use tile::{render_map, PlanetOwnerVisuals, SystemVisuals};
 use wasm_bindgen::prelude::*;
 use web_sys::{MessageEvent, UrlSearchParams, WebSocket};
 
@@ -61,6 +61,20 @@ struct MapInfo {
     previous_game_state: Option<GameState>,
 }
 
+impl MapInfo {
+    fn new(game_state: GameState) -> Self {
+        Self {
+            game_state,
+            previous_game_state: None,
+        }
+    }
+
+    fn update_game_state(&mut self, new_game_state: GameState) {
+        self.previous_game_state = Some(self.game_state.clone());
+        self.game_state = new_game_state;
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, serde::Serialize)]
 enum WsResponse {
     GameOptions(GameOptions),
@@ -79,8 +93,6 @@ fn handle_message(e: MessageEvent, tx: SyncSender<GameState>) -> Result<(), Stri
     let message: WsResponse = serde_json::from_str(&data)
         .map_err(|err| format!("Failed to deserialize message, err: {err:?}"))?;
 
-    console_log(&format!("HELLO message: {:?}", message));
-
     match message {
         WsResponse::GameOptions(opts) => console_log(&format!("Got game options, opts: {opts:?}")), // self.game_options = Some(opts),
         WsResponse::JoinedGame(_) => console_log("Joined game successfully"),
@@ -88,7 +100,6 @@ fn handle_message(e: MessageEvent, tx: SyncSender<GameState>) -> Result<(), Stri
             console_log("Got game state response");
             tx.send(state)
                 .map_err(|err| format!("Failed to send game_state over channel, err: {err:?}"))?;
-            console_log("SENT");
         }
     }
 
@@ -136,16 +147,7 @@ fn run_game(game_id: &str) -> Result<(), String> {
         }))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(game_info)
-        .add_systems(
-            Startup,
-            (
-                setup_camera,
-                setup_loading_text,
-                // setup_map,
-                // display_planet_ownership
-            )
-                .chain(),
-        )
+        .add_systems(Startup, (setup_camera, setup_loading_text).chain())
         .add_systems(Update, (zooming, update_map_from_channel))
         .run();
 
@@ -183,9 +185,8 @@ fn update_map_from_channel(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     loading_text_query: Query<Entity, With<LoadingText>>,
-    // TODO: Update the map in real time
-    mut planet_owner_query: Query<(&mut Text, &mut PlanetOwnerVisuals)>,
-    mut tile_visual_query: Query<(&mut SystemVisuals, &mut Handle<Image>, &mut Transform)>,
+    planet_owner_query: Query<Entity, With<PlanetOwnerVisuals>>,
+    tile_visual_query: Query<Entity, With<SystemVisuals>>,
 ) {
     let receiver = game_info.rx.get_mut().expect("Failed to get mutex");
     let Some(game_state) = receiver.try_iter().last() else {
@@ -204,7 +205,7 @@ fn update_map_from_channel(
         commands.entity(e).despawn();
     }
 
-    let Some(hex_map) = game_state.hex_map.as_ref() else {
+    if game_state.hex_map.is_none() {
         commands.spawn(Text2dBundle {
             text: Text::from_section(
                 "No milty string specified for game, unable to render map",
@@ -214,7 +215,7 @@ fn update_map_from_channel(
             ..default()
         });
         return;
-    };
+    }
 
     if matches!(game_state.phase, Phase::Creation | Phase::Setup) {
         commands.spawn(Text2dBundle {
@@ -226,17 +227,30 @@ fn update_map_from_channel(
     }
 
     if let Some(map_info) = game_info.map_info.as_mut() {
-        let prev = map_info.game_state.clone();
-        map_info.game_state = game_state.clone();
-        map_info.previous_game_state = Some(prev);
+        map_info.update_game_state(game_state);
     } else {
-        game_info.map_info = Some(MapInfo {
-            game_state: game_state.clone(),
-            previous_game_state: None,
-        });
-    }
+        game_info.map_info = Some(MapInfo::new(game_state));
+    };
+    let game_state = &game_info
+        .map_info
+        .as_ref()
+        .expect("Should have just set game_state!")
+        .game_state;
 
-    update_map(commands, asset_server, hex_map, &game_state);
+    // TODO: Instead of removing everything and respawning them, only update what has changed!
+    planet_owner_query.iter().for_each(|entity| {
+        commands
+            .get_entity(entity)
+            .expect("Entity to exist")
+            .despawn()
+    });
+    tile_visual_query.iter().for_each(|entity| {
+        commands
+            .get_entity(entity)
+            .expect("Entity to exist")
+            .despawn()
+    });
+    render_map(commands, asset_server, game_state);
 }
 
 #[derive(Component)]

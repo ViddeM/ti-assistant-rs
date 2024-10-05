@@ -69,12 +69,7 @@ fn try_update_game_state(
         Event::SetSettings { settings } => {
             game_state.assert_phase(Phase::Creation)?;
 
-            if let Some(milty) = settings.milty_string.as_ref() {
-                match HexMap::from_milty_string(milty) {
-                    Ok(v) => game_state.hex_map = Some(v),
-                    Err(err) => bail!("Invalid milty string, err: {err:?}"),
-                }
-            }
+            if let Some(milty_id) = settings.milty_id.as_ref() {}
 
             game_state.game_settings = settings;
         }
@@ -105,19 +100,17 @@ fn try_update_game_state(
 
             if let Some(hex_map) = game_state.hex_map.as_ref() {
                 // Ensure that this faction was included in the milty string import.
-                let faction_starting_system_id: Vec<String> = systems()
-                    .into_iter()
-                    .filter(|(_, system)| match system.system_type {
-                        SystemType::HomeSystem(faction) => faction == player.faction,
-                        _ => false,
-                    })
-                    .map(|(id, _)| id)
-                    .collect();
+                let map_systems: Vec<&String> =
+                    hex_map.tiles.iter().map(|tile| &tile.system).collect();
                 ensure!(
-                    hex_map
-                        .tiles
-                        .iter()
-                        .all(|tile| faction_starting_system_id.contains(&tile.system)),
+                    systems()
+                        .into_iter()
+                        .filter(|(_, system)| match system.system_type {
+                            SystemType::HomeSystem(faction) => faction == player.faction,
+                            _ => false,
+                        })
+                        .map(|(id, _)| id)
+                        .all(|system_id| map_systems.contains(&&system_id)),
                     "The selected faction was not included in the milty draft map!"
                 );
             }

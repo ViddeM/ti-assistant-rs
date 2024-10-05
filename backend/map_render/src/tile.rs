@@ -44,12 +44,12 @@ impl From<Player> for PlanetOwnerVisuals {
     }
 }
 
-pub fn update_map(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    hex_map: &HexMap,
-    game_state: &GameState,
-) {
+pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_state: &GameState) {
+    let hex_map = game_state
+        .hex_map
+        .as_ref()
+        .expect("No hex map? This should have been checked earlier and is thus a bug!");
+
     let font = asset_server.load("slider_regular.ttf");
 
     let tile_id_text_style = TextStyle {

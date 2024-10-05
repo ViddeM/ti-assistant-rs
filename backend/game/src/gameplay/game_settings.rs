@@ -12,8 +12,8 @@ pub struct GameSettings {
     pub max_points: u32,
     /// Which expansions are in play this game.
     pub expansions: Expansions,
-    /// The milty draft map string for this game, if one was used, or none.
-    pub milty_string: Option<String>,
+    /// Optional ID to the milty draft, if provided, an alternative creation flow will be used.
+    pub milty_id: Option<String>,
 }
 
 impl Default for GameSettings {
@@ -21,7 +21,7 @@ impl Default for GameSettings {
         Self {
             max_points: 10,
             expansions: Default::default(),
-            milty_string: None,
+            milty_id: None,
         }
     }
 }
