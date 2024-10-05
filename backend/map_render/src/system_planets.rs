@@ -1,8 +1,6 @@
 use bevy::math::Vec2;
 use ti_helper_game::data::components::{planet::Planet, system::SystemId};
 
-use crate::console_error;
-
 pub struct PlanetVisuals {
     planet: Planet,
     offset: Vec2,
@@ -26,6 +24,7 @@ macro_rules! pv {
 /// Returns the visual offset of the planet on the system tile image.
 pub fn planet_offset(planet: &Planet) -> Vec2 {
     match planet {
+        // Single planet systems
         Planet::Jord
         | Planet::MollPrimus
         | Planet::Darien
@@ -34,24 +33,98 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::ZeroZeroZero
         | Planet::Winnu
         | Planet::MordaiII
-        | Planet::Elysium => Vec2::new(0.0, 0.08),
+        | Planet::Elysium
+        | Planet::Wellon
+        | Planet::VefutII
+        | Planet::Thibah
+        | Planet::TarMann
+        | Planet::Saudor
+        | Planet::MeharXull
+        | Planet::Creuss
+        | Planet::Ixth
+        | Planet::Arcturus
+        | Planet::Acheron
+        | Planet::TheDark
+        | Planet::ArchonVail
+        | Planet::Perimiter
+        | Planet::SemLore
+        | Planet::Ang
+        | Planet::Vorhal
+        | Planet::Primor
+        | Planet::HopesEnd
+        | Planet::MecatolRex => Vec2::new(0.0, 0.08),
+        // Upper planet in two-planet systems
         Planet::Maaluuk
         | Planet::ArcPrime
         | Planet::LisisII
         | Planet::Nar
         | Planet::TrenLak
+        | Planet::ArchonRen
+        | Planet::Quann
+        | Planet::Lodor
+        | Planet::NewAlbion
+        | Planet::TequRan
+        | Planet::Qucenn
+        | Planet::Mellon
+        | Planet::Lazar
+        | Planet::DalBootha
+        | Planet::Corneeq
+        | Planet::Centauri
+        | Planet::Bereg
+        | Planet::Arnor
+        | Planet::Arinam
+        | Planet::Abyz
+        | Planet::Naazir
+        | Planet::Cormund
+        | Planet::Atlas
+        | Planet::Everra
+        | Planet::Accoen
+        | Planet::Kraag
+        | Planet::Bakal
+        | Planet::Lisis
+        | Planet::Cealdri
+        | Planet::VegaMajor
         | Planet::Retillion => Vec2::new(-0.12, 0.25),
+        // Lower planet in two-planet systems
         Planet::Druaa
         | Planet::WrenTerra
         | Planet::Ragh
         | Planet::Jol
         | Planet::Quinarra
+        | Planet::ArchonTau
+        | Planet::Starpoint
+        | Planet::Torkan
+        | Planet::Rarron
+        | Planet::Zohbat
+        | Planet::Sakulag
+        | Planet::Xxehan
+        | Planet::Resculon
+        | Planet::Gral
+        | Planet::LirtaIV
+        | Planet::Lor
+        | Planet::Meer
+        | Planet::Fria
+        | Planet::Rokha
+        | Planet::JeolIr
+        | Planet::Siig
+        | Planet::AlioPrima
+        | Planet::Velnor
+        | Planet::Xanhact
+        | Planet::VegaMinor
         | Planet::Shalloq => Vec2::new(0.15, -0.20),
-        // TODO
-        _ => {
-            console_error(&format!("ERROR: NOT IMPLEMENTED FOR PLANET: {planet:?}"));
-            Vec2::new(25.0, 25.0)
+        // Top-right planet in trinary systems
+        Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir => Vec2::new(0.14, 0.25),
+        // Left planet in trinay systems
+        Planet::RigelIII | Planet::Loki | Planet::Hercant | Planet::Valk => Vec2::new(-0.18, 0.0),
+        // Bottom-right planet in trinary systems
+        Planet::RigelI | Planet::Ashtroth | Planet::Kamdorn | Planet::Avar => {
+            Vec2::new(0.15, -0.20)
         }
+        Planet::Mallice => Vec2::new(0.20, 0.12),
+        Planet::Mirage => Vec2::ZERO,
+        Planet::CustodiaVigilia => panic!(
+            "Custodia vigilla should never be rendered as it is not considered to be on the map!"
+        ),
     }
 }
 
