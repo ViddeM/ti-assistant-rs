@@ -10,7 +10,7 @@ use ti_helper_game::{
 };
 use tile::{update_map, PlanetOwnerVisuals, SystemVisuals};
 use wasm_bindgen::prelude::*;
-use web_sys::{MessageEvent, WebSocket};
+use web_sys::{MessageEvent, UrlSearchParams, WebSocket};
 
 pub mod system_planets;
 pub mod tile;
@@ -27,9 +27,17 @@ extern "C" {
 }
 
 fn main() {
-    /* TODO: Figure out how to run the game from outside webassembly (currently requires calling the start_game method after this). If main runs the game it never returns and which is a problem... */
-    // TODO: READ game id from query param
-    run_game("905b8e94").expect("Failed to start game");
+    let window = web_sys::window().expect("Expected there to be a window!");
+    let search = window
+        .location()
+        .search()
+        .expect("Failed to find expected search parameters");
+    let search_params =
+        UrlSearchParams::new_with_str(&search).expect("Failed to create url search params");
+    let game_id = search_params
+        .get("gameId")
+        .expect("Failed to retrieve game ID");
+    run_game(&game_id).expect("Failed to start game");
 }
 
 #[derive(Resource, Debug)]
