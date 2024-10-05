@@ -5,9 +5,8 @@ use std::sync::{
 
 use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
 use serde::Deserialize;
-use ti_helper_game::{
-    data::components::phase::Phase, game_options::GameOptions, gameplay::game_state::GameState,
-};
+use ti_helper_game_data::components::phase::Phase;
+use ti_helper_game_logic::{game_options::GameOptions, gameplay::game_state::GameState};
 use tile::{render_map, PlanetOwnerVisuals, SystemVisuals};
 use wasm_bindgen::prelude::*;
 use web_sys::{MessageEvent, UrlSearchParams, WebSocket};

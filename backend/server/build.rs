@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use chrono::{DateTime, Utc};
-use ti_helper_game::gameplay::{event::Event, game::Game};
+use ti_helper_game_logic::gameplay::{event::Event, game::Game};
 
 fn main() {
     dotenvy::dotenv().ok();

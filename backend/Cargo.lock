@@ -1817,7 +1817,7 @@ dependencies = [
  "serde",
  "serde_json",
  "ti_helper_db",
- "ti_helper_game",
+ "ti_helper_game_logic",
  "tokio",
 ]
 
@@ -4679,7 +4679,73 @@ dependencies = [
 ]
 
 [[package]]
-name = "ti-helper-server"
+name = "ti_helper_db"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "diesel-async",
+ "diesel_migrations",
+ "eyre",
+ "rand",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ti_helper_game_data"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "eyre",
+ "serde",
+ "strum",
+ "strum_macros",
+ "ts-rs",
+]
+
+[[package]]
+name = "ti_helper_game_logic"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "eyre",
+ "log",
+ "serde",
+ "strum",
+ "strum_macros",
+ "ti_helper_game_data",
+ "ts-rs",
+]
+
+[[package]]
+name = "ti_helper_map_render"
+version = "0.1.0"
+dependencies = [
+ "bevy",
+ "chrono",
+ "eyre",
+ "js-sys",
+ "log",
+ "serde",
+ "serde_json",
+ "ti_helper_game_data",
+ "ti_helper_game_logic",
+ "wasm-bindgen",
+ "web-sys",
+]
+
+[[package]]
+name = "ti_helper_milty"
+version = "0.1.0"
+dependencies = [
+ "eyre",
+ "reqwest",
+ "serde",
+]
+
+[[package]]
+name = "ti_helper_server"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -4695,61 +4761,10 @@ dependencies = [
  "serde",
  "serde_json",
  "ti_helper_db",
- "ti_helper_game",
+ "ti_helper_game_data",
+ "ti_helper_game_logic",
  "ti_helper_websocket",
  "tokio",
-]
-
-[[package]]
-name = "ti_helper_db"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "diesel",
- "diesel-async",
- "diesel_migrations",
- "eyre",
- "rand",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "ti_helper_game"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "eyre",
- "log",
- "serde",
- "strum",
- "strum_macros",
- "ts-rs",
-]
-
-[[package]]
-name = "ti_helper_map_render"
-version = "0.1.0"
-dependencies = [
- "bevy",
- "chrono",
- "eyre",
- "js-sys",
- "log",
- "serde",
- "serde_json",
- "ti_helper_game",
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
-name = "ti_helper_milty"
-version = "0.1.0"
-dependencies = [
- "eyre",
- "reqwest",
- "serde",
 ]
 
 [[package]]
@@ -4762,7 +4777,8 @@ dependencies = [
  "serde",
  "serde_json",
  "ti_helper_db",
- "ti_helper_game",
+ "ti_helper_game_data",
+ "ti_helper_game_logic",
  "tokio",
  "tokio-tungstenite",
 ]

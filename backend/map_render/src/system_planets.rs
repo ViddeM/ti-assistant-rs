@@ -1,5 +1,5 @@
 use bevy::math::Vec2;
-use ti_helper_game::data::components::{planet::Planet, system::SystemId};
+use ti_helper_game_data::components::{planet::Planet, system::SystemId};
 
 pub struct PlanetVisuals {
     planet: Planet,

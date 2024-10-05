@@ -1,5 +1,5 @@
 [package]
-name = "ti-helper-server"
+name = "ti_helper_server"
 version = "0.1.0"
 edition = "2021"
 
@@ -20,14 +20,18 @@ log = "0.4.20"
 pretty_env_logger = "0.5.0"
 cron = "0.12.0"
 
-[dependencies.ti_helper_game]
-path = "../game"
-
 [dependencies.ti_helper_db]
 path = "../db"
 
 [dependencies.ti_helper_websocket]
 path = "../websocket"
+
+[dependencies.ti_helper_game_logic]
+path = "../game_logic"
+
+[dependencies.ti_helper_game_data]
+path = "../game_data"
+
 
 [build-dependencies]
 dotenvy = "0.15.7"
@@ -35,5 +39,5 @@ serde = { version = "1", features = ["derive", "rc"] }
 serde_json = "1"
 chrono = { version = "0.4.31", features = ["serde"] }
 
-[build-dependencies.ti_helper_game]
-path = "../game"
+[build-dependencies.ti_helper_game_logic]
+path = "../game_logic"

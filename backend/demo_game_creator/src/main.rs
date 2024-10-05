@@ -4,7 +4,7 @@ use chrono::{DateTime, Utc};
 use clap::Parser;
 use eyre::Context;
 use ti_helper_db::{db, game_id::GameId, queries};
-use ti_helper_game::gameplay::event::Event;
+use ti_helper_game_logic::gameplay::event::Event;
 
 #[derive(Parser)]
 pub struct Opt {

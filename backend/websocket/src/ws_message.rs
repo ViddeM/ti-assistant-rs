@@ -3,13 +3,10 @@ use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 
 use ti_helper_db::game_id::GameId;
-use ti_helper_game::{
+use ti_helper_game_data::common::game_settings::{Expansions, GameSettings};
+use ti_helper_game_logic::{
     game_options::GameOptions,
-    gameplay::{
-        event::Event,
-        game_settings::{Expansions, GameSettings},
-        game_state::GameState,
-    },
+    gameplay::{event::Event, game_state::GameState},
 };
 
 /// Websocket messages that can be received.
@@ -33,7 +30,7 @@ pub struct NewGame {
     cod1: bool,
     cod2: bool,
     cod3: bool,
-    milty_string: String,
+    milty_id: String,
 }
 
 impl From<NewGame> for GameSettings {
@@ -46,7 +43,11 @@ impl From<NewGame> for GameSettings {
                 codex_2: value.cod2,
                 codex_3: value.cod3,
             },
-            milty_string: Some(value.milty_string),
+            milty_id: if value.milty_id.is_empty() {
+                None
+            } else {
+                Some(value.milty_id)
+            },
         }
     }
 }

@@ -3,7 +3,7 @@ use std::{fs, str::FromStr};
 use chrono::{DateTime, Utc};
 use eyre::Context;
 use ti_helper_db::{db::DbPool, game_id::GameId, queries};
-use ti_helper_game::gameplay::{event::Event, game::Game};
+use ti_helper_game_logic::gameplay::{event::Event, game::Game};
 
 use crate::Opt;
 

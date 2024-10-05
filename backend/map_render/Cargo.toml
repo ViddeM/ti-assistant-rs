@@ -27,5 +27,8 @@ web-sys = { version = "0.3.70", features = [
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
 
-[dependencies.ti_helper_game]
-path = "../game"
+[dependencies.ti_helper_game_data]
+path = "../game_data"
+
+[dependencies.ti_helper_game_logic]
+path = "../game_logic"
