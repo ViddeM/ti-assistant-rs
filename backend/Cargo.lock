@@ -4742,6 +4742,7 @@ dependencies = [
  "eyre",
  "reqwest",
  "serde",
+ "ti_helper_game_data",
 ]
 
 [[package]]

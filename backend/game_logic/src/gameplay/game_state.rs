@@ -10,7 +10,8 @@ use ts_rs::TS;
 
 use ti_helper_game_data::{
     common::{
-        expansions::Expansion, faction::Faction, game_settings::GameSettings, player_id::PlayerId,
+        expansions::Expansion, faction::Faction, game_settings::GameSettings, map::HexMap,
+        player_id::PlayerId,
     },
     components::{
         action_card::ActionCard,
@@ -33,7 +34,6 @@ use super::{
     agenda::{AgendaRecord, AgendaState},
     error::GameError,
     event::{StrategicPrimaryAction, StrategicSecondaryAction},
-    map::HexMap,
     player::Player,
     score::Score,
     status::StatusPhaseState,

@@ -2,17 +2,16 @@ use std::{collections::HashMap, f32::consts::PI, ops::Div};
 
 use bevy::prelude::*;
 use ti_helper_game_data::{
-    common::color::Color,
+    common::{
+        color::Color,
+        map::{Coordinate, HexMap, HexPosition, Tile},
+    },
     components::{
         planet::Planet,
         system::{systems, SystemId},
     },
 };
-use ti_helper_game_logic::gameplay::{
-    game_state::GameState,
-    map::{Coordinate, HexMap, HexPosition, Tile},
-    player::Player,
-};
+use ti_helper_game_logic::gameplay::{game_state::GameState, player::Player};
 
 use crate::system_planets::planet_offset;
 
@@ -378,7 +377,7 @@ fn get_tile_position(coord: &Coordinate) -> Vec2 {
 #[cfg(test)]
 mod test {
     use bevy::math::Vec2;
-    use ti_helper_game_logic::gameplay::map::Coordinate;
+    use ti_helper_game_data::common::map::Coordinate;
 
     use super::get_tile_position;
 

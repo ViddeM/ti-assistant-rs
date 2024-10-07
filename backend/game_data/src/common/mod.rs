@@ -6,5 +6,7 @@ pub mod expansions;
 pub mod faction;
 /// Game configuration options.
 pub mod game_settings;
+/// The galactic map.
+pub mod map;
 /// A unique identifier for a player in a game.
 pub mod player_id;

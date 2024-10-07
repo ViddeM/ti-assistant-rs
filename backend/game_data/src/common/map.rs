@@ -2,8 +2,9 @@ use std::str::FromStr;
 
 use eyre::{Context, ContextCompat};
 use serde::{Deserialize, Serialize};
-use ti_helper_game_data::components::system::{systems, SystemId};
 use ts_rs::TS;
+
+use crate::components::system::{systems, SystemId};
 
 /// The galactic map.
 #[derive(Default, Debug, Clone, Serialize, Deserialize, TS)]
