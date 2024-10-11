@@ -91,7 +91,7 @@ impl FrontierCard {
             FrontierCard::MerchantStation => {
                 fi!(MerchantStation, "Merchant Station", ProphecyOfKings, 2)
             }
-            FrontierCard::Mirage => fi!(Mirage, "Mirage", ProphecyOfKings, 1),
+            FrontierCard::Mirage => fi!(Mirage, "Mirage", ProphecyOfKings, 1, Action),
             FrontierCard::UnknownRelicFragment => fi!(
                 UnknownRelicFragment,
                 "Unknown Relic Fragment",

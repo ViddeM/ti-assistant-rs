@@ -42,7 +42,7 @@ factions: Array<FactionResponse>,
 /**
  * What systems exists in the game.
  */
-systems: Array<System>, 
+systems: { [key in string]: System }, 
 /**
  * What technologies exist in the game.
  */

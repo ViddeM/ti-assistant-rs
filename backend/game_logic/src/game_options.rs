@@ -13,7 +13,7 @@ use ti_helper_game_data::{
         planet::{Planet, PlanetInfo},
         planet_attachment::{PlanetAttachment, PlanetAttachmentInfo},
         relic::{Relic, RelicInfo},
-        system::{systems, System},
+        system::{systems, System, SystemId},
         tech::{TechInfo, Technology},
     },
     enum_map::EnumMap,
@@ -35,7 +35,7 @@ pub struct GameOptions {
     /// What factions exist within the game.
     factions: Vec<FactionResponse>,
     /// What systems exists in the game.
-    systems: Vec<System>,
+    systems: EnumMap<SystemId, System>,
     /// What technologies exist in the game.
     technologies: EnumMap<Technology, TechInfo>,
     /// What planets exist in the game.
@@ -78,8 +78,8 @@ impl GameOptions {
                 .collect::<Vec<FactionResponse>>(),
             colors: Color::iter().collect(),
             systems: systems()
-                .into_values()
-                .filter(|s| expansions.is_enabled(&s.expansion))
+                .into_iter()
+                .filter(|(_, s)| expansions.is_enabled(&s.expansion))
                 .collect(),
             planet_infos: Planet::iter()
                 .map(|p| (p.clone(), p.info()))

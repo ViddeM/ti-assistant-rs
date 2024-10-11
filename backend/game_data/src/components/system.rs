@@ -120,7 +120,7 @@ macro_rules! s {
 }
 
 /// Returns a map of from System ID to System for all the systems in the game.
-pub fn systems() -> HashMap<String, System> {
+pub fn systems() -> HashMap<SystemId, System> {
     HashMap::from([
         s!(
             "1",

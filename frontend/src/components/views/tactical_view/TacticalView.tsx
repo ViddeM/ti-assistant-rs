@@ -23,7 +23,7 @@ export const TacticalView = () => {
   const takenPlanets = tactical.takenPlanets;
   const attachments = tactical.planetAttachments;
 
-  const availablePlanetsInSystem = gameOptions.systems
+  const availablePlanetsInSystem = Object.values(gameOptions.systems)
     .filter((s) => s.id === activatedSystem)
     .flatMap((s) => s.planets)
     .filter(

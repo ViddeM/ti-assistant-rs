@@ -84,8 +84,9 @@ const StellarConvertersView = () => {
           .length === 0,
     )
     .filter((p) => {
-      let type = gameOptions.systems.filter((s) => s.planets.includes(p.id))[0]
-        .systemType;
+      let type = Object.values(gameOptions.systems).filter((s) =>
+        s.planets.includes(p.id),
+      )[0].systemType;
       return (
         typeof type !== "object" || !Object.keys(type).includes("HomeSystem")
       );
@@ -148,8 +149,9 @@ const NanoForgeView = () => {
     .filter((p) => !p.isLegendary)
     .filter((p) => !p.attachments.includes("NanoForge"))
     .filter((p) => {
-      let type = gameOptions.systems.filter((s) => s.planets.includes(p.id))[0]
-        .systemType;
+      let type = Object.values(gameOptions.systems).filter((s) =>
+        s.planets.includes(p.id),
+      )[0].systemType;
       return (
         typeof type !== "object" || !Object.keys(type).includes("HomeSystem")
       );
