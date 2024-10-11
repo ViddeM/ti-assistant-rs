@@ -82,3 +82,11 @@
     }
   }
 }
+
+.rightAlignedRow {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin-bottom: $margin;
+}

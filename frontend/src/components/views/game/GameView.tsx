@@ -284,7 +284,7 @@ const CreateGameView = ({ sendMsg }: { sendMsg: (data: any) => void }) => {
     <div className={`card ${styles.createGameContainer}`}>
       <h2>Create Game</h2>
       <label htmlFor="points-slider">Winning Score</label>
-      <div className={styles.createGameRow}>
+      <div className={`${styles.createGameRow} centerRow`}>
         <input
           type="range"
           min={4}
@@ -295,29 +295,21 @@ const CreateGameView = ({ sendMsg }: { sendMsg: (data: any) => void }) => {
         />
         <p>{points}</p>
       </div>
-      <div style={{ width: "100%", height: "2px", backgroundColor: "black" }} />
-      <h2>(Optional) Import from milty!</h2>
-      <div
-        style={{
-          width: "100%",
-          height: "2px",
-          backgroundColor: "black",
-          marginBottom: "5px",
-        }}
-      />
 
-      <Button
-        disabled={miltyImportMode}
-        onClick={() => setMiltyImportMode(true)}
-      >
-        Import from milty
-      </Button>
-      <Button
-        disabled={!miltyImportMode}
-        onClick={() => setMiltyImportMode(false)}
-      >
-        New game
-      </Button>
+      <div className={`${styles.viewModeButtonGroup} marginBottom`}>
+        <Button
+          disabled={!miltyImportMode}
+          onClick={() => setMiltyImportMode(false)}
+        >
+          New game
+        </Button>
+        <Button
+          disabled={miltyImportMode}
+          onClick={() => setMiltyImportMode(true)}
+        >
+          Import from milty
+        </Button>
+      </div>
 
       {miltyImportMode ? (
         <ImportMiltyGame startGame={startGame} />
@@ -401,7 +393,7 @@ const ImportMiltyGame = ({ startGame }: { startGame: (data: any) => void }) => {
 
   return (
     <>
-      <div className={styles.createGameRow}>
+      <div className={styles.rightAlignedRow}>
         <label htmlFor="milty-string-input">Milty draft ID:</label>
         <input
           type="text"
@@ -418,8 +410,8 @@ const ImportMiltyGame = ({ startGame }: { startGame: (data: any) => void }) => {
           }}
         />
       </div>
-      <div className={styles.createGameRow}>
-        <label htmlFor="milty-tts-input">Milty TTS Map string</label>
+      <div className={styles.rightAlignedRow}>
+        <label htmlFor="milty-tts-input">Milty TTS Map string:</label>
         <input
           required={true}
           type="text"
