@@ -1,14 +1,12 @@
 use std::collections::HashMap;
 
 use serde::Deserialize;
-use ti_helper_game_data::common::map::HexMap;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct MiltyDataResponse {
     pub draft: MiltyDraftResponse,
     pub success: bool,
-    pub hex_map: HexMap,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -49,5 +47,16 @@ pub struct MiltyPlayerResponse {
 #[serde(rename_all = "snake_case")]
 pub struct MiltyConfigDataResponse {
     pub players: Vec<String>,
-    pub name: String,
+    pub name: Option<String>,
+    pub include_pok: bool,
+    pub include_keleres: bool,
+    pub include_ds_tiles: bool,
+    pub include_discordant: bool,
+    pub include_discordantexp: bool,
+}
+
+impl MiltyConfigDataResponse {
+    pub fn any_ds_enabled(&self) -> bool {
+        self.include_ds_tiles || self.include_discordant || self.include_discordantexp
+    }
 }

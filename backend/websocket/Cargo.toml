@@ -20,6 +20,9 @@ path = "../game_logic"
 [dependencies.ti_helper_game_data]
 path = "../game_data"
 
+[dependencies.ti_helper_milty]
+path = "../milty"
+
 
 # Only for gameId :/
 [dependencies.ti_helper_db]

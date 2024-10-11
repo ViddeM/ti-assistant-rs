@@ -1,8 +1,9 @@
 use std::{borrow::BorrowMut, collections::HashSet};
 
 use chrono::{DateTime, Utc};
-use eyre::{bail, ensure, ContextCompat, OptionExt, Result};
+use eyre::{bail, ensure, Context, ContextCompat, OptionExt, Result};
 use strum::IntoEnumIterator;
+use ti_helper_milty::MiltyPlayer;
 
 use crate::gameplay::{
     agenda::{AgendaRound, Vote, VoteState},
@@ -18,13 +19,15 @@ use crate::gameplay::{
 
 use super::{
     agenda::AgendaRecord,
+    color_assignment::assign_colors,
     error::GameError,
     event::{action_matches_frontier_card, ActionCardAction, Event},
     game_state::{GameState, TacticalProgress},
+    player::NewPlayer,
 };
 
 use ti_helper_game_data::{
-    common::{faction::Faction, player_id::PlayerId},
+    common::{faction::Faction, game_settings::GameSettings, player_id::PlayerId},
     components::{
         action_card::{ActionCard, ActionCardPlay},
         agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
@@ -65,15 +68,63 @@ fn try_update_game_state(
     match event {
         Event::SetSettings { settings } => {
             game_state.assert_phase(Phase::Creation)?;
-
-            if let Some(milty_id) = settings.milty_id.as_ref() {}
-
             game_state.game_settings = settings;
         }
+        Event::ImportFromMilty {
+            max_points,
+            milty_data,
+        } => {
+            game_state.assert_phase(Phase::Creation)?;
 
+            game_state.game_settings = GameSettings {
+                max_points,
+                expansions: milty_data.expansions.clone(),
+            };
+            game_state.hex_map = Some(milty_data.hex_map);
+
+            let mut players: Vec<&MiltyPlayer> = milty_data.players.values().collect();
+            players.sort_by(|a, b| a.order.cmp(&b.order));
+            game_state.table_order = players.into_iter().map(|p| p.name.clone().into()).collect();
+
+            let colors_map =
+                assign_colors(milty_data.players.values().map(|p| p.faction).collect())
+                    .wrap_err("Failed to assign colors to factions")?;
+            let new_players = milty_data
+                .players
+                .values()
+                .map(|p| {
+                    Ok(NewPlayer {
+                        name: p.name.clone(),
+                        faction: p.faction,
+                        color: colors_map
+                            .get(&p.faction)
+                            .ok_or_eyre(format!("Faction {:?} did not get a color?", p.faction))?
+                            .clone(),
+                    })
+                })
+                .collect::<eyre::Result<Vec<NewPlayer>>>()?;
+
+            game_state.players = new_players
+                .into_iter()
+                .map(|p| (p.name.clone().into(), p.setup(&milty_data.expansions)))
+                .collect();
+
+            game_state.speaker = Some(
+                game_state
+                    .table_order
+                    .iter()
+                    .cloned()
+                    .next()
+                    .wrap_err("Expected there to be players from milty?")?,
+            );
+        }
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;
             game_state.assert_expansion(&player.faction.expansion())?;
+            ensure!(
+                game_state.hex_map.is_none(), // TODO: Figure out if we can track this in a nicer way.
+                "Game was imported from milty, can't add more players!"
+            );
             ensure!(
                 game_state.players.len() < game_state.max_players(),
                 "can't have more than {} players",

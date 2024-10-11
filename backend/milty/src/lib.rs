@@ -3,63 +3,134 @@
 
 //! Logic for importing game configuration from milty.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use eyre::Context;
 use milty_response::{MiltyDataResponse, MiltyPlayerResponse};
+use serde::{Deserialize, Serialize};
 use ti_helper_game_data::common::{faction::Faction, game_settings::Expansions, map::HexMap};
 
 mod milty_response;
 
 /// Data imported from miltydraft.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MiltyData {
-    players: HashMap<String, MiltyPlayer>,
-    expansions: Expansions,
-    game_name: String,
+    /// Map from name to [MiltyPlayer] for the players participating in this game.
+    pub players: HashMap<String, MiltyPlayer>,
+    /// The expansions configured for the milty draft.
+    pub expansions: Expansions,
+    /// The configured name of the game in milty.
+    pub game_name: String,
+    /// The galactic map from the milty draft.
+    pub hex_map: HexMap,
 }
 
 /// Player imported from miltydraft.
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MiltyPlayer {
-    name: String,
-    faction: Faction,
-    order: u32,
+    /// The name of the player.
+    pub name: String,
+    /// The faction the player is playing.
+    pub faction: Faction,
+    /// The table order of the player, 0 being the starting speaker.
+    pub order: u32,
 }
 
-impl TryFrom<MiltyPlayerResponse> for MiltyPlayer {
+impl TryFrom<&MiltyPlayerResponse> for MiltyPlayer {
     type Error = eyre::Report;
 
-    fn try_from(value: MiltyPlayerResponse) -> Result<Self, Self::Error> {}
+    fn try_from(value: &MiltyPlayerResponse) -> Result<Self, Self::Error> {
+        Ok(MiltyPlayer {
+            name: html_escape::decode_html_entities(&value.name).to_string(),
+            faction: Faction::parse(&value.faction).wrap_err_with(|| {
+                format!(
+                    "Failed to parse faction for player {} ({})",
+                    value.name, value.faction
+                )
+            })?,
+            order: value
+                .position
+                .parse::<u32>()
+                .wrap_err("Failed to parse order into u32")?,
+        })
+    }
 }
 
-/// Import game configuration from a finished milty-draft.
-pub fn import_from_milty(milty_id: &str, tts_string: &str) -> eyre::Result<MiltyData> {
-    let client = reqwest::blocking::Client::new();
-    let get_milty_data_response: MiltyDataResponse = client
-        .get(&format!(
-            "https://milty.shenanigans.be/data.php?draft={milty_id}",
-        ))
-        .send()
-        .wrap_err("Failed to retrieve game data from milty")?
-        .json()
-        .wrap_err("Failed to parse milty response")?;
+impl MiltyData {
+    /// Import game configuration from a finished milty-draft.
+    pub async fn import_from_milty(milty_id: &str, tts_string: &str) -> eyre::Result<MiltyData> {
+        let client = reqwest::Client::new();
 
-    if !get_milty_data_response.success {
-        eyre::bail!("Got error response from milty: {get_milty_data_response:?}");
-    }
+        let get_milty_data_response: MiltyDataResponse = client
+            .get(&format!(
+                "https://milty.shenanigans.be/data.php?draft={milty_id}",
+            ))
+            .send()
+            .await
+            .wrap_err("Failed to retrieve game data from milty")?
+            .json()
+            .await
+            .wrap_err("Failed to parse milty response")?;
 
-    if !get_milty_data_response.draft.done {
-        eyre::bail!("Must finish milty draft before importing!");
-    }
+        log::debug!("Get milty data response {get_milty_data_response:?}");
 
-    Ok(MiltyData {
-        players: get_milty_data_response
+        if !get_milty_data_response.success {
+            eyre::bail!("Got error response from milty: {get_milty_data_response:?}");
+        }
+
+        if !get_milty_data_response.draft.done {
+            eyre::bail!("Must finish milty draft before importing!");
+        }
+
+        let milty_conf = get_milty_data_response.draft.config;
+        if milty_conf.any_ds_enabled() {
+            eyre::bail!("Discordant stars is currently not supported");
+        }
+
+        let players = get_milty_data_response
             .draft
             .draft
             .players
             .iter()
-            .map(|(_, player)| MiltyPlayer::try_from(player).map(|p| (player.name, p)))
-            .collect::<eyre::Result<HashMap<String, MiltyPlayer>>>()?,
-        expansions: todo!(),
-        game_name: todo!(),
-    })
+            .map(|(_, player)| MiltyPlayer::try_from(player).map(|p| (player.name.clone(), p)))
+            .collect::<eyre::Result<HashMap<String, MiltyPlayer>>>()?;
+
+        let expansions = Expansions {
+            prophecy_of_kings: milty_conf.include_pok,
+            codex_1: true, // TODO: not entirely sure about these.
+            codex_2: true,
+            codex_3: true,
+        };
+
+        for player in players.values() {
+            eyre::ensure!(
+                expansions.is_enabled(&player.faction.expansion()),
+                "Milty import included a faction from an expansion that is not enabled!"
+            );
+        }
+
+        eyre::ensure!(
+            players.keys().collect::<HashSet<&String>>().len() == players.len(),
+            "Two or more players had the same name!"
+        );
+
+        eyre::ensure!(
+            players
+                .values()
+                .map(|p| &p.faction)
+                .collect::<HashSet<&Faction>>()
+                .len()
+                == players.len(),
+            "Two or more players had the same faction!"
+        );
+
+        Ok(MiltyData {
+            players,
+            expansions,
+            game_name: html_escape::decode_html_entities(&get_milty_data_response.draft.name)
+                .to_string(),
+            hex_map: HexMap::from_milty_string(tts_string)
+                .wrap_err("Failed to parse milty tts string")?,
+        })
+    }
 }

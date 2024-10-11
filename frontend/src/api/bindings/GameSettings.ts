@@ -9,8 +9,4 @@ maxPoints: number,
 /**
  * Which expansions are in play this game.
  */
-expansions: Expansions, 
-/**
- * The milty draft map string for this game, if one was used, or none.
- */
-miltyString: string | null, };
+expansions: Expansions, };

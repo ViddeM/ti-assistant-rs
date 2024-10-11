@@ -157,15 +157,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   }
 
   if (isNewGame) {
-    return (
-      <CreateGameView
-        startGame={(data) =>
-          sendMsg({
-            NewGame: data,
-          })
-        }
-      />
-    );
+    return <CreateGameView sendMsg={sendMsg} />;
   }
 
   if (notFound) {
@@ -276,17 +268,78 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
   );
 };
 
-const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
-  const [pok, setPok] = useState<boolean>(false);
-  const [cod1, setCod1] = useState<boolean>(false);
-  const [cod2, setCod2] = useState<boolean>(false);
-  const [cod3, setCod3] = useState<boolean>(false);
+const CreateGameView = ({ sendMsg }: { sendMsg: (data: any) => void }) => {
   const [points, setPoints] = useState<number>(10);
-  const [miltyString, setMiltyString] = useState<string | null>(null);
+  const [miltyImportMode, setMiltyImportMode] = useState<boolean>(false);
+
+  const startGame = (data: any) =>
+    sendMsg({
+      NewGame: {
+        points: points,
+        gameConfig: data,
+      },
+    });
 
   return (
     <div className={`card ${styles.createGameContainer}`}>
       <h2>Create Game</h2>
+      <label htmlFor="points-slider">Winning Score</label>
+      <div className={styles.createGameRow}>
+        <input
+          type="range"
+          min={4}
+          max={16}
+          id="points-slider"
+          value={points}
+          onChange={(e) => setPoints(parseInt(e.target.value))}
+        />
+        <p>{points}</p>
+      </div>
+      <div style={{ width: "100%", height: "2px", backgroundColor: "black" }} />
+      <h2>(Optional) Import from milty!</h2>
+      <div
+        style={{
+          width: "100%",
+          height: "2px",
+          backgroundColor: "black",
+          marginBottom: "5px",
+        }}
+      />
+
+      <Button
+        disabled={miltyImportMode}
+        onClick={() => setMiltyImportMode(true)}
+      >
+        Import from milty
+      </Button>
+      <Button
+        disabled={!miltyImportMode}
+        onClick={() => setMiltyImportMode(false)}
+      >
+        New game
+      </Button>
+
+      {miltyImportMode ? (
+        <ImportMiltyGame startGame={startGame} />
+      ) : (
+        <CleanNewGameView startGame={startGame} />
+      )}
+    </div>
+  );
+};
+
+const CleanNewGameView = ({
+  startGame,
+}: {
+  startGame: (data: any) => void;
+}) => {
+  const [pok, setPok] = useState<boolean>(false);
+  const [cod1, setCod1] = useState<boolean>(false);
+  const [cod2, setCod2] = useState<boolean>(false);
+  const [cod3, setCod3] = useState<boolean>(false);
+
+  return (
+    <>
       <div className={styles.createGameRow}>
         <input
           type="checkbox"
@@ -323,50 +376,79 @@ const CreateGameView = ({ startGame }: { startGame: (data: any) => void }) => {
         />
         <label htmlFor="cod3">Codex III</label>
       </div>
-      <label htmlFor="points-slider">Winning Score</label>
-      <div className={styles.createGameRow}>
-        <input
-          type="range"
-          min={4}
-          max={16}
-          id="points-slider"
-          value={points}
-          onChange={(e) => setPoints(parseInt(e.target.value))}
-        />
-        <p>{points}</p>
-      </div>
-      <div className={styles.createGameRow}>
-        <label>Milty string:</label>
-        <br />
-        <input
-          type="text"
-          id="milty-string-input"
-          value={miltyString ?? ""}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (!v || v.length === 0) {
-              setMiltyString(null);
-            } else {
-              setMiltyString(v);
-            }
-          }}
-        />
-      </div>
+
       <Button
         onClick={() =>
           startGame({
-            points: points,
-            pok: pok,
-            cod1: cod1,
-            cod2: cod2,
-            cod3: cod3,
-            miltyString: miltyString,
+            CustomGameConfig: {
+              pok: pok,
+              cod1: cod1,
+              cod2: cod2,
+              cod3: cod3,
+            },
           })
         }
       >
         Create Game
       </Button>
-    </div>
+    </>
+  );
+};
+
+const ImportMiltyGame = ({ startGame }: { startGame: (data: any) => void }) => {
+  const [miltyGameId, setMiltyGameId] = useState<string | null>(null);
+  const [miltyTtsString, setMiltyTTSString] = useState<string | null>(null);
+
+  return (
+    <>
+      <div className={styles.createGameRow}>
+        <label htmlFor="milty-string-input">Milty draft ID:</label>
+        <input
+          type="text"
+          required={true}
+          id="milty-string-input"
+          value={miltyGameId ?? ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (!v || v.length === 0) {
+              setMiltyGameId(null);
+            } else {
+              setMiltyGameId(v);
+            }
+          }}
+        />
+      </div>
+      <div className={styles.createGameRow}>
+        <label htmlFor="milty-tts-input">Milty TTS Map string</label>
+        <input
+          required={true}
+          type="text"
+          id="milty-tts-input"
+          value={miltyTtsString ?? ""}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (!v || v.length === 0) {
+              setMiltyTTSString(null);
+            } else {
+              setMiltyTTSString(v);
+            }
+          }}
+        />
+      </div>
+
+      <Button
+        onClick={() =>
+          startGame({
+            ImportFromMilty: {
+              miltyGameId: miltyGameId,
+              miltyTtsString: miltyTtsString,
+            },
+          })
+        }
+      >
+        Create Game
+      </Button>
+    </>
   );
 };
 

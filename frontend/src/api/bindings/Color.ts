@@ -3,4 +3,4 @@
 /**
  * A player color.
  */
-export type Color = "Blue" | "Green" | "Red" | "Yellow" | "Black" | "Purple" | "Orange" | "Pink";
+export type Color = "Pink" | "Orange" | "Green" | "Red" | "Yellow" | "Black" | "Purple" | "Blue";

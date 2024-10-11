@@ -16,3 +16,6 @@ strum_macros = "0.25"
 
 [dependencies.ti_helper_game_data]
 path = "../game_data"
+
+[dependencies.ti_helper_milty]
+path = "../milty"

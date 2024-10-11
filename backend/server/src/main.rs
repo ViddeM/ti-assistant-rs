@@ -13,6 +13,7 @@ use ti_helper_db::{
     game_id::GameId,
     queries,
 };
+use ti_helper_game_data::common::game_settings::GameSettings;
 use ti_helper_game_logic::gameplay::{error::GameError, event::Event, game::Game};
 use ti_helper_websocket::{
     websocket_client::WsClient,
@@ -160,9 +161,8 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
 
                 let mut game = Game::default();
 
-                let set_settings_event = Event::SetSettings {
-                    settings: new_game.into(),
-                };
+                let set_settings_event = new_game.to_new_game_event().await?;
+
                 let now = Utc::now();
                 game.apply_or_err(set_settings_event.clone(), now)?;
                 if let Some(db_pool) = &shared.db_pool {

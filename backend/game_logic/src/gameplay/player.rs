@@ -2,6 +2,7 @@ use std::collections::HashSet;
 
 use eyre::ensure;
 use serde::{Deserialize, Serialize};
+use ti_helper_milty::MiltyPlayer;
 use ts_rs::TS;
 
 use ti_helper_game_data::{

@@ -1,5 +1,7 @@
 /// Agenda phase state.
 pub mod agenda;
+/// Handles assignment of colors to players based on factions.
+pub mod color_assignment;
 /// Game error.
 pub mod error;
 /// Game events.

@@ -207,7 +207,7 @@ fn update_map_from_channel(
     if game_state.hex_map.is_none() {
         commands.spawn(Text2dBundle {
             text: Text::from_section(
-                "No milty string specified for game, unable to render map",
+                "Only games imported from milty can be rendered.",
                 text_style,
             )
             .with_justify(JustifyText::Center),

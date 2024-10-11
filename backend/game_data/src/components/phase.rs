@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// A phase of the game (including some that exist only for technical reasons).
-#[derive(Clone, Copy, Default, Debug, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(ts_rs::TS)]
+#[derive(Clone, Copy, Default, Debug, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
 pub enum Phase {
     /// Game creation, selecting players & game rules

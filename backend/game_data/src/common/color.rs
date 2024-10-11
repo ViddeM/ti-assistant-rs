@@ -3,16 +3,16 @@ use strum_macros::EnumIter;
 use ts_rs::TS;
 
 /// A player color.
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, TS, PartialEq, Eq, Hash)]
 #[ts(export)]
 #[allow(missing_docs)]
 pub enum Color {
-    Blue,
+    Pink,
+    Orange,
     Green,
     Red,
     Yellow,
     Black,
     Purple,
-    Orange,
-    Pink,
+    Blue,
 }

@@ -8,6 +8,7 @@ use ti_helper_game_logic::{
     game_options::GameOptions,
     gameplay::{event::Event, game_state::GameState},
 };
+use ti_helper_milty::MiltyData;
 
 /// Websocket messages that can be received.
 #[derive(Debug, Clone, Deserialize)]
@@ -26,30 +27,68 @@ pub enum WsMessageIn {
 #[serde(rename_all = "camelCase")]
 pub struct NewGame {
     points: u32,
-    pok: bool,
-    cod1: bool,
-    cod2: bool,
-    cod3: bool,
-    milty_id: String,
+    game_config: GameConfig,
 }
 
-impl From<NewGame> for GameSettings {
-    fn from(value: NewGame) -> Self {
-        GameSettings {
-            max_points: value.points,
-            expansions: Expansions {
-                prophecy_of_kings: value.pok,
-                codex_1: value.cod1,
-                codex_2: value.cod2,
-                codex_3: value.cod3,
+impl NewGame {
+    /// Creates the appropriate new game event for this [NewGame].
+    pub async fn to_new_game_event(&self) -> eyre::Result<Event> {
+        Ok(match &self.game_config {
+            GameConfig::CustomGameConfig {
+                pok,
+                cod1,
+                cod2,
+                cod3,
+            } => Event::SetSettings {
+                settings: GameSettings {
+                    max_points: self.points,
+                    expansions: Expansions {
+                        prophecy_of_kings: pok.clone(),
+                        codex_1: cod1.clone(),
+                        codex_2: cod2.clone(),
+                        codex_3: cod3.clone(),
+                    },
+                },
             },
-            milty_id: if value.milty_id.is_empty() {
-                None
-            } else {
-                Some(value.milty_id)
-            },
-        }
+            GameConfig::ImportFromMilty {
+                milty_game_id,
+                milty_tts_string,
+            } => {
+                let milty_data =
+                    MiltyData::import_from_milty(&milty_game_id, &milty_tts_string).await?;
+                log::debug!("Milty data import {milty_data:?}");
+                Event::ImportFromMilty {
+                    max_points: self.points,
+                    milty_data,
+                }
+            }
+        })
     }
+}
+
+/// The game configuration.
+#[derive(Debug, Clone, Deserialize)]
+pub enum GameConfig {
+    /// Config specified by the user.
+    #[serde(rename_all = "camelCase")]
+    CustomGameConfig {
+        /// If Prophecy of kings is to be used.
+        pok: bool,
+        /// If Codex I should be used.
+        cod1: bool,
+        /// If Codex II should be used.
+        cod2: bool,
+        /// If Codex III should be used.
+        cod3: bool,
+    },
+    /// Game config imported from milty draft.
+    #[serde(rename_all = "camelCase")]
+    ImportFromMilty {
+        /// The game id from milty (from the URL).
+        milty_game_id: String,
+        /// The milty tts map string.
+        milty_tts_string: String,
+    },
 }
 
 /// Messages that can be sent to a client.

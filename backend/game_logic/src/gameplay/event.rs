@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
+use ti_helper_milty::MiltyData;
 
 use super::{game_state::StrategicSecondaryProgress, player::NewPlayer};
 
 use ti_helper_game_data::{
-    common::{faction::Faction, game_settings::GameSettings, player_id::PlayerId},
+    common::{color::Color, faction::Faction, game_settings::GameSettings, player_id::PlayerId},
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
@@ -27,7 +28,13 @@ pub enum Event {
         /// Settings for the game.
         settings: GameSettings,
     },
-
+    /// Import game configuration from milty-draft.
+    ImportFromMilty {
+        /// The number of points required to win this game.
+        max_points: u32,
+        /// The data imported from milty.
+        milty_data: MiltyData,
+    },
     /// Add a new player to the game.
     AddPlayer {
         /// The new player that joined the game.
