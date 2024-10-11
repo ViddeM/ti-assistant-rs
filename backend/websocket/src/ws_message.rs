@@ -59,7 +59,7 @@ impl NewGame {
                 log::debug!("Milty data import {milty_data:?}");
                 Event::ImportFromMilty {
                     max_points: self.points,
-                    milty_data,
+                    milty_data: Box::new(milty_data),
                 }
             }
         })

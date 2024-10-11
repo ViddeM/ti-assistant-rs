@@ -33,7 +33,7 @@ pub enum Event {
         /// The number of points required to win this game.
         max_points: u32,
         /// The data imported from milty.
-        milty_data: MiltyData,
+        milty_data: Box<MiltyData>,
     },
     /// Add a new player to the game.
     AddPlayer {
