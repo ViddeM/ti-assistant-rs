@@ -3,7 +3,6 @@ use std::{borrow::BorrowMut, collections::HashSet};
 use chrono::{DateTime, Utc};
 use eyre::{bail, ensure, Context, ContextCompat, OptionExt, Result};
 use strum::IntoEnumIterator;
-use ti_helper_milty::MiltyPlayer;
 
 use crate::gameplay::{
     agenda::{AgendaRound, Vote, VoteState},
@@ -27,7 +26,9 @@ use super::{
 };
 
 use ti_helper_game_data::{
-    common::{faction::Faction, game_settings::GameSettings, player_id::PlayerId},
+    common::{
+        faction::Faction, game_settings::GameSettings, milty_data::MiltyPlayer, player_id::PlayerId,
+    },
     components::{
         action_card::{ActionCard, ActionCardPlay},
         agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},

@@ -3,12 +3,15 @@ use std::sync::Arc;
 use serde::{Deserialize, Serialize};
 
 use ti_helper_db::game_id::GameId;
-use ti_helper_game_data::common::game_settings::{Expansions, GameSettings};
+use ti_helper_game_data::common::{
+    game_settings::{Expansions, GameSettings},
+    milty_data::MiltyData,
+};
 use ti_helper_game_logic::{
     game_options::GameOptions,
     gameplay::{event::Event, game_state::GameState},
 };
-use ti_helper_milty::MiltyData;
+use ti_helper_milty::MiltyImport;
 
 /// Websocket messages that can be received.
 #[derive(Debug, Clone, Deserialize)]

@@ -2,10 +2,7 @@
 <html lang="en">
   <body style="margin: 0px">
     <script type="module">
-      import init from "./game/ti_helper_map_render.js";
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const gameId = urlParams.get("gameId");
+      import init from "./game/map_render.js";
 
       function handleErr(error) {
         if (
@@ -17,17 +14,9 @@
         }
       }
 
-      if (gameId === null) {
-        throw "Got null gameId";
-      }
-
       await init()
         .then((v) => console.log("First then value", v))
         .catch(handleErr);
-
-      // console.log("I got the game id ", gameId);
-      // let resp = await start_game(gameId);
-      // console.log("response from start_game: ", resp);
     </script>
   </body>
 </html>

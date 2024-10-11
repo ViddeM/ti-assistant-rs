@@ -1,5 +1,6 @@
 use std::{collections::HashMap, f32::consts::PI, ops::Div};
 
+use bevy::color::Color as BevyColor;
 use bevy::prelude::*;
 use ti_helper_game_data::{
     common::{
@@ -52,13 +53,13 @@ pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_s
     let tile_id_text_style = TextStyle {
         font: font.clone(),
         font_size: 32.0,
-        color: bevy::color::Color::WHITE,
+        color: BevyColor::WHITE,
     };
 
     let planet_owner_text_style = TextStyle {
         font: font.clone(),
         font_size: 24.0,
-        color: bevy::color::Color::linear_rgb(1.0, 1.0, 0.0),
+        color: BevyColor::linear_rgb(1.0, 1.0, 0.0),
     };
 
     let owned_planets = game_state
@@ -125,23 +126,44 @@ fn spawn_planet_owner_visuals(
         if let Some(owner) = owned_planets.get(planet) {
             let base_pos = tile_pos_to_visual_pos(tile_pos);
             let offset = tile_offset_to_visual_pos(planet_offset(planet));
-            let position = base_pos + offset;
+            let position = base_pos + offset + Vec3::new(0.0, 0.0, 10.0);
 
             let mut text_style = planet_owner_text_style.clone();
             text_style.color = player_color_to_bevy_color(owner);
 
-            commands.spawn((
-                Text2dBundle {
-                    text: Text::from_section(owner.name.clone(), text_style)
-                        .with_justify(JustifyText::Center),
+            let background = background_color_for_player_color(&owner.color);
+            commands
+                .spawn(SpriteBundle {
+                    sprite: Sprite {
+                        color: background,
+                        custom_size: Some(Vec2::new(100.0, 25.0)),
+                        ..default()
+                    },
                     transform: Transform::from_translation(position),
+
                     ..default()
-                },
-                PlanetOwnerVisuals {
-                    owner: owner.name.clone(),
-                },
-            ));
+                })
+                .with_children(|builder| {
+                    builder.spawn((
+                        Text2dBundle {
+                            text: Text::from_section(owner.name.clone(), text_style)
+                                .with_justify(JustifyText::Center),
+                            transform: Transform::from_translation(Vec3::Z),
+                            ..default()
+                        },
+                        PlanetOwnerVisuals {
+                            owner: owner.name.clone(),
+                        },
+                    ));
+                });
         }
+    }
+}
+
+fn background_color_for_player_color(color: &Color) -> BevyColor {
+    match color {
+        Color::Blue | Color::Black => BevyColor::linear_rgba(1., 1., 1., 0.6),
+        _ => BevyColor::linear_rgba(0., 0., 0., 0.8),
     }
 }
 

@@ -7,34 +7,14 @@ use std::collections::{HashMap, HashSet};
 
 use eyre::Context;
 use milty_response::{MiltyDataResponse, MiltyPlayerResponse};
-use serde::{Deserialize, Serialize};
-use ti_helper_game_data::common::{faction::Faction, game_settings::Expansions, map::HexMap};
+use ti_helper_game_data::common::{
+    faction::Faction,
+    game_settings::Expansions,
+    map::HexMap,
+    milty_data::{MiltyData, MiltyPlayer},
+};
 
 mod milty_response;
-
-/// Data imported from miltydraft.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MiltyData {
-    /// Map from name to [MiltyPlayer] for the players participating in this game.
-    pub players: HashMap<String, MiltyPlayer>,
-    /// The expansions configured for the milty draft.
-    pub expansions: Expansions,
-    /// The configured name of the game in milty.
-    pub game_name: String,
-    /// The galactic map from the milty draft.
-    pub hex_map: HexMap,
-}
-
-/// Player imported from miltydraft.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct MiltyPlayer {
-    /// The name of the player.
-    pub name: String,
-    /// The faction the player is playing.
-    pub faction: Faction,
-    /// The table order of the player, 0 being the starting speaker.
-    pub order: u32,
-}
 
 impl TryFrom<&MiltyPlayerResponse> for MiltyPlayer {
     type Error = eyre::Report;
@@ -56,9 +36,18 @@ impl TryFrom<&MiltyPlayerResponse> for MiltyPlayer {
     }
 }
 
-impl MiltyData {
+/// Trait for importing data from milty draft.
+pub trait MiltyImport {
+    /// Try to Import data from milty draft.
+    fn import_from_milty(
+        milty_id: &str,
+        tts_string: &str,
+    ) -> impl std::future::Future<Output = eyre::Result<MiltyData>> + Send;
+}
+
+impl MiltyImport for MiltyData {
     /// Import game configuration from a finished milty-draft.
-    pub async fn import_from_milty(milty_id: &str, tts_string: &str) -> eyre::Result<MiltyData> {
+    async fn import_from_milty(milty_id: &str, tts_string: &str) -> eyre::Result<MiltyData> {
         let client = reqwest::Client::new();
 
         let get_milty_data_response: MiltyDataResponse = client

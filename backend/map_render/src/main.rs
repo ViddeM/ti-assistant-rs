@@ -4,12 +4,13 @@ use std::sync::{
 };
 
 use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
+use bevy_pancam::{PanCam, PanCamPlugin};
 use serde::Deserialize;
 use ti_helper_game_data::components::phase::Phase;
 use ti_helper_game_logic::{game_options::GameOptions, gameplay::game_state::GameState};
 use tile::{render_map, PlanetOwnerVisuals, SystemVisuals};
 use wasm_bindgen::prelude::*;
-use web_sys::{MessageEvent, UrlSearchParams, WebSocket};
+use web_sys::{window, MessageEvent, UrlSearchParams, WebSocket};
 
 pub mod system_planets;
 pub mod tile;
@@ -26,6 +27,7 @@ extern "C" {
 }
 
 fn main() {
+    console_log("FUCK?");
     let window = web_sys::window().expect("Expected there to be a window!");
     let search = window
         .location()
@@ -140,14 +142,23 @@ fn run_game(game_id: &str) -> Result<(), String> {
     let game_info = GameInfo::new(rx);
 
     App::new()
-        .add_plugins(DefaultPlugins.set(AssetPlugin {
-            meta_check: AssetMetaCheck::Never,
-            ..default()
-        }))
+        .add_plugins((
+            DefaultPlugins.set(AssetPlugin {
+                meta_check: AssetMetaCheck::Never,
+                ..default()
+            }),
+            PanCamPlugin::default(),
+        ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(game_info)
         .add_systems(Startup, (setup_camera, setup_loading_text).chain())
-        .add_systems(Update, (zooming, update_map_from_channel))
+        .add_systems(
+            Update,
+            (
+                // zooming,
+                update_map_from_channel
+            ),
+        )
         .run();
 
     Ok(())
@@ -157,26 +168,21 @@ fn run_game(game_id: &str) -> Result<(), String> {
 struct MainCamera;
 
 fn setup_camera(mut commands: Commands) {
-    commands.spawn((Camera2dBundle::default(), MainCamera));
-}
-
-const SCROLL_STEP: f32 = 0.001;
-const MAX_SCALE: f32 = 5.0;
-const MIN_SCALE: f32 = 0.2;
-
-fn zooming(
-    mut camera_query: Query<&mut OrthographicProjection, With<MainCamera>>,
-    mut scroll_evr: EventReader<MouseWheel>,
-) {
-    let mut projection = camera_query.single_mut();
-    let steps: f32 = scroll_evr.read().map(|e| e.y).sum();
-    if steps == 0. {
-        return;
-    }
-
-    let new_projection =
-        (projection.scale - SCROLL_STEP * steps * projection.scale).clamp(MIN_SCALE, MAX_SCALE);
-    projection.scale = new_projection;
+    commands.spawn((
+        Camera2dBundle::default(),
+        MainCamera,
+        PanCam {
+            speed: 300.0,
+            max_scale: 15.,
+            min_scale: 0.5,
+            zoom_to_cursor: true,
+            max_x: 4000.0,
+            min_x: -4000.0,
+            max_y: 2000.0,
+            min_y: -2000.0,
+            ..default()
+        },
+    ));
 }
 
 fn update_map_from_channel(

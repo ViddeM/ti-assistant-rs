@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
-use ti_helper_milty::MiltyData;
 
 use super::{game_state::StrategicSecondaryProgress, player::NewPlayer};
 
 use ti_helper_game_data::{
-    common::{color::Color, faction::Faction, game_settings::GameSettings, player_id::PlayerId},
+    common::{
+        faction::Faction, game_settings::GameSettings, milty_data::MiltyData, player_id::PlayerId,
+    },
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},

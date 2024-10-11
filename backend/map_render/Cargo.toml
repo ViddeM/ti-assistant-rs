@@ -26,6 +26,7 @@ web-sys = { version = "0.3.70", features = [
 ]}
 serde = { version = "1.0.210", features = ["derive"] }
 serde_json = "1.0.128"
+bevy_pancam = "0.14.0"
 
 [dependencies.ti_helper_game_data]
 path = "../game_data"
