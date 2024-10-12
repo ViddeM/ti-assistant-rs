@@ -23,7 +23,10 @@ export const SetupPhase = () => {
         ...gameState.players[p],
       };
     })
-    .sort(nameSort);
+    .sort(
+      (a, b) =>
+        gameState.tableOrder.indexOf(a.id) - gameState.tableOrder.indexOf(b.id),
+    );
 
   const availableObjectives = Object.keys(gameOptions.objectives)
     .map((o) => {
