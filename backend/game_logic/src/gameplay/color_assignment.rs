@@ -25,7 +25,7 @@ impl Eq for ColorPrio {}
 
 impl PartialOrd for ColorPrio {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        self.weight.partial_cmp(&other.weight)
+        Some(self.cmp(other))
     }
 }
 
@@ -115,7 +115,7 @@ pub fn assign_colors(factions: Vec<Faction>) -> eyre::Result<HashMap<Faction, Co
 
     log::debug!("Final colors map: {map:?}");
 
-    Ok(map.into_iter().map(|(a, (_, b))| (b.clone(), a)).collect())
+    Ok(map.into_iter().map(|(a, (_, b))| (*b, a)).collect())
 }
 
 fn select_color_for_faction<'a>(
@@ -163,7 +163,7 @@ fn select_color_for_faction<'a>(
                 map.insert(color.clone(), (ColorPrio::base(color), other_faction));
             } else {
                 log::debug!("Selecting new color for faction {other_faction:?}");
-                select_color_for_faction(&mut remaining_prios, map, &other_faction)?;
+                select_color_for_faction(&mut remaining_prios, map, other_faction)?;
             }
             return Ok(());
         }
@@ -174,13 +174,13 @@ fn select_color_for_faction<'a>(
     }
 
     // We have no more prioritised colors, pick any free one.
-    let color = get_random_unused_color(&map)?;
+    let color = get_random_unused_color(map)?;
     log::debug!("Unable to find prio color, taking default {color:?}");
     map.insert(color.clone(), (ColorPrio::base(color), faction));
     Ok(())
 }
 
 fn get_random_unused_color<T>(map: &HashMap<Color, T>) -> eyre::Result<Color> {
-    Ok(Color::iter().filter(|c| !map.contains_key(c)).next()
-        .ok_or_eyre("No more colors to choose from? (This is should not happen as we should never be able to have more players than colors!)")?)
+    Color::iter().find(|c| !map.contains_key(c))
+        .ok_or_eyre("No more colors to choose from? (This is should not happen as we should never be able to have more players than colors!)")
 }

@@ -51,7 +51,7 @@ impl MiltyImport for MiltyData {
         let client = reqwest::Client::new();
 
         let get_milty_data_response: MiltyDataResponse = client
-            .get(&format!(
+            .get(format!(
                 "https://milty.shenanigans.be/data.php?draft={milty_id}",
             ))
             .send()
@@ -80,8 +80,8 @@ impl MiltyImport for MiltyData {
             .draft
             .draft
             .players
-            .iter()
-            .map(|(_, player)| MiltyPlayer::try_from(player).map(|p| (player.name.clone(), p)))
+            .values()
+            .map(|player| MiltyPlayer::try_from(player).map(|p| (player.name.clone(), p)))
             .collect::<eyre::Result<HashMap<String, MiltyPlayer>>>()?;
 
         let expansions = Expansions {

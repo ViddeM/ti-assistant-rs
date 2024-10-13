@@ -46,10 +46,10 @@ impl NewGame {
                 settings: GameSettings {
                     max_points: self.points,
                     expansions: Expansions {
-                        prophecy_of_kings: pok.clone(),
-                        codex_1: cod1.clone(),
-                        codex_2: cod2.clone(),
-                        codex_3: cod3.clone(),
+                        prophecy_of_kings: *pok,
+                        codex_1: *cod1,
+                        codex_2: *cod2,
+                        codex_3: *cod3,
                     },
                 },
             },
@@ -58,7 +58,7 @@ impl NewGame {
                 milty_tts_string,
             } => {
                 let milty_data =
-                    MiltyData::import_from_milty(&milty_game_id, &milty_tts_string).await?;
+                    MiltyData::import_from_milty(milty_game_id, milty_tts_string).await?;
                 log::debug!("Milty data import {milty_data:?}");
                 Event::ImportFromMilty {
                     max_points: self.points,

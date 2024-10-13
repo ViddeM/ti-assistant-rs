@@ -13,18 +13,18 @@ pub struct MiltyDataResponse {
 #[serde(rename_all = "snake_case")]
 pub struct MiltyDraftResponse {
     pub done: bool,
-    pub id: String,
+    pub _id: String,
     pub draft: MiltyDraftDataResponse,
     pub config: MiltyConfigDataResponse,
     pub name: String,
-    pub slices: Vec<MiltySliceResponse>,
-    pub factions: Vec<String>,
+    pub _slices: Vec<MiltySliceResponse>,
+    pub _factions: Vec<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct MiltySliceResponse {
-    pub tiles: Vec<u32>,
+    pub _tiles: Vec<u32>,
     // We don't need these...
     // specialities, wormholes, has_legendary, legendaries, total_influence, total_reources, optimal_influcuence, optimal_resources
 }
@@ -46,10 +46,10 @@ pub struct MiltyPlayerResponse {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct MiltyConfigDataResponse {
-    pub players: Vec<String>,
-    pub name: Option<String>,
+    pub _players: Vec<String>,
+    pub _name: Option<String>,
     pub include_pok: bool,
-    pub include_keleres: bool,
+    pub _include_keleres: bool,
     pub include_ds_tiles: bool,
     pub include_discordant: bool,
     pub include_discordantexp: bool,

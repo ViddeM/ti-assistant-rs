@@ -27,7 +27,6 @@ extern "C" {
 }
 
 fn main() {
-    console_log("FUCK?");
     let window = web_sys::window().expect("Expected there to be a window!");
     let search = window
         .location()
@@ -43,12 +42,12 @@ fn main() {
 
 #[derive(Resource, Debug)]
 struct GameInfo {
-    rx: Mutex<Receiver<GameState>>,
+    rx: Mutex<Receiver<Box<GameState>>>,
     map_info: Option<MapInfo>,
 }
 
 impl GameInfo {
-    fn new(rx: Receiver<GameState>) -> Self {
+    fn new(rx: Receiver<Box<GameState>>) -> Self {
         Self {
             rx: Mutex::new(rx),
             map_info: None,
@@ -58,19 +57,19 @@ impl GameInfo {
 
 #[derive(Debug)]
 struct MapInfo {
-    game_state: GameState,
-    previous_game_state: Option<GameState>,
+    game_state: Box<GameState>,
+    previous_game_state: Option<Box<GameState>>,
 }
 
 impl MapInfo {
-    fn new(game_state: GameState) -> Self {
+    fn new(game_state: Box<GameState>) -> Self {
         Self {
             game_state,
             previous_game_state: None,
         }
     }
 
-    fn update_game_state(&mut self, new_game_state: GameState) {
+    fn update_game_state(&mut self, new_game_state: Box<GameState>) {
         self.previous_game_state = Some(self.game_state.clone());
         self.game_state = new_game_state;
     }
@@ -78,12 +77,12 @@ impl MapInfo {
 
 #[derive(Debug, Clone, Deserialize, serde::Serialize)]
 enum WsResponse {
-    GameOptions(GameOptions),
+    GameOptions(Box<GameOptions>),
     JoinedGame(String),
-    GameState(GameState),
+    GameState(Box<GameState>),
 }
 
-fn handle_message(e: MessageEvent, tx: SyncSender<GameState>) -> Result<(), String> {
+fn handle_message(e: MessageEvent, tx: SyncSender<Box<GameState>>) -> Result<(), String> {
     let data = e.data();
     let Some(data) = data.as_string() else {
         return Err(format!(
@@ -112,7 +111,7 @@ fn run_game(game_id: &str) -> Result<(), String> {
     let ws = WebSocket::new("ws://localhost:5555")
         .map_err(|err| format!("Failed to setup ws connection, err: {err:?}"))?;
 
-    let (tx, rx) = sync_channel::<GameState>(2);
+    let (tx, rx) = sync_channel::<Box<GameState>>(2);
 
     let on_message_callback = Closure::<dyn FnMut(_)>::new(move |e: MessageEvent| {
         let tx = tx.clone();
@@ -147,7 +146,7 @@ fn run_game(game_id: &str) -> Result<(), String> {
                 meta_check: AssetMetaCheck::Never,
                 ..default()
             }),
-            PanCamPlugin::default(),
+            PanCamPlugin {},
         ))
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(game_info)

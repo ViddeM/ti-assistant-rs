@@ -67,14 +67,13 @@ pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_s
     let owned_planets = game_state
         .players
         .values()
-        .map(|player| {
+        .flat_map(|player| {
             player
                 .planets
                 .keys()
                 .cloned()
                 .map(move |planet| (planet, player))
         })
-        .flatten()
         .collect::<HashMap<Planet, &Player>>();
 
     let mut system_planets: HashMap<SystemId, Vec<Planet>> = systems()
@@ -147,7 +146,7 @@ pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_s
 
 fn spawn_planet_owner_visuals(
     commands: &mut Commands,
-    planets: &Vec<Planet>,
+    planets: &[Planet],
     owned_planets: &HashMap<Planet, &Player>,
     planet_owner_text_style: &TextStyle,
     tile_pos: &Vec2,
@@ -283,8 +282,8 @@ fn get_tile_position(coord: &Coordinate) -> Vec2 {
     let radius = coord.ring as i32;
     let ring_pos = coord.position as i32;
 
-    let full = (radius * 6) as i32;
-    let half = (radius * 3) as i32;
+    let full = radius * 6;
+    let half = radius * 3;
     let quarter = ((radius as f32) * 1.5).ceil() as i32;
 
     let x_right_half = ring_pos % half;

@@ -116,9 +116,8 @@ fn try_update_game_state(
             game_state.speaker = Some(
                 game_state
                     .table_order
-                    .iter()
+                    .first()
                     .cloned()
-                    .next()
                     .wrap_err("Expected there to be players from milty?")?,
             );
         }
@@ -187,8 +186,8 @@ fn try_update_game_state(
             if let Some(map_data) = game_state.map_data.as_ref() {
                 let selected_factions: Vec<Faction> = game_state
                     .players
-                    .iter()
-                    .map(|(_, player)| player.faction)
+                    .values()
+                    .map(|player| player.faction)
                     .collect();
 
                 ensure!(
