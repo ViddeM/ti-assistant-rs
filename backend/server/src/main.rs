@@ -13,7 +13,6 @@ use ti_helper_db::{
     game_id::GameId,
     queries,
 };
-use ti_helper_game_data::common::game_settings::GameSettings;
 use ti_helper_game_logic::gameplay::{error::GameError, event::Event, game::Game};
 use ti_helper_websocket::{
     websocket_client::WsClient,
