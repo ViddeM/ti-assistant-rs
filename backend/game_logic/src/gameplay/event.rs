@@ -16,6 +16,7 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         relic::Relic,
         strategy_card::StrategyCard,
+        system::SystemId,
         tech::Technology,
     },
 };
@@ -589,6 +590,12 @@ pub enum FrontierCardAction {
         /// The tech to gain.
         tech: Technology,
     },
+    Mirage {
+        /// The system to spawn mirage in.
+        system: SystemId,
+        /// Any planet attachment that should be assigned to it when it spawns.
+        attachment: PlanetAttachment,
+    },
 }
 
 /// Returns weather the [FrontierCardAction] is for the provided [FrontierCard].
@@ -599,6 +606,9 @@ pub fn action_matches_frontier_card(
     match card {
         FrontierCard::EnigmaticDevice => {
             matches!(action, Some(FrontierCardAction::EnigmaticDevice { .. }))
+        }
+        FrontierCard::Mirage => {
+            matches!(action, Some(FrontierCardAction::Mirage { .. }))
         }
         _ => action.is_none(),
     }

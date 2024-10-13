@@ -3,7 +3,7 @@ import { useGameContext } from "@/hooks/GameContext";
 export const MapViewMode = () => {
   const { gameId, gameState } = useGameContext();
 
-  if (!gameState.hexMap) {
+  if (!gameState.mapData) {
     return (
       <div>
         No milty string was provided at creation, map will not be available for

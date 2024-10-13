@@ -50,11 +50,11 @@ pub struct GameState {
     /// The settings for the game.
     pub game_settings: GameSettings,
 
-    /// The hex map for the game.
-    pub hex_map: Option<HexMap>,
-
     /// The current phase of the game.
     pub phase: Phase,
+
+    /// Information about the map.
+    pub map_data: Option<MapData>,
 
     /// Which players are in the game.
     pub players: HashMap<PlayerId, Player>,
@@ -114,6 +114,17 @@ pub struct GameState {
     /// When the current player started their turn.
     #[ts(type = "string | null")]
     pub current_turn_start_time: Option<DateTime<Utc>>,
+}
+
+/// A snapshot of the game state.
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct MapData {
+    /// The hex map for the game.
+    pub hex_map: HexMap,
+    /// The system that contains mirage (if any).
+    pub mirage_system: Option<SystemId>,
 }
 
 /// The current progress of an action-phase action.

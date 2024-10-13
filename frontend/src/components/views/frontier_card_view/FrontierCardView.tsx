@@ -4,6 +4,8 @@ import { SelectTechView } from "../select_tech_view/SelectTechView";
 import { Button } from "@/components/elements/button/Button";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
 import { useState } from "react";
+import { SelectPlanetAttachment } from "../tactical_view/TacticalView";
+import { PlanetAttachment } from "@/api/bindings/PlanetAttachment";
 
 export const FrontierCardView = () => {
   const { gameState, gameOptions, isActive } = useGameContext();
@@ -78,45 +80,58 @@ const FrontierCardProgressView = ({
 const MirageView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
   const [selectedSystem, setSelectedSystem] = useState<string>("");
-
-  if (!gameState.hexMap) {
-    return (
-      <Button
-        onClick={() =>
-          // Send event to take the planet.
-          console.log("TODO")
-        }
-      >
-        Take planet
-      </Button>
-    );
-  }
+  const [selectedAttachment, setSelectedAttachment] =
+    useState<PlanetAttachment | null>(null);
 
   const systemsWithoutPlanets = Object.values(gameOptions.systems)
     .filter((s) => s.planets.length === 0)
     .map((s) => s.id);
 
-  const usedSystemsWithoutPlanets = gameState.hexMap.tiles
+  const usedSystemsWithoutPlanets = gameState.mapData?.hexMap.tiles
     .filter((t) => systemsWithoutPlanets.includes(t.system))
     .filter((t) => gameOptions.systems[t.system].systemType !== "Hyperlane");
 
   return (
-    <div>
-      <fieldset className={`centerRow`}>
-        <legend>Pick system</legend>
-        <Dropdown
-          onChange={(e) => {
-            setSelectedSystem(e.target.value);
-          }}
-        >
-          <option value="">--Select System--</option>
-          {usedSystemsWithoutPlanets.map((sys) => (
-            <option key={sys.system} value={sys.system}>
-              System {sys.system}
-            </option>
-          ))}
-        </Dropdown>
+    <div className="column">
+      {usedSystemsWithoutPlanets ? (
+        <fieldset className={`centerRow fullWidth`}>
+          <legend>Pick system</legend>
+          <Dropdown
+            value={selectedSystem}
+            onChange={(e) => {
+              setSelectedSystem(e.target.value);
+            }}
+          >
+            <option value="">--Select System--</option>
+            {usedSystemsWithoutPlanets.map((sys) => (
+              <option key={sys.system} value={sys.system}>
+                System {sys.system}
+              </option>
+            ))}
+          </Dropdown>
+        </fieldset>
+      ) : (
+        <p>Can only select system when game is imported from milty draft.</p>
+      )}
+
+      <fieldset>
+        <legend>Select planet attachment</legend>
+        <div className="column">
+          {selectedSystem === "" ? (
+            <p>Select system first...</p>
+          ) : (
+            <SelectPlanetAttachment
+              planet={"Mirage"}
+              attachment={selectedAttachment}
+              previousOwner={null}
+              selectAttachment={(attachment) =>
+                setSelectedAttachment(attachment)
+              }
+            />
+          )}
+        </div>
       </fieldset>
+
       <Button
         disabled={selectedSystem === ""}
         onClick={() => {
@@ -124,7 +139,10 @@ const MirageView = () => {
             FrontierCardActionCommit: {
               player: gameState.currentPlayer,
               data: {
-                system: selectedSystem,
+                Mirage: {
+                  system: selectedSystem,
+                  attachment: selectedAttachment,
+                },
               },
             },
           });

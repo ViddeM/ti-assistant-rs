@@ -121,7 +121,7 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
             Vec2::new(0.15, -0.20)
         }
         Planet::Mallice => Vec2::new(0.20, 0.12),
-        Planet::Mirage => Vec2::ZERO,
+        Planet::Mirage => Vec2::new(0.12, -0.25),
         Planet::CustodiaVigilia => panic!(
             "Custodia vigilla should never be rendered as it is not considered to be on the map!"
         ),

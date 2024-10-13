@@ -21,7 +21,7 @@ use super::{
     color_assignment::assign_colors,
     error::GameError,
     event::{action_matches_frontier_card, ActionCardAction, Event},
-    game_state::{GameState, TacticalProgress},
+    game_state::{GameState, MapData, TacticalProgress},
     player::NewPlayer,
 };
 
@@ -81,7 +81,10 @@ fn try_update_game_state(
                 max_points,
                 expansions: milty_data.expansions.clone(),
             };
-            game_state.hex_map = Some(milty_data.hex_map);
+            game_state.map_data = Some(MapData {
+                hex_map: milty_data.hex_map,
+                mirage_system: None,
+            });
 
             let mut players: Vec<&MiltyPlayer> = milty_data.players.values().collect();
             players.sort_by(|a, b| a.order.cmp(&b.order));
@@ -123,7 +126,7 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::Creation)?;
             game_state.assert_expansion(&player.faction.expansion())?;
             ensure!(
-                game_state.hex_map.is_none(), // TODO: Figure out if we can track this in a nicer way.
+                game_state.map_data.is_none(),
                 "Game was imported from milty, can't add more players!"
             );
             ensure!(
@@ -147,10 +150,15 @@ fn try_update_game_state(
                 "two players can't play the same faction",
             );
 
-            if let Some(hex_map) = game_state.hex_map.as_ref() {
+            if let Some(map_data) = game_state.map_data.as_ref() {
                 // Ensure that this faction was included in the milty string import.
-                let map_systems: Vec<&String> =
-                    hex_map.tiles.iter().map(|tile| &tile.system).collect();
+                let map_systems: Vec<&String> = map_data
+                    .hex_map
+                    .tiles
+                    .iter()
+                    .map(|tile| &tile.system)
+                    .collect();
+
                 ensure!(
                     systems()
                         .into_iter()
@@ -176,7 +184,7 @@ fn try_update_game_state(
                 "can't have less than {MIN_PLAYER_COUNT} players"
             );
             let systems = systems();
-            if let Some(hex_map) = game_state.hex_map.as_ref() {
+            if let Some(map_data) = game_state.map_data.as_ref() {
                 let selected_factions: Vec<Faction> = game_state
                     .players
                     .iter()
@@ -184,7 +192,8 @@ fn try_update_game_state(
                     .collect();
 
                 ensure!(
-                    hex_map
+                    map_data
+                        .hex_map
                         .tiles
                         .iter()
                         .filter_map(|tile| systems.get(&tile.system))
@@ -438,6 +447,11 @@ fn try_update_game_state(
                     None
                 })
                 .unwrap_or((None, HashSet::new()));
+
+            ensure!(
+                planet != Planet::Mirage || current_owner.is_some(),
+                "Mirage must be spawned using the frontier card action"
+            );
 
             let shard_of_the_throne = if let Some(current_owner) = current_owner.as_ref() {
                 let Some(p) = game_state.players.get_mut(current_owner) else {
@@ -889,6 +903,32 @@ fn try_update_game_state(
 
                         let current_player = game_state.get_current_player()?;
                         current_player.research_tech(tech.clone())?;
+                    }
+                    FrontierCardAction::Mirage { system, attachment } => {
+                        ensure!(
+                            !game_state
+                                .players
+                                .values()
+                                .flat_map(|p| p.planets.keys())
+                                .any(|p| p == &Planet::Mirage),
+                            "A player already owns mirage and can only be takn using a tactical action"
+                        );
+                        ensure!(
+                            game_state
+                                .map_data
+                                .as_ref()
+                                .map(|data| data.mirage_system.is_none())
+                                .unwrap_or(false),
+                            "Mirage system is already set?"
+                        );
+                        let player = game_state.get_current_player()?;
+                        let mut attachments = HashSet::new();
+                        attachments.insert(attachment);
+                        player.planets.insert(Planet::Mirage, attachments);
+
+                        if let Some(map_data) = game_state.map_data.as_mut() {
+                            map_data.mirage_system = Some(system);
+                        }
                     }
                 }
             }

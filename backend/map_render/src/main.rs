@@ -3,14 +3,14 @@ use std::sync::{
     Mutex,
 };
 
-use bevy::{asset::AssetMetaCheck, input::mouse::MouseWheel, prelude::*};
+use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_pancam::{PanCam, PanCamPlugin};
 use serde::Deserialize;
 use ti_helper_game_data::components::phase::Phase;
 use ti_helper_game_logic::{game_options::GameOptions, gameplay::game_state::GameState};
 use tile::{render_map, PlanetOwnerVisuals, SystemVisuals};
 use wasm_bindgen::prelude::*;
-use web_sys::{window, MessageEvent, UrlSearchParams, WebSocket};
+use web_sys::{MessageEvent, UrlSearchParams, WebSocket};
 
 pub mod system_planets;
 pub mod tile;
@@ -92,7 +92,7 @@ fn handle_message(e: MessageEvent, tx: SyncSender<GameState>) -> Result<(), Stri
     };
 
     let message: WsResponse = serde_json::from_str(&data)
-        .map_err(|err| format!("Failed to deserialize message, err: {err:?}"))?;
+        .map_err(|err| format!("Failed to deserialize message ({data}), err: {err:?}"))?;
 
     match message {
         WsResponse::GameOptions(opts) => console_log(&format!("Got game options, opts: {opts:?}")), // self.game_options = Some(opts),
@@ -152,13 +152,7 @@ fn run_game(game_id: &str) -> Result<(), String> {
         .insert_resource(ClearColor(Color::BLACK))
         .insert_resource(game_info)
         .add_systems(Startup, (setup_camera, setup_loading_text).chain())
-        .add_systems(
-            Update,
-            (
-                // zooming,
-                update_map_from_channel
-            ),
-        )
+        .add_systems(Update, update_map_from_channel)
         .run();
 
     Ok(())
@@ -210,7 +204,7 @@ fn update_map_from_channel(
         commands.entity(e).despawn();
     }
 
-    if game_state.hex_map.is_none() {
+    if game_state.map_data.is_none() {
         commands.spawn(Text2dBundle {
             text: Text::from_section(
                 "Only games imported from milty can be rendered.",

@@ -22,6 +22,10 @@ export const TacticalView = () => {
   const activatedSystem = tactical.activatedSystem;
   const takenPlanets = tactical.takenPlanets;
   const attachments = tactical.planetAttachments;
+  const anyPlayerOwnsMirage =
+    Object.values(gameState.players)
+      .flatMap((p) => Object.keys(p.planets) as Planet[])
+      .find((p) => p === "Mirage") !== undefined;
 
   const availablePlanetsInSystem = Object.values(gameOptions.systems)
     .filter((s) => s.id === activatedSystem)
@@ -43,6 +47,7 @@ export const TacticalView = () => {
     .map((p) => {
       return p as Planet;
     })
+    .filter((p) => p !== "Mirage" || anyPlayerOwnsMirage) // Only allow players to take mirage if someone else owns it, otherwise they'll need to use a frontier action.
     .filter((p) => !Object.keys(currentPlayerPlanets).includes(p))
     .map((p) => {
       return {
@@ -82,6 +87,15 @@ export const TacticalView = () => {
                         planet={p}
                         attachment={attachments[p] ?? null}
                         previousOwner={takenPlanets[p]}
+                        selectAttachment={(attachment) => {
+                          sendEvent({
+                            TacticalActionAttachPlanetAttachment: {
+                              player: gameState.currentPlayer,
+                              planet: p,
+                              attachment: attachment,
+                            },
+                          });
+                        }}
                       />
                     </div>
                   </fieldset>
@@ -148,14 +162,16 @@ interface SelectPlanetAttachmentProps {
   planet: Planet;
   attachment: PlanetAttachment | null;
   previousOwner: string | null;
+  selectAttachment: (attachment: PlanetAttachment) => void;
 }
 
-const SelectPlanetAttachment = ({
+export const SelectPlanetAttachment = ({
   planet,
   attachment,
   previousOwner,
+  selectAttachment,
 }: SelectPlanetAttachmentProps) => {
-  const { gameState, gameOptions, sendEvent } = useGameContext();
+  const { gameState, gameOptions } = useGameContext();
   const [selectedAttachment, setSelectedAttachment] = useState<string>("");
 
   const planetInfo = gameOptions.planetInfos[planet];
@@ -207,15 +223,7 @@ const SelectPlanetAttachment = ({
           availableAttachments.length === 0 || selectedAttachment === ""
         }
         className={"marginTop"}
-        onClick={() =>
-          sendEvent({
-            TacticalActionAttachPlanetAttachment: {
-              player: gameState.currentPlayer,
-              planet: planet,
-              attachment: selectedAttachment,
-            },
-          })
-        }
+        onClick={() => selectAttachment(selectedAttachment as PlanetAttachment)}
       >
         Attach
       </Button>

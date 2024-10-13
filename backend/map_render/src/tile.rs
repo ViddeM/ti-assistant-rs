@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use ti_helper_game_data::{
     common::{
         color::Color,
-        map::{Coordinate, HexMap, HexPosition, Tile},
+        map::{Coordinate, HexPosition, Tile},
     },
     components::{
         planet::Planet,
@@ -43,10 +43,12 @@ impl From<Player> for PlanetOwnerVisuals {
 }
 
 pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_state: &GameState) {
-    let hex_map = game_state
-        .hex_map
+    let map_data = game_state
+        .map_data
         .as_ref()
-        .expect("No hex map? This should have been checked earlier and is thus a bug!");
+        .expect("No map data, this should be have been checked earlier (THIS IS A BUG!)");
+
+    let hex_map = &map_data.hex_map;
 
     let font = asset_server.load("slider_regular.ttf");
 
@@ -75,10 +77,18 @@ pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_s
         .flatten()
         .collect::<HashMap<Planet, &Player>>();
 
-    let system_planets: HashMap<SystemId, Vec<Planet>> = systems()
+    let mut system_planets: HashMap<SystemId, Vec<Planet>> = systems()
         .into_iter()
         .map(|(system_id, system)| (system_id, system.planets))
         .collect();
+
+    if let Some(system) = map_data.mirage_system.as_ref() {
+        if let Some(sys_planets) = system_planets.get_mut(system) {
+            sys_planets.push(Planet::Mirage);
+        } else {
+            system_planets.insert(system.clone(), vec![Planet::Mirage]);
+        }
+    }
 
     let mut outside_galaxy_count = 0;
 
@@ -112,6 +122,26 @@ pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_s
             system_visuals,
             &tile_id_text_style,
         );
+
+        if let Some(system) = map_data.mirage_system.as_ref() {
+            if system == &tile.system {
+                let mut mirage_position = position;
+                let mirage_offset = planet_offset(&Planet::Mirage);
+
+                mirage_position.translation += Vec3::new(
+                    TILE_WIDTH * mirage_offset.x,
+                    TILE_HEIGHT * mirage_offset.y,
+                    2.0,
+                );
+                mirage_position.scale *= 0.3;
+
+                commands.spawn(SpriteBundle {
+                    transform: mirage_position,
+                    texture: asset_server.load("mirage_token.webp"),
+                    ..default()
+                });
+            }
+        }
     }
 }
 
@@ -187,116 +217,11 @@ fn spawn_tile(
     commands.spawn((Text2dBundle {
         text: Text::from_section(tile.system.as_str(), text_style.clone())
             .with_justify(JustifyText::Left),
-        transform: position.with_rotation(Quat::IDENTITY),
+        transform: position
+            .with_rotation(Quat::IDENTITY)
+            .with_translation(position.translation + Vec3::Z * 5.0),
         ..default()
     },));
-}
-
-pub fn setup_map(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    hex_map: &HexMap,
-    game_state: &GameState,
-) {
-    let font = asset_server.load("slider_regular.ttf");
-    let text_style = TextStyle {
-        font: font.clone(),
-        font_size: 32.0,
-        color: bevy::color::Color::WHITE,
-    };
-
-    let mut outside_galaxy_count = 0;
-
-    let owned_planets = game_state
-        .players
-        .values()
-        .map(|player| {
-            player
-                .planets
-                .keys()
-                .cloned()
-                .map(move |planet| (planet, player))
-        })
-        .flatten()
-        .collect::<HashMap<Planet, &Player>>();
-
-    let system_planets: HashMap<SystemId, Vec<Planet>> = systems()
-        .into_iter()
-        .map(|(system_id, system)| (system_id, system.planets))
-        .collect();
-
-    let planet_owner_text_style = TextStyle {
-        font: font.clone(),
-        font_size: 24.0,
-        color: bevy::color::Color::linear_rgb(1.0, 1.0, 0.0),
-    };
-
-    for tile in hex_map.tiles.iter() {
-        let (tile_pos, rotation) = match &tile.position {
-            HexPosition::OutsideGalaxy => {
-                let pos = Vec2::new(-5.5, -2.0 + 4.0 * outside_galaxy_count as f32);
-
-                outside_galaxy_count += 1;
-
-                (pos, 0.0)
-            }
-            HexPosition::Pos(coord) => {
-                let rot = coord.rotation as f32;
-                let pos = get_tile_position(coord);
-
-                (pos, rot)
-            }
-        };
-
-        let position = Transform::from_translation(tile_pos_to_visual_pos(&tile_pos))
-            .with_rotation(Quat::from_rotation_z(rotation * ROTATION_STEP));
-
-        let system_visuals = SystemVisuals {
-            system_id: tile.system.clone(),
-            tile_pos,
-        };
-
-        if let Some(planets) = system_planets.get(&tile.system) {
-            for planet in planets.iter() {
-                if let Some(owner) = owned_planets.get(planet) {
-                    let base_pos = tile_pos_to_visual_pos(&tile_pos);
-                    let offset = tile_offset_to_visual_pos(planet_offset(planet));
-                    let position = base_pos + offset;
-
-                    let mut text_style = planet_owner_text_style.clone();
-                    text_style.color = player_color_to_bevy_color(owner);
-
-                    commands.spawn((
-                        Text2dBundle {
-                            text: Text::from_section(owner.name.clone(), text_style)
-                                .with_justify(JustifyText::Center),
-                            transform: Transform::from_translation(position),
-                            ..default()
-                        },
-                        PlanetOwnerVisuals {
-                            owner: owner.name.clone(),
-                        },
-                    ));
-                }
-            }
-        }
-
-        commands.spawn((
-            SpriteBundle {
-                texture: asset_server.load(format!("tiles/webp/{}.webp", tile.system)),
-                transform: position,
-                ..default()
-            },
-            system_visuals,
-        ));
-
-        commands.spawn((Text2dBundle {
-            text: Text::from_section(tile.system.as_str(), text_style.clone())
-                .with_justify(JustifyText::Left),
-            transform: position.with_rotation(Quat::IDENTITY),
-            ..default()
-        },));
-    }
 }
 
 fn get_tile_pos_and_rotation(
