@@ -2,6 +2,7 @@ use std::{collections::HashMap, f32::consts::PI, ops::Div};
 
 use bevy::color::Color as BevyColor;
 use bevy::prelude::*;
+use eyre::{Context, OptionExt};
 use ti_helper_game_data::{
     common::{
         color::Color,
@@ -9,7 +10,7 @@ use ti_helper_game_data::{
     },
     components::{
         planet::Planet,
-        system::{systems, SystemId},
+        system::{systems, System, SystemId},
     },
 };
 use ti_helper_game_logic::gameplay::{game_state::GameState, player::Player};
@@ -42,13 +43,18 @@ impl From<Player> for PlanetOwnerVisuals {
     }
 }
 
-pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_state: &GameState) {
-    let map_data = game_state
+pub fn render_map(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    game_state: &GameState,
+) -> eyre::Result<()> {
+    let milty_information = game_state
         .map_data
+        .milty_information
         .as_ref()
-        .expect("No map data, this should be have been checked earlier (THIS IS A BUG!)");
+        .ok_or_eyre("No map data, this should be have been checked earlier (THIS IS A BUG!)")?;
 
-    let hex_map = &map_data.hex_map;
+    let hex_map = &milty_information.hex_map;
 
     let font = asset_server.load("slider_regular.ttf");
 
@@ -81,11 +87,26 @@ pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_s
         .map(|(system_id, system)| (system_id, system.planets))
         .collect();
 
-    if let Some(system) = map_data.mirage_system.as_ref() {
+    if let Some(system) = milty_information.mirage_system.as_ref() {
         if let Some(sys_planets) = system_planets.get_mut(system) {
             sys_planets.push(Planet::Mirage);
         } else {
             system_planets.insert(system.clone(), vec![Planet::Mirage]);
+        }
+    }
+
+    let mut destroyed_planets_in_system: HashMap<SystemId, Vec<Planet>> = HashMap::new();
+    for planet in game_state
+        .map_data
+        .stellar_converter_destroyed_planets
+        .iter()
+    {
+        let system = System::for_planet(planet)
+            .wrap_err_with(|| format!("Failed to find a system for planet {planet:?}?"))?;
+        if let Some(planets) = destroyed_planets_in_system.get_mut(&system.id) {
+            planets.push(planet.clone());
+        } else {
+            destroyed_planets_in_system.insert(system.id, vec![planet.clone()]);
         }
     }
 
@@ -122,26 +143,20 @@ pub fn render_map(mut commands: Commands, asset_server: Res<AssetServer>, game_s
             &tile_id_text_style,
         );
 
-        if let Some(system) = map_data.mirage_system.as_ref() {
+        if let Some(system) = milty_information.mirage_system.as_ref() {
             if system == &tile.system {
-                let mut mirage_position = position;
-                let mirage_offset = planet_offset(&Planet::Mirage);
+                render_mirage(&mut commands, &asset_server, tile_pos);
+            }
+        }
 
-                mirage_position.translation += Vec3::new(
-                    TILE_WIDTH * mirage_offset.x,
-                    TILE_HEIGHT * mirage_offset.y,
-                    2.0,
-                );
-                mirage_position.scale *= 0.3;
-
-                commands.spawn(SpriteBundle {
-                    transform: mirage_position,
-                    texture: asset_server.load("mirage_token.webp"),
-                    ..default()
-                });
+        if let Some(planets) = destroyed_planets_in_system.get(&tile.system) {
+            for planet in planets.iter() {
+                render_destroyed_planet_token(&mut commands, &asset_server, tile_pos, planet);
             }
         }
     }
+
+    Ok(())
 }
 
 fn spawn_planet_owner_visuals(
@@ -153,9 +168,8 @@ fn spawn_planet_owner_visuals(
 ) {
     for planet in planets.iter() {
         if let Some(owner) = owned_planets.get(planet) {
-            let base_pos = tile_pos_to_visual_pos(tile_pos);
-            let offset = tile_offset_to_visual_pos(planet_offset(planet));
-            let position = base_pos + offset + Vec3::new(0.0, 0.0, 10.0);
+            let position =
+                tile_with_offset_to_visual_pos(tile_pos, &planet_offset(planet)) + Vec3::Z * 10.0;
 
             let mut text_style = planet_owner_text_style.clone();
             text_style.color = player_color_to_bevy_color(owner);
@@ -223,6 +237,36 @@ fn spawn_tile(
     },));
 }
 
+fn render_mirage(commands: &mut Commands, asset_server: &Res<AssetServer>, tile_pos: Vec2) {
+    let mirage_visual_position =
+        tile_with_offset_to_visual_pos(&tile_pos, &planet_offset(&Planet::Mirage)) + Vec3::Z * 2.0;
+    let mirage_transform =
+        Transform::from_translation(mirage_visual_position).with_scale(Vec3::ONE * 0.3);
+
+    commands.spawn(SpriteBundle {
+        transform: mirage_transform,
+        texture: asset_server.load("tokens/mirage_token.webp"),
+        ..default()
+    });
+}
+
+fn render_destroyed_planet_token(
+    commands: &mut Commands,
+    asset_server: &Res<AssetServer>,
+    tile_pos: Vec2,
+    planet: &Planet,
+) {
+    let visual_position =
+        tile_with_offset_to_visual_pos(&tile_pos, &planet_offset(planet)) + Vec3::Z * 2.0;
+    let token_transform = Transform::from_translation(visual_position).with_scale(Vec3::ONE * 0.25);
+
+    commands.spawn(SpriteBundle {
+        transform: token_transform,
+        texture: asset_server.load("tokens/destroyed_planet_token.webp"),
+        ..default()
+    });
+}
+
 fn get_tile_pos_and_rotation(
     position: &HexPosition,
     outside_galaxy_count: &mut i32,
@@ -270,8 +314,12 @@ pub fn tile_pos_to_visual_pos(tile_pos: &Vec2) -> Vec3 {
     )
 }
 
-pub fn tile_offset_to_visual_pos(tile_pos: Vec2) -> Vec3 {
+pub fn tile_offset_to_visual_pos(tile_pos: &Vec2) -> Vec3 {
     Vec3::new(tile_pos.x * TILE_WIDTH, tile_pos.y * TILE_HEIGHT, 0.0)
+}
+
+pub fn tile_with_offset_to_visual_pos(tile_pos: &Vec2, offset: &Vec2) -> Vec3 {
+    tile_pos_to_visual_pos(tile_pos) + tile_offset_to_visual_pos(offset)
 }
 
 fn get_tile_position(coord: &Coordinate) -> Vec2 {

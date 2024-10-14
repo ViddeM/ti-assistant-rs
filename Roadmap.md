@@ -129,6 +129,13 @@
    - ❌ Backend tracked personal views
      - ❌ Personal undo
 
+## Map Render
+ - ❌ Creuss portals
+ - ❌ Creuss hero
+ - ❌ System destruction (supernova bois)
+ - ❌ Planet destruction (Stellar converter relic)
+ - ✅ Mirage
+
 ### Agenda Phase
 
 #### Core functionality

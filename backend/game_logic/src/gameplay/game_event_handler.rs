@@ -21,7 +21,7 @@ use super::{
     color_assignment::assign_colors,
     error::GameError,
     event::{action_matches_frontier_card, ActionCardAction, Event},
-    game_state::{GameState, MapData, TacticalProgress},
+    game_state::{GameState, MapData, MiltyInformation, TacticalProgress},
     player::NewPlayer,
 };
 
@@ -81,10 +81,13 @@ fn try_update_game_state(
                 max_points,
                 expansions: milty_data.expansions.clone(),
             };
-            game_state.map_data = Some(MapData {
-                hex_map: milty_data.hex_map,
-                mirage_system: None,
-            });
+            game_state.map_data = MapData {
+                milty_information: Some(MiltyInformation {
+                    hex_map: milty_data.hex_map,
+                    mirage_system: None,
+                }),
+                stellar_converter_destroyed_planets: vec![],
+            };
 
             let mut players: Vec<&MiltyPlayer> = milty_data.players.values().collect();
             players.sort_by(|a, b| a.order.cmp(&b.order));
@@ -125,7 +128,7 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::Creation)?;
             game_state.assert_expansion(&player.faction.expansion())?;
             ensure!(
-                game_state.map_data.is_none(),
+                game_state.map_data.milty_information.is_none(),
                 "Game was imported from milty, can't add more players!"
             );
             ensure!(
@@ -149,7 +152,7 @@ fn try_update_game_state(
                 "two players can't play the same faction",
             );
 
-            if let Some(map_data) = game_state.map_data.as_ref() {
+            if let Some(map_data) = game_state.map_data.milty_information.as_ref() {
                 // Ensure that this faction was included in the milty string import.
                 let map_systems: Vec<&String> = map_data
                     .hex_map
@@ -183,7 +186,7 @@ fn try_update_game_state(
                 "can't have less than {MIN_PLAYER_COUNT} players"
             );
             let systems = systems();
-            if let Some(map_data) = game_state.map_data.as_ref() {
+            if let Some(map_data) = game_state.map_data.milty_information.as_ref() {
                 let selected_factions: Vec<Faction> = game_state
                     .players
                     .values()
@@ -915,6 +918,7 @@ fn try_update_game_state(
                         ensure!(
                             game_state
                                 .map_data
+                                .milty_information
                                 .as_ref()
                                 .map(|data| data.mirage_system.is_none())
                                 .unwrap_or(false),
@@ -925,8 +929,8 @@ fn try_update_game_state(
                         attachments.insert(attachment);
                         player.planets.insert(Planet::Mirage, attachments);
 
-                        if let Some(map_data) = game_state.map_data.as_mut() {
-                            map_data.mirage_system = Some(system);
+                        if let Some(milty_info) = game_state.map_data.milty_information.as_mut() {
+                            milty_info.mirage_system = Some(system);
                         }
                     }
                 }
@@ -1032,6 +1036,7 @@ fn try_update_game_state(
                             !planet.info().is_legendary,
                             "Cannot use stellar converter on legendary planet"
                         );
+                        ensure!(!game_state.map_data.stellar_converter_destroyed_planets.contains(&planet), "Cannot use stellar converter on a planet that has already been destroyed!");
 
                         if let Some(player) = game_state.players.values_mut().find_map(|p| {
                             if p.planets.contains_key(&planet) {
@@ -1049,6 +1054,10 @@ fn try_update_game_state(
                             );
                             player.planets.remove(&planet);
                         }
+                        game_state
+                            .map_data
+                            .stellar_converter_destroyed_planets
+                            .push(planet);
                         // TODO: Should we also mark the planet as destroyed and disallow anyone else taking it in the future?
                     }
                     RelicAction::NanoForge { planet } => {

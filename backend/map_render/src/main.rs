@@ -203,7 +203,7 @@ fn update_map_from_channel(
         commands.entity(e).despawn();
     }
 
-    if game_state.map_data.is_none() {
+    if game_state.map_data.milty_information.is_none() {
         commands.spawn(Text2dBundle {
             text: Text::from_section(
                 "Only games imported from milty can be rendered.",
@@ -248,7 +248,7 @@ fn update_map_from_channel(
             .expect("Entity to exist")
             .despawn()
     });
-    render_map(commands, asset_server, game_state);
+    render_map(commands, asset_server, game_state).expect("Failed to render map");
 }
 
 #[derive(Component)]

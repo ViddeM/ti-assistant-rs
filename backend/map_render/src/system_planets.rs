@@ -64,7 +64,7 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Lisis
         | Planet::Cealdri
         | Planet::VegaMajor
-        | Planet::Retillion => Vec2::new(-0.12, 0.25),
+        | Planet::Retillion => Vec2::new(-0.1, 0.19),
         // Lower planet in two-planet systems
         Planet::Druaa
         | Planet::WrenTerra
@@ -91,7 +91,7 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Velnor
         | Planet::Xanhact
         | Planet::VegaMinor
-        | Planet::Shalloq => Vec2::new(0.15, -0.20),
+        | Planet::Shalloq => Vec2::new(0.09, -0.20),
         // Top-right planet in trinary systems
         Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir => Vec2::new(0.14, 0.25),
         // Left planet in trinay systems

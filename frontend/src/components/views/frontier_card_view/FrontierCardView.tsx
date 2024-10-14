@@ -87,9 +87,10 @@ const MirageView = () => {
     .filter((s) => s.planets.length === 0)
     .map((s) => s.id);
 
-  const usedSystemsWithoutPlanets = gameState.mapData?.hexMap.tiles
-    .filter((t) => systemsWithoutPlanets.includes(t.system))
-    .filter((t) => gameOptions.systems[t.system].systemType !== "Hyperlane");
+  const usedSystemsWithoutPlanets =
+    gameState.mapData.miltyInformation?.hexMap.tiles
+      .filter((t) => systemsWithoutPlanets.includes(t.system))
+      .filter((t) => gameOptions.systems[t.system].systemType !== "Hyperlane");
 
   return (
     <div className="column">

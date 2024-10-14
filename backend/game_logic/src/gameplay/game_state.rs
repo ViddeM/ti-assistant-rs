@@ -53,8 +53,8 @@ pub struct GameState {
     /// The current phase of the game.
     pub phase: Phase,
 
-    /// Information about the map.
-    pub map_data: Option<MapData>,
+    /// Information about the map, only available on games imported from milty.
+    pub map_data: MapData,
 
     /// Which players are in the game.
     pub players: HashMap<PlayerId, Player>,
@@ -116,11 +116,22 @@ pub struct GameState {
     pub current_turn_start_time: Option<DateTime<Utc>>,
 }
 
-/// A snapshot of the game state.
+/// Information relevant to things that has happened on the gameboard.
 #[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MapData {
+    /// Map information relevant to games imported from milty draft.
+    pub milty_information: Option<MiltyInformation>,
+    /// Which planets (if any) has been destroyed by the stellar converter.
+    pub stellar_converter_destroyed_planets: Vec<Planet>,
+}
+
+/// Map information only relevant / obtainable for games imported from milty draft.
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct MiltyInformation {
     /// The hex map for the game.
     pub hex_map: HexMap,
     /// The system that contains mirage (if any).

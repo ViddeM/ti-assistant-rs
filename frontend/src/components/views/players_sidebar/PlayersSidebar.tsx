@@ -6,7 +6,6 @@ import { PlanetAttachmentInfo } from "@/api/bindings/PlanetAttachmentInfo";
 import { TechInfo } from "@/api/bindings/TechInfo";
 import { Score } from "@/api/bindings/Score";
 import { Color } from "@/api/bindings/Color";
-import { Duration } from "@/api/bindings/Duration";
 import { StrategicCardInfo, StrategyCardInfo } from "./parts/StrategyCardInfo";
 import { PlayerResources } from "./parts/PlayerResources";
 import { PlayerScoreInfo } from "./parts/PlayerScoreInfo";
@@ -29,6 +28,11 @@ export interface SidebarPlayer {
   planets: PlayerPlanetInfo[];
   technologies: Tech[];
   playTime: Duration;
+}
+
+export interface Duration {
+  secs: number;
+  nanos: number;
 }
 
 export interface Tech {
@@ -136,8 +140,8 @@ const PlayerBox = ({
         player.isActive
           ? styles.activePlayer
           : player.hasPassed
-            ? styles.passedPlayer
-            : ""
+          ? styles.passedPlayer
+          : ""
       }`}
     >
       <legend

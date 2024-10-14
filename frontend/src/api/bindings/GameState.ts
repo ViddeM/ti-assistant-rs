@@ -27,9 +27,9 @@ gameSettings: GameSettings,
  */
 phase: Phase, 
 /**
- * Information about the map.
+ * Information about the map, only available on games imported from milty.
  */
-mapData: MapData | null, 
+mapData: MapData, 
 /**
  * Which players are in the game.
  */
