@@ -32,7 +32,7 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Vorhal
         | Planet::Primor
         | Planet::HopesEnd
-        | Planet::MecatolRex => Vec2::new(0.0, 0.08),
+        | Planet::MecatolRex => Vec2::new(0.0, 0.0),
         // Upper planet in two-planet systems
         Planet::Maaluuk
         | Planet::ArcPrime
@@ -93,12 +93,12 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::VegaMinor
         | Planet::Shalloq => Vec2::new(0.09, -0.20),
         // Top-right planet in trinary systems
-        Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir => Vec2::new(0.14, 0.25),
+        Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir => Vec2::new(0.12, 0.21),
         // Left planet in trinay systems
-        Planet::RigelIII | Planet::Loki | Planet::Hercant | Planet::Valk => Vec2::new(-0.18, 0.0),
+        Planet::RigelIII | Planet::Loki | Planet::Hercant | Planet::Valk => Vec2::new(-0.24, 0.05),
         // Bottom-right planet in trinary systems
         Planet::RigelI | Planet::Ashtroth | Planet::Kamdorn | Planet::Avar => {
-            Vec2::new(0.15, -0.20)
+            Vec2::new(0.15, -0.26)
         }
         Planet::Mallice => Vec2::new(0.20, 0.12),
         Planet::Mirage => Vec2::new(0.12, -0.25),

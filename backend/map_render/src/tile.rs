@@ -166,10 +166,14 @@ fn spawn_planet_owner_visuals(
     planet_owner_text_style: &TextStyle,
     tile_pos: &Vec2,
 ) {
+    let planet_owner_text_offset = Vec2::new(0.0, 0.08);
+
     for planet in planets.iter() {
         if let Some(owner) = owned_planets.get(planet) {
-            let position =
-                tile_with_offset_to_visual_pos(tile_pos, &planet_offset(planet)) + Vec3::Z * 10.0;
+            let position = tile_with_offset_to_visual_pos(
+                tile_pos,
+                &(planet_offset(planet) + planet_owner_text_offset),
+            ) + Vec3::Z * 10.0;
 
             let mut text_style = planet_owner_text_style.clone();
             text_style.color = player_color_to_bevy_color(owner);
@@ -258,7 +262,7 @@ fn render_destroyed_planet_token(
 ) {
     let visual_position =
         tile_with_offset_to_visual_pos(&tile_pos, &planet_offset(planet)) + Vec3::Z * 2.0;
-    let token_transform = Transform::from_translation(visual_position).with_scale(Vec3::ONE * 0.25);
+    let token_transform = Transform::from_translation(visual_position).with_scale(Vec3::ONE * 0.2);
 
     commands.spawn(SpriteBundle {
         transform: token_transform,
