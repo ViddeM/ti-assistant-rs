@@ -304,7 +304,14 @@ impl GameState {
             self.strategy_card_holders
                 .iter()
                 .filter(|&(_, holder)| holder == player)
-                .map(|(card, _)| card.card_number())
+                .map(|(card, holder)| {
+                    let player_faction = self.players.get(holder).map(|p| &p.faction);
+                    if player_faction == Some(&Faction::NaaluCollective) {
+                        0 // Naalu always has initiative 0.
+                    } else {
+                        card.card_number()
+                    }
+                })
                 .min()
         });
 
