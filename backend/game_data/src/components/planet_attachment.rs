@@ -165,8 +165,8 @@ impl PlanetAttachment {
                 "Biotic Research Facility",
                 ProphecyOfKings,
                 Industrial,
-                0,
-                0
+                1,
+                1
             ),
             PlanetAttachment::CyberneticResearchFacility => a!(
                 "Cybernetic Research Facility",
