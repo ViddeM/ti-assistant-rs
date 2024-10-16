@@ -146,7 +146,6 @@ const RenderChoice = ({
     return <p>--Skipped--</p>;
   }
 
-  console.log("CHOICE", choice);
   if ("TechnologyJolNar" in choice) {
     const c = choice.TechnologyJolNar as JolNarChoice;
     return (
