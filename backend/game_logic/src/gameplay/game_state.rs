@@ -239,6 +239,7 @@ pub enum StrategicSecondaryProgress {
         tech: Technology,
     },
     /// Special technology secondary for the Universities of Jol-Nar
+    #[serde(rename_all = "camelCase")]
     TechnologyJolNar {
         first_tech: Technology,
         second_tech: Option<Technology>,

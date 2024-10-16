@@ -1,6 +1,5 @@
 import { GameOptions } from "@/api/bindings/GameOptions";
 import { Technology } from "@/api/bindings/Technology";
-import { TechCategory } from "@/api/bindings/TechCategory";
 import { TechInfo } from "@/api/bindings/TechInfo";
 import { GameState } from "@/api/bindings/GameState";
 import { Button } from "@/components/elements/button/Button";

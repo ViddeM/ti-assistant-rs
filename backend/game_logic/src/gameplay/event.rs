@@ -502,8 +502,9 @@ pub enum StrategicSecondaryAction {
         /// The tech that was taken.
         tech: Technology,
     },
+    /// The special secondary that the Universities of Jol-Nar has for technology.
+    #[serde(rename_all = "camelCase")]
     TechnologyJolNar {
-        /// The special secondary that the Universities of Jol-Nar has for technology.
         first_tech: Technology,
         second_tech: Option<Technology>,
     },
