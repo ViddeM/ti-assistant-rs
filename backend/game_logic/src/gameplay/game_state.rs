@@ -238,6 +238,11 @@ pub enum StrategicSecondaryProgress {
         /// What tech was taken.
         tech: Technology,
     },
+    /// Special technology secondary for the Universities of Jol-Nar
+    TechnologyJolNar {
+        first_tech: Technology,
+        second_tech: Option<Technology>,
+    },
     Imperial,
     Skipped,
 }
@@ -449,7 +454,7 @@ impl GameState {
     pub fn assert_player_turn(&self, player: &PlayerId) -> Result<(), GameError> {
         let current_player = self.current_player()?;
         if &current_player != player {
-            bail!("wrong players turn, expected {player:?}, got {current_player:?}");
+            bail!("wrong players turn, current player is {current_player:?} got  {player:?}");
         }
 
         Ok(())
@@ -504,6 +509,15 @@ impl GameState {
         match action {
             StrategicSecondaryAction::Technology { tech } => {
                 self.assert_expansion(&tech.info().expansion)?;
+            }
+            StrategicSecondaryAction::TechnologyJolNar {
+                first_tech,
+                second_tech,
+            } => {
+                self.assert_expansion(&first_tech.info().expansion)?;
+                if let Some(t) = second_tech {
+                    self.assert_expansion(&t.info().expansion)?;
+                }
             }
             StrategicSecondaryAction::Skip => {}
             StrategicSecondaryAction::Leadership => {}

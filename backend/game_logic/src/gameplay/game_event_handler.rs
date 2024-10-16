@@ -690,11 +690,21 @@ fn try_update_game_state(
                         action.is_for_card(progress.card),
                         "Mismatch between strategic progress {progress:?} and action {action:?}"
                     );
-
                     match action.clone() {
                         StrategicSecondaryAction::Technology { tech } => {
                             let player = game_state.players.get_mut(&player).unwrap();
                             player.research_tech(tech)?;
+                        }
+                        StrategicSecondaryAction::TechnologyJolNar {
+                            first_tech,
+                            second_tech,
+                        } => {
+                            let player = game_state.players.get_mut(&player).unwrap();
+                            ensure!(player.faction == Faction::UniversitiesOfJolNar, "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary");
+                            player.research_tech(first_tech)?;
+                            if let Some(t) = second_tech {
+                                player.research_tech(t)?;
+                            }
                         }
                         _ => {}
                     }

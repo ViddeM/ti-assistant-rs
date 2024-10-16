@@ -502,6 +502,11 @@ pub enum StrategicSecondaryAction {
         /// The tech that was taken.
         tech: Technology,
     },
+    TechnologyJolNar {
+        /// The special secondary that the Universities of Jol-Nar has for technology.
+        first_tech: Technology,
+        second_tech: Option<Technology>,
+    },
     Imperial,
 }
 
@@ -518,6 +523,7 @@ impl StrategicSecondaryAction {
             (StrategicSecondaryAction::Trade, StrategyCard::Trade) => true,
             (StrategicSecondaryAction::Warfare, StrategyCard::Warfare) => true,
             (StrategicSecondaryAction::Technology { .. }, StrategyCard::Technology) => true,
+            (StrategicSecondaryAction::TechnologyJolNar { .. }, StrategyCard::Technology) => true,
             (StrategicSecondaryAction::Imperial, StrategyCard::Imperial) => true,
             _ => false,
         }
@@ -540,6 +546,13 @@ impl From<StrategicSecondaryAction> for StrategicSecondaryProgress {
             StrategicSecondaryAction::Trade => Self::Trade,
             StrategicSecondaryAction::Warfare => Self::Warfare,
             StrategicSecondaryAction::Technology { tech } => Self::Technology { tech },
+            StrategicSecondaryAction::TechnologyJolNar {
+                first_tech,
+                second_tech,
+            } => Self::TechnologyJolNar {
+                first_tech,
+                second_tech,
+            },
             StrategicSecondaryAction::Imperial => Self::Imperial,
         }
     }

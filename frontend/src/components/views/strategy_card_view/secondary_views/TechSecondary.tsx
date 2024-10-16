@@ -11,7 +11,14 @@ type Choice =
   | "NekroVirus"
   | "Skipped"
   | "OtherPlayer"
-  | { Technology: { tech: Technology } }
+  | { Variant: "SecondTechNormal"; Technology: { tech: Technology } }
+  | {
+      Variant: "SecondTechJolNar";
+      JolNarTechnology: {
+        firstTech: Technology;
+        secondTech: Technology | null;
+      };
+    }
   | "YetToChoose";
 
 export const StrategyTechnologySecondaryView = () => {
@@ -99,6 +106,10 @@ const RenderChoice = ({
   }
 
   if (choice === "YetToChoose") {
+    if (player.faction === "UniversitiesOfJolNar") {
+      return <JolNarTechSecondary player={player} />;
+    }
+
     return (
       <>
         <p className="warningText">Remember: pay 1 token and 4 resources</p>
@@ -124,5 +135,30 @@ const RenderChoice = ({
     return <p>--Skipped--</p>;
   }
 
+  if (choice.Variant === "SecondTechJolNar") {
+    return (
+      <>
+        <p>
+          First Tech:{" "}
+          {gameOptions.technologies[choice.JolNarTechnology.firstTech].name}
+        </p>
+        {choice.JolNarTechnology.secondTech === null ? (
+          <p>Skipped second tech</p>
+        ) : (
+          <p>
+            Second Tech:{" "}
+            {gameOptions.technologies[choice.JolNarTechnology.secondTech].name}
+          </p>
+        )}
+      </>
+    );
+  }
+
   return <p>Tech: {gameOptions.technologies[choice.Technology.tech].name}</p>;
 };
+
+const JolNarTechnology = ({
+  player,
+}: {
+  player: Player & { id: string };
+}) => {};
