@@ -1,6 +1,6 @@
 import { useGameContext } from "@/hooks/GameContext";
 
-export const MapViewMode = () => {
+export const MapViewMode = ({ wsUri }: { wsUri: string }) => {
   const { gameId, gameState } = useGameContext();
 
   if (!gameState.mapData) {
@@ -18,7 +18,7 @@ export const MapViewMode = () => {
     >
       <iframe
         id="map_render_game_id"
-        src={`/map_render/index.html?gameId=${gameId}`}
+        src={`/map_render/index.html?gameId=${gameId}&serverUrl=${wsUri}`}
         width="1280"
         height="720"
       ></iframe>

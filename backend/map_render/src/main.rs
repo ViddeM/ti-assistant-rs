@@ -37,7 +37,10 @@ fn main() {
     let game_id = search_params
         .get("gameId")
         .expect("Failed to retrieve game ID");
-    run_game(&game_id).expect("Failed to start game");
+    let server_url = search_params
+        .get("serverUrl")
+        .expect("Failed to retrieve server url");
+    run_game(&game_id, &server_url).expect("Failed to start game");
 }
 
 #[derive(Resource, Debug)]
@@ -106,9 +109,11 @@ fn handle_message(e: MessageEvent, tx: SyncSender<Box<GameState>>) -> Result<(),
     Ok(())
 }
 
-fn run_game(game_id: &str) -> Result<(), String> {
-    console_log(&format!("Running game with game_id: {game_id}"));
-    let ws = WebSocket::new("ws://localhost:5555")
+fn run_game(game_id: &str, server_url: &str) -> Result<(), String> {
+    console_log(&format!(
+        "Running game with game_id: {game_id} and server {server_url}"
+    ));
+    let ws = WebSocket::new(server_url)
         .map_err(|err| format!("Failed to setup ws connection, err: {err:?}"))?;
 
     let (tx, rx) = sync_channel::<Box<GameState>>(2);

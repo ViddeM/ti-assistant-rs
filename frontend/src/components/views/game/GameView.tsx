@@ -262,7 +262,7 @@ export const GameView = ({ gameId, wsUri }: GameViewProps) => {
         </div>
       </div>
       {gameOptions && gameState && (
-        <DisplayViewMode viewMode={currentViewMode} />
+        <DisplayViewMode viewMode={currentViewMode} wsUri={wsUri} />
       )}
     </GameContext.Provider>
   );
@@ -446,9 +446,10 @@ const ImportMiltyGame = ({ startGame }: { startGame: (data: any) => void }) => {
 
 interface DisplayViewModeProps {
   viewMode: View;
+  wsUri: string;
 }
 
-const DisplayViewMode = ({ viewMode }: DisplayViewModeProps) => {
+const DisplayViewMode = ({ viewMode, wsUri }: DisplayViewModeProps) => {
   const { gameState, gameOptions } = useGameContext();
 
   switch (viewMode) {
@@ -477,7 +478,7 @@ const DisplayViewMode = ({ viewMode }: DisplayViewModeProps) => {
     case "Laws":
       return <LawsViewMode />;
     case "Map":
-      return <MapViewMode />;
+      return <MapViewMode wsUri={wsUri} />;
     default:
       return <p>Unknown view mode ({viewMode})?</p>;
   }
