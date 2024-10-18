@@ -8,9 +8,15 @@ use ts_rs::TS;
 
 use ti_helper_game_data::{
     common::player_id::PlayerId,
-    components::objectives::{secret::SecretObjective, Objective},
+    components::{
+        agenda::{Agenda, AgendaElect, ForOrAgainst},
+        objectives::{secret::SecretObjective, Objective},
+        planet::Planet,
+    },
     enum_map::EnumMap,
 };
+
+use super::{agenda::AgendaRecord, player::Player};
 
 /// Everything game state that to player points.
 #[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
@@ -44,30 +50,33 @@ pub struct Score {
     /// Points gained by playing the Imperial strategy card action while holding Mecatol Rex.
     pub imperial: HashMap<PlayerId, i8>,
 
+    /// Agendas that provide points.
+    pub agenda_scores: Vec<ScorableAgenda>,
+
     /// The player who took the custodians token from Mecatol Rex.
     pub custodians: Option<PlayerId>,
 }
 
 impl Score {
     /// Update [Score::player_points] to the correct values.
-    pub fn update_player_points(&mut self, all_players: &[PlayerId]) {
+    pub fn update_player_points(&mut self, all_players: &HashMap<PlayerId, Player>) {
         self.max_points = 10; // TODO set up score
 
-        for player in all_players {
+        for (player_id, player) in all_players {
             let mut player_points = 0;
 
             // Check players completed public objectives
             player_points += self
                 .revealed_objectives
                 .iter()
-                .filter(|(_objective, has_scored)| has_scored.contains(player))
+                .filter(|(_objective, has_scored)| has_scored.contains(player_id))
                 .map(|(objective, _)| objective.info().points)
                 .sum::<i8>();
 
             // Check players completed secret objectives
             player_points += self
                 .secret_objectives
-                .get(player)
+                .get(player_id)
                 .map(|scored| scored.len())
                 .unwrap_or(0) as i8;
 
@@ -75,29 +84,38 @@ impl Score {
             player_points += self
                 .support_for_the_throne
                 .values()
-                .filter(|&owner| owner == player)
+                .filter(|&owner| owner == player_id)
                 .count() as i8;
 
             // Manually assigned points modifier
-            player_points += self.extra_points.get(player).unwrap_or(&0);
+            player_points += self.extra_points.get(player_id).unwrap_or(&0);
 
             // Points gained from playing Imperial
-            player_points += self.imperial.get(player).unwrap_or(&0);
+            player_points += self.imperial.get(player_id).unwrap_or(&0);
 
             // Check if player has the custodians
-            player_points += i8::from(self.custodians.as_ref() == Some(player));
+            player_points += i8::from(self.custodians.as_ref() == Some(player_id));
 
             // Check if the player has the Shard of the Throne relic
-            if Some(player) == self.shard_of_the_throne.as_ref() {
+            if Some(player_id) == self.shard_of_the_throne.as_ref() {
                 player_points += 1;
             }
 
             // Check if the player has the crown of emphidia relic
-            if Some(player) == self.crown_of_emphidia.as_ref() {
+            if Some(player_id) == self.crown_of_emphidia.as_ref() {
                 player_points += 1;
             }
 
-            self.player_points.insert(Arc::clone(player), player_points);
+            player_points += self
+                .agenda_scores
+                .iter()
+                .map(|score| score.get_score_for_player(player_id, &player))
+                .sum::<i8>();
+
+            // TODO: player_points could in theory be negative here, is that allowed or should we reset it to 0 in that case?
+
+            self.player_points
+                .insert(Arc::clone(player_id), player_points);
         }
     }
 
@@ -120,5 +138,185 @@ impl Score {
             .get(player)
             .map(|secrets| secrets.len())
             .unwrap_or(0)
+    }
+
+    /// If applicable, add the provided agenda record to the scoring table.
+    pub fn add_agenda_record(&mut self, agenda_record: &AgendaRecord) {
+        let Some(outcome) = agenda_record.outcome.as_ref() else {
+            // Agenda was discarded.
+            return;
+        };
+
+        // Assumes that the outcome is valid for the agenda (that should be handled elsewhere).
+        let scorable_agenda = match (agenda_record.vote.agenda, outcome) {
+            (Agenda::HolyPlanetOfIxth, AgendaElect::CulturalPlanet(planet)) => {
+                ScorableAgenda::HolyPlanetOfIxth {
+                    planet: planet.clone(),
+                }
+            }
+            (Agenda::ShardOfTheThrone, AgendaElect::Player(player)) => {
+                ScorableAgenda::ShardOfTheThrone {
+                    player: player.clone(),
+                }
+            }
+            (Agenda::TheCrownOfEmphidia, AgendaElect::Player(player)) => {
+                ScorableAgenda::TheCrownOfEmphidia {
+                    player: player.clone(),
+                }
+            }
+            (Agenda::Mutiny, AgendaElect::ForOrAgainst(for_or_against)) => ScorableAgenda::Mutiny {
+                players_that_voted_for: agenda_record
+                    .vote
+                    .player_votes
+                    .iter()
+                    .filter(|(_, vote)| {
+                        if let Some(AgendaElect::ForOrAgainst(ForOrAgainst::For)) =
+                            vote.as_ref().map(|v| v.get_outcome())
+                        {
+                            true
+                        } else {
+                            false
+                        }
+                    })
+                    .map(|(p, _)| p.clone())
+                    .collect(),
+                for_won: for_or_against == &ForOrAgainst::For,
+            },
+            (Agenda::SeedOfAnEmpire, AgendaElect::ForOrAgainst(for_or_against)) => {
+                let (players, _) = match for_or_against {
+                    ForOrAgainst::For => {
+                        self.player_points.iter().map(|(p, s)| (p.clone(), s)).fold(
+                            (vec![], i8::MIN),
+                            |(mut players_with_most_point, most_points), (player, score)| {
+                                if score > &most_points {
+                                    (vec![player], score.clone())
+                                } else if score == &most_points {
+                                    players_with_most_point.push(player);
+                                    (players_with_most_point, most_points)
+                                } else {
+                                    (players_with_most_point, most_points)
+                                }
+                            },
+                        )
+                    }
+                    ForOrAgainst::Against => {
+                        self.player_points.iter().map(|(p, s)| (p.clone(), s)).fold(
+                            (vec![], i8::MAX),
+                            |(mut players_with_least_points, least_points), (player, score)| {
+                                if score < &least_points {
+                                    (vec![player], score.clone())
+                                } else if score == &least_points {
+                                    players_with_least_points.push(player);
+                                    (players_with_least_points, least_points)
+                                } else {
+                                    (players_with_least_points, least_points)
+                                }
+                            },
+                        )
+                    }
+                };
+                ScorableAgenda::SeedOfAnEmpire {
+                    players_elected: players.clone(),
+                }
+            }
+            (Agenda::PoliticalCensure, AgendaElect::Player(player)) => {
+                ScorableAgenda::PoliticalCensure {
+                    player: player.clone(),
+                }
+            }
+
+            _ => return,
+        };
+
+        self.agenda_scores.push(scorable_agenda);
+    }
+}
+
+/// Agendas that provide points and to whom.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export)]
+pub enum ScorableAgenda {
+    /// The owner of this planet has a point.
+    HolyPlanetOfIxth {
+        /// The planet in question.
+        planet: Planet,
+    },
+    /// The player has a point but it can be lost if someone wins a combat against them.
+    ShardOfTheThrone {
+        /// The player that currently has the card.
+        player: PlayerId,
+    },
+    /// The player has a point but it can be lost if someone takes a planet in their home system.
+    TheCrownOfEmphidia {
+        /// The player that currently has the card.
+        player: PlayerId,
+    },
+    /// The players that voted for either gains or loses a point depending on whether for won or not.
+    Mutiny {
+        /// The players that voted for this agenda.
+        players_that_voted_for: Vec<PlayerId>,
+        /// Whether the alternative 'for' won or not.
+        for_won: bool,
+    },
+    /// Either the players with the most points gets a point or the players with the fewest.
+    SeedOfAnEmpire {
+        /// The players that got a point.
+        players_elected: Vec<PlayerId>,
+    },
+    /// The player gets a point but if they lose this card (i.e. this law is discarded or smth) they lose that point.
+    PoliticalCensure {
+        /// The player in question.
+        player: PlayerId,
+    },
+}
+
+impl ScorableAgenda {
+    fn get_score_for_player(&self, player_id: &PlayerId, player: &Player) -> i8 {
+        match self {
+            ScorableAgenda::HolyPlanetOfIxth { planet } => {
+                if player.planets.contains_key(planet) {
+                    return 1;
+                }
+            }
+            ScorableAgenda::ShardOfTheThrone { player } => {
+                if player == player_id {
+                    return 1;
+                }
+            }
+            ScorableAgenda::TheCrownOfEmphidia { player } => {
+                if player == player_id {
+                    return 1;
+                }
+            }
+            ScorableAgenda::Mutiny {
+                players_that_voted_for,
+                for_won: true,
+            } => {
+                if players_that_voted_for.contains(player_id) {
+                    return 1;
+                }
+            }
+            ScorableAgenda::Mutiny {
+                players_that_voted_for,
+                for_won: false,
+            } => {
+                if players_that_voted_for.contains(player_id) {
+                    return -1;
+                }
+            }
+            ScorableAgenda::SeedOfAnEmpire { players_elected } => {
+                if players_elected.contains(player_id) {
+                    return 1;
+                }
+            }
+            ScorableAgenda::PoliticalCensure { player } => {
+                if player == player_id {
+                    return 1;
+                }
+            }
+        }
+
+        0
     }
 }

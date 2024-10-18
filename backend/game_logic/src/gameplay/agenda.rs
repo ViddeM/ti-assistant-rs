@@ -243,6 +243,11 @@ impl Vote {
     pub fn new(votes: u16, outcome: AgendaElect) -> Self {
         Self { votes, outcome }
     }
+
+    /// Get the outcome of this vote.
+    pub fn get_outcome(&self) -> AgendaElect {
+        self.outcome.clone()
+    }
 }
 
 fn get_planet_traits(planet: &Planet, attachments: &HashSet<PlanetAttachment>) -> Vec<PlanetTrait> {

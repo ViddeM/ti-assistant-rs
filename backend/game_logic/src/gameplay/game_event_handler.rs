@@ -1427,7 +1427,7 @@ fn try_update_game_state(
                 )
             }
 
-            let vote = state.vote.take().unwrap();
+            let vote: VoteState = state.vote.take().unwrap();
             state.round = state.round.next();
 
             if let Some(outcome) = outcome.as_ref() {
@@ -1443,6 +1443,7 @@ fn try_update_game_state(
             } else {
                 // do nothing, i.e. discard agenda without resolving it.
             }
+
             game_state.agenda_vote_history.push(AgendaRecord {
                 round: game_state.round,
                 vote,
@@ -1724,9 +1725,7 @@ fn try_update_game_state(
 
     // TODO: maybe not recalculate this all the time?
     game_state.update_available_leaders();
-    game_state
-        .score
-        .update_player_points(&game_state.table_order);
+    game_state.score.update_player_points(&game_state.players);
 
     Ok(())
 }
