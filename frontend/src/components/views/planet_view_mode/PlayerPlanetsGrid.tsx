@@ -322,6 +322,7 @@ const AttachmentRow = ({
       <td align="center">
         <FontAwesomeIcon icon={faArrowTurnUp} className={styles.rotate90} />
       </td>
+
       <td className={styles.attachmentRowText} align="right">
         <AttachmentIcon attachment={attachment} />
       </td>

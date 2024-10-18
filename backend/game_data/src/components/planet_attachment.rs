@@ -243,52 +243,32 @@ impl PlanetAttachment {
 
     /// Returns the ''correct'' variant of this attachment for the provided PlanetInfo.
     pub fn match_planet(self, planet: &PlanetInfo) -> Self {
-        let handle_alt = |tech_category: TechCategory, a: Self, b: Self| {
-            if planet.tech_specialty == Some(tech_category) {
-                a
-            } else {
-                b
+        match (self, planet.tech_specialty.is_some()) {
+            (PlanetAttachment::BioticResearchFacility, true) => {
+                Self::BioticResearchFacilityResources
             }
-        };
-
-        match self {
-            PlanetAttachment::BioticResearchFacility => handle_alt(
-                TechCategory::Biotic,
-                Self::BioticResearchFacilityResources,
-                self,
-            ),
-            PlanetAttachment::CyberneticResearchFacility => handle_alt(
-                TechCategory::Cybernetic,
-                Self::CyberneticResearchFacilityResources,
-                self,
-            ),
-            PlanetAttachment::PropulsionResearchFacility => handle_alt(
-                TechCategory::Propulsion,
-                Self::PropulsionResearchFacilityResources,
-                self,
-            ),
-            PlanetAttachment::WarfareResearchFacility => handle_alt(
-                TechCategory::Warfare,
-                Self::WarfareResearchFacilityResources,
-                self,
-            ),
-            PlanetAttachment::BioticResearchFacilityResources => {
-                handle_alt(TechCategory::Biotic, self, Self::BioticResearchFacility)
+            (PlanetAttachment::BioticResearchFacilityResources, false) => {
+                Self::BioticResearchFacility
             }
-            PlanetAttachment::CyberneticResearchFacilityResources => handle_alt(
-                TechCategory::Cybernetic,
-                self,
-                Self::CyberneticResearchFacility,
-            ),
-            PlanetAttachment::PropulsionResearchFacilityResources => handle_alt(
-                TechCategory::Propulsion,
-                self,
-                Self::PropulsionResearchFacility,
-            ),
-            PlanetAttachment::WarfareResearchFacilityResources => {
-                handle_alt(TechCategory::Warfare, self, Self::WarfareResearchFacility)
+            (PlanetAttachment::CyberneticResearchFacility, true) => {
+                Self::CyberneticResearchFacilityResources
             }
-            _ => self,
+            (PlanetAttachment::CyberneticResearchFacilityResources, false) => {
+                Self::CyberneticResearchFacility
+            }
+            (PlanetAttachment::PropulsionResearchFacility, true) => {
+                Self::PropulsionResearchFacilityResources
+            }
+            (PlanetAttachment::PropulsionResearchFacilityResources, false) => {
+                Self::PropulsionResearchFacility
+            }
+            (PlanetAttachment::WarfareResearchFacility, true) => {
+                Self::WarfareResearchFacilityResources
+            }
+            (PlanetAttachment::WarfareResearchFacilityResources, false) => {
+                Self::WarfareResearchFacility
+            }
+            (attachment, _) => attachment,
         }
     }
 }
