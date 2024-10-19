@@ -1430,25 +1430,27 @@ fn try_update_game_state(
             let vote: VoteState = state.vote.take().unwrap();
             state.round = state.round.next();
 
+            let agenda_record = AgendaRecord {
+                round: game_state.round,
+                vote: vote.clone(),
+                outcome: outcome.clone(),
+            };
+
             if let Some(outcome) = outcome.as_ref() {
-                if vote.kind == AgendaKind::Law {
-                    if let AgendaElect::ForOrAgainst(ForOrAgainst::Against) = &outcome {
-                        // law didn't pass, don't add it to set of active laws.
-                    } else {
-                        game_state.laws.insert(vote.agenda, outcome.clone());
-                    }
+                if vote.kind == AgendaKind::Law
+                    && outcome != &AgendaElect::ForOrAgainst(ForOrAgainst::Against)
+                {
+                    game_state.laws.insert(vote.agenda, outcome.clone());
                 }
 
-                // TODO: resolve any vote effects such as VPs or techs
+                game_state.score.add_agenda_record(&agenda_record);
+
+                // TODO: resolve any other vote effects such as VPs or techs
             } else {
-                // do nothing, i.e. discard agenda without resolving it.
+                // Do nothing, i.e. discard agenda without resolving it.
             }
 
-            game_state.agenda_vote_history.push(AgendaRecord {
-                round: game_state.round,
-                vote,
-                outcome,
-            });
+            game_state.agenda_vote_history.push(agenda_record);
         }
         Event::CompleteAgendaPhase => {
             game_state.assert_phase(Phase::Agenda)?;
