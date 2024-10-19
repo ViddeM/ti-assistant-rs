@@ -2,6 +2,7 @@
 import type { ActionPhaseProgress } from "./ActionPhaseProgress";
 import type { Agenda } from "./Agenda";
 import type { AgendaElect } from "./AgendaElect";
+import type { AgendaOverrideState } from "./AgendaOverrideState";
 import type { AgendaRecord } from "./AgendaRecord";
 import type { AgendaState } from "./AgendaState";
 import type { GameSettings } from "./GameSettings";
@@ -82,6 +83,10 @@ agendaVoteHistory: Array<AgendaRecord>,
  * Laws in play.
  */
 laws: { [key in Agenda]: AgendaElect }, 
+/**
+ * State required for the agenda 'admin view'.
+ */
+agendaOverrideState: AgendaOverrideState | null, 
 /**
  * State for the status phase.
  */

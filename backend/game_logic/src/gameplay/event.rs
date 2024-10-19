@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{agenda::Vote, game_state::StrategicSecondaryProgress, player::NewPlayer};
+use super::{game_state::StrategicSecondaryProgress, player::NewPlayer};
 
 use ti_helper_game_data::{
     common::{
@@ -467,24 +467,34 @@ pub enum Event {
         attachment: PlanetAttachment,
     },
 
-    /// Add an agenda outside of the normal agenda phase flow.
-    AddAgenda {
+    /// Begin adding an agenda outside of the normal agenda phase flow.
+    AddAgendaBegin {
         /// The agenda that was played.
         agenda: Agenda,
-        /// The votes that was cast by players, only includes players that actually voted.
-        player_votes: Vec<PlayerAgendaVote>,
-        /// The outcome that won the agenda.
-        elected_outcome: AgendaElect,
     },
-}
 
-/// A vote that a player cast for an agenda.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PlayerAgendaVote {
-    /// The player that case the vote.
-    pub player: PlayerId,
-    /// The vote they cast.
-    pub vote: Vote,
+    /// A vote cast by a player outside of the normal agenda phase flow.
+    AddAgendaPlayerVote {
+        /// The player that is casting the vote.
+        player: PlayerId,
+
+        /// The outcome the player is voting for. `None` means the player is abstaining.
+        outcome: AgendaElect,
+
+        /// Number of votes cast, should be omitted in case player abstains.
+        #[serde(default)]
+        votes: u16,
+    },
+
+    /// Cancel the current admin view agenda.
+    AddAgendaCancel,
+
+    /// Resolve the current admin view agenda.
+    #[serde(rename_all = "camelCase")]
+    AddAgendaResolve {
+        /// The outcome that won the agenda or none if the expected outcome won.
+        elected_outcome: Option<AgendaElect>,
+    },
 }
 
 /// Primary action taken during a strategy card.

@@ -4,7 +4,7 @@ use std::{
 };
 
 use chrono::{DateTime, Utc};
-use eyre::{bail, eyre, Context};
+use eyre::{bail, ensure, eyre, Context};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -15,7 +15,7 @@ use ti_helper_game_data::{
     },
     components::{
         action_card::ActionCard,
-        agenda::{Agenda, AgendaElect},
+        agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
         frontier_card::FrontierCard,
         leaders::{Leader, LeaderAbilityKind},
         objectives::Objective,
@@ -31,7 +31,7 @@ use ti_helper_game_data::{
 };
 
 use super::{
-    agenda::{AgendaRecord, AgendaState},
+    agenda::{AgendaRecord, AgendaState, VoteState},
     error::GameError,
     event::{StrategicPrimaryAction, StrategicSecondaryAction},
     player::Player,
@@ -95,6 +95,9 @@ pub struct GameState {
     /// Laws in play.
     pub laws: EnumMap<Agenda, AgendaElect>,
 
+    /// State required for the agenda 'admin view'.
+    pub agenda_override_state: Option<AgendaOverrideState>,
+
     /// State for the status phase.
     pub status_phase_state: Option<StatusPhaseState>,
 
@@ -131,6 +134,15 @@ pub struct MapData {
     pub milty_information: Option<MiltyInformation>,
     /// Which planets (if any) has been destroyed by the stellar converter.
     pub stellar_converter_destroyed_planets: Vec<Planet>,
+}
+
+/// Information relevant to things that has happened on the gameboard.
+#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct AgendaOverrideState {
+    /// The vote state of this agenda override.
+    pub vote_state: VoteState,
 }
 
 /// Map information only relevant / obtainable for games imported from milty draft.
@@ -621,5 +633,43 @@ impl GameState {
             self.available_leaders
                 .insert(player_id.clone(), available_to_this_player);
         }
+    }
+
+    /// Resolve an agenda.
+    pub fn resolve_agenda(
+        &mut self,
+        vote: VoteState,
+        outcome: Option<AgendaElect>,
+    ) -> eyre::Result<()> {
+        if let Some(outcome) = &outcome {
+            ensure!(
+                AgendaElectKind::from(outcome) == vote.elect,
+                "invalid elect kind, expected {:?}",
+                vote.elect
+            )
+        }
+
+        let agenda_record = AgendaRecord {
+            round: self.round,
+            vote: vote.clone(),
+            outcome: outcome.clone(),
+        };
+
+        if let Some(outcome) = outcome.as_ref() {
+            if vote.kind == AgendaKind::Law
+                && outcome != &AgendaElect::ForOrAgainst(ForOrAgainst::Against)
+            {
+                self.laws.insert(vote.agenda, outcome.clone());
+            }
+
+            self.score.add_agenda_record(&agenda_record);
+
+            // TODO: resolve any other vote effects such as VPs or techs
+        } else {
+            // Do nothing, i.e. discard agenda without resolving it.
+        }
+
+        self.agenda_vote_history.push(agenda_record);
+        Ok(())
     }
 }

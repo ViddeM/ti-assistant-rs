@@ -11,13 +11,12 @@ use crate::gameplay::{
         StrategicPrimaryAction, StrategicSecondaryAction,
     },
     game_state::{
-        ActionCardProgress, ActionPhaseProgress, FrontierCardProgress, LeaderProgress,
-        RelicProgress, StrategicPrimaryProgress, StrategicProgress,
+        ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
+        LeaderProgress, RelicProgress, StrategicPrimaryProgress, StrategicProgress,
     },
 };
 
 use super::{
-    agenda::AgendaRecord,
     color_assignment::assign_colors,
     error::GameError,
     event::{action_matches_frontier_card, ActionCardAction, Event},
@@ -31,7 +30,7 @@ use ti_helper_game_data::{
     },
     components::{
         action_card::{ActionCard, ActionCardPlay},
-        agenda::{AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
+        agenda::{AgendaElectKind, AgendaKind},
         frontier_card::{FrontierCard, FrontierCardType},
         leaders::LeaderAbilityKind,
         objectives::{Objective, ObjectiveKind},
@@ -1416,41 +1415,23 @@ fn try_update_game_state(
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
             };
-            let Some(vote) = &state.vote else {
+
+            let Some(vote) = state.vote.as_ref() else {
                 bail!("no agenda has been revealed yet");
             };
-            if let Some(outcome) = &outcome {
-                ensure!(
-                    AgendaElectKind::from(outcome) == vote.elect,
-                    "invalid elect kind, expected {:?}",
-                    vote.elect
-                )
-            }
 
-            let vote: VoteState = state.vote.take().unwrap();
-            state.round = state.round.next();
+            let vote = vote.clone();
 
-            let agenda_record = AgendaRecord {
-                round: game_state.round,
-                vote: vote.clone(),
-                outcome: outcome.clone(),
+            game_state
+                .resolve_agenda(vote, outcome)
+                .wrap_err("Failed to resolve agenda")?;
+
+            let Some(state) = &mut game_state.agenda else {
+                bail!("agenda state not initialized, this is a bug.");
             };
 
-            if let Some(outcome) = outcome.as_ref() {
-                if vote.kind == AgendaKind::Law
-                    && outcome != &AgendaElect::ForOrAgainst(ForOrAgainst::Against)
-                {
-                    game_state.laws.insert(vote.agenda, outcome.clone());
-                }
-
-                game_state.score.add_agenda_record(&agenda_record);
-
-                // TODO: resolve any other vote effects such as VPs or techs
-            } else {
-                // Do nothing, i.e. discard agenda without resolving it.
-            }
-
-            game_state.agenda_vote_history.push(agenda_record);
+            state.vote = None;
+            state.round = state.round.next();
         }
         Event::CompleteAgendaPhase => {
             game_state.assert_phase(Phase::Agenda)?;
@@ -1723,28 +1704,71 @@ fn try_update_game_state(
 
             attachments.remove(&attachment);
         }
-        Event::AddAgenda {
-            agenda,
-            player_votes,
-            elected_outcome,
-        } => {
+
+        Event::AddAgendaBegin { agenda } => {
             game_state.assert_expansion(&agenda.info().expansion)?;
+            ensure!(game_state.agenda_override_state.is_none(), "There is already an agenda override in progress, cancel or resolve that before starting a new one.");
 
-            let mut vote_state =
-                VoteState::new(agenda, game_state).wrap_err("Failed to create vote state")?;
-            for vote in player_votes.into_iter() {
-                vote_state.player_votes.insert(vote.player, Some(vote.vote));
-            }
-            vote_state.tally_votes();
+            game_state.agenda_override_state = Some(AgendaOverrideState {
+                vote_state: VoteState::new(agenda, game_state)
+                    .wrap_err("Failed to create vote state")?,
+            });
+        }
 
-            let record = AgendaRecord {
-                round: game_state.round, // TODO: How should we handle this here?
-                vote: vote_state,
-                outcome: Some(elected_outcome),
+        Event::AddAgendaPlayerVote {
+            player,
+            outcome,
+            votes,
+        } => {
+            ensure!(
+                game_state
+                    .players
+                    .get(&player)
+                    .wrap_err("Player doesn't exist?")?
+                    .faction
+                    != Faction::NekroVirus,
+                "Nekro Virus cannot vote on agendas"
+            );
+
+            let Some(agenda_override_state) = game_state.agenda_override_state.as_mut() else {
+                bail!("No agenda override is in progress");
             };
 
-            game_state.score.add_agenda_record(&record);
-            game_state.agenda_vote_history.push(record);
+            let kind = AgendaElectKind::from(&outcome);
+            ensure!(
+                kind == agenda_override_state.vote_state.elect,
+                "Invalid vote kind, expected {:?}",
+                agenda_override_state.vote_state.elect
+            );
+
+            agenda_override_state
+                .vote_state
+                .player_votes
+                .insert(player, Some(Vote::new(votes, outcome)));
+
+            agenda_override_state.vote_state.tally_votes();
+        }
+
+        Event::AddAgendaCancel => {
+            ensure!(
+                game_state.agenda_override_state.is_some(),
+                "No agenda override is in progress"
+            );
+
+            game_state.agenda_override_state = None;
+        }
+
+        Event::AddAgendaResolve { elected_outcome } => {
+            let Some(agenda_override_state) = game_state.agenda_override_state.as_mut() else {
+                bail!("No agenda override is in progress");
+            };
+
+            let vote_state = agenda_override_state.vote_state.clone();
+
+            game_state
+                .resolve_agenda(vote_state, elected_outcome)
+                .wrap_err("Failed to resolve agenda")?;
+            game_state.agenda_override_state = None;
         }
     }
 
