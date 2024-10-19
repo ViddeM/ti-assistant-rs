@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{game_state::StrategicSecondaryProgress, player::NewPlayer};
+use super::{agenda::Vote, game_state::StrategicSecondaryProgress, player::NewPlayer};
 
 use ti_helper_game_data::{
     common::{
@@ -466,6 +466,25 @@ pub enum Event {
         /// The attachment that is to be removed.
         attachment: PlanetAttachment,
     },
+
+    /// Add an agenda outside of the normal agenda phase flow.
+    AddAgenda {
+        /// The agenda that was played.
+        agenda: Agenda,
+        /// The votes that was cast by players, only includes players that actually voted.
+        player_votes: Vec<PlayerAgendaVote>,
+        /// The outcome that won the agenda.
+        elected_outcome: AgendaElect,
+    },
+}
+
+/// A vote that a player cast for an agenda.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PlayerAgendaVote {
+    /// The player that case the vote.
+    pub player: PlayerId,
+    /// The vote they cast.
+    pub vote: Vote,
 }
 
 /// Primary action taken during a strategy card.

@@ -1723,6 +1723,29 @@ fn try_update_game_state(
 
             attachments.remove(&attachment);
         }
+        Event::AddAgenda {
+            agenda,
+            player_votes,
+            elected_outcome,
+        } => {
+            game_state.assert_expansion(&agenda.info().expansion)?;
+
+            let mut vote_state =
+                VoteState::new(agenda, game_state).wrap_err("Failed to create vote state")?;
+            for vote in player_votes.into_iter() {
+                vote_state.player_votes.insert(vote.player, Some(vote.vote));
+            }
+            vote_state.tally_votes();
+
+            let record = AgendaRecord {
+                round: game_state.round, // TODO: How should we handle this here?
+                vote: vote_state,
+                outcome: Some(elected_outcome),
+            };
+
+            game_state.score.add_agenda_record(&record);
+            game_state.agenda_vote_history.push(record);
+        }
     }
 
     // TODO: maybe not recalculate this all the time?
