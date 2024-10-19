@@ -234,7 +234,7 @@ impl Score {
 
 /// Agendas that provide points and to whom.
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "electableAgendaKind", content = "value")]
 #[ts(export)]
 pub enum ScorableAgenda {
     /// The owner of this planet has a point.
@@ -253,6 +253,7 @@ pub enum ScorableAgenda {
         player: PlayerId,
     },
     /// The players that voted for either gains or loses a point depending on whether for won or not.
+    #[serde(rename_all = "camelCase")]
     Mutiny {
         /// The players that voted for this agenda.
         players_that_voted_for: Vec<PlayerId>,
@@ -260,6 +261,7 @@ pub enum ScorableAgenda {
         for_won: bool,
     },
     /// Either the players with the most points gets a point or the players with the fewest.
+    #[serde(rename_all = "camelCase")]
     SeedOfAnEmpire {
         /// The players that got a point.
         players_elected: Vec<PlayerId>,
