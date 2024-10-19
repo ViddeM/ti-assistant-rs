@@ -53,6 +53,8 @@ pub struct RelicInfo {
     pub expansion: Expansion,
     /// When the relic can be played / is relevant.
     pub play: RelicPlay,
+    /// A description of what the relic is about.
+    pub description: String,
 }
 
 macro_rules! ri {
@@ -66,6 +68,7 @@ macro_rules! ri {
             name: $name.to_string(),
             expansion: Expansion::$exp,
             play: RelicPlay::$play,
+            description: include_str!(concat!("./description/", stringify!($card))).to_string(),
         }
     };
 }
