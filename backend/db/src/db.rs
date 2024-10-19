@@ -35,7 +35,7 @@ pub struct Game {
 }
 
 /// An event that occured in a game.
-#[derive(Queryable, Selectable)]
+#[derive(Debug, Queryable, Selectable)]
 #[diesel(table_name = crate::schema::game_event)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct GameEvent {

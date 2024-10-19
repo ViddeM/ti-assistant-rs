@@ -142,9 +142,14 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
             lobbies, db_pool, ..
         } = shared;
 
-        let mut ws_client = WsClient::accept(stream).await?;
+        let mut ws_client = WsClient::accept(stream)
+            .await
+            .wrap_err("failed to accept client")?;
 
-        let message = ws_client.receive_message::<WsMessageIn>().await?;
+        let message = ws_client
+            .receive_message::<WsMessageIn>()
+            .await
+            .wrap_err("failed to received message")?;
 
         let (id, lobby) = match message {
             WsMessageIn::NewGame(new_game) => {
@@ -160,10 +165,14 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
 
                 let mut game = Game::default();
 
-                let set_settings_event = new_game.to_new_game_event().await?;
+                let set_settings_event = new_game
+                    .to_new_game_event()
+                    .await
+                    .wrap_err("failed to convert new game to event")?;
 
                 let now = Utc::now();
-                game.apply_or_err(set_settings_event.clone(), now)?;
+                game.apply_or_err(set_settings_event.clone(), now)
+                    .wrap_err("failed to apply event to game")?;
                 if let Some(db_pool) = &shared.db_pool {
                     log::info!("persisting event for game {id:?}");
 
@@ -200,18 +209,25 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
                         .await
                         .wrap_err_with(|| format!("Failed to retrieve game {id:?} from DB"))
                     {
-                        ws_client.send_message(&WsMessageOut::not_found(id)).await?;
+                        ws_client
+                            .send_message(&WsMessageOut::not_found(id))
+                            .await
+                            .wrap_err("failed to send game not found message to client")?;
                         return Err(e);
                     }
 
                     let events = queries::get_events_for_game(db_pool, &id)
                         .await
-                        .wrap_err_with(|| format!("error querying game events ({id:?})"))?;
+                        .wrap_err_with(|| format!("error querying game events ({id:?})"))
+                        .wrap_err("failed to retrieve game events from DB")?;
 
                     log::info!("replaying {} events for game {id:?}", events.len());
                     let mut game = Game::default();
                     for record in events {
-                        let event = serde_json::from_value(record.event)?;
+                        let event =
+                            serde_json::from_value(record.event.clone()).wrap_err_with(|| {
+                                format!("failed to parse event from DB, record: {record:?}")
+                            })?;
                         game.apply(event, record.timestamp);
                     }
 
@@ -221,7 +237,10 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
 
                     (id, lobby)
                 } else {
-                    ws_client.send_message(&WsMessageOut::not_found(id)).await?;
+                    ws_client
+                        .send_message(&WsMessageOut::not_found(id))
+                        .await
+                        .wrap_err("failed to send game not found message to client")?;
                     bail!("no lobby with id {id:?}");
                 }
             }
@@ -234,14 +253,19 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
             .send_message(&WsMessageOut::game_options(
                 &lobby.read().await.game.current.game_settings.expansions,
             ))
-            .await?;
-        ws_client.send_message(&WsMessageOut::join_game(id)).await?;
+            .await
+            .wrap_err("failed to send game options message to client")?;
+        ws_client
+            .send_message(&WsMessageOut::join_game(id))
+            .await
+            .wrap_err("failed to send joined game message to client")?;
 
         let mut state_updates = {
             let lobby = lobby.read().await;
             ws_client
                 .send_message(&WsMessageOut::GameState(lobby.game.current.clone()))
-                .await?;
+                .await
+                .wrap_err("failed to send game state message to client")?;
 
             // make sure we subscribe while we are holding the game state lock to avoid silly races
             lobby.state_updates.subscribe()
@@ -251,18 +275,18 @@ pub async fn handle_client(shared: Arc<Shared>, stream: TcpStream, from: SocketA
             select! {
                 update = state_updates.recv() => {
                     log::debug!("sending state update to {from:?}");
-                    ws_client.send_message(&WsMessageOut::GameState(update?)).await?;
+                    ws_client.send_message(&WsMessageOut::GameState(update?)).await.wrap_err("failed to send game state message to client")?;
                 }
                 message = ws_client.receive_message::<WsMessageIn>() => {
-                    let message = message?;
+                    let message = message.wrap_err("failed to receive message from client")?;
 
                     match message {
-                        WsMessageIn::Undo => handle_undo(shared, id, &lobby).await?,
+                        WsMessageIn::Undo => handle_undo(shared, id, &lobby).await.wrap_err("failed to handle undo event")?,
                         WsMessageIn::Event(event) => {
                             match handle_event(shared, id, &lobby, event).await {
                                 Ok(_) => {},
                                 Err(EventError::HandleEventError(e)) => {
-                                    ws_client.send_message(&WsMessageOut::event_err(e)).await?;
+                                    ws_client.send_message(&WsMessageOut::event_err(e)).await.wrap_err("failed to send error message to client")?;
                                 },
                                 Err(EventError::InternalError(err)) => return Err(err),
                             }

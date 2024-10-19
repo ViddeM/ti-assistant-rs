@@ -8,6 +8,8 @@ import styles from "./LawsViewMode.module.scss";
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 import { Dropdown } from "@/components/elements/dropdown/Dropdown";
+import { getElectDisplayValue } from "../agenda_phase_view/AgendaActionsView";
+import { AgendaElect } from "@/api/bindings/AgendaElect";
 
 export const LawsViewMode = () => {
   return (
@@ -39,7 +41,7 @@ const ActiveLawsTable = () => {
         <thead>
           <tr>
             <th colSpan={3} align="center">
-              <h2>Laws</h2>
+              <h2>Active laws</h2>
             </th>
           </tr>
         </thead>
@@ -89,6 +91,15 @@ const AddLawForm = () => {
 
   const [agenda, setAgenda] = useState<string>("");
 
+  const [player, setPlayer] = useState<string>("");
+  const [votes, setVotes] = useState<string>("");
+  const [voteOption, setVoteOption] = useState<string>("");
+
+  const voteState = gameState.agendaOverrideState?.voteState;
+  const [outcome, setOutcome] = useState<string>(
+    voteState?.expectedOutcome ? voteState.expectedOutcome.value : "",
+  );
+
   const allAgendas = Object.keys(gameOptions.agendas)
     .map((a) => {
       return a as Agenda;
@@ -106,17 +117,147 @@ const AddLawForm = () => {
       a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()),
     );
 
-  const voteState = gameState.agendaOverrideState?.voteState;
+  const playersThatHaveVoted = voteState
+    ? Object.keys(voteState.playerVotes)
+    : [];
+  const playersLeftToVote = Object.keys(gameState.players).filter(
+    (p) => !playersThatHaveVoted.includes(p),
+  );
+
+  const voteCount = votes === "" ? 0 : parseInt(votes);
 
   return (
-    <form className="card column">
+    <div className="card column">
       <h2>Add Agenda</h2>
       {voteState ? (
-        <>
-          <p>Agenda: {voteState.agenda}</p>
-        </>
+        <div className={styles.formContainer}>
+          <h3>{gameOptions.agendas[voteState.agenda].name}</h3>
+          <Button onClick={() => sendEvent("AddAgendaCancel")}>
+            Cancel Adding Agenda
+          </Button>
+
+          {Object.keys(voteState.playerVotes).map((player) => (
+            <p key={player}>
+              {player}:{" "}
+              {getElectDisplayValue(
+                voteState.playerVotes[player]!!.outcome,
+                gameOptions,
+              )}{" "}
+              ({voteState.playerVotes[player]!!.votes})
+            </p>
+          ))}
+
+          <fieldset>
+            <legend>Cast Votes</legend>
+
+            <form
+              className={styles.formContainer}
+              onSubmit={() =>
+                sendEvent({
+                  AddAgendaPlayerVote: {
+                    player: player,
+                  },
+                })
+              }
+            >
+              <Dropdown
+                value={player}
+                onChange={(e) => setPlayer(e.target.value)}
+              >
+                <option value={""}>--Select Player--</option>
+                {playersLeftToVote.map((p) => (
+                  <option value={p} key={p}>
+                    {p}
+                  </option>
+                ))}
+              </Dropdown>
+              <input
+                type="number"
+                className={"marginLeft"}
+                placeholder="Votes (0)"
+                min={0}
+                max={1000}
+                value={votes}
+                onChange={(e) => {
+                  const s = e.target.value;
+                  const val = parseInt(e.target.value, 10);
+                  if (!isNaN(val) || s === "") {
+                    setVotes(s);
+                  }
+                }}
+              />
+              <Dropdown
+                value={voteOption}
+                onChange={(e) => setVoteOption(e.target.value)}
+              >
+                <option value="">--Select vote option--</option>
+                {voteState.candidates.map((candidate) => (
+                  <option key={candidate.value} value={candidate.value}>
+                    {getElectDisplayValue(candidate, gameOptions)}
+                  </option>
+                ))}
+              </Dropdown>
+              <Button
+                type="submit"
+                onClick={() =>
+                  sendEvent({
+                    AddAgendaPlayerVote: {
+                      player: player,
+                      outcome: {
+                        electKind: voteState.elect,
+                        value: voteOption,
+                      } as AgendaElect,
+                      votes: voteCount,
+                    },
+                  })
+                }
+              >
+                Cast Votes
+              </Button>
+            </form>
+          </fieldset>
+
+          <fieldset>
+            <legend>Resolve</legend>
+
+            <div className={styles.resolveOutcomeContainer}>
+              <label htmlFor="outcome-override-dropdown">
+                Override outcome
+              </label>
+
+              <Dropdown
+                id="outcome-override-dropdown"
+                value={outcome}
+                onChange={(e) => setOutcome(e.target.value)}
+              >
+                <option value="">--Select Outcome--</option>
+                {voteState.candidates.map((candidate) => (
+                  <option value={candidate.value} key={candidate.value}>
+                    {getElectDisplayValue(candidate, gameOptions)}
+                  </option>
+                ))}
+              </Dropdown>
+
+              <Button
+                disabled={outcome === ""}
+                onClick={() =>
+                  sendEvent({
+                    AddAgendaResolve: {
+                      electedOutcome: {
+                        electKind: voteState.elect,
+                        value: outcome,
+                      },
+                    },
+                  })
+                }
+              >
+                Resolve {outcome}
+              </Button>
+            </div>
+          </fieldset>
+        </div>
       ) : (
-        <>
+        <form className={styles.formContainer}>
           <Dropdown
             id="select-agenda-dropdown"
             value={agenda}
@@ -142,8 +283,8 @@ const AddLawForm = () => {
           >
             Add Agenda
           </Button>
-        </>
+        </form>
       )}
-    </form>
+    </div>
   );
 };

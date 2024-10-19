@@ -12,7 +12,6 @@
   }
 }
 
-
 .lawsTable {
   width: 100%;
   border-collapse: collapse;
@@ -25,4 +24,28 @@
 .deleteLawButton {
   border: none;
   background-color: inherit;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  // justify-content: space-between;
+
+  > * {
+    margin: $marginLarge 0 0 0;
+  }
+}
+
+.resolveOutcomeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  & > * {
+    margin-bottom: $marginLarge;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }

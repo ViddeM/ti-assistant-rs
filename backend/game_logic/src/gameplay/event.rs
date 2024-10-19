@@ -493,7 +493,7 @@ pub enum Event {
     #[serde(rename_all = "camelCase")]
     AddAgendaResolve {
         /// The outcome that won the agenda or none if the expected outcome won.
-        elected_outcome: Option<AgendaElect>,
+        elected_outcome: AgendaElect,
     },
 }
 

@@ -332,7 +332,7 @@ const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
   );
 };
 
-function getElectDisplayValue(
+export function getElectDisplayValue(
   candidate: AgendaElect,
   gameOptions: GameOptions,
 ): string {

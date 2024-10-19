@@ -1734,6 +1734,14 @@ fn try_update_game_state(
                 bail!("No agenda override is in progress");
             };
 
+            ensure!(
+                !agenda_override_state
+                    .vote_state
+                    .player_votes
+                    .contains_key(&player),
+                "Votes have already been cast by this player for this agenda"
+            );
+
             let kind = AgendaElectKind::from(&outcome);
             ensure!(
                 kind == agenda_override_state.vote_state.elect,
@@ -1766,7 +1774,7 @@ fn try_update_game_state(
             let vote_state = agenda_override_state.vote_state.clone();
 
             game_state
-                .resolve_agenda(vote_state, elected_outcome)
+                .resolve_agenda(vote_state, Some(elected_outcome))
                 .wrap_err("Failed to resolve agenda")?;
             game_state.agenda_override_state = None;
         }
