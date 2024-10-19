@@ -9,6 +9,7 @@ import styles from "./InfoModal.module.scss";
 import { StrategyCard } from "@/resources/types/strategyCards";
 import { ReactNode } from "react";
 import Image from "next/image";
+import { RelicInfo } from "@/api/bindings/RelicInfo";
 
 export type InfoObject =
   | { Agenda: AgendaInfo }
@@ -16,6 +17,7 @@ export type InfoObject =
   | { Objective: ObjectiveInfo }
   | { Strategy: StrategyCard }
   | { Tech: TechInfo }
+  | { Relic: RelicInfo }
   | { Custom: InfoFields };
 
 interface InfoModalProps {
@@ -26,8 +28,8 @@ export interface InfoFields {
   title: string;
   subtitle: string;
   description:
-  | { type: "description"; description: string }
-  | { type: "custom"; content: ReactNode };
+    | { type: "description"; description: string }
+    | { type: "custom"; content: ReactNode };
 }
 
 export const InfoModal = ({ infoObject }: InfoModalProps) => {
@@ -141,6 +143,18 @@ function getInfo(info: InfoObject): InfoFields {
 
   if ("Custom" in info) {
     return info.Custom;
+  }
+
+  if ("Relic" in info) {
+    const relic = info["Relic"];
+    return {
+      title: relic.name,
+      subtitle: "",
+      description: {
+        type: "description",
+        description: relic.description,
+      },
+    };
   }
 
   throw "Type error, invalid object!";

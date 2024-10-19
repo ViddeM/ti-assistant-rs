@@ -9,7 +9,7 @@ export interface AgendaInfoViewProps {
 }
 
 export const AgendaInfoView = ({ state }: AgendaInfoViewProps) => {
-  const { gameState, gameOptions, showInfo } = useGameContext();
+  const { gameState, gameOptions } = useGameContext();
 
   const previousVotesThisRound = gameState.agendaVoteHistory.filter(
     (vote) => vote.round === gameState.round,

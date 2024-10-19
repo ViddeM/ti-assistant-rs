@@ -83,15 +83,15 @@
   border-radius: $border-radius;
 }
 
-$stage-one-color: orange;
-$stage-two-color: rgb(110, 110, 255);
-$secret-color: rgb(240, 50, 50);
-$custodians-color: rgb(0, 0, 0);
-$imperial-color: rgb(181, 0, 181);
-$spftt-color: #a74551;
-$extra-color: green;
-$shard-color: white;
-$crown-color: gold;
+$stage-one-color: hsl(39, 100%, 50%);
+$stage-two-color: hsl(240, 100%, 72%);
+$secret-color: hsl(0, 70%, 55%);
+$agenda-color: hsl(0, 0%, 100%);
+$custodians-color: hsl(0, 0%, 70%);
+$imperial-color: hsl(276, 100%, 68%);
+$relic-color: hsl(51, 100%, 50%);
+$spftt-color: hsl(360, 60%, 60%);
+$extra-color: hsl(120, 70%, 40%);
 
 .stageOneColor {
   color: $stage-one-color;
@@ -103,6 +103,10 @@ $crown-color: gold;
 
 .secretColor {
   color: $secret-color;
+}
+
+.agendaColor {
+  color: $agenda-color;
 }
 
 .custodiansColor {
@@ -121,12 +125,8 @@ $crown-color: gold;
   color: $extra-color;
 }
 
-.shardColor {
-  color: $shard-color;
-}
-
-.crownColor {
-  color: $crown-color;
+.relicColor {
+  color: $relic-color;
 }
 
 .stageOneBackgroundColor {
@@ -139,6 +139,10 @@ $crown-color: gold;
 
 .secretBackgroundColor {
   background-color: $secret-color;
+}
+
+.agendaBackgroundColor {
+  background-color: $agenda-color;
 }
 
 .custodiansBackgroundColor {
@@ -157,12 +161,8 @@ $crown-color: gold;
   background-color: $extra-color;
 }
 
-.shardBackgroundColor {
-  background-color: $shard-color;
-}
-
-.crownBackgroundColor {
-  background-color: $crown-color;
+.relicBackgroundColor {
+  background-color: $relic-color;
 }
 
 .factionButton {

@@ -20,14 +20,14 @@ export type SelectedCard = {
 export const SelectStrategyCardView = () => {
   const { gameState, sendEvent } = useGameContext();
 
-  const selectedCards: SelectedCard[] = Object.entries(gameState.strategyCardHolders).map(
-    ([strategyCard, playerId]) => {
-      return {
-        card: strategyCard as StrategyCard,
-        faction: gameState.players[playerId].faction,
-      };
-    },
-  );
+  const selectedCards: SelectedCard[] = Object.entries(
+    gameState.strategyCardHolders,
+  ).map(([strategyCard, playerId]) => {
+    return {
+      card: strategyCard as StrategyCard,
+      faction: gameState.players[playerId].faction,
+    };
+  });
 
   const expectedStrategyCards: number = getExpectedStrategyCards(
     Object.keys(gameState.players).length,
@@ -81,13 +81,12 @@ export const SelectStrategyCardView = () => {
   );
 };
 
-
 // A dropdown show and change the owner of Naalu's ability "Telepathy"/"Give of Prescience".
 const NaaluTelepathy = () => {
   const { gameState, sendEvent } = useGameContext();
 
-  const giveNaaluTelepathy = (player: String) => sendEvent({ "PlayGiftOfPrescience": { "player": player } });
-
+  const giveNaaluTelepathy = (player: String) =>
+    sendEvent({ PlayGiftOfPrescience: { player: player } });
 
   const naaluTelepathy = gameState.naaluTelepathy;
   if (naaluTelepathy === null) {
@@ -98,32 +97,45 @@ const NaaluTelepathy = () => {
     <div className={styles.naaluTelepathy}>
       <InfoButton
         info={{
-          "Custom": {
-            "title": "Telepathic",
-            "subtitle": "Faction Ability / Promisary Note",
-            "description": {
+          Custom: {
+            title: "Telepathic",
+            subtitle: "Faction Ability / Promisary Note",
+            description: {
               type: "custom",
               content: (
                 <div>
                   <br />
                   <h3>TELEPATHIC:</h3>
-                  <div>At the end of the strategy phase, place the Naalu 0 token on your strategy card; you are first in initiative order.</div>
+                  <div>
+                    At the end of the strategy phase, place the Naalu 0 token on
+                    your strategy card; you are first in initiative order.
+                  </div>
                   <br />
                   <br />
-                  <h3><b>GIFT OF PRESCIENCE:</b></h3>
+                  <h3>
+                    <b>GIFT OF PRESCIENCE:</b>
+                  </h3>
                   <div>At the end of the strategy phase:</div>
                   <br />
-                  <div>Place this card face-up in your play area and place the Naalu 0 token on your strategy card;  you are first in the initiative order.  The Naalu player cannot use their TELEPATHIC faction ability during this game round.</div>
+                  <div>
+                    Place this card face-up in your play area and place the
+                    Naalu 0 token on your strategy card; you are first in the
+                    initiative order. The Naalu player cannot use their
+                    TELEPATHIC faction ability during this game round.
+                  </div>
                   <br />
-                  <div>Return this card to the Naalu player at the end of the status phase.</div>
+                  <div>
+                    Return this card to the Naalu player at the end of the
+                    status phase.
+                  </div>
                 </div>
               ),
             },
-          }
+          },
         }}
       />
       <div className={styles.naaluTelepathyBody}>
-        < div className={styles.naaluTelepathyHeader} >
+        <div className={styles.naaluTelepathyHeader}>
           <Image
             src={"/icons/resources/naalu_0_token.webp"}
             alt={`Naalu '0' token`}
@@ -131,8 +143,8 @@ const NaaluTelepathy = () => {
             height={32}
           />
           Telepathic / Gift of Prescience
-          < FactionIcon faction={"NaaluCollective"} />
-        </div >
+          <FactionIcon faction={"NaaluCollective"} />
+        </div>
         <Dropdown
           required
           id="naalu_telepathy_dropdown"
@@ -148,10 +160,10 @@ const NaaluTelepathy = () => {
             </option>
           ))}
         </Dropdown>
-      </div >
-    </div >
+      </div>
+    </div>
   );
-}
+};
 
 function getExpectedStrategyCards(noPlayers: number): number {
   if (noPlayers > 4) {

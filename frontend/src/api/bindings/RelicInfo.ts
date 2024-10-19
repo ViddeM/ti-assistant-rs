@@ -22,4 +22,8 @@ expansion: Expansion,
 /**
  * When the relic can be played / is relevant.
  */
-play: RelicPlay, };
+play: RelicPlay, 
+/**
+ * A description of what the relic is about.
+ */
+description: string, };

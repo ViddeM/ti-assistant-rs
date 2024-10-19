@@ -7,9 +7,12 @@ import { FactionButton } from "@/components/elements/factionButton/FactionButton
 import { useGameContext } from "@/hooks/GameContext";
 import { nameSort } from "@/utils/Utils";
 import { InfoButton } from "@/components/elements/button/InfoButton";
+import { InfoObject } from "../info_modal/InfoModal";
+import { ScorableAgenda } from "@/api/bindings/ScorableAgenda";
+import { Player } from "@/api/bindings/Player";
 
 export const ScoreTableView = () => {
-  const { gameState, gameOptions, sendEvent, showInfo } = useGameContext();
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const revealedStageOneObjectives = Object.keys(
     gameState.score.revealedObjectives,
@@ -49,6 +52,11 @@ export const ScoreTableView = () => {
       };
     })
     .sort(nameSort);
+
+  const crownOfEmphidia = gameOptions.relics.TheCrownOfEmphidia;
+  const shardOfTheThrone = gameOptions.relics.ShardOfTheThrone;
+
+  const agendaScores = gameState.score.agendaScores;
 
   const playerCount = players.length;
 
@@ -103,19 +111,13 @@ export const ScoreTableView = () => {
         />
         {revealedStageOneObjectives.map((obj, index) => (
           <React.Fragment key={obj.id}>
-            <tr key={obj.id}>
-              <th
-                colSpan={playerCount}
-                className={index === 0 ? "" : styles.borderTop}
-              >
-                <InfoButton
-                  info={{ Objective: obj }}
-                  style={{ visibility: "hidden" }}
-                />
-                {obj.name}
-                <InfoButton info={{ Objective: obj }} />
-              </th>
-            </tr>
+            <SubSectionHeading
+              key={obj.id}
+              playerCount={playerCount}
+              topBorder={index > 0}
+              name={obj.name}
+              info={{ Objective: obj }}
+            />
             <tr>
               {players.map((p) => (
                 <td key={p.id} align="center">
@@ -163,19 +165,13 @@ export const ScoreTableView = () => {
         />
         {revealedStageTwoObjectives.map((obj, index) => (
           <React.Fragment key={obj.id}>
-            <tr key={obj.id}>
-              <th
-                colSpan={playerCount}
-                className={index === 0 ? "" : styles.borderTop}
-              >
-                <InfoButton
-                  info={{ Objective: obj }}
-                  style={{ visibility: "hidden" }}
-                />
-                {obj.name}
-                <InfoButton info={{ Objective: obj }} />
-              </th>
-            </tr>
+            <SubSectionHeading
+              key={obj.id}
+              playerCount={playerCount}
+              topBorder={index > 0}
+              name={obj.name}
+              info={{ Objective: obj }}
+            />
             <tr>
               {players.map((p) => (
                 <td key={p.id} align="center">
@@ -229,57 +225,88 @@ export const ScoreTableView = () => {
           ))}
         </tr>
 
-        {/* Crown of Emphidia */}
+        {/* AGENDAS */}
         <TableSectionHeading
           playerCount={playerCount}
-          title="The Crown of Emphidia"
-          stylingPrefix="crown"
+          title="Agendas"
+          stylingPrefix="agenda"
         />
-        <tr>
-          {players.map((p) => (
-            <td key={p.id} align="center">
-              <FactionButton
-                faction={p.faction}
-                selected={gameState.score.crownOfEmphidia === p.id}
-                onClick={() => {
-                  let newOwner =
-                    gameState.score.crownOfEmphidia === p.id ? null : p.id;
-                  sendEvent({
-                    SetCrownOfEmphidiaOwner: {
-                      player: newOwner,
-                    },
-                  });
-                }}
-              />
-            </td>
-          ))}
-        </tr>
+        {agendaScores.map((score) => (
+          <AgendaScoreRow
+            key={score.electableAgendaKind}
+            agenda={score}
+            players={players}
+          />
+        ))}
 
-        {/* Shard of the Throne */}
+        {/* Relics */}
         <TableSectionHeading
           playerCount={playerCount}
-          title="Shard of the Throne"
-          stylingPrefix="shard"
+          title="Relics"
+          stylingPrefix="relic"
         />
-        <tr>
-          {players.map((p) => (
-            <td key={p.id} align="center">
-              <FactionButton
-                faction={p.faction}
-                selected={gameState.score.shardOfTheThrone === p.id}
-                onClick={() => {
-                  let newOwner =
-                    gameState.score.shardOfTheThrone === p.id ? null : p.id;
-                  sendEvent({
-                    SetShardForTheThroneOwner: {
-                      player: newOwner,
-                    },
-                  });
-                }}
-              />
-            </td>
-          ))}
-        </tr>
+
+        {/* The Crown of Emphidia, check that it is enabled for this game */}
+        {crownOfEmphidia && (
+          <>
+            <SubSectionHeading
+              playerCount={playerCount}
+              topBorder={false}
+              name={"The Crown of Emphidia"}
+              info={{ Relic: gameOptions.relics.TheCrownOfEmphidia }}
+            />
+            <tr>
+              {players.map((p) => (
+                <td key={p.id} align="center">
+                  <FactionButton
+                    faction={p.faction}
+                    selected={gameState.score.crownOfEmphidia === p.id}
+                    onClick={() => {
+                      let newOwner =
+                        gameState.score.crownOfEmphidia === p.id ? null : p.id;
+                      sendEvent({
+                        SetCrownOfEmphidiaOwner: {
+                          player: newOwner,
+                        },
+                      });
+                    }}
+                  />
+                </td>
+              ))}
+            </tr>
+          </>
+        )}
+
+        {/* Shard of the Throne relic, check that it is enabled for this game */}
+        {shardOfTheThrone && (
+          <>
+            <SubSectionHeading
+              playerCount={playerCount}
+              topBorder={true}
+              name={"Shard of the Throne"}
+              info={{ Relic: gameOptions.relics.ShardOfTheThrone }}
+            />
+            <tr>
+              {players.map((p) => (
+                <td key={p.id} align="center">
+                  <FactionButton
+                    faction={p.faction}
+                    selected={gameState.score.shardOfTheThrone === p.id}
+                    onClick={() => {
+                      let newOwner =
+                        gameState.score.shardOfTheThrone === p.id ? null : p.id;
+                      sendEvent({
+                        SetShardForTheThroneOwner: {
+                          player: newOwner,
+                        },
+                      });
+                    }}
+                  />
+                </td>
+              ))}
+            </tr>
+          </>
+        )}
 
         {/* Support for the Throne */}
         <TableSectionHeading
@@ -377,8 +404,8 @@ interface TableSectionHeadingProps {
     | "stageOne"
     | "stageTwo"
     | "secret"
-    | "shard"
-    | "crown"
+    | "agenda"
+    | "relic"
     | "custodians"
     | "imperial"
     | "spftt"
@@ -401,6 +428,30 @@ const TableSectionHeading = ({
           <h2 className={`${color} ${styles.stageText}`}>{title}</h2>
           <div className={`${background} ${styles.horizontalLine}`} />
         </div>
+      </th>
+    </tr>
+  );
+};
+
+interface SubSectionHeadingProps {
+  playerCount: number;
+  topBorder: boolean;
+  name: string;
+  info: InfoObject;
+}
+
+const SubSectionHeading = ({
+  playerCount,
+  topBorder,
+  name,
+  info,
+}: SubSectionHeadingProps) => {
+  return (
+    <tr>
+      <th colSpan={playerCount} className={topBorder ? styles.borderTop : ""}>
+        <InfoButton info={info} style={{ visibility: "hidden" }} />
+        {name}
+        <InfoButton info={info} />
       </th>
     </tr>
   );
@@ -430,4 +481,26 @@ const IncDecView = ({ points, changePoints }: IncDecViewProps) => {
       </Button>
     </>
   );
+};
+
+interface AgendaScoreRowProps {
+  agenda: ScorableAgenda;
+  players: (Player & { id: string })[];
+}
+
+const AgendaScoreRow = ({ agenda, players }: AgendaScoreRowProps) => {
+  switch (agenda.electableAgendaKind) {
+    case "HolyPlanetOfIxth":
+      let owner = players.find((p) => agenda.value.planet in p.planets)!!.id;
+
+      return (
+        <tr>
+          {players.map((p) => (
+            <td key={p.id} align="center">
+              {owner === p.id ? `1` : `0`}
+            </td>
+          ))}
+        </tr>
+      );
+  }
 };
