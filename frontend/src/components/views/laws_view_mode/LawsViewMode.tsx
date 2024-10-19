@@ -16,6 +16,7 @@ export const LawsViewMode = () => {
     <div className={styles.lawsViewContainer}>
       <ActiveLawsTable />
       <AddLawForm />
+      <AgendaHistoryView />
     </div>
   );
 };
@@ -285,6 +286,22 @@ const AddLawForm = () => {
           </Button>
         </form>
       )}
+    </div>
+  );
+};
+
+const AgendaHistoryView = () => {
+  const { gameState, gameOptions } = useGameContext();
+
+  return (
+    <div className="card">
+      <h2>Agenda history</h2>
+      {gameState.agendaVoteHistory.map((record) => (
+        <div key={record.vote.agenda}>
+          <h3>{gameOptions.agendas[record.vote.agenda].name}</h3>
+          Result: {record.outcome?.value}
+        </div>
+      ))}
     </div>
   );
 };
