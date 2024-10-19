@@ -132,7 +132,15 @@ const AddLawForm = () => {
       <h2>Add Agenda</h2>
       {voteState ? (
         <div className={styles.formContainer}>
-          <h3>{gameOptions.agendas[voteState.agenda].name}</h3>
+          <h3>
+            {gameOptions.agendas[voteState.agenda].name}
+            <InfoButton
+              info={{
+                Agenda: gameOptions.agendas[voteState.agenda],
+              }}
+            />
+          </h3>
+
           <Button onClick={() => sendEvent("AddAgendaCancel")}>
             Cancel Adding Agenda
           </Button>

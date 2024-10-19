@@ -10,6 +10,7 @@ import { InfoButton } from "@/components/elements/button/InfoButton";
 import { InfoObject } from "../info_modal/InfoModal";
 import { ScorableAgenda } from "@/api/bindings/ScorableAgenda";
 import { Player } from "@/api/bindings/Player";
+import { Agenda } from "@/api/bindings/Agenda";
 
 export const ScoreTableView = () => {
   const { gameState, gameOptions, sendEvent } = useGameContext();
@@ -231,10 +232,11 @@ export const ScoreTableView = () => {
           title="Agendas"
           stylingPrefix="agenda"
         />
-        {agendaScores.map((score) => (
+        {agendaScores.map((score, index) => (
           <AgendaScoreRow
+            topBorder={index > 0}
             key={score.electableAgendaKind}
-            agenda={score}
+            scorableAgenda={score}
             players={players}
           />
         ))}
@@ -484,23 +486,113 @@ const IncDecView = ({ points, changePoints }: IncDecViewProps) => {
 };
 
 interface AgendaScoreRowProps {
-  agenda: ScorableAgenda;
+  scorableAgenda: ScorableAgenda;
+  topBorder: boolean;
   players: (Player & { id: string })[];
 }
 
-const AgendaScoreRow = ({ agenda, players }: AgendaScoreRowProps) => {
-  switch (agenda.electableAgendaKind) {
-    case "HolyPlanetOfIxth":
-      let owner = players.find((p) => agenda.value.planet in p.planets)!!.id;
+const AgendaScoreRow = ({
+  scorableAgenda,
+  topBorder,
+  players,
+}: AgendaScoreRowProps) => {
+  const { gameOptions } = useGameContext();
+
+  const heading = (agenda: Agenda) => (
+    <SubSectionHeading
+      playerCount={players.length}
+      topBorder={topBorder}
+      name={gameOptions.agendas[agenda].name}
+      info={{ Agenda: gameOptions.agendas[agenda] }}
+    />
+  );
+
+  switch (scorableAgenda.electableAgendaKind) {
+    case "Mutiny":
+      let score = scorableAgenda.value.forWon ? `1` : `-1`;
 
       return (
-        <tr>
-          {players.map((p) => (
-            <td key={p.id} align="center">
-              {owner === p.id ? `1` : `0`}
-            </td>
-          ))}
-        </tr>
+        <>
+          {heading("Mutiny")}
+          <tr>
+            {players.map((p) => (
+              <td key={p.id} align="center">
+                {scorableAgenda.value.playersThatVotedFor.includes(p.id)
+                  ? score
+                  : `0`}
+              </td>
+            ))}
+          </tr>
+        </>
+      );
+    case "HolyPlanetOfIxth":
+      let owner = players.find(
+        (p) => scorableAgenda.value.planet in p.planets,
+      )!!.id;
+
+      return (
+        <>
+          {heading("HolyPlanetOfIxth")}
+          <tr>
+            {players.map((p) => (
+              <td key={p.id} align="center">
+                {owner === p.id ? `1` : `0`}
+              </td>
+            ))}
+          </tr>
+        </>
+      );
+    case "SeedOfAnEmpire":
+      return (
+        <>
+          {heading("SeedOfAnEmpire")}
+          <tr>
+            {players.map((p) => (
+              <td key={p.id} align="center">
+                {scorableAgenda.value.playersElected.includes(p.id) ? 1 : 0}
+              </td>
+            ))}
+          </tr>
+        </>
+      );
+    case "PoliticalCensure":
+      return (
+        <>
+          {heading("PoliticalCensure")}
+          <tr>
+            {players.map((p) => (
+              <td key={p.id} align="center">
+                {scorableAgenda.value.player === p.id ? 1 : 0}
+              </td>
+            ))}
+          </tr>
+        </>
+      );
+    case "ShardOfTheThrone":
+      return (
+        <>
+          {heading("ShardOfTheThrone")}
+          <tr>
+            {players.map((p) => (
+              <td key={p.id} align="center">
+                {scorableAgenda.value.player === p.id ? 1 : 0}
+              </td>
+            ))}
+          </tr>
+        </>
+      );
+    case "TheCrownOfEmphidia":
+      return (
+        <>
+          {heading("TheCrownOfEmphidia")}
+          <tr>
+            {players.map((p) => (
+              <td key={p.id} align="center">
+                {scorableAgenda.value.player === p.id ? 1 : 0}
+              </td>
+            ))}
+          </tr>
+        </>
       );
   }
 };

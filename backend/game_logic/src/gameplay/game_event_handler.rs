@@ -1575,6 +1575,7 @@ fn try_update_game_state(
                 bail!("Unable to repeal law that has not been enacted");
             }
 
+            game_state.score.handle_law_repealed(&law);
             game_state.laws.remove(&law);
         }
         Event::TrackTime { paused } => {

@@ -230,6 +230,20 @@ impl Score {
 
         self.agenda_scores.push(scorable_agenda);
     }
+
+    /// Handle that the particular agenda is repealed, only has an effect if it is a scorable agenda.
+    pub fn handle_law_repealed(&mut self, agenda: &Agenda) {
+        let Some((index, _)) = self
+            .agenda_scores
+            .iter()
+            .enumerate()
+            .find(|(_, a)| &a.get_agenda() == agenda)
+        else {
+            return;
+        };
+
+        self.agenda_scores.remove(index);
+    }
 }
 
 /// Agendas that provide points and to whom.
@@ -320,5 +334,16 @@ impl ScorableAgenda {
         }
 
         0
+    }
+
+    fn get_agenda(&self) -> Agenda {
+        match self {
+            ScorableAgenda::HolyPlanetOfIxth { .. } => Agenda::HolyPlanetOfIxth,
+            ScorableAgenda::ShardOfTheThrone { .. } => Agenda::ShardOfTheThrone,
+            ScorableAgenda::TheCrownOfEmphidia { .. } => Agenda::TheCrownOfEmphidia,
+            ScorableAgenda::Mutiny { .. } => Agenda::Mutiny,
+            ScorableAgenda::SeedOfAnEmpire { .. } => Agenda::SeedOfAnEmpire,
+            ScorableAgenda::PoliticalCensure { .. } => Agenda::PoliticalCensure,
+        }
     }
 }
