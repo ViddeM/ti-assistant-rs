@@ -37,10 +37,10 @@
    - ✅ Support for the Throne
    - ✅ Imperial
    - ❌ Agendas
-     - ❌ Mutiny (Multiple players, add or remove VPs)
+     - 🍑 Mutiny (Multiple players, add or remove VPs)
      - ❌ Incentive Programs (Draws new objective cards)
      - ❌ Classified Document Leaks (make a secret objective public)
-     - ❌ Seed of an empire (Give 1 VP to player(s) with most/least victory points)
+     - 🍑 Seed of an empire (Give 1 VP to player(s) with most/least victory points)
      - ❌ (LAW) Political Censure (Player gains 1 vp and can't play action cards)
    - ❌ Relics
      - ❌ Obsidian (Draw and have 1 extra secret objective) :: Note we don't track the cap atm so technically it is not required to be implemented?
