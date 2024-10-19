@@ -15,7 +15,7 @@ import { RelicsPhaseView } from "../relics_phase_view/RelicsPhaseView";
 import { SetupPhase } from "../setup/Setup";
 
 export const PhaseView = () => {
-  const { gameState, sendEvent } = useGameContext();
+  const { gameState } = useGameContext();
 
   switch (gameState.phase) {
     case "Creation":
@@ -23,30 +23,7 @@ export const PhaseView = () => {
     case "Setup":
       return <SetupPhase />;
     case "Strategy":
-      return (
-        <SelectStrategyCardView
-          selectedCards={Object.entries(gameState.strategyCardHolders).map(
-            ([strategyCard, playerId]) => {
-              return {
-                card: strategyCard as StrategyCard,
-                faction: gameState.players[playerId].faction,
-              };
-            },
-          )}
-          expectedStrategyCards={getExpectedStrategyCards(
-            Object.keys(gameState.players).length,
-          )}
-          selectCard={(card) => {
-            sendEvent({
-              TakeStrategyCard: {
-                player: gameState.currentPlayer,
-                card: card,
-              },
-            });
-          }}
-          startActionPhase={() => sendEvent("CompleteStrategyPhase")}
-        />
-      );
+      return <SelectStrategyCardView />;
     case "Action":
       return <ActionPhaseView />;
     case "StrategicAction":
@@ -78,10 +55,3 @@ export const PhaseView = () => {
   }
 };
 
-function getExpectedStrategyCards(noPlayers: number): number {
-  if (noPlayers > 4) {
-    return 1 * noPlayers;
-  }
-
-  return 2 * noPlayers;
-}

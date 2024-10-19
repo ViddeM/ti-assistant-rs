@@ -114,6 +114,12 @@ pub struct GameState {
     /// When the current player started their turn.
     #[ts(type = "string | null")]
     pub current_turn_start_time: Option<DateTime<Utc>>,
+
+    /// The player (if any) currently using [Faction::NaaluCollective]s faction ability:
+    /// "Telepathic", or the Naalu promisary note "Gift of Prescience".
+    ///
+    /// This player has initiative 0 in the action and status phase.
+    pub naalu_telepathy: Option<PlayerId>,
 }
 
 /// Information relevant to things that has happened on the gameboard.
@@ -305,23 +311,27 @@ impl GameState {
     pub fn calculate_action_turn_order(&mut self) -> Result<(), GameError> {
         self.turn_order = self.table_order.clone();
 
+        let mut result = Ok(());
+
         // sort players by the smallest number of the strategy cards they hold (initiative order)
         self.turn_order.sort_by_key(|player| {
-            self.strategy_card_holders
-                .iter()
-                .filter(|&(_, holder)| holder == player)
-                .map(|(card, holder)| {
-                    let player_faction = self.players.get(holder).map(|p| &p.faction);
-                    if player_faction == Some(&Faction::NaaluCollective) {
-                        0 // Naalu always has initiative 0.
-                    } else {
-                        card.card_number()
-                    }
-                })
-                .min()
+            let strategy_card = (self.strategy_card_holders.iter())
+                .find_map(|(card, holder)| (player == holder).then_some(card));
+
+            // error out of outer function if player doesn't have a strategy card
+            let Some(strategy_card) = strategy_card else {
+                result = Err(eyre!("Player {player:?} does not have a strategy card."));
+                return 99;
+            };
+
+            if self.naalu_telepathy.as_ref() == Some(player) {
+                0 // Naalu's faction ability/promisary note gives initiative 0.
+            } else {
+                strategy_card.card_number()
+            }
         });
 
-        Ok(())
+        result
     }
 
     /// Update the turn order according to table-order, starting with the speaker.
@@ -397,6 +407,10 @@ impl GameState {
         self.phase = phase;
         match phase {
             Phase::Strategy => {
+                self.naalu_telepathy = (self.players.iter())
+                    .find(|(_player_id, player)| player.faction == Faction::NaaluCollective)
+                    .map(|(player_id, _player)| player_id.clone());
+
                 self.calculate_turn_order_from_speaker()?;
                 self.round = self.round.saturating_add(1);
             }

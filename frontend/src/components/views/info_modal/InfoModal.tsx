@@ -15,18 +15,19 @@ export type InfoObject =
   | { Leader: LeaderInfo }
   | { Objective: ObjectiveInfo }
   | { Strategy: StrategyCard }
-  | { Tech: TechInfo };
+  | { Tech: TechInfo }
+  | { Custom: InfoFields };
 
 interface InfoModalProps {
   infoObject: InfoObject | null;
 }
 
-interface InfoFields {
+export interface InfoFields {
   title: string;
   subtitle: string;
   description:
-    | { type: "description"; description: string }
-    | { type: "custom"; content: ReactNode };
+  | { type: "description"; description: string }
+  | { type: "custom"; content: ReactNode };
 }
 
 export const InfoModal = ({ infoObject }: InfoModalProps) => {
@@ -136,6 +137,10 @@ function getInfo(info: InfoObject): InfoFields {
         description: tech.effects.join("\n"),
       },
     };
+  }
+
+  if ("Custom" in info) {
+    return info.Custom;
   }
 
   throw "Type error, invalid object!";

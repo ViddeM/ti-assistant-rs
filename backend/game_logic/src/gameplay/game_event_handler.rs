@@ -390,6 +390,14 @@ fn try_update_game_state(
             game_state.strategy_card_holders.insert(card, player);
             game_state.advance_turn(timestamp)?;
         }
+        Event::PlayGiftOfPrescience { player } => {
+            game_state.assert_phase(Phase::Strategy)?;
+            ensure!(
+                game_state.players.contains_key(&player),
+                "unknown player: {player:?}",
+            );
+            game_state.naalu_telepathy = Some(player);
+        }
         Event::CompleteStrategyPhase => {
             let how_many_card_must_pick = match game_state.players.len() {
                 3 => 6,

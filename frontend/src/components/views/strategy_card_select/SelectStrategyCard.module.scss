@@ -4,7 +4,7 @@
   width: 100%;
   max-width: 400px;
 
-  & > h2 {
+  &>h2 {
     text-align: center;
   }
 }
@@ -27,7 +27,7 @@
   font-size: 24px;
   flex: 1;
 
-  & > p {
+  &>p {
     margin: 0 auto;
   }
 }
@@ -45,24 +45,54 @@
 .strategyCardLeadership {
   border-color: $leadershipColor;
 }
+
 .strategyCardDiplomacy {
   border-color: $diplomacyColor;
 }
+
 .strategyCardPolitics {
   border-color: $politicsColor;
 }
+
 .strategyCardConstruction {
   border-color: $constructionColor;
 }
+
 .strategyCardTrade {
   border-color: $tradeColor;
 }
+
 .strategyCardWarfare {
   border-color: $warfareColor;
 }
+
 .strategyCardTechnology {
   border-color: $technologyColor;
 }
+
 .strategyCardImperial {
   border-color: $imperialColor;
+}
+
+.naaluTelepathy {
+  display: flex;
+  font-size: 18px;
+  align-items: center;
+  margin-bottom: 8px;
+
+  > :first-child {
+    margin: 0 $marginLarge;
+  }
+}
+
+.naaluTelepathyBody {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.naaluTelepathyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }

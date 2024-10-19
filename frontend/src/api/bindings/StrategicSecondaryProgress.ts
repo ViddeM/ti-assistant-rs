@@ -8,4 +8,4 @@ export type StrategicSecondaryProgress = "Leadership" | "Diplomacy" | "Politics"
 /**
  * What tech was taken.
  */
-tech: Technology, } } | "Imperial" | "Skipped";
+tech: Technology, } } | { "TechnologyJolNar": { firstTech: Technology, secondTech: Technology | null, } } | "Imperial" | "Skipped";

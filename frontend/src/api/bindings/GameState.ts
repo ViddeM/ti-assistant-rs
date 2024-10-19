@@ -104,4 +104,11 @@ playersPlayTime: { [playerId: string]: { secs: number, nanos: number } },
 /**
  * When the current player started their turn.
  */
-currentTurnStartTime: string | null, };
+currentTurnStartTime: string | null, 
+/**
+ * The player (if any) currently using [Faction::NaaluCollective]s faction ability:
+ * "Telepathic", or the Naalu promisary note "Gift of Prescience".
+ *
+ * This player has initiative 0 in the action and status phase.
+ */
+naaluTelepathy: string | null, };

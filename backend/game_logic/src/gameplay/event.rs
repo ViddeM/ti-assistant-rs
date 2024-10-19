@@ -89,6 +89,13 @@ pub enum Event {
         /// The card taken.
         card: StrategyCard,
     },
+
+    /// A player plays [Faction::NaaluCollective]s promisary note.
+    PlayGiftOfPrescience {
+        /// The player that plays the card.
+        player: PlayerId,
+    },
+
     /// Finish the strategy phase.
     CompleteStrategyPhase,
 
