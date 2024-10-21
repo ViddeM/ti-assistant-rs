@@ -40,14 +40,13 @@ export const AgendaActionsView = ({ state }: AgendaActionsViewProps) => {
     );
 
   const speaker = gameState.players[gameState.speaker!!];
-  const players = Object.keys(gameState.players)
+  const players = gameState.turnOrder
     .map((p) => {
       return {
         id: p,
         ...gameState.players[p],
       };
-    })
-    .sort(nameSort);
+    });
 
   const everyoneHasVoted =
     Object.keys(state.vote?.playerVotes ?? {}).length ===
@@ -317,9 +316,9 @@ const ResolveOutcome = ({ everyoneHasVoted, state }: ResolveOutcomeProps) => {
                     outcome === "Discard"
                       ? null
                       : {
-                          electKind: state.vote?.elect,
-                          value: outcome,
-                        },
+                        electKind: state.vote?.elect,
+                        value: outcome,
+                      },
                 },
               })
             }

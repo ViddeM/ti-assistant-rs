@@ -347,7 +347,7 @@ impl GameState {
     }
 
     /// Update the turn order according to table-order, starting with the speaker.
-    pub fn calculate_turn_order_from_speaker(&mut self) -> Result<(), GameError> {
+    pub fn calculate_strategy_turn_order(&mut self) -> Result<(), GameError> {
         let speaker = self.speaker()?;
         let speaker_index = self
             .table_order
@@ -355,9 +355,26 @@ impl GameState {
             .position(|p| p == speaker)
             .ok_or(eyre!("No speaker index?"))?;
 
-        let mut tmp = self.table_order.clone();
-        tmp.rotate_left(speaker_index);
-        self.turn_order = tmp;
+        self.turn_order = self.table_order.clone();
+        self.turn_order.rotate_left(speaker_index); // speaker goes first
+
+        Ok(())
+    }
+
+    /// Update the turn order according to table-order, ending with the speaker.
+    pub fn calculate_agenda_turn_order(&mut self) -> Result<(), GameError> {
+        let speaker = self.speaker()?;
+        let speaker_index = self
+            .table_order
+            .iter()
+            .position(|p| p == speaker)
+            .ok_or(eyre!("No speaker index?"))?;
+
+        self.turn_order = self.table_order.clone();
+        self.turn_order.rotate_left(speaker_index + 1); // speaker goes last
+        self.turn_order
+            // Argent Flight always votes first
+            .sort_by_key(|p| self.players[p].faction != Faction::ArgentFlight);
 
         Ok(())
     }
@@ -419,12 +436,11 @@ impl GameState {
         self.phase = phase;
         match phase {
             Phase::Strategy => {
+                self.calculate_strategy_turn_order()?;
+                self.round = self.round.saturating_add(1);
                 self.naalu_telepathy = (self.players.iter())
                     .find(|(_player_id, player)| player.faction == Faction::NaaluCollective)
                     .map(|(player_id, _player)| player_id.clone());
-
-                self.calculate_turn_order_from_speaker()?;
-                self.round = self.round.saturating_add(1);
             }
             Phase::Action => {
                 self.calculate_action_turn_order()?;
@@ -433,7 +449,7 @@ impl GameState {
                 self.calculate_action_turn_order()?;
             }
             Phase::Agenda => {
-                self.calculate_turn_order_from_speaker()?;
+                self.calculate_agenda_turn_order()?;
                 self.agenda = Some(AgendaState::default());
             }
             Phase::Relics => { /* Nein */ }
