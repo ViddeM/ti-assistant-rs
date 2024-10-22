@@ -69,6 +69,10 @@ const ScoreObjectives = () => {
     ? unrevealedObjectives.filter((o) => o.kind === "StageII")
     : unrevealedObjectives.filter((o) => o.kind === "StageI");
 
+  const revealedObjectiveInfo = state.revealedObjective
+    ? gameOptions.objectives[state.revealedObjective]
+    : null;
+
   return (
     <div>
       <h2>Score Objectives</h2>
@@ -81,8 +85,11 @@ const ScoreObjectives = () => {
         <legend>
           <h3>Reveal Stage {revealStageII ? "II" : "I"} Objective</h3>
         </legend>
-        {state.revealedObjective !== null ? (
-          <p>{gameOptions.objectives[state.revealedObjective].name}</p>
+        {revealedObjectiveInfo ? (
+          <>
+            <p>{revealedObjectiveInfo.name}</p>
+            <InfoButton info={{ Objective: revealedObjectiveInfo }} />
+          </>
         ) : isGlobal || isSpeaker ? (
           <>
             <Dropdown
