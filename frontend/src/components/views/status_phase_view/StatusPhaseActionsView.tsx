@@ -86,10 +86,10 @@ const ScoreObjectives = () => {
           <h3>Reveal Stage {revealStageII ? "II" : "I"} Objective</h3>
         </legend>
         {revealedObjectiveInfo ? (
-          <>
+          <div className="row">
             <p>{revealedObjectiveInfo.name}</p>
             <InfoButton info={{ Objective: revealedObjectiveInfo }} />
-          </>
+          </div>
         ) : isGlobal || isSpeaker ? (
           <>
             <Dropdown
