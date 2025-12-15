@@ -52,7 +52,7 @@ impl MiltyImport for MiltyData {
 
         let get_milty_data_response: MiltyDataResponse = client
             .get(format!(
-                "https://milty.shenanigans.be/data.php?draft={milty_id}",
+                "https://milty.shenanigans.be/api/data?draft={milty_id}",
             ))
             .send()
             .await

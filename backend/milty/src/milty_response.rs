@@ -49,10 +49,17 @@ pub struct MiltyConfigDataResponse {
     pub players: Vec<String>,
     pub name: Option<String>,
     pub include_pok: bool,
-    pub include_keleres: bool,
     pub include_ds_tiles: bool,
     pub include_discordant: bool,
     pub include_discordantexp: bool,
+    pub include_base_factions: bool,
+    pub include_pok_factions: bool, // prophecy of kings
+    pub include_keleres: bool,
+    pub include_te_factions: bool, // thunder's edge
+    pub custom_factions: bool,
+    pub custom_slices: bool,
+    pub alliance: bool,
+    pub seed: u128,
 }
 
 impl MiltyConfigDataResponse {
