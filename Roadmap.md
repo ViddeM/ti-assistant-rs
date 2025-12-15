@@ -15,7 +15,7 @@
 ## Gameplay
  - ✅ Track round number
  - ✅ Undo
- - ❌ Player-specific view
+ - ✅ Player-specific view
  - ✅ Update setup to do all required tasks
    - ✅ Choose speaker at start of game
    - ✅ Reveal initial objectives
@@ -223,3 +223,20 @@
  - ❌ Go over all planets and see if we have missed any interactions
  - ❌ Go over all factions and see if we have missed anything
  - ❌ Test play with both this and OG ti-assistant
+ - x  Go over PoK to see if anything has been missed.
+
+## Thunder's Edge
+ - x  Breakthroughs for each faction
+ - x  new relic cards
+ - x  new factions
+ - x  new planets
+ - x  new legendary planet abilities
+ - x  fracture? (option for picking relic after taking those planets?)
+   - x styx planet score
+ - x  new anomaly?
+ - x  galactic events (could be difficult!)
+ - x  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
+ - x  updated strategy cards
+ - x  thunder's edge
+   - x  planet
+   - x  exploration
