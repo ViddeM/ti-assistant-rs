@@ -56,9 +56,9 @@ pub struct MiltyConfigDataResponse {
     pub include_pok_factions: bool, // prophecy of kings
     pub include_keleres: bool,
     pub include_te_factions: bool, // thunder's edge
-    pub custom_factions: bool,
-    pub custom_slices: bool,
-    pub alliance: bool,
+    pub custom_factions: Option<bool>,
+    pub custom_slices: Option<bool>,
+    pub alliance: Option<bool>,
     pub seed: u128,
 }
 
