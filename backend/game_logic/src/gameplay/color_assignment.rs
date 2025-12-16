@@ -100,6 +100,8 @@ fn get_faction_color_prio(faction: &Faction) -> BinaryHeap<ColorPrio> {
             w!(Orange, 0.35),
             w!(Yellow, 0.35)
         ),
+        // TODO: Thunder's Edge faction colors aren't yet added to the wiki table so we've made up our own.
+        Faction::LastBastion => prio!(w!(Orange, 1.5), w!(Blue, 0.6)),
     }
 }
 

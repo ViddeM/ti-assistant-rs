@@ -42,6 +42,7 @@ impl NewGame {
                 cod1,
                 cod2,
                 cod3,
+                te,
             } => Event::SetSettings {
                 settings: GameSettings {
                     max_points: self.points,
@@ -50,6 +51,7 @@ impl NewGame {
                         codex_1: *cod1,
                         codex_2: *cod2,
                         codex_3: *cod3,
+                        thunders_edge: *te,
                     },
                 },
             },
@@ -83,6 +85,8 @@ pub enum GameConfig {
         cod2: bool,
         /// If Codex III should be used.
         cod3: bool,
+        /// If Thunder's Edge is to be used.
+        te: bool,
     },
     /// Game config imported from milty draft.
     #[serde(rename_all = "camelCase")]

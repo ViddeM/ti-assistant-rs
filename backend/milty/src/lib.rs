@@ -89,6 +89,7 @@ impl MiltyImport for MiltyData {
             codex_1: true, // TODO: not entirely sure about these.
             codex_2: true,
             codex_3: true,
+            thunders_edge: milty_conf.include_te_factions,
         };
 
         for player in players.values() {

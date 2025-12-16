@@ -35,7 +35,7 @@ pub enum Faction {
     XxchaKingdom,
     YinBrotherhood,
     YssarilTribes,
-    // PoK expansions
+    // PoK expansion
     ArgentFlight,
     Empyrean,
     MahactGeneSorcerers,
@@ -45,6 +45,12 @@ pub enum Faction {
     VuilRaithCabal,
     // Codex
     CouncilKeleres,
+    // Thunder's Edge expansion
+    LastBastion,
+    RalNelConsortium,
+    DeepwroughtScolorate,
+    CrimsonRebellion,
+    FirmamentObsidian,
 }
 
 impl Faction {
@@ -76,6 +82,11 @@ impl Faction {
             Faction::TitansOfUl => Expansion::ProphecyOfKings,
             Faction::VuilRaithCabal => Expansion::ProphecyOfKings,
             Faction::CouncilKeleres => Expansion::CodexIII,
+            Faction::LastBastion => Expansion::ThundersEdge,
+            Faction::RalNelConsortium => Expansion::ThundersEdge,
+            Faction::DeepwroughtScolorate => Expansion::ThundersEdge,
+            Faction::CrimsonRebellion => Expansion::ThundersEdge,
+            Faction::FirmamentObsidian => Expansion::ThundersEdge,
         }
     }
 
@@ -107,6 +118,11 @@ impl Faction {
             Faction::TitansOfUl => "The Titans of Ul",
             Faction::VuilRaithCabal => "The Vuil'Raith Cabal",
             Faction::CouncilKeleres => "The Council Keleres",
+            Faction::LastBastion => "Last Bastion",
+            Faction::RalNelConsortium => "The Ral Nel Consortium",
+            Faction::DeepwroughtScolorate => "The Deepwrought Scolorate",
+            Faction::CrimsonRebellion => "The Crimson Rebellion",
+            Faction::FirmamentObsidian => "The Firmament / The Obsidian",
         })
     }
 
@@ -154,11 +170,11 @@ impl Faction {
                 Technology::SarweenTools,
                 Technology::PlasmaScoring,
             ],
-            Faction::Winnu => vec![], // Choose any 1 technology that has no prereqs
+            Faction::Winnu => vec![],
             Faction::XxchaKingdom => vec![Technology::GravitonLaserSystem],
             Faction::YinBrotherhood => vec![Technology::SarweenTools],
             Faction::YssarilTribes => vec![Technology::NeuralMotivator],
-            Faction::ArgentFlight => vec![], // Choose TWO of the following: Neural Motivator, Sarween Tools, Plasma Scoring
+            Faction::ArgentFlight => vec![],
             Faction::Empyrean => vec![Technology::DarkEnergyTap],
             Faction::MahactGeneSorcerers => {
                 vec![Technology::BioStims, Technology::PredictiveIntelligence]
@@ -173,7 +189,8 @@ impl Faction {
                 Technology::ScanlinkDroneNetwork,
             ],
             Faction::VuilRaithCabal => vec![Technology::SelfAssemblyRoutines],
-            Faction::CouncilKeleres => vec![], // Choose 2 non-faction technologies owned by other players.
+            Faction::CouncilKeleres => vec![/* Get's to pick starting techs */],
+            Faction::LastBastion => vec![/* Get's to pick starting techs */],
         }
         .into_iter()
         .filter(|tech| tech.is_enabled_in(expansions))
@@ -208,6 +225,7 @@ impl Faction {
             "The Titans of Ul" => Faction::TitansOfUl,
             "The Vuil'raith Cabal" => Faction::VuilRaithCabal,
             "The Council Keleres" => Faction::CouncilKeleres,
+            "Last Bastion" => Faction::LastBastion,
             "Augurs of Ilyxum"
             | "Celdauri Trade Confederation"
             | "Dih-Mohn Flotilla"

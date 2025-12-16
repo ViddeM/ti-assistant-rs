@@ -33,6 +33,7 @@ pub struct Expansions {
     pub codex_1: bool,
     pub codex_2: bool,
     pub codex_3: bool,
+    pub thunders_edge: bool,
 }
 
 impl Expansions {
@@ -52,6 +53,7 @@ impl Expansions {
             Expansion::CodexII => self.codex_2,
             Expansion::CodexIII => self.codex_3,
             Expansion::ProphecyOfKings => self.prophecy_of_kings,
+            Expansion::ThundersEdge => self.thunders_edge,
         }
     }
 }
