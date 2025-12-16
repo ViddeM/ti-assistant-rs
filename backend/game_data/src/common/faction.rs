@@ -48,7 +48,7 @@ pub enum Faction {
     // Thunder's Edge expansion
     LastBastion,
     RalNelConsortium,
-    DeepwroughtScolorate,
+    DeepwroughtScolarate,
     CrimsonRebellion,
     FirmamentObsidian,
 }
@@ -84,7 +84,7 @@ impl Faction {
             Faction::CouncilKeleres => Expansion::CodexIII,
             Faction::LastBastion => Expansion::ThundersEdge,
             Faction::RalNelConsortium => Expansion::ThundersEdge,
-            Faction::DeepwroughtScolorate => Expansion::ThundersEdge,
+            Faction::DeepwroughtScolarate => Expansion::ThundersEdge,
             Faction::CrimsonRebellion => Expansion::ThundersEdge,
             Faction::FirmamentObsidian => Expansion::ThundersEdge,
         }
@@ -120,7 +120,7 @@ impl Faction {
             Faction::CouncilKeleres => "The Council Keleres",
             Faction::LastBastion => "Last Bastion",
             Faction::RalNelConsortium => "The Ral Nel Consortium",
-            Faction::DeepwroughtScolorate => "The Deepwrought Scolorate",
+            Faction::DeepwroughtScolarate => "The Deepwrought Scolorate",
             Faction::CrimsonRebellion => "The Crimson Rebellion",
             Faction::FirmamentObsidian => "The Firmament / The Obsidian",
         })
@@ -189,8 +189,14 @@ impl Faction {
                 Technology::ScanlinkDroneNetwork,
             ],
             Faction::VuilRaithCabal => vec![Technology::SelfAssemblyRoutines],
-            Faction::CouncilKeleres => vec![/* Get's to pick starting techs */],
-            Faction::LastBastion => vec![/* Get's to pick starting techs */],
+            Faction::CouncilKeleres => vec![/* Gets to pick starting techs */],
+            Faction::LastBastion => vec![/* Gets to pick starting techs */],
+            Faction::RalNelConsortium => vec![/* Gets to pick starting techs */],
+            Faction::DeepwroughtScolarate => {
+                vec![/* Gets to research twice at the start of the game */]
+            }
+            Faction::CrimsonRebellion => vec![/* Gets to pick a starting tech */],
+            Faction::FirmamentObsidian => vec![/* Gets to pick a starting tech */],
         }
         .into_iter()
         .filter(|tech| tech.is_enabled_in(expansions))
@@ -226,6 +232,10 @@ impl Faction {
             "The Vuil'raith Cabal" => Faction::VuilRaithCabal,
             "The Council Keleres" => Faction::CouncilKeleres,
             "Last Bastion" => Faction::LastBastion,
+            "The Ral Nel Consortium" => Faction::RalNelConsortium,
+            "The Deepwrought Scholarate" => Faction::DeepwroughtScolarate,
+            "The Crimson Rebellion" => Faction::CrimsonRebellion,
+            "The Firmament / The Obsidian" => Faction::FirmamentObsidian,
             "Augurs of Ilyxum"
             | "Celdauri Trade Confederation"
             | "Dih-Mohn Flotilla"
