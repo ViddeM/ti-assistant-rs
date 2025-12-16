@@ -543,7 +543,10 @@ fn try_update_game_state(
                     bail!("Only attachments with planet_traits can be used during exploration")
                 };
                 ensure!(
-                    planet.info().planet_trait.as_ref() == Some(attachment_planet_trait),
+                    planet
+                        .info()
+                        .planet_traits
+                        .contains(attachment_planet_trait),
                     "Planet does not meet the trait requirements for the attachment"
                 );
             }
@@ -1679,7 +1682,9 @@ fn try_update_game_state(
                     );
                 }
                 v => {
-                    ensure!(v.info().planet_trait == planet.info().planet_trait, "Attachment is not allowed to be placed on this planet, planet_trait requirement not met.");
+                    if let Some(t) = v.info().planet_trait {
+                        ensure!(planet.info().planet_traits.contains(&t), "Attachment is not allowed to be placed on this planet, planet_trait requirement not met.");
+                    }
                 }
             }
 

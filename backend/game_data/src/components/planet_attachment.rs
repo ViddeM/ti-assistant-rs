@@ -243,7 +243,7 @@ impl PlanetAttachment {
 
     /// Returns the ''correct'' variant of this attachment for the provided PlanetInfo.
     pub fn match_planet(self, planet: &PlanetInfo) -> Self {
-        match (self, planet.tech_specialty.is_some()) {
+        match (self, !planet.tech_specialities.is_empty()) {
             (PlanetAttachment::BioticResearchFacility, true) => {
                 Self::BioticResearchFacilityResources
             }

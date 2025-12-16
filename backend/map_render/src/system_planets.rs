@@ -4,7 +4,6 @@ use ti_helper_game_data::components::planet::Planet;
 /// Returns the visual offset of the planet on the system tile image.
 pub fn planet_offset(planet: &Planet) -> Vec2 {
     match planet {
-        // Single planet systems
         Planet::Jord
         | Planet::MollPrimus
         | Planet::Darien
@@ -33,7 +32,6 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Primor
         | Planet::HopesEnd
         | Planet::MecatolRex => Vec2::new(0.0, 0.0),
-        // Upper planet in two-planet systems
         Planet::Maaluuk
         | Planet::ArcPrime
         | Planet::LisisII
@@ -65,7 +63,6 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Cealdri
         | Planet::VegaMajor
         | Planet::Retillion => Vec2::new(-0.1, 0.19),
-        // Lower planet in two-planet systems
         Planet::Druaa
         | Planet::WrenTerra
         | Planet::Ragh
@@ -92,11 +89,8 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Xanhact
         | Planet::VegaMinor
         | Planet::Shalloq => Vec2::new(0.09, -0.20),
-        // Top-right planet in trinary systems
         Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir => Vec2::new(0.12, 0.21),
-        // Left planet in trinay systems
         Planet::RigelIII | Planet::Loki | Planet::Hercant | Planet::Valk => Vec2::new(-0.24, 0.05),
-        // Bottom-right planet in trinary systems
         Planet::RigelI | Planet::Ashtroth | Planet::Kamdorn | Planet::Avar => {
             Vec2::new(0.15, -0.26)
         }
@@ -105,5 +99,36 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         Planet::CustodiaVigilia => panic!(
             "Custodia vigilla should never be rendered as it is not considered to be on the map!"
         ),
+        Planet::Lesab => todo!(),
+        Planet::Olergodt => todo!(),
+        Planet::ViraPicsIII => todo!(),
+        Planet::Andeara => todo!(),
+        Planet::Lemox => todo!(),
+        Planet::TheWatchtower => todo!(),
+        Planet::Emelpar => todo!(),
+        Planet::Faunus => todo!(),
+        Planet::Garbozia => todo!(),
+        Planet::Tempesta => todo!(),
+        Planet::Industrex => todo!(),
+        Planet::Capha => todo!(),
+        Planet::Kostboth => todo!(),
+        Planet::Cresius => todo!(),
+        Planet::LazulRex => todo!(),
+        Planet::Hercalor => todo!(),
+        Planet::Tiamat => todo!(),
+        Planet::NewTerra => todo!(),
+        Planet::Tinnes => todo!(),
+        Planet::Bellatrix => todo!(),
+        Planet::TsionStation => todo!(),
+        Planet::Tarana => todo!(),
+        Planet::OluzStation => todo!(),
+        Planet::Cocytus => todo!(),
+        Planet::Styx => todo!(),
+        Planet::Lethe => todo!(),
+        Planet::Phlegethon => todo!(),
+        Planet::MecatolRexOmega => todo!(),
+        Planet::ThundersEdge => todo!(),
+        Planet::Ordinian => todo!(),
+        Planet::Avernus => todo!(),
     }
 }

@@ -253,7 +253,7 @@ impl Vote {
 fn get_planet_traits(planet: &Planet, attachments: &HashSet<PlanetAttachment>) -> Vec<PlanetTrait> {
     let mut ts = vec![];
 
-    if let Some(t) = planet.info().planet_trait {
+    for t in planet.info().planet_traits.into_iter() {
         ts.push(t);
     }
 
