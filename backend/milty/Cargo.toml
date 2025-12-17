@@ -1,13 +1,13 @@
 [package]
 name = "ti_helper_milty"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 eyre = "0.6.12"
 html-escape = "0.2.13"
 log = "0.4.22"
-reqwest = { version = "0.12.8", default_features = false, features = [
+reqwest = { version = "0.12.8", default-features = false, features = [
     "json",
     "rustls-tls",
 ] }
