@@ -226,6 +226,18 @@ pub enum Planet {
     ThundersEdge,
     Ordinian,
     Avernus,
+    Cronos,
+    CronosHollow,
+    Tallin,
+    TallinHollow,
+    Revelation,
+    MezLoOrzFeiZsha,
+    RepoLoOrzQet,
+    Ikatena,
+    AhkCreuxx,
+    Elnath,
+    Horizon,
+    LuthienVi,
 }
 
 impl Planet {
@@ -854,28 +866,218 @@ impl Planet {
                 Expansion::ThundersEdge,
                 true
             ),
-            Planet::Tempesta => todo!(),
-            Planet::Industrex => todo!(),
-            Planet::Capha => todo!(),
-            Planet::Kostboth => todo!(),
-            Planet::Cresius => todo!(),
-            Planet::LazulRex => todo!(),
-            Planet::Hercalor => todo!(),
-            Planet::Tiamat => todo!(),
-            Planet::NewTerra => todo!(),
-            Planet::Tinnes => todo!(),
-            Planet::Bellatrix => todo!(),
-            Planet::TsionStation => todo!(),
-            Planet::Tarana => todo!(),
-            Planet::OluzStation => todo!(),
-            Planet::Cocytus => todo!(),
-            Planet::Styx => todo!(),
-            Planet::Lethe => todo!(),
-            Planet::Phlegethon => todo!(),
-            Planet::MecatolRexOmega => todo!(),
-            Planet::ThundersEdge => todo!(),
-            Planet::Ordinian => todo!(),
-            Planet::Avernus => todo!(),
+            Planet::Tempesta => planet!(
+                "Tempesta",
+                vec![PlanetTrait::Hazardous],
+                vec![TechCategory::Propulsion],
+                1,
+                1,
+                Expansion::ThundersEdge,
+                true
+            ),
+            Planet::Industrex => planet!(
+                "Industrex",
+                vec![PlanetTrait::Industrial],
+                vec![TechCategory::Warfare],
+                2,
+                0,
+                Expansion::ThundersEdge,
+                true
+            ),
+            Planet::Capha => planet!(
+                "Capha",
+                vec![PlanetTrait::Hazardous],
+                vec![],
+                3,
+                0,
+                Expansion::ThundersEdge
+            ),
+            Planet::Kostboth => planet!(
+                "Kostboth",
+                vec![PlanetTrait::Cultural],
+                vec![],
+                0,
+                1,
+                Expansion::ThundersEdge
+            ),
+            Planet::Cresius => planet!(
+                "Cresius",
+                vec![PlanetTrait::Hazardous],
+                vec![],
+                0,
+                1,
+                Expansion::ThundersEdge
+            ),
+            Planet::LazulRex => planet!(
+                "Lazul Rex",
+                vec![PlanetTrait::Cultural, PlanetTrait::Industrial],
+                vec![],
+                2,
+                2,
+                Expansion::ThundersEdge
+            ),
+            Planet::Hercalor => planet!(
+                "Hercalor",
+                vec![PlanetTrait::Industrial],
+                vec![],
+                1,
+                0,
+                Expansion::ThundersEdge
+            ),
+            Planet::Tiamat => planet!(
+                "Tiamat",
+                vec![PlanetTrait::Cultural],
+                vec![TechCategory::Cybernetic],
+                1,
+                2,
+                Expansion::ThundersEdge
+            ),
+            Planet::NewTerra => planet!(
+                "New Terra",
+                vec![PlanetTrait::Industrial],
+                vec![TechCategory::Biotic],
+                1,
+                1,
+                Expansion::ThundersEdge
+            ),
+            Planet::Tinnes => planet!(
+                "Tinnes",
+                vec![PlanetTrait::Industrial, PlanetTrait::Hazardous],
+                vec![TechCategory::Biotic],
+                2,
+                1,
+                Expansion::ThundersEdge
+            ),
+            Planet::Bellatrix => planet!(
+                "Bellatrix",
+                vec![PlanetTrait::Cultural],
+                vec![],
+                1,
+                2,
+                Expansion::ThundersEdge
+            ),
+            Planet::TsionStation => space_station!("Tsion Station", 1, 1, Expansion::ThundersEdge),
+            Planet::Tarana => planet!(
+                "Tarana",
+                vec![PlanetTrait::Cultural, PlanetTrait::Industrial],
+                vec![],
+                1,
+                2,
+                Expansion::ThundersEdge
+            ),
+            Planet::OluzStation => space_station!("Oluz Station", 1, 1, Expansion::ThundersEdge),
+            Planet::Cocytus => planet!("Cocytus", vec![], vec![], 3, 0, Expansion::ThundersEdge),
+            Planet::Styx => planet!("Styx", vec![], vec![], 3, 0, Expansion::ThundersEdge, true),
+            Planet::Lethe => planet!("Lethe", vec![], vec![], 0, 2, Expansion::ThundersEdge),
+            Planet::Phlegethon => {
+                planet!("Phlegethon", vec![], vec![], 1, 2, Expansion::ThundersEdge)
+            }
+            Planet::MecatolRexOmega => planet!(
+                "Mecatol Rex Ω",
+                vec![],
+                vec![],
+                1,
+                6,
+                Expansion::ThundersEdge,
+                true
+            ),
+            Planet::ThundersEdge => planet!(
+                "Thunder's Edge",
+                vec![],
+                vec![],
+                5,
+                1,
+                Expansion::ThundersEdge,
+                true
+            ),
+            Planet::Ordinian => planet!(
+                "Ordinian",
+                vec![],
+                vec![],
+                0,
+                0,
+                Expansion::ThundersEdge,
+                true
+            ),
+            Planet::Avernus => planet!(
+                "Avernus",
+                vec![PlanetTrait::Hazardous],
+                vec![],
+                2,
+                0,
+                Expansion::ThundersEdge,
+                true
+            ),
+            Planet::Cronos => planet!("Cronos", vec![], vec![], 2, 1, Expansion::ThundersEdge),
+            Planet::CronosHollow => planet!(
+                "Cronos Hollow",
+                vec![],
+                vec![],
+                3,
+                0,
+                Expansion::ThundersEdge
+            ),
+            Planet::Tallin => planet!(
+                "Tallin Hollow",
+                vec![],
+                vec![],
+                1,
+                2,
+                Expansion::ThundersEdge
+            ),
+            Planet::TallinHollow => planet!(
+                "Tallin Hollow",
+                vec![],
+                vec![],
+                3,
+                0,
+                Expansion::ThundersEdge
+            ),
+            Planet::Revelation => space_station!("Revelation", 1, 2, Expansion::ThundersEdge),
+            Planet::MezLoOrzFeiZsha => planet!(
+                "Mez Lo Orz Fei Zsha",
+                vec![],
+                vec![],
+                2,
+                1,
+                Expansion::ThundersEdge
+            ),
+            Planet::RepoLoOrzQet => planet!(
+                "Rep Lo Orz Qet",
+                vec![],
+                vec![],
+                1,
+                3,
+                Expansion::ThundersEdge
+            ),
+            Planet::Ikatena => planet!("Ikatena", vec![], vec![], 4, 4, Expansion::ThundersEdge),
+            Planet::AhkCreuxx => {
+                planet!("Ahk Creuxx", vec![], vec![], 4, 2, Expansion::ThundersEdge)
+            }
+            Planet::Elnath => planet!(
+                "Elnath",
+                vec![PlanetTrait::Hazardous],
+                vec![],
+                2,
+                0,
+                Expansion::ThundersEdge
+            ),
+            Planet::Horizon => planet!(
+                "Horizon",
+                vec![PlanetTrait::Cultural],
+                vec![],
+                1,
+                2,
+                Expansion::ThundersEdge
+            ),
+            Planet::LuthienVi => planet!(
+                "Luthien VI",
+                vec![PlanetTrait::Hazardous],
+                vec![],
+                3,
+                1,
+                Expansion::ThundersEdge
+            ),
         }
     }
 }

@@ -1,10 +1,10 @@
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 use eyre::{Context, ContextCompat};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::components::system::{systems, SystemId};
+use crate::components::system::{SystemId, systems};
 
 /// The galactic map.
 #[derive(Default, Debug, Clone, Serialize, Deserialize, TS)]
@@ -23,6 +23,8 @@ impl HexMap {
 
     /// The system ID for the mecatol rex system.
     const MECATOL_REX_ID: u32 = 18;
+    /// The system ID for the mecatol rex system in the Thunder's Edge expansion.
+    const MECATOL_REX_OMEGA_ID: u32 = 112;
 
     /// Create the map from a milty export string (space separated system ids).
     /// Example `87A1 89B3 47 87A4 89B0 78 37 64 46 29 72 22 24 63 44 40 23 76 50 30 48 28 43 83B2 67 69 34 27 77 26 36 74 83B2 79 19 38 53 42 59 7 0 0 14 21 0 4 39 71 15 80 68 52 0 0 17 75 0 58 41 60`
@@ -33,7 +35,7 @@ impl HexMap {
     ///  - 3 = 19-36 |
     ///  - 4 = 37-60 |
     ///  - 5 = 61-90 |
-    pub fn from_milty_string(milty_string: &str) -> eyre::Result<Self> {
+    pub fn from_milty_string(milty_string: &str, use_te_tiles: bool) -> eyre::Result<Self> {
         let systems = systems();
 
         let mut map: Vec<MiltySystemId> = milty_string
@@ -44,7 +46,18 @@ impl HexMap {
             })
             .collect::<eyre::Result<Vec<MiltySystemId>>>()?;
 
-        map.insert(0, MiltySystemId::Number(Self::MECATOL_REX_ID));
+        let mecatol_rex_id = if use_te_tiles {
+            Self::MECATOL_REX_OMEGA_ID
+        } else {
+            Self::MECATOL_REX_ID
+        };
+        map.insert(
+            0,
+            MiltySystemId::Standard {
+                number: mecatol_rex_id,
+                variant: None,
+            },
+        );
 
         let mut tiles = Vec::with_capacity(milty_string.len() + 1);
 
@@ -85,14 +98,18 @@ impl HexMap {
             position: HexPosition::OutsideGalaxy,
         });
 
-        if map.contains(&MiltySystemId::Number(Self::CREUSS_WORMHILE_ID)) {
+        if map.contains(&MiltySystemId::Standard {
+            number: Self::CREUSS_WORMHILE_ID,
+            variant: None,
+        }) {
             let creuss_home_system = systems
                 .get(Self::CREUSS_HOME_SYSTEM)
                 .wrap_err("Creuss homesystem not in list of systems?")?;
+
             tiles.push(Tile {
                 system: creuss_home_system.id.clone(),
                 position: HexPosition::OutsideGalaxy,
-            })
+            });
         }
 
         Ok(HexMap {
@@ -133,9 +150,39 @@ pub struct Coordinate {
 
 #[derive(Debug, Clone, PartialEq)]
 enum MiltySystemId {
-    Number(u32),
+    Standard {
+        number: u32,
+        variant: Option<Variant>,
+    },
     Hyperlane(HyperLaneTile),
     Empty,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+enum Variant {
+    A,
+    B,
+}
+
+impl Display for Variant {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            Variant::A => "a",
+            Variant::B => "b",
+        })
+    }
+}
+
+impl TryFrom<char> for Variant {
+    type Error = eyre::Report;
+
+    fn try_from(value: char) -> eyre::Result<Self> {
+        match value {
+            'a' => Ok(Self::A),
+            'b' => Ok(Self::B),
+            v => eyre::bail!("Unsupported system variant {}", v),
+        }
+    }
 }
 
 impl FromStr for MiltySystemId {
@@ -147,15 +194,31 @@ impl FromStr for MiltySystemId {
                 return Ok(MiltySystemId::Empty);
             }
 
-            return Ok(MiltySystemId::Number(n));
+            return Ok(MiltySystemId::Standard {
+                number: n,
+                variant: None,
+            });
         }
 
         let mut chars = s.chars().collect::<Vec<char>>();
-        let rotation = chars
-            .pop()
-            .wrap_err("Failed to extract number from milty system ID")?
-            .to_digit(10)
-            .wrap_err("Failed to parse digit from rotation number")?;
+
+        let last_char = chars.pop().wrap_err("Failed to pop last char of tile ID")?;
+
+        let Some(rotation) = last_char.to_digit(10) else {
+            // Its the variant of a normal tile
+            let number = chars
+                .into_iter()
+                .collect::<String>()
+                .parse::<u32>()
+                .wrap_err("Failed to parse system id from milty")?;
+
+            let variant = last_char.try_into().wrap_err("Failed to parse variant")?;
+
+            return Ok(MiltySystemId::Standard {
+                number,
+                variant: Some(variant),
+            });
+        };
 
         let variant = chars
             .pop()
@@ -178,7 +241,10 @@ impl FromStr for MiltySystemId {
 impl MiltySystemId {
     fn to_system_id(&self) -> Option<SystemId> {
         match self {
-            MiltySystemId::Number(n) => Some(n.to_string()),
+            MiltySystemId::Standard { number, variant } => {
+                let var_name = variant.as_ref().map(|v| v.to_string()).unwrap_or_default();
+                Some(format!("{number}{var_name}",))
+            }
             MiltySystemId::Hyperlane(h) => Some(format!("{}{}", h.system_id, h.variant)),
             MiltySystemId::Empty => None,
         }

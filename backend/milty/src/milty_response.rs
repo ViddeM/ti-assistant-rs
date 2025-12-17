@@ -50,6 +50,7 @@ pub struct MiltyConfigDataResponse {
     pub name: Option<String>,
     pub include_pok: bool,
     pub include_ds_tiles: bool,
+    pub include_te_tiles: bool,
     pub include_discordant: bool,
     pub include_discordantexp: bool,
     pub include_base_factions: bool,

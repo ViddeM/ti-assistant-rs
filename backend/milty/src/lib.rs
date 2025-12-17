@@ -89,7 +89,7 @@ impl MiltyImport for MiltyData {
             codex_1: true, // TODO: not entirely sure about these.
             codex_2: true,
             codex_3: true,
-            thunders_edge: milty_conf.include_te_factions,
+            thunders_edge: milty_conf.include_te_factions || milty_conf.include_te_tiles,
         };
 
         for player in players.values() {
@@ -119,7 +119,7 @@ impl MiltyImport for MiltyData {
             expansions,
             game_name: html_escape::decode_html_entities(&get_milty_data_response.draft.name)
                 .to_string(),
-            hex_map: HexMap::from_milty_string(tts_string)
+            hex_map: HexMap::from_milty_string(tts_string, milty_conf.include_te_tiles)
                 .wrap_err("Failed to parse milty tts string")?,
         })
     }

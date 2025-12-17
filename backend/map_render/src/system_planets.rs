@@ -130,5 +130,17 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         Planet::ThundersEdge => todo!(),
         Planet::Ordinian => todo!(),
         Planet::Avernus => todo!(),
+        Planet::Cronos => todo!(),
+        Planet::CronosHollow => todo!(),
+        Planet::Tallin => todo!(),
+        Planet::TallinHollow => todo!(),
+        Planet::Revelation => todo!(),
+        Planet::MezLoOrzFeiZsha => todo!(),
+        Planet::RepoLoOrzQet => todo!(),
+        Planet::Ikatena => todo!(),
+        Planet::AhkCreuxx => todo!(),
+        Planet::Elnath => todo!(),
+        Planet::Horizon => todo!(),
+        Planet::LuthienVi => todo!(),
     }
 }

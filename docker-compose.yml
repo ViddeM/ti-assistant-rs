@@ -1,4 +1,3 @@
-version: "3"
 services:
   db:
     image: postgres:13.2
@@ -13,3 +12,4 @@ services:
     image: adminer
     ports:
       - 8080:8080
+

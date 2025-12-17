@@ -17,6 +17,7 @@ pub enum WormHoleType {
     Beta,
     Gamma,
     Delta,
+    Epsilon,
 }
 
 /// A type of system.
@@ -24,7 +25,7 @@ pub enum WormHoleType {
 #[ts(export)]
 #[allow(missing_docs)]
 pub enum SystemType {
-    Anomaly(AnomalyType),
+    Anomaly(Vec<AnomalyType>),
     Hyperlane,
     Normal,
     HomeSystem(Faction),
@@ -40,6 +41,7 @@ pub enum AnomalyType {
     Supernova,
     MuaatSupernova,
     GravityRift,
+    EntropicScar,
 }
 
 /// The ID for a system.
@@ -369,27 +371,27 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "41",
-            SystemType::Anomaly(AnomalyType::GravityRift),
+            SystemType::Anomaly(vec![AnomalyType::GravityRift]),
             Expansion::Base
         ),
         s!(
             "42",
-            SystemType::Anomaly(AnomalyType::Nebula),
+            SystemType::Anomaly(vec![AnomalyType::Nebula]),
             Expansion::Base
         ),
         s!(
             "43",
-            SystemType::Anomaly(AnomalyType::Supernova),
+            SystemType::Anomaly(vec![AnomalyType::Supernova]),
             Expansion::Base
         ),
         s!(
             "44",
-            SystemType::Anomaly(AnomalyType::AsteroidField),
+            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
             Expansion::Base
         ),
         s!(
             "45",
-            SystemType::Anomaly(AnomalyType::AsteroidField),
+            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
             Expansion::Base
         ),
         s!("46", SystemType::Normal, Expansion::Base),
@@ -497,13 +499,13 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "67",
-            SystemType::Anomaly(AnomalyType::GravityRift),
+            SystemType::Anomaly(vec![AnomalyType::GravityRift]),
             vec![Planet::Cormund],
             Expansion::ProphecyOfKings
         ),
         s!(
             "68",
-            SystemType::Anomaly(AnomalyType::Nebula),
+            SystemType::Anomaly(vec![AnomalyType::Nebula]),
             vec![Planet::Everra],
             Expansion::ProphecyOfKings
         ),
@@ -559,19 +561,19 @@ pub fn systems() -> HashMap<SystemId, System> {
         s!("78", SystemType::Normal, Expansion::ProphecyOfKings),
         s!(
             "79",
-            SystemType::Anomaly(AnomalyType::AsteroidField),
+            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
             vec![],
             vec![WormHoleType::Alpha],
             Expansion::ProphecyOfKings
         ),
         s!(
             "80",
-            SystemType::Anomaly(AnomalyType::Supernova),
+            SystemType::Anomaly(vec![AnomalyType::Supernova]),
             Expansion::ProphecyOfKings
         ),
         s!(
             "81",
-            SystemType::Anomaly(AnomalyType::MuaatSupernova),
+            SystemType::Anomaly(vec![AnomalyType::MuaatSupernova]),
             Expansion::ProphecyOfKings
         ),
         s!(
@@ -599,5 +601,182 @@ pub fn systems() -> HashMap<SystemId, System> {
         s!("90B", SystemType::Hyperlane, Expansion::ProphecyOfKings),
         s!("91A", SystemType::Hyperlane, Expansion::ProphecyOfKings),
         s!("91B", SystemType::Hyperlane, Expansion::ProphecyOfKings),
+        s!(
+            "92",
+            SystemType::HomeSystem(Faction::LastBastion),
+            vec![Planet::Ordinian, Planet::Revelation],
+            vec![],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "93",
+            SystemType::HomeSystem(Faction::RalNelConsortium),
+            vec![Planet::MezLoOrzFeiZsha, Planet::RepoLoOrzQet],
+            vec![],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "94",
+            SystemType::HomeSystem(Faction::CrimsonRebellion),
+            vec![],
+            vec![WormHoleType::Epsilon],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "95",
+            SystemType::HomeSystem(Faction::DeepwroughtScolarate),
+            vec![Planet::Ikatena],
+            vec![],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "96a",
+            SystemType::HomeSystem(Faction::FirmamentObsidian),
+            vec![Planet::Cronos, Planet::Tallin],
+            vec![],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "96b",
+            SystemType::HomeSystem(Faction::FirmamentObsidian),
+            vec![Planet::CronosHollow, Planet::TallinHollow],
+            vec![],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "97",
+            SystemType::Normal,
+            vec![Planet::Faunus],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "98",
+            SystemType::Normal,
+            vec![Planet::Garbozia],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "99",
+            SystemType::Normal,
+            vec![Planet::Emelpar],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "100",
+            SystemType::Normal,
+            vec![Planet::Tempesta],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "101",
+            SystemType::Normal,
+            vec![Planet::Olergodt],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "102",
+            SystemType::Normal,
+            vec![Planet::Andeara],
+            vec![WormHoleType::Alpha],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "103",
+            SystemType::Normal,
+            vec![Planet::ViraPicsIII],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "104",
+            SystemType::Normal,
+            vec![Planet::Lesab],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "105",
+            SystemType::Normal,
+            vec![Planet::NewTerra, Planet::Tinnes],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "106",
+            SystemType::Normal,
+            vec![Planet::Cresius, Planet::LazulRex],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "107",
+            SystemType::Normal,
+            vec![Planet::Hercalor, Planet::Tiamat],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "108",
+            SystemType::Normal,
+            vec![Planet::Capha, Planet::Kostboth],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "109",
+            SystemType::Normal,
+            vec![Planet::Bellatrix, Planet::TsionStation],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "110",
+            SystemType::Normal,
+            vec![Planet::Elnath, Planet::LuthienVi, Planet::Horizon],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "111",
+            SystemType::Normal,
+            vec![Planet::Tarana, Planet::OluzStation],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "112",
+            SystemType::Normal,
+            vec![Planet::MecatolRexOmega],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "113",
+            SystemType::Anomaly(vec![AnomalyType::GravityRift]),
+            vec![],
+            vec![WormHoleType::Beta],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "114",
+            SystemType::Anomaly(vec![AnomalyType::EntropicScar]),
+            vec![],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "115",
+            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
+            vec![Planet::Industrex],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "116",
+            SystemType::Anomaly(vec![AnomalyType::EntropicScar]),
+            vec![Planet::Lemox],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "117",
+            SystemType::Anomaly(vec![AnomalyType::GravityRift, AnomalyType::AsteroidField]),
+            vec![Planet::TheWatchtower],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "118",
+            SystemType::Normal,
+            vec![Planet::AhkCreuxx],
+            vec![WormHoleType::Epsilon],
+            Expansion::ThundersEdge
+        ),
     ])
 }
