@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use ti_helper_game_data::{
+use crate::{
     common::player_id::PlayerId,
-    components::objectives::{secret::SecretObjective, Objective},
+    components::objectives::{Objective, secret::SecretObjective},
 };
 
 /// State for the status phase.

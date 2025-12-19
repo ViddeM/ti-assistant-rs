@@ -1,8 +1,14 @@
 use std::sync::Arc;
 
-use dioxus::prelude::*;
+use dioxus::{
+    fullstack::{JsonEncoding, WebSocketOptions, Websocket},
+    prelude::*,
+};
 
-use crate::requests::new_game::NewGame;
+use crate::{
+    messages::{WsMessage, WsMessageOut},
+    requests::new_game::NewGame,
+};
 
 #[cfg(feature = "server")]
 use {
@@ -13,20 +19,20 @@ use {
     anyhow::Context,
     chrono::Utc,
     dioxus::server::axum::Extension,
-    ti_helper_db::game_id::GameId,
     ti_helper_db::queries,
+    ti_helper_game_data::game_id::GameId,
     ti_helper_game_logic::gameplay::game::Game,
 };
 
 /// Echo the user input on the server.
-#[post("/api/game", ext: Extension<state::State>)]
+#[post("/api/game", ext: Extension<Arc<state::State>>)]
 pub async fn new_game(data: NewGame) -> Result<String, ServerFnError> {
     let id = GameId::random();
     let name = generate_game_name(id);
 
     if let Some(db_pool) = &ext.db_pool {
         log::info!("persisting new game {id:?} in database");
-        queries::create_game(db_pool, id, name)
+        queries::create_game(db_pool, id.into(), name)
             .await
             .context("failed to create game")?;
     }
@@ -62,4 +68,14 @@ pub async fn new_game(data: NewGame) -> Result<String, ServerFnError> {
 
     // TODO: GameID should be shared between client & server but isn't currently so we use a string instead.
     Ok(id.to_string())
+}
+
+pub type TIWebsocket = Websocket<WsMessage, WsMessageOut, JsonEncoding>;
+
+#[post("/api/game/{game_id}", ext: Extension<Arc<state::State>>)]
+pub async fn join_game(
+    game_id: String,
+    options: WebSocketOptions,
+) -> Result<TIWebsocket, ServerFnError> {
+    Ok(options.on_upgrade(move |mut socket| async move {}))
 }

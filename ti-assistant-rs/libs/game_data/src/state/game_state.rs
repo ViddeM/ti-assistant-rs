@@ -8,7 +8,10 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use ti_helper_game_data::{
+use crate::{
+    actions::strategic::{
+        StrategicPrimaryAction, StrategicSecondaryAction, StrategicSecondaryProgress,
+    },
     common::{
         expansions::Expansion, faction::Faction, game_settings::GameSettings, map::HexMap,
         player_id::PlayerId,
@@ -32,8 +35,6 @@ use ti_helper_game_data::{
 
 use super::{
     agenda::{AgendaRecord, AgendaState, VoteState},
-    error::GameError,
-    event::{StrategicPrimaryAction, StrategicSecondaryAction},
     player::Player,
     score::Score,
     status::StatusPhaseState,
@@ -241,31 +242,6 @@ impl StrategicPrimaryProgress {
     }
 }
 
-/// The progress of the secondary portion of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
-#[ts(export)]
-#[allow(missing_docs)]
-pub enum StrategicSecondaryProgress {
-    Leadership,
-    Diplomacy,
-    Politics,
-    Construction,
-    Trade,
-    Warfare,
-    Technology {
-        /// What tech was taken.
-        tech: Technology,
-    },
-    /// Special technology secondary for the Universities of Jol-Nar
-    #[serde(rename_all = "camelCase")]
-    TechnologyJolNar {
-        first_tech: Technology,
-        second_tech: Option<Technology>,
-    },
-    Imperial,
-    Skipped,
-}
-
 /// Progress during a tactical action.
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]
@@ -320,7 +296,7 @@ pub struct RelicProgress {
 
 impl GameState {
     /// Update the turn order according to initiative order.
-    pub fn calculate_action_turn_order(&mut self) -> Result<(), GameError> {
+    pub fn calculate_action_turn_order(&mut self) -> anyhow::Result<()> {
         self.turn_order = self.table_order.clone();
 
         let mut result = Ok(());
@@ -347,7 +323,7 @@ impl GameState {
     }
 
     /// Update the turn order according to table-order, starting with the speaker.
-    pub fn calculate_strategy_turn_order(&mut self) -> Result<(), GameError> {
+    pub fn calculate_strategy_turn_order(&mut self) -> anyhow::Result<()> {
         let speaker = self.speaker()?;
         let speaker_index = self
             .table_order
@@ -362,7 +338,7 @@ impl GameState {
     }
 
     /// Update the turn order according to table-order, ending with the speaker.
-    pub fn calculate_agenda_turn_order(&mut self) -> Result<(), GameError> {
+    pub fn calculate_agenda_turn_order(&mut self) -> anyhow::Result<()> {
         let speaker = self.speaker()?;
         let speaker_index = self
             .table_order
@@ -381,7 +357,7 @@ impl GameState {
 
     /// If we're tracking turn time, save the result for the current player and return true.
     /// Otherwise return false.
-    pub fn commit_turn_time(&mut self, timestamp: DateTime<Utc>) -> Result<bool, GameError> {
+    pub fn commit_turn_time(&mut self, timestamp: DateTime<Utc>) -> anyhow::Result<bool> {
         let current_turn_start_time = self.current_turn_start_time.take();
 
         if let Some(turn_start_time) = current_turn_start_time {
@@ -397,7 +373,7 @@ impl GameState {
     }
 
     /// Advance to the next players turn, if all players have passed, advance to the next phase.
-    pub fn advance_turn(&mut self, timestamp: DateTime<Utc>) -> Result<(), GameError> {
+    pub fn advance_turn(&mut self, timestamp: DateTime<Utc>) -> anyhow::Result<()> {
         let current_player = self.current_player()?;
         let next_player = self.next_player_after(&current_player)?;
 
@@ -428,11 +404,7 @@ impl GameState {
     }
 
     /// Set the phase to the provided `phase` and update turn order accordingly.
-    pub fn change_phase(
-        &mut self,
-        phase: Phase,
-        timestamp: DateTime<Utc>,
-    ) -> Result<(), GameError> {
+    pub fn change_phase(&mut self, phase: Phase, timestamp: DateTime<Utc>) -> anyhow::Result<()> {
         self.phase = phase;
         match phase {
             Phase::Strategy => {
@@ -470,7 +442,7 @@ impl GameState {
     }
 
     /// Returns the player after the provided player.
-    pub fn next_player_after(&self, after: &PlayerId) -> Result<Option<PlayerId>, GameError> {
+    pub fn next_player_after(&self, after: &PlayerId) -> anyhow::Result<Option<PlayerId>> {
         let next_player = self
             .turn_order
             .iter()
@@ -484,19 +456,19 @@ impl GameState {
     }
 
     /// Returns the current players [PlyerId].
-    pub fn current_player(&self) -> Result<PlayerId, GameError> {
+    pub fn current_player(&self) -> anyhow::Result<PlayerId> {
         self.current_player
             .clone()
             .ok_or(anyhow!("no active player"))
     }
 
     /// Returns the current speaker.
-    pub fn speaker(&self) -> Result<&PlayerId, GameError> {
+    pub fn speaker(&self) -> anyhow::Result<&PlayerId> {
         self.speaker.as_ref().ok_or(anyhow!("No speaker"))
     }
 
     /// Asserts that the provided player is the currently active player.
-    pub fn assert_player_turn(&self, player: &PlayerId) -> Result<(), GameError> {
+    pub fn assert_player_turn(&self, player: &PlayerId) -> anyhow::Result<()> {
         let current_player = self.current_player()?;
         if &current_player != player {
             bail!("wrong players turn, current player is {current_player:?} got  {player:?}");
@@ -506,7 +478,7 @@ impl GameState {
     }
 
     /// Assert that the provided phase is the current phase.
-    pub fn assert_phase(&self, phase: Phase) -> Result<(), GameError> {
+    pub fn assert_phase(&self, phase: Phase) -> anyhow::Result<()> {
         if self.phase != phase {
             bail!(
                 "invalid game state, expected {phase:?}, was {:?}",
@@ -517,7 +489,7 @@ impl GameState {
     }
 
     /// Asserts that the provided expansion is enabled.
-    pub fn assert_expansion(&self, expansion: &Expansion) -> Result<(), GameError> {
+    pub fn assert_expansion(&self, expansion: &Expansion) -> anyhow::Result<()> {
         if !self.game_settings.expansions.is_enabled(expansion) {
             bail!("Expansion is not enabled {expansion:?}");
         }
@@ -525,10 +497,7 @@ impl GameState {
     }
 
     /// Asserts that the configured expansions is valid for the provided action.
-    pub fn assert_action_expansion(
-        &self,
-        action: &StrategicPrimaryAction,
-    ) -> Result<(), GameError> {
+    pub fn assert_action_expansion(&self, action: &StrategicPrimaryAction) -> anyhow::Result<()> {
         match action {
             StrategicPrimaryAction::Technology { tech, extra } => {
                 self.assert_expansion(&tech.info().expansion)?;
@@ -550,7 +519,7 @@ impl GameState {
     pub fn assert_secondary_action_expansion(
         &self,
         action: &StrategicSecondaryAction,
-    ) -> Result<(), GameError> {
+    ) -> anyhow::Result<()> {
         match action {
             StrategicSecondaryAction::Technology { tech } => {
                 self.assert_expansion(&tech.info().expansion)?;
@@ -577,7 +546,7 @@ impl GameState {
     }
 
     /// Get a mutable reference to the currently active player.
-    pub fn get_current_player(&mut self) -> Result<&mut Player, GameError> {
+    pub fn get_current_player(&mut self) -> anyhow::Result<&mut Player> {
         let current_player_id = match self.current_player.as_ref() {
             Some(p) => p,
             None => bail!("invalid game state, expected there to be a player"),
@@ -605,7 +574,7 @@ impl GameState {
     }
 
     /// Returns true if the player has performed any required initialization for their faction.
-    pub fn player_initialization_finished(&self, player_id: &PlayerId) -> Result<bool, GameError> {
+    pub fn player_initialization_finished(&self, player_id: &PlayerId) -> anyhow::Result<bool> {
         let Some(player) = self.players.get(player_id) else {
             anyhow::bail!("player does not exist (this is a bug)");
         };

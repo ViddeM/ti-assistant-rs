@@ -1,14 +1,15 @@
 use std::sync::{
-    mpsc::{sync_channel, Receiver, SyncSender},
     Mutex,
+    mpsc::{Receiver, SyncSender, sync_channel},
 };
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
 use bevy_pancam::{PanCam, PanCamPlugin};
 use serde::Deserialize;
-use ti_helper_game_data::components::phase::Phase;
-use ti_helper_game_logic::{game_options::GameOptions, gameplay::game_state::GameState};
-use tile::{render_map, PlanetOwnerVisuals, SystemVisuals};
+use ti_helper_game_data::{
+    components::phase::Phase, game_options::GameOptions, state::game_state::GameState,
+};
+use tile::{PlanetOwnerVisuals, SystemVisuals, render_map};
 use wasm_bindgen::prelude::*;
 use web_sys::{MessageEvent, UrlSearchParams, WebSocket};
 

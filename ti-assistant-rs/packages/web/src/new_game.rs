@@ -4,6 +4,8 @@ use ui::{
     requests::new_game::{self, GameConfig},
 };
 
+use crate::Route;
+
 #[derive(PartialEq)]
 enum CreateGameMode {
     New,
@@ -20,12 +22,28 @@ pub fn NewGame() -> Element {
     let mut codexII = use_signal(|| false);
     let mut codexIII = use_signal(|| false);
 
-    let mut new_game_result = use_signal(|| None);
+    let nav = navigator();
 
-    match new_game_result() {
-        Some(s) => rsx! {
-            p { "S: {s:?}" }
+    let mut new_game_result: Signal<Option<Result<String, ServerFnError>>> = use_signal(|| None);
+
+    match &new_game_result() {
+        Some(Err(err)) => rsx! {
+            p { "Failed to create game: {err:?}" }
         },
+        Some(Ok(game_id)) => {
+            match nav.push(Route::Game {
+                id: game_id.clone(),
+            }) {
+                Some(s) => rsx! {
+                    p { "Failed to navigate... {s:?}" }
+                },
+                None => {
+                    rsx! {
+                        p { "Navigating..." }
+                    }
+                }
+            }
+        }
         None => {
             rsx! {
                 div {

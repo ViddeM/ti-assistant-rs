@@ -2,18 +2,18 @@ use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use ts_rs::TS;
 
-use ti_helper_game_data::{
+use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
     components::{
         action_card::{ActionCard, ActionCardInfo},
         agenda::{Agenda, AgendaInfo},
         frontier_card::{FrontierCard, FrontierCardInfo},
         leaders::{Leader, LeaderInfo},
-        objectives::{public::PublicObjective, secret::SecretObjective, Objective, ObjectiveInfo},
+        objectives::{Objective, ObjectiveInfo, public::PublicObjective, secret::SecretObjective},
         planet::{Planet, PlanetInfo},
         planet_attachment::{PlanetAttachment, PlanetAttachmentInfo},
         relic::{Relic, RelicInfo},
-        system::{systems, System, SystemId},
+        system::{System, SystemId, systems},
         tech::{TechInfo, Technology},
     },
     enum_map::EnumMap,
@@ -56,6 +56,14 @@ pub struct GameOptions {
     frontier_cards: EnumMap<FrontierCard, FrontierCardInfo>,
     /// What relics exists in the game.
     relics: EnumMap<Relic, RelicInfo>,
+}
+
+impl std::ops::Deref for GameOptions {
+    type Target = EnumMap<Faction, Vec<Leader>>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.leaders_by_faction
+    }
 }
 
 impl GameOptions {

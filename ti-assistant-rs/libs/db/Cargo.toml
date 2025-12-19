@@ -17,4 +17,6 @@ serde = { version = "1", features = ["derive", "rc"] }
 serde_json = "1"
 thiserror = "1"
 chrono = { version = "0.4.31", features = ["serde"] }
-rand = "0.8.5"
+
+[dependencies.ti_helper_game_data]
+path = "../game_data"

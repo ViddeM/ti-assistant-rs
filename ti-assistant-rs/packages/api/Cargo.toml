@@ -7,6 +7,7 @@ edition = "2024"
 dioxus = { workspace = true, features = ["fullstack"] }
 anyhow = "1.0"
 serde = { version = "1", features = ["derive", "rc"] }
+ti_helper_game_data = { workspace = true }
 
 # Server only
 serde_json = { version = "1", optional = true }
@@ -30,7 +31,6 @@ thiserror = { version = "1", optional = true }
 
 ti_helper_db = { workspace = true, optional = true }
 ti_helper_game_logic = { workspace = true, optional = true }
-ti_helper_game_data = { workspace = true, optional = true }
 ti_helper_milty = { workspace = true, optional = true }
 
 [build-dependencies]
@@ -45,6 +45,7 @@ ti_helper_game_logic = { workspace = true, optional = true }
 [features]
 server = [
     "dioxus/server",
+    "ti_helper_game_data/server",
     "dep:serde_json",
     "dep:chrono",
     "dep:clap",
@@ -58,7 +59,6 @@ server = [
     "dep:cron",
     "dep:ti_helper_db",
     "dep:ti_helper_game_logic",
-    "dep:ti_helper_game_data",
     "dep:ti_helper_milty",
 ]
 

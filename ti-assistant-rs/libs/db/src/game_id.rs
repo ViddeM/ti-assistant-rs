@@ -1,96 +1,47 @@
+use std::{fmt::Display, ops::Deref};
+
 use diesel::{deserialize::FromSqlRow, expression::AsExpression};
-use rand::random;
-use serde::{de::Error, Deserialize, Serialize};
-use std::{
-    fmt::{Debug, Display},
-    io::Write,
-    ops::Deref,
-    str::{self, FromStr},
-};
+use ti_helper_game_data::game_id::GameId;
 
-/// A game ID, which is always an 8 character hexadecimal string.
-///
-/// You can create a [GameId] by calling `.parse` on a string.
-///
-/// # Invariant
-///
-/// The inner `[u8; 8]` must always be a valid 8-character hexadecimal string. This is enforced
-/// through the `From<u32>`, and the [FromStr] impls, which are the only valid ways to make GameIds.
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, AsExpression, FromSqlRow)]
+/// Database compatible wrapper for the GameId.
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, AsExpression, FromSqlRow)]
 #[diesel(sql_type = diesel::sql_types::Text)]
-pub struct GameId([u8; 8]);
+pub struct DBGameId(GameId);
 
-impl GameId {
-    /// Generate a new random game ID.
-    pub fn random() -> Self {
-        let id: u32 = random();
-        id.into()
+impl From<&GameId> for DBGameId {
+    fn from(value: &GameId) -> Self {
+        Self(*value)
     }
 }
 
-impl Deref for GameId {
+impl From<GameId> for DBGameId {
+    fn from(value: GameId) -> Self {
+        Self(value)
+    }
+}
+
+impl From<&DBGameId> for GameId {
+    fn from(value: &DBGameId) -> Self {
+        value.0
+    }
+}
+
+impl From<DBGameId> for GameId {
+    fn from(value: DBGameId) -> Self {
+        value.0
+    }
+}
+
+impl Deref for DBGameId {
     type Target = str;
 
     fn deref(&self) -> &Self::Target {
-        str::from_utf8(&self.0).expect("GameId must always be a hexadecimal str")
+        self.0.deref()
     }
 }
 
-impl FromStr for GameId {
-    type Err = &'static str;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let id: &[u8; 8] = s
-            .as_bytes()
-            .try_into()
-            .map_err(|_| "GameId must be exactly 8 bytes long")?;
-
-        if s.chars().any(|c| !c.is_ascii_hexdigit()) {
-            return Err("GameId must be a hexadecimal string");
-        }
-
-        let _parsed = u32::from_str_radix(s, 16)
-            .map_err(|_| "failed to parse game id, expected hex string of length 8")?;
-
-        Ok(GameId(*id))
-    }
-}
-
-impl From<u32> for GameId {
-    fn from(id: u32) -> Self {
-        let mut buf = [0u8; 8];
-        write!(&mut &mut buf[..], "{id:08x}").expect("the buf is big enough");
-        GameId(buf)
-    }
-}
-
-impl Serialize for GameId {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        self.deref().serialize(serializer)
-    }
-}
-
-impl<'de> Deserialize<'de> for GameId {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let s = <&str>::deserialize(deserializer)?;
-        s.parse().map_err(D::Error::custom)
-    }
-}
-
-impl Debug for GameId {
+impl Display for DBGameId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        Debug::fmt(self.deref(), f)
-    }
-}
-
-impl Display for GameId {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        Display::fmt(self.deref(), f)
+        self.0.fmt(f)
     }
 }

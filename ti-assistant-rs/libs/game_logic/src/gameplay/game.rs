@@ -2,10 +2,14 @@ use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use ti_helper_game_data::{
+    actions::event::Event,
+    state::{game_state::GameState, player::Player},
+};
 
 use crate::gameplay::game_event_handler::update_game_state;
 
-use super::{error::GameError, event::Event, game_state::GameState, player::Player};
+use super::error::GameError;
 
 /// A game.
 #[derive(Debug, Serialize, Deserialize, Default)]

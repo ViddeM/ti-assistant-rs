@@ -8,9 +8,7 @@ use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use ts_rs::TS;
 
-use super::game_state::GameState;
-
-use ti_helper_game_data::{
+use crate::{
     common::player_id::PlayerId,
     components::{
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
@@ -18,6 +16,7 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         strategy_card::StrategyCard,
     },
+    state::game_state::GameState,
 };
 
 /// State for the agenda phase.

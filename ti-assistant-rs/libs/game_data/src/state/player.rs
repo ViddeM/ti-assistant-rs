@@ -4,15 +4,13 @@ use anyhow::ensure;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use ti_helper_game_data::{
+use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
     components::{
         planet::Planet, planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
     },
     enum_map::EnumMap,
 };
-
-use super::error::GameError;
 
 /// A new player that is currently being created.
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
@@ -75,7 +73,7 @@ impl Player {
     }
 
     /// Add a technology to the players technologie list.
-    pub fn take_tech(&mut self, tech: Technology) -> Result<(), GameError> {
+    pub fn take_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
         ensure!(
             !self.has_tech(&tech),
             "Player {self:?} already has tech {tech:?}"
@@ -85,7 +83,7 @@ impl Player {
     }
 
     /// Research a technology (for actions stating 'gain', use [`take_tech()`] instead), performing necessary checks for that action.
-    pub fn research_tech(&mut self, tech: Technology) -> Result<(), GameError> {
+    pub fn research_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
         ensure!(
             self.faction != Faction::NekroVirus,
             "Nekro Virus cannot research techs"

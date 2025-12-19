@@ -6,11 +6,11 @@ use std::{
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use ti_helper_game_data::{
+use crate::{
     common::player_id::PlayerId,
     components::{
         agenda::{Agenda, AgendaElect, ForOrAgainst},
-        objectives::{secret::SecretObjective, Objective},
+        objectives::{Objective, secret::SecretObjective},
         planet::Planet,
     },
     enum_map::EnumMap,

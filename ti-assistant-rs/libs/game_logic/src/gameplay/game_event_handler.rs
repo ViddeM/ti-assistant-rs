@@ -4,27 +4,16 @@ use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
 use strum::IntoEnumIterator;
 
-use crate::gameplay::{
-    agenda::{AgendaRound, Vote, VoteState},
-    event::{
-        FrontierCardAction, RelicAction, StrategicPrimaryAction, StrategicSecondaryAction,
-        action_matches_action_card, action_matches_relic,
-    },
-    game_state::{
-        ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
-        LeaderProgress, RelicProgress, StrategicPrimaryProgress, StrategicProgress,
-    },
-};
-
-use super::{
-    color_assignment::assign_colors,
-    error::GameError,
-    event::{ActionCardAction, Event, action_matches_frontier_card},
-    game_state::{GameState, MapData, MiltyInformation, TacticalProgress},
-    player::NewPlayer,
-};
+use super::{color_assignment::assign_colors, error::GameError};
 
 use ti_helper_game_data::{
+    actions::{
+        event::{
+            ActionCardAction, Event, FrontierCardAction, RelicAction, action_matches_action_card,
+            action_matches_frontier_card, action_matches_relic,
+        },
+        strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
+    },
     common::{
         faction::Faction, game_settings::GameSettings, milty_data::MiltyPlayer, player_id::PlayerId,
     },
@@ -41,6 +30,15 @@ use ti_helper_game_data::{
         strategy_card::StrategyCard,
         system::{System, SystemType, systems},
         tech::{TechOrigin, TechType, Technology},
+    },
+    state::{
+        agenda::{AgendaRound, Vote, VoteState},
+        game_state::{
+            ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
+            GameState, LeaderProgress, MapData, MiltyInformation, RelicProgress,
+            StrategicPrimaryProgress, StrategicProgress, TacticalProgress,
+        },
+        player::NewPlayer,
     },
 };
 

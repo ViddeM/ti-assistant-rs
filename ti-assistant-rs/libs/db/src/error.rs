@@ -1,7 +1,7 @@
 use diesel::ConnectionError;
 use diesel_async::pooled_connection::deadpool::{BuildError, PoolError};
 
-use crate::game_id::GameId;
+use crate::game_id::DBGameId;
 
 /// Result for the DB crate.
 pub type DbResult<T> = Result<T, DbError>;
@@ -19,7 +19,7 @@ pub enum DbError {
     #[error("Connection error: {0}")]
     ConnectionError(#[from] ConnectionError),
     #[error("Failed to delete game event for game_id: {game_id} due to error: {error}")]
-    DeleteGameError { game_id: GameId, error: String },
+    DeleteGameError { game_id: DBGameId, error: String },
     #[error("Failed to run migrations: {0}")]
     MigrationError(String),
 }

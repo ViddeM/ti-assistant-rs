@@ -4,4 +4,5 @@
 pub mod server_side;
 
 pub mod endpoints;
+pub mod messages;
 pub mod requests;

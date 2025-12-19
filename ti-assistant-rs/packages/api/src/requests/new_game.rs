@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "server")]
+use ti_helper_game_data::actions::event::Event;
 
 #[cfg(feature = "server")]
 use {
@@ -6,7 +8,6 @@ use {
         game_settings::{Expansions, GameSettings},
         milty_data::MiltyData,
     },
-    ti_helper_game_logic::gameplay::event::Event,
     ti_helper_milty::MiltyImport,
 };
 

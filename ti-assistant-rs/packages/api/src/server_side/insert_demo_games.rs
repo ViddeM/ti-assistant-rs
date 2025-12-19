@@ -2,8 +2,9 @@ use std::{fs, str::FromStr};
 
 use anyhow::Context;
 use chrono::{DateTime, Utc};
-use ti_helper_db::{db::DbPool, game_id::GameId, queries};
-use ti_helper_game_logic::gameplay::{event::Event, game::Game};
+use ti_helper_db::{db::DbPool, queries};
+use ti_helper_game_data::{actions::event::Event, game_id::GameId};
+use ti_helper_game_logic::gameplay::game::Game;
 
 use crate::server_side::Opts;
 

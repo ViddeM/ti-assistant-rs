@@ -16,10 +16,11 @@ use diesel_async::{
     pooled_connection::{AsyncDieselConnectionManager, deadpool::Pool},
 };
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
+use ti_helper_game_data::game_id::GameId;
 
 use crate::{
     error::{DbError, DbResult},
-    game_id::GameId,
+    game_id::DBGameId,
 };
 
 /// A database pool.
@@ -31,7 +32,7 @@ pub type DbPool = Pool<AsyncPgConnection>;
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Game {
     /// A unique ID for the game.
-    pub id: GameId,
+    pub id: DBGameId,
     /// The name of the game.
     pub name: String,
 }
@@ -44,7 +45,7 @@ pub struct GameEvent {
     /// A unique ID for the event.
     pub id: i32,
     /// The game that this event occurred in.
-    pub game_id: GameId,
+    pub game_id: DBGameId,
     /// When this event occurred for that game (must be unique for a particular game).
     pub seq: i32,
     /// At what timestamp the event was taken.
@@ -59,14 +60,14 @@ pub struct GameEvent {
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct NewGameEvent {
     /// The ID this event belongs to.
-    pub game_id: GameId,
+    pub game_id: DBGameId,
     /// The event information in json format.
     pub event: serde_json::Value,
     /// The timestamp at which the event occurred.
     pub timestamp: DateTime<Utc>,
 }
 
-impl<DB: Backend> FromSql<Text, DB> for GameId
+impl<DB: Backend> FromSql<Text, DB> for DBGameId
 where
     String: FromSql<Text, DB>,
     //*const str: FromSql<Text, DB>,
@@ -79,11 +80,11 @@ where
         //let p = <*const str as FromSql<Text, DB>>::from_sql(bytes)?;
         //let s = unsafe { p.as_ref() }.expect("string can't be null");
 
-        Ok(s.parse()?)
+        Ok(s.parse::<GameId>()?.into())
     }
 }
 
-impl<DB> ToSql<Text, DB> for GameId
+impl<DB> ToSql<Text, DB> for DBGameId
 where
     DB: Backend,
     str: ToSql<Text, DB>,

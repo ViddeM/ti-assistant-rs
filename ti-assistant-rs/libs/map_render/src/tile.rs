@@ -10,10 +10,10 @@ use ti_helper_game_data::{
     },
     components::{
         planet::Planet,
-        system::{systems, System, SystemId},
+        system::{System, SystemId, systems},
     },
+    state::{game_state::GameState, player::Player},
 };
-use ti_helper_game_logic::gameplay::{game_state::GameState, player::Player};
 
 use crate::system_planets::planet_offset;
 

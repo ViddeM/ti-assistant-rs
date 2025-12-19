@@ -9,7 +9,6 @@ members = [
     "libs/game_logic",
     "libs/map_render",
     "libs/milty",
-    "libs/websocket",
 ]
 
 [workspace.dependencies]
@@ -25,4 +24,3 @@ ti_helper_game_data = { path = "libs/game_data" }
 ti_helper_game_logic = { path = "libs/game_logic" }
 ti_helper_map_render = { path = "libs/map_render" }
 ti_helper_milty = { path = "libs/milty" }
-ti_helper_websocket = { path = "libs/websocket" }
