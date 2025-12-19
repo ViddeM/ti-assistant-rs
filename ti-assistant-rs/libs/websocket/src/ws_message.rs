@@ -72,7 +72,7 @@ impl NewGame {
 }
 
 /// The game configuration.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum GameConfig {
     /// Config specified by the user.
     #[serde(rename_all = "camelCase")]

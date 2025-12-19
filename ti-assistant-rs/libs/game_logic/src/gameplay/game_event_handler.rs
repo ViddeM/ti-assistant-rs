@@ -1,14 +1,14 @@
 use std::{borrow::BorrowMut, collections::HashSet};
 
+use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
-use eyre::{bail, ensure, Context, ContextCompat, OptionExt, Result};
 use strum::IntoEnumIterator;
 
 use crate::gameplay::{
     agenda::{AgendaRound, Vote, VoteState},
     event::{
-        action_matches_action_card, action_matches_relic, FrontierCardAction, RelicAction,
-        StrategicPrimaryAction, StrategicSecondaryAction,
+        FrontierCardAction, RelicAction, StrategicPrimaryAction, StrategicSecondaryAction,
+        action_matches_action_card, action_matches_relic,
     },
     game_state::{
         ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
@@ -19,7 +19,7 @@ use crate::gameplay::{
 use super::{
     color_assignment::assign_colors,
     error::GameError,
-    event::{action_matches_frontier_card, ActionCardAction, Event},
+    event::{ActionCardAction, Event, action_matches_frontier_card},
     game_state::{GameState, MapData, MiltyInformation, TacticalProgress},
     player::NewPlayer,
 };
@@ -39,7 +39,7 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
-        system::{systems, System, SystemType},
+        system::{System, SystemType, systems},
         tech::{TechOrigin, TechType, Technology},
     },
 };
@@ -94,7 +94,7 @@ fn try_update_game_state(
 
             let colors_map =
                 assign_colors(milty_data.players.values().map(|p| p.faction).collect())
-                    .wrap_err("Failed to assign colors to factions")?;
+                    .context("Failed to assign colors to factions")?;
             let new_players = milty_data
                 .players
                 .values()
@@ -104,11 +104,13 @@ fn try_update_game_state(
                         faction: p.faction,
                         color: colors_map
                             .get(&p.faction)
-                            .ok_or_eyre(format!("Faction {:?} did not get a color?", p.faction))?
+                            .ok_or_else(|| {
+                                anyhow::anyhow!("Faction {:?} did not get a color?", p.faction)
+                            })?
                             .clone(),
                     })
                 })
-                .collect::<eyre::Result<Vec<NewPlayer>>>()?;
+                .collect::<anyhow::Result<Vec<NewPlayer>>>()?;
 
             game_state.players = new_players
                 .into_iter()
@@ -120,7 +122,7 @@ fn try_update_game_state(
                     .table_order
                     .first()
                     .cloned()
-                    .wrap_err("Expected there to be players from milty?")?,
+                    .context("Expected there to be players from milty?")?,
             );
         }
         Event::AddPlayer { player } => {
@@ -360,13 +362,9 @@ fn try_update_game_state(
                 .players
                 .keys()
                 .map(|p| {
-                    game_state.player_initialization_finished(p).map(|ok| {
-                        if ok {
-                            None
-                        } else {
-                            Some(p)
-                        }
-                    })
+                    game_state
+                        .player_initialization_finished(p)
+                        .map(|ok| if ok { None } else { Some(p) })
                 })
                 .collect::<Result<Vec<Option<&PlayerId>>, GameError>>()?
                 .into_iter()
@@ -375,7 +373,9 @@ fn try_update_game_state(
 
             ensure!(
                 uninitialized_players.is_empty(),
-                format!("All initialization has not yet been completed for players {uninitialized_players:?}")
+                format!(
+                    "All initialization has not yet been completed for players {uninitialized_players:?}"
+                )
             );
 
             game_state.change_phase(Phase::Strategy, timestamp)?;
@@ -404,7 +404,7 @@ fn try_update_game_state(
                 n => n,
             };
             if game_state.strategy_card_holders.len() != how_many_card_must_pick {
-                eyre::bail!(
+                anyhow::bail!(
                     "can't complete strategy phase, all players have not selected strategy cards"
                 );
             }
@@ -478,7 +478,9 @@ fn try_update_game_state(
             };
 
             let Some(current_player) = game_state.players.get_mut(current_player_id) else {
-                bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
+                bail!(
+                    "invalid game state, expected current player (id: {current_player_id:?}) to be in the players map"
+                )
             };
 
             if shard_of_the_throne {
@@ -595,7 +597,7 @@ fn try_update_game_state(
             let player_faction = game_state
                 .players
                 .get(&player)
-                .wrap_err("Expected player to exist")?
+                .context("Expected player to exist")?
                 .faction;
 
             game_state.action_progress = Some(ActionPhaseProgress::Strategic(StrategicProgress {
@@ -710,7 +712,10 @@ fn try_update_game_state(
                             second_tech,
                         } => {
                             let player = game_state.players.get_mut(&player).unwrap();
-                            ensure!(player.faction == Faction::UniversitiesOfJolNar, "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary");
+                            ensure!(
+                                player.faction == Faction::UniversitiesOfJolNar,
+                                "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary"
+                            );
                             player.research_tech(first_tech)?;
                             if let Some(t) = second_tech {
                                 player.research_tech(t)?;
@@ -1002,7 +1007,7 @@ fn try_update_game_state(
                 game_state
                     .players
                     .get(&player)
-                    .ok_or_else(|| eyre::eyre!("Player doesn't exist? (This is a bug)"))?
+                    .ok_or_else(|| anyhow::anyhow!("Player doesn't exist? (This is a bug)"))?
                     .relics
                     .contains(&relic),
                 "Player doesn't own the relic"
@@ -1027,7 +1032,7 @@ fn try_update_game_state(
                 game_state
                     .players
                     .get(&player)
-                    .ok_or_eyre("Player doesn't exist? (This is a bug)")?
+                    .ok_or_else(|| anyhow::anyhow!("Player doesn't exist? (This is a bug)"))?
                     .relics
                     .contains(&progress.relic),
                 "Player doesn't own the relic"
@@ -1056,7 +1061,13 @@ fn try_update_game_state(
                             !planet.info().is_legendary,
                             "Cannot use stellar converter on legendary planet"
                         );
-                        ensure!(!game_state.map_data.stellar_converter_destroyed_planets.contains(&planet), "Cannot use stellar converter on a planet that has already been destroyed!");
+                        ensure!(
+                            !game_state
+                                .map_data
+                                .stellar_converter_destroyed_planets
+                                .contains(&planet),
+                            "Cannot use stellar converter on a planet that has already been destroyed!"
+                        );
 
                         if let Some(player) = game_state.players.values_mut().find_map(|p| {
                             if p.planets.contains_key(&planet) {
@@ -1114,7 +1125,7 @@ fn try_update_game_state(
             game_state
                 .players
                 .get_mut(&player)
-                .ok_or_eyre("Player no longer exists? (This is a bug)")?
+                .ok_or_else(|| anyhow::anyhow!("Player no longer exists? (This is a bug)"))?
                 .relics
                 .remove(&progress.relic);
 
@@ -1240,7 +1251,9 @@ fn try_update_game_state(
                 }
                 ObjectiveKind::StageII => {
                     if num_revealed < status_phase_state.expected_objectives_before_stage_two {
-                        bail!("Haven't finished revealing stage I obejctives, cannot reveal stage II yet")
+                        bail!(
+                            "Haven't finished revealing stage I obejctives, cannot reveal stage II yet"
+                        )
                     }
                 }
                 ObjectiveKind::Secret { .. } => {
@@ -1249,7 +1262,9 @@ fn try_update_game_state(
             }
 
             if !status_phase_state.can_reveal_objective(game_state.players.len()) {
-                bail!("Cannot reveal objective until all players have finished scoring their objectives");
+                bail!(
+                    "Cannot reveal objective until all players have finished scoring their objectives"
+                );
             }
 
             status_phase_state.revealed_objective = Some(pub_obj.clone());
@@ -1319,7 +1334,9 @@ fn try_update_game_state(
             );
 
             ensure!(
-                p.planets.values().any(|attachments| attachments.iter().any(|a| a == &PlanetAttachment::TombOfEmphidia)),
+                p.planets.values().any(|attachments| attachments
+                    .iter()
+                    .any(|a| a == &PlanetAttachment::TombOfEmphidia)),
                 "Planet must have the 'Tomb of Emphidia' planet attachment in order to play the Crown of Emphidia"
             );
 
@@ -1384,7 +1401,7 @@ fn try_update_game_state(
                 game_state
                     .players
                     .get(&player)
-                    .wrap_err("Player doesn't exist?")?
+                    .context("Player doesn't exist?")?
                     .faction
                     != Faction::NekroVirus,
                 "Nekro Virus cannot vote on agendas"
@@ -1427,7 +1444,7 @@ fn try_update_game_state(
 
             game_state
                 .resolve_agenda(vote, outcome)
-                .wrap_err("Failed to resolve agenda")?;
+                .context("Failed to resolve agenda")?;
 
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
@@ -1683,7 +1700,10 @@ fn try_update_game_state(
                 }
                 v => {
                     if let Some(t) = v.info().planet_trait {
-                        ensure!(planet.info().planet_traits.contains(&t), "Attachment is not allowed to be placed on this planet, planet_trait requirement not met.");
+                        ensure!(
+                            planet.info().planet_traits.contains(&t),
+                            "Attachment is not allowed to be placed on this planet, planet_trait requirement not met."
+                        );
                     }
                 }
             }
@@ -1713,11 +1733,14 @@ fn try_update_game_state(
 
         Event::AddAgendaBegin { agenda } => {
             game_state.assert_expansion(&agenda.info().expansion)?;
-            ensure!(game_state.agenda_override_state.is_none(), "There is already an agenda override in progress, cancel or resolve that before starting a new one.");
+            ensure!(
+                game_state.agenda_override_state.is_none(),
+                "There is already an agenda override in progress, cancel or resolve that before starting a new one."
+            );
 
             game_state.agenda_override_state = Some(AgendaOverrideState {
                 vote_state: VoteState::new(agenda, game_state)
-                    .wrap_err("Failed to create vote state")?,
+                    .context("Failed to create vote state")?,
             });
         }
 
@@ -1730,7 +1753,7 @@ fn try_update_game_state(
                 game_state
                     .players
                     .get(&player)
-                    .wrap_err("Player doesn't exist?")?
+                    .context("Player doesn't exist?")?
                     .faction
                     != Faction::NekroVirus,
                 "Nekro Virus cannot vote on agendas"
@@ -1781,7 +1804,7 @@ fn try_update_game_state(
 
             game_state
                 .resolve_agenda(vote_state, Some(elected_outcome))
-                .wrap_err("Failed to resolve agenda")?;
+                .context("Failed to resolve agenda")?;
             game_state.agenda_override_state = None;
         }
     }
@@ -1800,7 +1823,7 @@ fn get_plagiarize_available_techs(
     let current_player = game_state
         .players
         .get(&current_player_id)
-        .ok_or_else(|| eyre::eyre!("Invalid game state, current player not in players map"))?;
+        .ok_or_else(|| anyhow::anyhow!("Invalid game state, current player not in players map"))?;
 
     let available_techs = game_state
         .players

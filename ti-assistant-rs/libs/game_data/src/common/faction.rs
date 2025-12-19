@@ -4,10 +4,13 @@ use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
 use ts_rs::TS;
 
-use crate::components::{
-    planet::Planet,
-    system::{systems, SystemType},
-    tech::Technology,
+use crate::{
+    components::{
+        planet::Planet,
+        system::{SystemType, systems},
+        tech::Technology,
+    },
+    error::{GDResult, GameDataError},
 };
 
 use super::{expansions::Expansion, game_settings::Expansions};
@@ -204,7 +207,7 @@ impl Faction {
     }
 
     /// Tries to parse the name of a faction into a faction (note: Must match w/e naming scheme milty draft is using!)
-    pub fn parse(name: &str) -> eyre::Result<Self> {
+    pub fn parse(name: &str) -> GDResult<Self> {
         Ok(match name {
             "Sardakk N'orr" => Faction::SardakkNorr,
             "The Arborec" => Faction::Arborec,
@@ -270,9 +273,11 @@ impl Faction {
             | "Lanefir Remnants"
             | "The Monks of Kolume"
             | "Nokar Sellships" => {
-                eyre::bail!("Discordant stars factions are currently not supported!")
+                return Err(GameDataError::DiscordantStarsFactionsNotSupported(
+                    name.to_string(),
+                ));
             }
-            other => eyre::bail!("Unknown faction {other}"),
+            other => return Err(GameDataError::UnknownFaction(name.to_string())),
         })
     }
 }

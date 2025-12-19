@@ -11,4 +11,4 @@ ts-rs = "8.1.0"
 chrono = { version = "0.4.31", features = ["serde"] }
 strum = "0.25"
 strum_macros = "0.25"
-eyre = "0.6.8"
+thiserror = "1"

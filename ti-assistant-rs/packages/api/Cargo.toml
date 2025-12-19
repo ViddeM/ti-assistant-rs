@@ -21,17 +21,18 @@ diesel-async = { version = "0.4.1", features = [
     "async-connection-wrapper",
 ], optional = true }
 dotenvy = { version = "0.15.7", optional = true }
-eyre = { version = "0.6.8", optional = true }
-color-eyre = { version = "0.6.2", optional = true }
 tokio = { version = "1.28", features = ["full"], optional = true }
 log = { version = "0.4.20", optional = true }
 pretty_env_logger = { version = "0.5.0", optional = true }
 cron = { version = "0.12.0", optional = true }
+thiserror = { version = "1", optional = true }
 
 ti_helper_db = { workspace = true, optional = true }
 ti_helper_websocket = { workspace = true, optional = true }
 ti_helper_game_logic = { workspace = true, optional = true }
 ti_helper_game_data = { workspace = true, optional = true }
+ti_helper_milty = { workspace = true, optional = true }
+anyhow = { version = "1.0", optional = true }
 
 [build-dependencies]
 dotenvy = { version = "0.15.7", optional = true }
@@ -50,8 +51,8 @@ server = [
     "dep:diesel",
     "dep:diesel-async",
     "dep:dotenvy",
-    "dep:eyre",
-    "dep:color-eyre",
+    "dep:anyhow",
+    "dep:thiserror",
     "dep:tokio",
     "dep:log",
     "dep:pretty_env_logger",
@@ -60,6 +61,7 @@ server = [
     "dep:ti_helper_websocket",
     "dep:ti_helper_game_logic",
     "dep:ti_helper_game_data",
+    "dep:ti_helper_milty",
 ]
 
 default = [

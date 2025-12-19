@@ -3,22 +3,24 @@ use std::thread;
 
 use chrono::{DateTime, Utc};
 use diesel::{
+    Connection, Selectable,
     backend::Backend,
     deserialize::FromSql,
     prelude::{Insertable, Queryable},
     serialize::{self, Output, ToSql},
     sql_types::Text,
-    Connection, Selectable,
 };
 use diesel_async::AsyncPgConnection;
 use diesel_async::{
     async_connection_wrapper::AsyncConnectionWrapper,
-    pooled_connection::{deadpool::Pool, AsyncDieselConnectionManager},
+    pooled_connection::{AsyncDieselConnectionManager, deadpool::Pool},
 };
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use eyre::{eyre, Context};
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 
-use crate::game_id::GameId;
+use crate::{
+    error::{DbError, DbResult},
+    game_id::GameId,
+};
 
 /// A database pool.
 pub type DbPool = Pool<AsyncPgConnection>;
@@ -92,15 +94,13 @@ where
 }
 
 /// Configure and setup a database pool
-pub async fn setup_pool(db_url: &str) -> eyre::Result<DbPool> {
+pub async fn setup_pool(db_url: &str) -> DbResult<DbPool> {
     let config = AsyncDieselConnectionManager::<diesel_async::AsyncPgConnection>::new(db_url);
-    Pool::builder(config)
-        .build()
-        .wrap_err("create connection pool")
+    Ok(Pool::builder(config).build()?)
 }
 
 /// Run database migrations
-pub fn run_migrations(db_url: &str) -> eyre::Result<()> {
+pub fn run_migrations(db_url: &str) -> DbResult<()> {
     const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
     // diesel_async doesn't work well with diesel_migrations, so we have to use this
@@ -112,8 +112,7 @@ pub fn run_migrations(db_url: &str) -> eyre::Result<()> {
         s.spawn(|| {
             let mut db = AsyncConnectionWrapper::<AsyncPgConnection>::establish(db_url)?;
             db.run_pending_migrations(MIGRATIONS)
-                .map_err(|e| eyre!("{e}"))?;
-
+                .map_err(|err| DbError::MigrationError(err.to_string()))?;
             Ok(())
         })
         .join()

@@ -1,2 +1,2 @@
 /// An error.
-pub type GameError = eyre::Report;
+pub type GameError = anyhow::Error;

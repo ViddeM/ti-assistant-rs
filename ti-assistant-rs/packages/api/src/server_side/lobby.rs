@@ -3,9 +3,9 @@ use ti_helper_db::game_id::GameId;
 use ti_helper_game_logic::gameplay::{game::Game, game_state::GameState};
 use tokio::sync::{broadcast, RwLock};
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Lobbies {
-    pub list: RwLock<HashMap<GameId, Arc<RwLock<Lobby>>>>,
+    pub list: Arc<RwLock<HashMap<GameId, Arc<RwLock<Lobby>>>>>,
 }
 
 pub struct Lobby {

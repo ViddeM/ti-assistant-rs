@@ -3,8 +3,8 @@ use std::{
     time::Duration,
 };
 
+use anyhow::{Context, anyhow, bail, ensure};
 use chrono::{DateTime, Utc};
-use eyre::{bail, ensure, eyre, Context};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -332,7 +332,7 @@ impl GameState {
 
             // error out of outer function if player doesn't have a strategy card
             let Some(strategy_card) = strategy_card else {
-                result = Err(eyre!("Player {player:?} does not have a strategy card."));
+                result = Err(anyhow!("Player {player:?} does not have a strategy card."));
                 return 99;
             };
 
@@ -353,7 +353,7 @@ impl GameState {
             .table_order
             .iter()
             .position(|p| p == speaker)
-            .ok_or(eyre!("No speaker index?"))?;
+            .ok_or(anyhow!("No speaker index?"))?;
 
         self.turn_order = self.table_order.clone();
         self.turn_order.rotate_left(speaker_index); // speaker goes first
@@ -368,7 +368,7 @@ impl GameState {
             .table_order
             .iter()
             .position(|p| p == speaker)
-            .ok_or(eyre!("No speaker index?"))?;
+            .ok_or(anyhow!("No speaker index?"))?;
 
         self.turn_order = self.table_order.clone();
         self.turn_order.rotate_left(speaker_index + 1); // speaker goes last
@@ -389,7 +389,7 @@ impl GameState {
             let turn_time_elapsed = timestamp - turn_start_time;
             let turn_time_elapsed = turn_time_elapsed
                 .to_std()
-                .wrap_err("turn time out of range")?;
+                .context("turn time out of range")?;
             *self.players_play_time.entry(current_player).or_default() += turn_time_elapsed;
         }
 
@@ -485,12 +485,14 @@ impl GameState {
 
     /// Returns the current players [PlyerId].
     pub fn current_player(&self) -> Result<PlayerId, GameError> {
-        self.current_player.clone().ok_or(eyre!("no active player"))
+        self.current_player
+            .clone()
+            .ok_or(anyhow!("no active player"))
     }
 
     /// Returns the current speaker.
     pub fn speaker(&self) -> Result<&PlayerId, GameError> {
-        self.speaker.as_ref().ok_or(eyre!("No speaker"))
+        self.speaker.as_ref().ok_or(anyhow!("No speaker"))
     }
 
     /// Asserts that the provided player is the currently active player.
@@ -583,7 +585,9 @@ impl GameState {
 
         let current_player = match self.players.get_mut(current_player_id) {
             Some(p) => p,
-            None => bail!("invalid game state, expected current player (id: {current_player_id:?}) to be in the players map")
+            None => bail!(
+                "invalid game state, expected current player (id: {current_player_id:?}) to be in the players map"
+            ),
         };
 
         Ok(current_player)
@@ -603,7 +607,7 @@ impl GameState {
     /// Returns true if the player has performed any required initialization for their faction.
     pub fn player_initialization_finished(&self, player_id: &PlayerId) -> Result<bool, GameError> {
         let Some(player) = self.players.get(player_id) else {
-            bail!("player does not exist (this is a bug)");
+            anyhow::bail!("player does not exist (this is a bug)");
         };
 
         Ok(match player.faction {
@@ -656,7 +660,7 @@ impl GameState {
         &mut self,
         vote: VoteState,
         outcome: Option<AgendaElect>,
-    ) -> eyre::Result<()> {
+    ) -> anyhow::Result<()> {
         if let Some(outcome) = &outcome {
             ensure!(
                 AgendaElectKind::from(outcome) == vote.elect,

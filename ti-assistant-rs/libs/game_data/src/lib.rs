@@ -7,3 +7,5 @@ pub mod enum_map;
 pub mod common;
 /// Game components
 pub mod components;
+/// Errors that can occur in the game data operations.
+pub mod error;

@@ -1,14 +1,14 @@
 use std::str::FromStr;
 use std::sync::Arc;
 
+use anyhow::Context;
 use chrono::Local;
 use cron::Schedule;
-use eyre::Context;
 use tokio::{spawn, time::sleep};
 
-use crate::Shared;
+use crate::server_side::State;
 
-pub fn setup_game_gc(shared: &Arc<Shared>) -> eyre::Result<()> {
+pub fn setup_game_gc(shared: &Arc<State>) -> anyhow::Result<()> {
     if let Some(mem_gc_cron) = &shared.opt.mem_gc_cron {
         if shared.db_pool.is_none() {
             log::warn!("you have specified mem_gc_cron without specifying database_url");
@@ -16,7 +16,7 @@ pub fn setup_game_gc(shared: &Arc<Shared>) -> eyre::Result<()> {
         }
 
         let schedule =
-            Schedule::from_str(mem_gc_cron).wrap_err("failed to parse mem_gc_cron string")?;
+            Schedule::from_str(mem_gc_cron).context("failed to parse mem_gc_cron string")?;
 
         spawn(unload_inactive_games(schedule, Arc::clone(shared)));
     }
@@ -26,7 +26,7 @@ pub fn setup_game_gc(shared: &Arc<Shared>) -> eyre::Result<()> {
 
 /// Background tasks that periodically goes through all games in memory and unloads the ones with
 /// no clients.
-async fn unload_inactive_games(cron: Schedule, shared: Arc<Shared>) {
+async fn unload_inactive_games(cron: Schedule, shared: Arc<State>) {
     log::info!("scheduling inactive games gc task");
 
     let lobbies = &shared.lobbies;

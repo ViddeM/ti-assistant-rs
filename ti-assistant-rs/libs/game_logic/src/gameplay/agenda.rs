@@ -3,7 +3,7 @@ use std::{
     collections::{BTreeMap, HashMap, HashSet},
 };
 
-use eyre::{bail, ensure};
+use anyhow::{bail, ensure};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 use ts_rs::TS;
@@ -111,7 +111,7 @@ impl VoteState {
     /// Create the default [VoteState] for the given [Agenda].
     ///
     /// Returns an error if the agenda has no eligible targets for the vote.
-    pub fn new(agenda: Agenda, game: &GameState) -> eyre::Result<Self> {
+    pub fn new(agenda: Agenda, game: &GameState) -> anyhow::Result<Self> {
         let info = agenda.info();
 
         // list eligible planets for the vote, given the provided trait filter

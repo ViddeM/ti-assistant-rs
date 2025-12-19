@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use eyre::ensure;
+use anyhow::ensure;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 

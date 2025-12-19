@@ -1,10 +1,12 @@
 use std::collections::HashMap;
 
-use eyre::ensure;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use crate::common::{expansions::Expansion, faction::Faction};
+use crate::{
+    common::{expansions::Expansion, faction::Faction},
+    error::GameDataError,
+};
 
 use super::planet::Planet;
 
@@ -66,17 +68,19 @@ pub struct System {
 
 impl System {
     /// Returns the system that the provide planet belongs to.
-    pub fn for_planet(planet: &Planet) -> Result<Self, eyre::Error> {
+    pub fn for_planet(planet: &Planet) -> Result<Self, GameDataError> {
         let systems = systems()
             .values()
             .filter(|s| s.planets.contains(planet))
             .cloned()
             .collect::<Vec<System>>();
 
-        ensure!(
-            systems.len() == 1,
-            "A planet should only be a part of one system, got: {systems:?}"
-        );
+        if systems.len() != 1 {
+            return Err(GameDataError::PlanetInMoreThanOneSystems {
+                planet: planet.clone(),
+                num_systems: systems.len(),
+            });
+        }
 
         Ok(systems[0].clone())
     }

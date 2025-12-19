@@ -1,15 +1,15 @@
 use chrono::{DateTime, Utc};
-use diesel::{delete, insert_into, ExpressionMethods, OptionalExtension, QueryDsl};
+use diesel::{ExpressionMethods, OptionalExtension, QueryDsl, delete, insert_into};
 use diesel_async::{AsyncConnection, RunQueryDsl};
-use eyre::Context;
 
 use crate::{
     db::{self, DbPool},
+    error::{DbError, DbResult},
     game_id::GameId,
 };
 
 /// Insert a new game with the given `id` and `name`.
-pub async fn create_game(db_pool: &DbPool, id: GameId, name: String) -> eyre::Result<()> {
+pub async fn create_game(db_pool: &DbPool, id: GameId, name: String) -> DbResult<()> {
     let mut db = db_pool.get().await?;
 
     use crate::schema::game::dsl;
@@ -22,7 +22,7 @@ pub async fn create_game(db_pool: &DbPool, id: GameId, name: String) -> eyre::Re
 }
 
 /// Get a list of ALL [GameId]s in the database. Use with care.
-pub async fn get_all_game_ids(db_pool: &DbPool) -> eyre::Result<Vec<GameId>> {
+pub async fn get_all_game_ids(db_pool: &DbPool) -> DbResult<Vec<GameId>> {
     let mut db = db_pool.get().await?;
 
     use crate::schema::game::dsl;
@@ -30,7 +30,7 @@ pub async fn get_all_game_ids(db_pool: &DbPool) -> eyre::Result<Vec<GameId>> {
 }
 
 /// Retrieves the game with the provided game id.
-pub async fn get_game_by_id(db_pool: &DbPool, id: &GameId) -> eyre::Result<db::Game> {
+pub async fn get_game_by_id(db_pool: &DbPool, id: &GameId) -> DbResult<db::Game> {
     let mut db = db_pool.get().await?;
 
     use crate::schema::game::dsl;
@@ -39,7 +39,7 @@ pub async fn get_game_by_id(db_pool: &DbPool, id: &GameId) -> eyre::Result<db::G
 }
 
 /// Try to get a game by its id, returns None if the game doesn't exist in the DB.
-pub async fn try_get_game_by_id(db_pool: &DbPool, id: &GameId) -> eyre::Result<Option<db::Game>> {
+pub async fn try_get_game_by_id(db_pool: &DbPool, id: &GameId) -> DbResult<Option<db::Game>> {
     let mut db = db_pool.get().await?;
 
     use crate::schema::game::dsl;
@@ -53,7 +53,7 @@ pub async fn try_get_game_by_id(db_pool: &DbPool, id: &GameId) -> eyre::Result<O
 }
 
 /// Deletes all games associated with the game with the provided id.
-pub async fn delete_all_events_for_game(db_pool: &DbPool, id: &GameId) -> eyre::Result<()> {
+pub async fn delete_all_events_for_game(db_pool: &DbPool, id: &GameId) -> DbResult<()> {
     let mut db = db_pool.get().await?;
 
     use crate::schema::game_event::dsl;
@@ -66,10 +66,7 @@ pub async fn delete_all_events_for_game(db_pool: &DbPool, id: &GameId) -> eyre::
 }
 
 /// Returns a list of all the events for the game with provided id.
-pub async fn get_events_for_game(
-    db_pool: &DbPool,
-    id: &GameId,
-) -> eyre::Result<Vec<db::GameEvent>> {
+pub async fn get_events_for_game(db_pool: &DbPool, id: &GameId) -> DbResult<Vec<db::GameEvent>> {
     let mut db = db_pool.get().await?;
 
     use crate::schema::game_event::dsl;
@@ -88,7 +85,7 @@ pub async fn insert_game_event(
     id: GameId,
     event: serde_json::Value,
     timestamp: DateTime<Utc>,
-) -> eyre::Result<()> {
+) -> DbResult<()> {
     let mut db = db_pool.get().await?;
 
     use crate::schema::game_event::dsl::game_event;
@@ -105,7 +102,7 @@ pub async fn insert_game_event(
 }
 
 /// Deletes the latest event for the game with the provided [GameId].
-pub async fn delete_latest_event_for_game(db_pool: &DbPool, id: &GameId) -> eyre::Result<()> {
+pub async fn delete_latest_event_for_game(db_pool: &DbPool, id: &GameId) -> DbResult<()> {
     let mut db = db_pool.get().await?;
     db.transaction(|db| {
         Box::pin(async move {
@@ -128,7 +125,10 @@ pub async fn delete_latest_event_for_game(db_pool: &DbPool, id: &GameId) -> eyre
                 .filter(dsl::id.eq(last_event_id))
                 .execute(db)
                 .await
-                .wrap_err_with(|| format!("error querying game events ({id:?})"))
+                .map_err(|err| DbError::DeleteGameError {
+                    game_id: id.clone(),
+                    error: err.to_string(),
+                })
                 // sanity check that we deleted exactly one event
                 .map(|count| debug_assert_eq!(count, 1))
         })

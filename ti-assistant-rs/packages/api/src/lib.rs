@@ -1,4 +1,4 @@
 //! This crate contains all shared fullstack server functions.
 
 #[cfg(feature = "server")]
-mod server_side;
+pub mod server_side;

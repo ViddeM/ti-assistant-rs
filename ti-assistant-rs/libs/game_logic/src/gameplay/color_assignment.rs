@@ -1,4 +1,3 @@
-use eyre::OptionExt;
 use std::collections::{BinaryHeap, HashMap};
 use strum::IntoEnumIterator;
 use ti_helper_game_data::common::{color::Color, faction::Faction}; // 0.7.2
@@ -110,7 +109,7 @@ fn get_faction_color_prio(faction: &Faction) -> BinaryHeap<ColorPrio> {
 }
 
 /// Assign colors to the factions according to priority.
-pub fn assign_colors(factions: Vec<Faction>) -> eyre::Result<HashMap<Faction, Color>> {
+pub fn assign_colors(factions: Vec<Faction>) -> anyhow::Result<HashMap<Faction, Color>> {
     let mut map: HashMap<Color, (ColorPrio, &Faction)> = HashMap::new();
 
     for faction in factions.iter() {
@@ -128,7 +127,7 @@ fn select_color_for_faction<'a>(
     prios: &mut BinaryHeap<ColorPrio>,
     map: &mut HashMap<Color, (ColorPrio, &'a Faction)>,
     faction: &'a Faction,
-) -> eyre::Result<()> {
+) -> anyhow::Result<()> {
     log::debug!("Select color called, current map: {map:?}");
     // TODO: Cleanup...
     while let Some(my_prio) = prios.pop() {
@@ -139,7 +138,9 @@ fn select_color_for_faction<'a>(
                 other_faction
             );
             if my_prio.weight <= other_prio.weight {
-                log::debug!("They ({other_faction:?} :: {other_prio:?}) had higher prio than us ({faction:?} :: {my_prio:?})");
+                log::debug!(
+                    "They ({other_faction:?} :: {other_prio:?}) had higher prio than us ({faction:?} :: {my_prio:?})"
+                );
                 // Just check the next color.
                 continue;
             }
@@ -161,7 +162,10 @@ fn select_color_for_faction<'a>(
             );
             map.insert(my_prio.color.clone(), (my_prio, faction));
 
-            log::debug!("Trying to find a new color for other faction {other_faction:?} who previously had {:?}, remaining prios for them {remaining_prios:?}", other_prio.color);
+            log::debug!(
+                "Trying to find a new color for other faction {other_faction:?} who previously had {:?}, remaining prios for them {remaining_prios:?}",
+                other_prio.color
+            );
             if remaining_prios.is_empty() {
                 // They ran out of colors, pick an unused one.
                 let color = get_random_unused_color(map)?;
@@ -186,7 +190,7 @@ fn select_color_for_faction<'a>(
     Ok(())
 }
 
-fn get_random_unused_color<T>(map: &HashMap<Color, T>) -> eyre::Result<Color> {
+fn get_random_unused_color<T>(map: &HashMap<Color, T>) -> anyhow::Result<Color> {
     Color::iter().find(|c| !map.contains_key(c))
-        .ok_or_eyre("No more colors to choose from? (This is should not happen as we should never be able to have more players than colors!)")
+        .ok_or_else(|| anyhow::anyhow!("No more colors to choose from? (This is should not happen as we should never be able to have more players than colors!)"))
 }

@@ -1,18 +1,21 @@
 use dioxus::prelude::*;
 
-use ui::Navbar;
-use views::{Blog, Home};
-
-mod views;
+mod main_menu;
+use main_menu::MainMenu;
+mod new_game;
+use new_game::NewGame;
+mod game;
+use game::Game;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
-    #[layout(WebNavbar)]
     #[route("/")]
-    Home {},
-    #[route("/blog/:id")]
-    Blog { id: i32 },
+    MainMenu,
+    #[route("/game/new")]
+    NewGame,
+    #[route("/game/:id")]
+    Game { id: String }
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -44,19 +47,5 @@ fn App() -> Element {
         document::Link { rel: "stylesheet", href: MAIN_CSS }
 
         Router::<Route> {}
-    }
-}
-
-/// A web-specific Router around the shared `Navbar` component
-/// which allows us to use the web-specific `Route` enum.
-#[component]
-fn WebNavbar() -> Element {
-    rsx! {
-        Navbar {
-            Link { to: Route::Home {}, "Home" }
-            Link { to: Route::Blog { id: 1 }, "Blog" }
-        }
-
-        Outlet::<Route> {}
     }
 }
