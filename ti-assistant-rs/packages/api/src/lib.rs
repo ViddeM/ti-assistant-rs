@@ -2,3 +2,6 @@
 
 #[cfg(feature = "server")]
 pub mod server_side;
+
+pub mod endpoints;
+pub mod requests;

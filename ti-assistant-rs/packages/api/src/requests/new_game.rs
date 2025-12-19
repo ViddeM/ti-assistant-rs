@@ -1,19 +1,50 @@
 use serde::{Deserialize, Serialize};
-use ti_helper_game_data::common::{
-    game_settings::{Expansions, GameSettings},
-    milty_data::MiltyData,
+
+#[cfg(feature = "server")]
+use {
+    ti_helper_game_data::common::{
+        game_settings::{Expansions, GameSettings},
+        milty_data::MiltyData,
+    },
+    ti_helper_game_logic::gameplay::event::Event,
+    ti_helper_milty::MiltyImport,
 };
-use ti_helper_game_logic::gameplay::event::Event;
-use ti_helper_milty::MiltyImport;
-use ti_helper_websocket::ws_message::GameConfig;
 
 #[derive(Serialize, Deserialize)]
 pub struct NewGame {
-    points: u32,
-    game_config: GameConfig,
+    pub points: u32,
+    pub game_config: GameConfig,
+}
+
+/// The game configuration.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum GameConfig {
+    /// Config specified by the user.
+    #[serde(rename_all = "camelCase")]
+    CustomGameConfig {
+        /// If Prophecy of kings is to be used.
+        pok: bool,
+        /// If Codex I should be used.
+        cod1: bool,
+        /// If Codex II should be used.
+        cod2: bool,
+        /// If Codex III should be used.
+        cod3: bool,
+        /// If Thunder's Edge is to be used.
+        te: bool,
+    },
+    /// Game config imported from milty draft.
+    #[serde(rename_all = "camelCase")]
+    ImportFromMilty {
+        /// The game id from milty (from the URL).
+        milty_game_id: String,
+        /// The milty tts map string.
+        milty_tts_string: String,
+    },
 }
 
 impl NewGame {
+    #[cfg(feature = "server")]
     /// Creates the appropriate new game event for this [NewGame].
     pub async fn to_new_game_event(&self) -> anyhow::Result<Event> {
         Ok(match &self.game_config {

@@ -28,8 +28,9 @@ fn main() {
     #[cfg(feature = "server")]
     dioxus::serve(|| async {
         use dioxus::server::axum::Extension;
+        use ui::server_side::setup;
 
-        let state = ui::setup().await.expect("failed to setup server");
+        let state = setup().await.expect("failed to setup server");
 
         let router = dioxus::server::router(App).layer(Extension(state));
 

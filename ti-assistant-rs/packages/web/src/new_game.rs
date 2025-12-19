@@ -1,5 +1,8 @@
 use dioxus::prelude::*;
-use ui::endpoints::new_game;
+use ui::{
+    endpoints,
+    requests::new_game::{self, GameConfig},
+};
 
 #[derive(PartialEq)]
 enum CreateGameMode {
@@ -17,68 +20,91 @@ pub fn NewGame() -> Element {
     let mut codexII = use_signal(|| false);
     let mut codexIII = use_signal(|| false);
 
-    rsx! {
-        div {
-            h2 { "Create Game" }
+    let mut new_game_result = use_signal(|| None);
 
-            label { r#for: "winning_score", "Winning Score" }
-            input {
-                r#type: "range",
-                name: "winning_score",
-                min: 4,
-                max: 16,
-                value: winning_score,
-                oninput: move |event| *winning_score.write() = event.value().parse().unwrap(),
-            }
-            p { "{winning_score}" }
+    match new_game_result() {
+        Some(s) => rsx! {
+            p { "S: {s:?}" }
+        },
+        None => {
+            rsx! {
+                div {
+                    label { r#for: "winning_score", "Winning Score" }
+                    input {
+                        r#type: "range",
+                        name: "winning_score",
+                        min: 4,
+                        max: 16,
+                        value: winning_score,
+                        oninput: move |event| *winning_score.write() = event.value().parse().unwrap(),
+                    }
+                    p { "{winning_score}" }
 
-            button {
-                disabled: mode.read().eq(&CreateGameMode::New),
-                onclick: move |_| *mode.write() = CreateGameMode::New,
-                "New Game"
-            }
-            button {
-                disabled: mode.read().eq(&CreateGameMode::MiltyImport),
-                onclick: move |_| *mode.write() = CreateGameMode::MiltyImport,
-                "Import from Milty"
-            }
+                    button {
+                        disabled: mode.read().eq(&CreateGameMode::New),
+                        onclick: move |_| *mode.write() = CreateGameMode::New,
+                        "New Game"
+                    }
+                    button {
+                        disabled: mode.read().eq(&CreateGameMode::MiltyImport),
+                        onclick: move |_| *mode.write() = CreateGameMode::MiltyImport,
+                        "Import from Milty"
+                    }
 
-            label { r#for: "pok_cb", "Prophecy of Kings" }
-            input {
-                r#type: "checkbox",
-                name: "pok_cb",
-                onchange: move |_| pok.toggle(),
-            }
+                    label { r#for: "pok_cb", "Prophecy of Kings" }
+                    input {
+                        r#type: "checkbox",
+                        name: "pok_cb",
+                        onchange: move |_| pok.toggle(),
+                    }
 
-            label { r#for: "pok_codI_cb", "Codex I" }
-            input {
-                r#type: "checkbox",
-                name: "pok_codI_cb",
-                onchange: move |_| codexI.toggle(),
-            }
+                    label { r#for: "pok_codI_cb", "Codex I" }
+                    input {
+                        r#type: "checkbox",
+                        name: "pok_codI_cb",
+                        onchange: move |_| codexI.toggle(),
+                    }
 
-            label { r#for: "pok_codII_cb", "Codex II" }
-            input {
-                r#type: "checkbox",
-                name: "pok_codII_cb",
-                onchange: move |_| codexII.toggle(),
-            }
+                    label { r#for: "pok_codII_cb", "Codex II" }
+                    input {
+                        r#type: "checkbox",
+                        name: "pok_codII_cb",
+                        onchange: move |_| codexII.toggle(),
+                    }
 
-            label { r#for: "pok_codIII_cb", "Codex III" }
-            input {
-                r#type: "checkbox",
-                name: "pok_codIII_cb",
-                onchange: move |_| codexIII.toggle(),
-            }
+                    label { r#for: "pok_codIII_cb", "Codex III" }
+                    input {
+                        r#type: "checkbox",
+                        name: "pok_codIII_cb",
+                        onchange: move |_| codexIII.toggle(),
+                    }
 
-            label { r#for: "te_cb", "Thunder's Edge" }
-            input {
-                r#type: "checkbox",
-                name: "te_cb",
-                onchange: move |_| te.toggle(),
-            }
+                    label { r#for: "te_cb", "Thunder's Edge" }
+                    input {
+                        r#type: "checkbox",
+                        name: "te_cb",
+                        onchange: move |_| te.toggle(),
+                    }
 
-            button { onclick: move |_| async move { new_game(NewGame {}) }, "Create Game" }
+                    button {
+                        onclick: move |_| async move {
+                            let ngr = endpoints::new_game(new_game::NewGame {
+                                    points: winning_score(),
+                                    game_config: GameConfig::CustomGameConfig {
+                                        pok: pok(),
+                                        cod1: codexI(),
+                                        cod2: codexII(),
+                                        cod3: codexIII(),
+                                        te: te(),
+                                    },
+                                })
+                                .await;
+                            *new_game_result.write() = Some(ngr);
+                        },
+                        "Create Game"
+                    }
+                }
+            }
         }
     }
 }

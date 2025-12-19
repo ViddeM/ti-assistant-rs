@@ -255,7 +255,6 @@ dependencies = [
  "ti_helper_game_data",
  "ti_helper_game_logic",
  "ti_helper_milty",
- "ti_helper_websocket",
  "tokio",
 ]
 

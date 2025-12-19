@@ -7,4 +7,7 @@ mod navbar;
 pub use navbar::Navbar;
 
 #[cfg(feature = "server")]
-pub use api::server_side::*;
+pub use api::server_side;
+
+pub use api::endpoints;
+pub use api::requests;

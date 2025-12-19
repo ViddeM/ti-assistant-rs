@@ -1,9 +1,7 @@
-pub mod endpoints;
 pub mod gc;
 pub mod insert_demo_games;
 pub mod lobby;
 pub mod opts;
-pub mod requests;
 pub mod state;
 
 use std::sync::Arc;
