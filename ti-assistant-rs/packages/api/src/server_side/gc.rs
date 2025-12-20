@@ -6,7 +6,7 @@ use chrono::Local;
 use cron::Schedule;
 use tokio::{spawn, time::sleep};
 
-use crate::server_side::State;
+use crate::server_side::{State, lobby::Lobbies};
 
 pub fn setup_game_gc(shared: &Arc<State>) -> anyhow::Result<()> {
     if let Some(mem_gc_cron) = &shared.opt.mem_gc_cron {
@@ -29,7 +29,7 @@ pub fn setup_game_gc(shared: &Arc<State>) -> anyhow::Result<()> {
 async fn unload_inactive_games(cron: Schedule, shared: Arc<State>) {
     log::info!("scheduling inactive games gc task");
 
-    let lobbies = &shared.lobbies;
+    let lobbies: &Lobbies = &shared.lobbies;
 
     loop {
         let Some(next_gc) = cron.upcoming(Local).next() else {
@@ -46,7 +46,7 @@ async fn unload_inactive_games(cron: Schedule, shared: Arc<State>) {
 
         log::debug!("unloading inactive games");
 
-        let mut list = lobbies.list.write();
+        let mut list = lobbies.list.write().await;
         let mut delete_queue = Vec::new();
         for (game_id, lobby) in list.iter() {
             let Ok(lobby) = lobby.try_write() else {

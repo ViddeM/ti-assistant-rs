@@ -6,6 +6,8 @@ use dioxus::{
     fullstack::{JsonEncoding, WebSocketOptions, Websocket},
     prelude::*,
 };
+#[cfg(feature = "server")]
+use tokio::sync::RwLock;
 
 use crate::{
     messages::{WsMessage, WsMessageOut},
@@ -80,10 +82,8 @@ pub async fn join_game(
     game_id: GameId,
     options: WebSocketOptions,
 ) -> Result<TIWebsocket, ServerFnError> {
-    let state: &state::State = &ext.0;
-
     Ok(options.on_upgrade(move |mut socket| async move {
-        match join_game_inner(&mut socket, game_id, state).await {
+        match join_game_inner(&mut socket, game_id, &ext).await {
             Ok((game_id, lobby)) => {
                 let s = "";
             }
@@ -100,14 +100,14 @@ async fn join_game_inner(
     socket: &mut TIWebsocketServer,
     game_id: GameId,
     state: &state::State,
-) -> anyhow::Result<(GameId, Arc<Lobby>)> {
+) -> anyhow::Result<(GameId, Arc<RwLock<Lobby>>)> {
     let state::State {
         lobbies,
         db_pool,
         opt,
     } = state;
 
-    let mut list = lobbies.list.write();
+    let mut list = lobbies.list.write().await;
 
     if let Some(lobby) = list.get(&game_id) {
         Ok((game_id, Arc::clone(lobby)))
@@ -148,7 +148,7 @@ async fn join_game_inner(
 
         list.insert(game_id, Arc::clone(&lobby));
 
-        (game_id, lobby)
+        Ok((game_id, lobby))
     } else {
         socket
             .send(WsMessageOut::not_found(game_id))

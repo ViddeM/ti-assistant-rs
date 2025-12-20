@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 use ui::{
     endpoints,
+    game_id::GameId,
     requests::new_game::{self, GameConfig},
 };
 
@@ -32,7 +33,7 @@ pub fn NewGame() -> Element {
         },
         Some(Ok(game_id)) => {
             match nav.push(Route::Game {
-                id: game_id.clone(),
+                id: game_id.to_string(),
             }) {
                 Some(s) => rsx! {
                     p { "Failed to navigate... {s:?}" }

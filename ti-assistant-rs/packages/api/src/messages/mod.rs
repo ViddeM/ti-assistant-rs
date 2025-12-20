@@ -1,18 +1,19 @@
 use std::sync::Arc;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use ti_helper_game_data::{
     actions::event::Event, common::game_settings::Expansions, game_id::GameId,
     game_options::GameOptions, state::game_state::GameState,
 };
 
+#[derive(Serialize, Deserialize)]
 pub enum WsMessage {
     Event(Event),
     Undo,
 }
 
 /// Messages that can be sent to a client.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(missing_docs)]
 pub enum WsMessageOut {
     /// Initial message sent by the server that contains all general info about game components
