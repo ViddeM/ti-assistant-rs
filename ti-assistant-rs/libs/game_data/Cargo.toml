@@ -13,7 +13,6 @@ strum = "0.25"
 strum_macros = "0.25"
 thiserror = "1"
 anyhow = "1"
-
 rand = { version = "0.9", optional = true }
 
 [features]

@@ -46,7 +46,7 @@ async fn unload_inactive_games(cron: Schedule, shared: Arc<State>) {
 
         log::debug!("unloading inactive games");
 
-        let mut list = lobbies.list.write().await;
+        let mut list = lobbies.list.write();
         let mut delete_queue = Vec::new();
         for (game_id, lobby) in list.iter() {
             let Ok(lobby) = lobby.try_write() else {

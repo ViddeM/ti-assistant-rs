@@ -7,5 +7,8 @@ edition = "2021"
 dioxus = { workspace = true }
 api = { workspace = true }
 
+[dependencies.ti_helper_game_data]
+path = "../game_data"
+
 [features]
 server = ["api/server"]

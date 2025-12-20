@@ -6781,6 +6781,7 @@ version = "0.1.0"
 dependencies = [
  "api",
  "dioxus",
+ "ti_helper_game_data",
 ]
 
 [[package]]

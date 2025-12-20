@@ -24,7 +24,7 @@ pub fn NewGame() -> Element {
 
     let nav = navigator();
 
-    let mut new_game_result: Signal<Option<Result<String, ServerFnError>>> = use_signal(|| None);
+    let mut new_game_result: Signal<Option<Result<GameId, ServerFnError>>> = use_signal(|| None);
 
     match &new_game_result() {
         Some(Err(err)) => rsx! {
