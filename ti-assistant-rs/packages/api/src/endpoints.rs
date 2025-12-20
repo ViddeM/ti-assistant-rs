@@ -83,12 +83,17 @@ pub async fn join_game(
     options: WebSocketOptions,
 ) -> Result<TIWebsocket, ServerFnError> {
     Ok(options.on_upgrade(move |mut socket| async move {
-        match join_game_inner(&mut socket, game_id, &ext).await {
-            Ok((game_id, lobby)) => {
-                let s = "";
+        let (game_id, lobby) = match join_game_inner(&mut socket, game_id, &ext).await {
+            Ok(info) => info,
+            Err(err) => {
+                log::error!("Failed to join game: {err:?}");
+                return;
             }
-            Err(err) => log::error!("Failed to join game: {err:?}"),
         };
+
+        if let Err(err) = run_client(&mut socket, game_id, lobby).await {
+            log::error!("Failed to run client coms: {err:?}");
+        }
     }))
 }
 
@@ -156,4 +161,18 @@ async fn join_game_inner(
             .context("failed to send game not found message to client")?;
         anyhow::bail!("no lobby with id {game_id:?}");
     }
+}
+
+#[cfg(feature = "server")]
+async fn run_client(
+    socket: &mut TIWebsocketServer,
+    game_id: GameId,
+    lobby: Arc<RwLock<Lobby>>,
+) -> anyhow::Result<()> {
+    socket
+        .send(WsMessageOut::JoinedGame(game_id))
+        .await
+        .context("Failed to send joined game message")?;
+
+    Ok(())
 }
