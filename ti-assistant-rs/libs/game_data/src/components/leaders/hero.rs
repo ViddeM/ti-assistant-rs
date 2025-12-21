@@ -7,7 +7,7 @@ use crate::common::faction::Faction;
 use super::LeaderAbilityKind;
 
 /// Information about a hero leader.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 pub struct HeroInfo {
     /// [Hero] variant for this hero.

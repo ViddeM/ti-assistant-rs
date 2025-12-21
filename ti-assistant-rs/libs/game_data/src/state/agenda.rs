@@ -20,7 +20,7 @@ use crate::{
 };
 
 /// State for the agenda phase.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct AgendaState {
@@ -59,7 +59,7 @@ impl AgendaRound {
 }
 
 /// Record of a previously completed agenda vote.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct AgendaRecord {
@@ -75,7 +75,7 @@ pub struct AgendaRecord {
 }
 
 /// State of an agenda vote.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct VoteState {
@@ -229,7 +229,7 @@ impl VoteState {
 }
 
 /// Votes for an elect option.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Vote {

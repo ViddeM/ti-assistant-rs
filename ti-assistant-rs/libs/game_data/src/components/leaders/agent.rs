@@ -7,7 +7,7 @@ use crate::common::faction::Faction;
 use super::LeaderAbilityKind;
 
 /// Information about an agent leader.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 pub struct AgentInfo {
     /// [Agent] variant for this agent.

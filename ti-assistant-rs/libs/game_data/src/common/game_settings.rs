@@ -4,7 +4,7 @@ use ts_rs::TS;
 use super::expansions::Expansion;
 
 /// Settings for a game.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct GameSettings {
@@ -24,7 +24,7 @@ impl Default for GameSettings {
 }
 
 /// Which expansions are in use.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 #[allow(missing_docs)]

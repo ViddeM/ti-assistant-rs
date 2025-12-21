@@ -26,7 +26,7 @@ pub struct NewPlayer {
 }
 
 /// A player in a running game.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Player {

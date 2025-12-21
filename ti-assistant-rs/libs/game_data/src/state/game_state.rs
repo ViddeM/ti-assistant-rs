@@ -41,7 +41,7 @@ use super::{
 };
 
 /// A snapshot of the game state.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct GameState {
@@ -127,7 +127,7 @@ pub struct GameState {
 }
 
 /// Information relevant to things that has happened on the gameboard.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MapData {
@@ -138,7 +138,7 @@ pub struct MapData {
 }
 
 /// Information relevant to things that has happened on the gameboard.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct AgendaOverrideState {
@@ -147,7 +147,7 @@ pub struct AgendaOverrideState {
 }
 
 /// Map information only relevant / obtainable for games imported from milty draft.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MiltyInformation {
@@ -158,7 +158,7 @@ pub struct MiltyInformation {
 }
 
 /// The current progress of an action-phase action.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(tag = "t")]
 #[ts(export)]
 pub enum ActionPhaseProgress {
@@ -189,7 +189,7 @@ impl ActionPhaseProgress {
 }
 
 /// Progress of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct StrategicProgress {
@@ -202,7 +202,7 @@ pub struct StrategicProgress {
 }
 
 /// The progress of the primary section of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 pub enum StrategicPrimaryProgress {
     /// Primary progress for the technology strategy card.
@@ -243,7 +243,7 @@ impl StrategicPrimaryProgress {
 }
 
 /// Progress during a tactical action.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct TacticalProgress {
@@ -257,7 +257,7 @@ pub struct TacticalProgress {
 }
 
 /// The progress of an action card being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct ActionCardProgress {
@@ -266,7 +266,7 @@ pub struct ActionCardProgress {
 }
 
 /// The progress of a leader action being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "action")]
 #[ts(export)]
@@ -277,7 +277,7 @@ pub enum LeaderProgress {
 }
 
 /// The progress of a frontier card being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct FrontierCardProgress {
@@ -286,7 +286,7 @@ pub struct FrontierCardProgress {
 }
 
 /// The progress of a frontier card being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct RelicProgress {

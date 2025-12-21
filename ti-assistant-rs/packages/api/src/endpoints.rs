@@ -1,5 +1,5 @@
 use crate::{
-    messages::{WsMessage, WsMessageOut},
+    messages::{WsMessageIn, WsMessageOut},
     requests::new_game::NewGame,
 };
 use dioxus::{
@@ -69,7 +69,7 @@ pub async fn new_game(data: NewGame) -> Result<GameId, ServerFnError> {
     Ok(id)
 }
 
-pub type TIWebsocket = Websocket<WsMessage, WsMessageOut, JsonEncoding>;
+pub type TIWebsocket = Websocket<WsMessageIn, WsMessageOut, JsonEncoding>;
 
 #[get("/api/game/{game_id}", ext: Extension<Arc<state::State>>)]
 pub async fn join_game(
@@ -92,7 +92,7 @@ pub async fn join_game(
 }
 
 #[cfg(feature = "server")]
-pub type TIWebsocketServer = TypedWebsocket<WsMessage, WsMessageOut, JsonEncoding>;
+pub type TIWebsocketServer = TypedWebsocket<WsMessageIn, WsMessageOut, JsonEncoding>;
 
 #[cfg(feature = "server")]
 async fn join_game_inner(
@@ -197,8 +197,8 @@ async fn run_client(
                 let message = message.context("failed to receive message from client")?;
 
                 match message {
-                    WsMessage::Undo => handle_undo(state, game_id, &lobby).await.context("failed to handle undo event")?,
-                    WsMessage::Event(event) => {
+                    WsMessageIn::Undo => handle_undo(state, game_id, &lobby).await.context("failed to handle undo event")?,
+                    WsMessageIn::Event(event) => {
                         match handle_event(state, game_id, &lobby, event).await {
                             Ok(_) => {},
                             Err(EventError::HandleEventError(e)) => {

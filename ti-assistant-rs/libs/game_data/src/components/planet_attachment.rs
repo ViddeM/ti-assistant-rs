@@ -38,7 +38,7 @@ pub enum PlanetAttachment {
 }
 
 /// All relevant information about this planet attachment.
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct PlanetAttachmentInfo {

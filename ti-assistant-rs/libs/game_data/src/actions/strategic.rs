@@ -82,7 +82,7 @@ impl StrategicSecondaryAction {
 }
 
 /// The progress of the secondary portion of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[ts(export)]
 #[allow(missing_docs)]
 pub enum StrategicSecondaryProgress {

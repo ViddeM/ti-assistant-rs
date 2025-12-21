@@ -19,7 +19,7 @@ use crate::{
 use super::{agenda::AgendaRecord, player::Player};
 
 /// Everything game state that to player points.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct Score {
@@ -247,7 +247,7 @@ impl Score {
 }
 
 /// Agendas that provide points and to whom.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(tag = "electableAgendaKind", content = "value")]
 #[ts(export)]
 pub enum ScorableAgenda {

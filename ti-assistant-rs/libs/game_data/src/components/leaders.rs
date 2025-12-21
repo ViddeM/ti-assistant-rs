@@ -23,7 +23,7 @@ pub enum Leader {
 }
 
 /// Information about a leader, i.e. an agent, commander, or hero.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(tag = "type")]
 #[ts(export)]
 #[allow(missing_docs)]

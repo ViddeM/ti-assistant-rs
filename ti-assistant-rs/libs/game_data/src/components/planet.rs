@@ -17,7 +17,7 @@ pub enum PlanetTrait {
 }
 
 /// All relevant information for a planet.
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct PlanetInfo {
@@ -40,7 +40,7 @@ pub struct PlanetInfo {
 }
 
 /// What type of orbital body type.
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
 pub enum OrbitalBodyType {
     Planet,
     SpaceStation,

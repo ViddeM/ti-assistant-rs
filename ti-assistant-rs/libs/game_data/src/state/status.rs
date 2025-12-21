@@ -9,7 +9,7 @@ use crate::{
 };
 
 /// State for the status phase.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct StatusPhaseState {

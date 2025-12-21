@@ -22,40 +22,40 @@ use crate::{
 const MIN_PLAYER_COUNT: usize = 3;
 
 /// All information that is static for a game of TI4.
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct GameOptions {
     /// The minimum number of players allowed for the game.
-    min_players: usize,
+    pub min_players: usize,
     /// The maximum number of players allowed for the game.
-    max_players: usize,
+    pub max_players: usize,
     /// What colors players are allowed to have.
-    colors: Vec<Color>,
+    pub colors: Vec<Color>,
     /// What factions exist within the game.
-    factions: Vec<FactionResponse>,
+    pub factions: Vec<FactionResponse>,
     /// What systems exists in the game.
-    systems: EnumMap<SystemId, System>,
+    pub systems: EnumMap<SystemId, System>,
     /// What technologies exist in the game.
-    technologies: EnumMap<Technology, TechInfo>,
+    pub technologies: EnumMap<Technology, TechInfo>,
     /// What planets exist in the game.
-    planet_infos: EnumMap<Planet, PlanetInfo>,
+    pub planet_infos: EnumMap<Planet, PlanetInfo>,
     /// What planet attachments exist in the game.
-    planet_attachments: EnumMap<PlanetAttachment, PlanetAttachmentInfo>,
+    pub planet_attachments: EnumMap<PlanetAttachment, PlanetAttachmentInfo>,
     /// What objectives exist in the game.
-    objectives: EnumMap<Objective, ObjectiveInfo>,
+    pub objectives: EnumMap<Objective, ObjectiveInfo>,
     /// What action cards exist in the game.
-    action_cards: EnumMap<ActionCard, ActionCardInfo>,
+    pub action_cards: EnumMap<ActionCard, ActionCardInfo>,
     /// What agendas exist in the game.
-    agendas: EnumMap<Agenda, AgendaInfo>,
+    pub agendas: EnumMap<Agenda, AgendaInfo>,
     /// What leaders exist in the game.
-    leaders: EnumMap<Leader, LeaderInfo>,
+    pub leaders: EnumMap<Leader, LeaderInfo>,
     /// Map from all factions in the game to the leaders of that faction.
-    leaders_by_faction: EnumMap<Faction, Vec<Leader>>,
+    pub leaders_by_faction: EnumMap<Faction, Vec<Leader>>,
     /// What frontier cards exists in the game.
-    frontier_cards: EnumMap<FrontierCard, FrontierCardInfo>,
+    pub frontier_cards: EnumMap<FrontierCard, FrontierCardInfo>,
     /// What relics exists in the game.
-    relics: EnumMap<Relic, RelicInfo>,
+    pub relics: EnumMap<Relic, RelicInfo>,
 }
 
 impl std::ops::Deref for GameOptions {
@@ -140,12 +140,12 @@ impl GameOptions {
 }
 
 /// A faction in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[ts(export)]
 pub struct FactionResponse {
     /// The faction ID.
-    faction: Faction,
+    pub faction: Faction,
     /// The name of the faction in 'pretty' format.
-    name: String,
+    pub name: String,
 }
