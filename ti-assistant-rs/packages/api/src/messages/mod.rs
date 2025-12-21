@@ -6,7 +6,7 @@ use ti_helper_game_data::{
     game_options::GameOptions, state::game_state::GameState,
 };
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum WsMessage {
     Event(Event),
     Undo,

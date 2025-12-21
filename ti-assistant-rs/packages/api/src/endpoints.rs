@@ -1,20 +1,13 @@
-use std::sync::Arc;
-
-#[cfg(feature = "server")]
-use dioxus::fullstack::TypedWebsocket;
-use dioxus::{
-    fullstack::{JsonEncoding, WebSocketOptions, Websocket},
-    prelude::*,
-};
-#[cfg(feature = "server")]
-use tokio::sync::RwLock;
-
 use crate::{
     messages::{WsMessage, WsMessageOut},
     requests::new_game::NewGame,
 };
-
-use ti_helper_game_data::game_id::GameId;
+use dioxus::{
+    fullstack::{JsonEncoding, WebSocketOptions, Websocket},
+    prelude::*,
+};
+use std::sync::Arc;
+use ti_helper_game_data::{actions::event::Event, game_id::GameId};
 
 #[cfg(feature = "server")]
 use {
@@ -23,10 +16,11 @@ use {
         state,
     },
     anyhow::Context,
-    chrono::Utc,
-    dioxus::server::axum::Extension,
+    chrono::{DateTime, Utc},
+    dioxus::{fullstack::TypedWebsocket, server::axum::Extension},
     ti_helper_db::queries,
-    ti_helper_game_logic::gameplay::game::Game,
+    ti_helper_game_logic::gameplay::{error::GameError, game::Game},
+    tokio::{select, sync::RwLock},
 };
 
 /// Echo the user input on the server.
@@ -77,7 +71,7 @@ pub async fn new_game(data: NewGame) -> Result<GameId, ServerFnError> {
 
 pub type TIWebsocket = Websocket<WsMessage, WsMessageOut, JsonEncoding>;
 
-#[post("/api/game/{game_id}", ext: Extension<Arc<state::State>>)]
+#[get("/api/game/{game_id}", ext: Extension<Arc<state::State>>)]
 pub async fn join_game(
     game_id: GameId,
     options: WebSocketOptions,
@@ -91,7 +85,7 @@ pub async fn join_game(
             }
         };
 
-        if let Err(err) = run_client(&mut socket, game_id, lobby).await {
+        if let Err(err) = run_client(&mut socket, game_id, lobby, &ext).await {
             log::error!("Failed to run client coms: {err:?}");
         }
     }))
@@ -109,7 +103,7 @@ async fn join_game_inner(
     let state::State {
         lobbies,
         db_pool,
-        opt,
+        opt: _,
     } = state;
 
     let mut list = lobbies.list.write().await;
@@ -142,7 +136,7 @@ async fn join_game_inner(
 
         for record in events {
             let event = serde_json::from_value(record.event.clone())
-                .with_context(|| format!("faield to parse event from DB, record: {record:?}"))?;
+                .with_context(|| format!("failed to parse event from DB, record: {record:?}"))?;
 
             game.apply(event, record.timestamp);
         }
@@ -168,11 +162,124 @@ async fn run_client(
     socket: &mut TIWebsocketServer,
     game_id: GameId,
     lobby: Arc<RwLock<Lobby>>,
+    state: &state::State,
 ) -> anyhow::Result<()> {
     socket
         .send(WsMessageOut::JoinedGame(game_id))
         .await
         .context("Failed to send joined game message")?;
+
+    socket
+        .send(WsMessageOut::game_options(
+            &lobby.read().await.game.current.game_settings.expansions,
+        ))
+        .await
+        .context("Failed to send game options")?;
+
+    let mut state_updates = {
+        let lobby = lobby.read().await;
+        socket
+            .send(WsMessageOut::GameState(lobby.game.current.clone()))
+            .await
+            .context("failed to send game state message to client")?;
+
+        // make sure we subscribe while we are holding the game state lock to avoid silly races
+        lobby.state_updates.subscribe()
+    };
+
+    loop {
+        select! {
+            update = state_updates.recv() => {
+                log::debug!("Sendng state update to client"); // TODO: Figure out a way to retrieve an addr or smth that we can log here.
+                socket.send(WsMessageOut::GameState(update?)).await.context("failed to send game state message to client")?;
+            }
+            message = socket.recv() => {
+                let message = message.context("failed to receive message from client")?;
+
+                match message {
+                    WsMessage::Undo => handle_undo(state, game_id, &lobby).await.context("failed to handle undo event")?,
+                    WsMessage::Event(event) => {
+                        match handle_event(state, game_id, &lobby, event).await {
+                            Ok(_) => {},
+                            Err(EventError::HandleEventError(e)) => {
+                                socket.send(WsMessageOut::event_err(e)).await.context("failed to send error message to client")?;
+                            },
+                            Err(EventError::InternalError(err)) => return Err(err),
+                        }
+                    }
+                };
+            }
+        }
+    }
+}
+
+#[cfg(feature = "server")]
+enum EventError {
+    HandleEventError(String),
+    InternalError(GameError),
+}
+
+#[cfg(feature = "server")]
+async fn handle_event(
+    state: &state::State,
+    id: GameId,
+    lobby: &RwLock<Lobby>,
+    event: Event,
+) -> Result<(), EventError> {
+    log::debug!("applying event {event:?}");
+
+    let mut lobby = lobby.write().await;
+
+    let now = Utc::now();
+
+    if let Err(e) = lobby.game.apply_or_err(event.clone(), now) {
+        log::warn!("Event not valid for the current state, err: {e:?}");
+        return Err(EventError::HandleEventError(e.to_string()));
+    }
+
+    store_and_propagate_event(state, id, event, now, &lobby)
+        .await
+        .map_err(EventError::InternalError)?;
+
+    Ok(())
+}
+
+#[cfg(feature = "server")]
+async fn store_and_propagate_event(
+    state: &state::State,
+    id: GameId,
+    event: Event,
+    timestamp: DateTime<Utc>,
+    lobby: &Lobby,
+) -> anyhow::Result<()> {
+    if let Some(db_pool) = &state.db_pool {
+        log::info!("persisting event for game {id:?}");
+
+        queries::insert_game_event(db_pool, id, serde_json::to_value(&event)?, timestamp)
+            .await
+            .with_context(|| format!("error querying game events ({id:?})"))?;
+    }
+
+    lobby.state_updates.send(lobby.game.current.clone())?;
+
+    Ok(())
+}
+
+#[cfg(feature = "server")]
+async fn handle_undo(
+    state: &state::State,
+    id: GameId,
+    lobby: &RwLock<Lobby>,
+) -> anyhow::Result<()> {
+    let mut lobby = lobby.write().await;
+
+    if let Some(db_pool) = &state.db_pool {
+        log::info!("undoing last event for game {id:?}");
+        queries::delete_latest_event_for_game(db_pool, &id).await?;
+    }
+
+    lobby.game.undo();
+    lobby.state_updates.send(lobby.game.current.clone())?;
 
     Ok(())
 }
