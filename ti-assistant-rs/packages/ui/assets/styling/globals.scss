@@ -1,0 +1,242 @@
+@import "vars";
+
+body {
+  color: $primary-text-color;
+  font-family: 'slider-font', 'slider-font-fallback';
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0.5rem 0;
+}
+
+h1 {
+  font-size: 42px;
+  font-weight: 400;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+fieldset {
+  border-radius: $border-radius;
+  margin: $margin-large 0;
+  padding: $padding-large;
+}
+
+.card {
+  background-color: $background-color;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+
+  padding: $padding;
+  border-radius: $border-radius;
+  width: 100%;
+
+  @media (min-width: 800px) {
+    width: fit-content;
+    min-width: 200px;
+  }
+}
+
+.screen-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  width: 100vw;
+  height: 100vh;
+
+  @media (min-width: $width-small) {
+    padding: 1rem 0.5rem;
+  }
+
+  @media (min-width: $width-medium) {
+    padding: 3rem;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.center-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.margin-top {
+  margin-top: $margin-large;
+}
+
+.margin-right {
+  margin-right: $margin-large;
+}
+
+.margin-bottom {
+  margin-bottom: $margin-large;
+}
+
+.margin-left {
+  margin-left: $margin-large;
+}
+
+.warning-text {
+  margin: $margin;
+  margin-top: 0;
+  font-weight: bold;
+  border: 4px dotted yellow;
+  padding: $padding;
+}
+
+.style-leadership {
+  color: $leadership-color;
+  border-color: $leadership-color;
+}
+.style-diplomacy {
+  color: $diplomacy-color;
+  border-color: $diplomacy-color;
+}
+.style-politics {
+  color: $politics-color;
+  border-color: $politics-color;
+}
+.style-construction {
+  color: $construction-color;
+  border-color: $construction-color;
+}
+.style-trade {
+  color: $trade-color;
+  border-color: $trade-color;
+}
+.style-warfare {
+  color: $warfare-color;
+  border-color: $warfare-color;
+}
+.style-technology {
+  color: $technology-color;
+  border-color: $technology-color;
+}
+.style-imperial {
+  color: $imperial-color;
+  border-color: $imperial-color;
+}
+
+.player-color-background-black {
+  background-color: $player-color-black;
+}
+.player-color-background-blue {
+  background-color: $player-color-blue;
+}
+.player-color-background-green {
+  background-color: $player-color-green;
+}
+.player-color-background-red {
+  background-color: $player-color-red;
+}
+.player-color-background-yellow {
+  background-color: $player-color-yellow;
+}
+.player-color-background-purple {
+  background-color: $player-color-purple;
+}
+.player-color-background-orange {
+  background-color: $player-color-orange;
+}
+.player-color-background-pink {
+  background-color: $player-color-pink;
+}
+
+.player-color-border-black {
+  border-color: $player-color-black;
+}
+.player-color-border-blue {
+  border-color: $player-color-blue;
+}
+.player-color-border-green {
+  border-color: $player-color-green;
+}
+.player-color-border-red {
+  border-color: $player-color-red;
+}
+.player-color-border-yellow {
+  border-color: $player-color-yellow;
+}
+.player-color-border-purple {
+  border-color: $player-color-purple;
+}
+.player-color-border-orange {
+  border-color: $player-color-orange;
+}
+.player-color-border-pink {
+  border-color: $player-color-pink;
+}
+
+.player-color-black {
+  color: $player-color-black;
+}
+.player-color-blue {
+  color: $player-color-blue;
+}
+.player-color-green {
+  color: $player-color-green;
+}
+.player-color-red {
+  color: $player-color-red;
+}
+.player-color-yellow {
+  color: $player-color-yellow;
+}
+.player-color-purple {
+  color: $player-color-purple;
+}
+.player-color-orange {
+  color: $player-color-orange;
+}
+.player-color-pink {
+  color: $player-color-pink;
+}

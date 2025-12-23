@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use ui::{
+    components::button::Button,
     endpoints,
     game_id::GameId,
     requests::new_game::{self, GameConfig},
@@ -59,12 +60,12 @@ pub fn NewGame() -> Element {
                     }
                     p { "{winning_score}" }
 
-                    button {
+                    Button {
                         disabled: mode.read().eq(&CreateGameMode::New),
                         onclick: move |_| *mode.write() = CreateGameMode::New,
                         "New Game"
                     }
-                    button {
+                    Button {
                         disabled: mode.read().eq(&CreateGameMode::MiltyImport),
                         onclick: move |_| *mode.write() = CreateGameMode::MiltyImport,
                         "Import from Milty"
@@ -105,7 +106,7 @@ pub fn NewGame() -> Element {
                         onchange: move |_| te.toggle(),
                     }
 
-                    button {
+                    Button {
                         onclick: move |_| async move {
                             let ngr = endpoints::new_game(new_game::NewGame {
                                     points: winning_score(),

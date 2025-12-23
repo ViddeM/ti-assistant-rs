@@ -1,23 +1,23 @@
 use std::collections::HashSet;
 
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumIter;
-use ts_rs::TS;
+use strum_macros::{Display, EnumIter, EnumString};
 
-use crate::{
-    components::{
-        planet::Planet,
-        system::{SystemType, systems},
-        tech::Technology,
-    },
-    error::{GDResult, GameDataError},
+use crate::components::{
+    planet::Planet,
+    system::{SystemType, systems},
+    tech::Technology,
 };
 
 use super::{expansions::Expansion, game_settings::Expansions};
 
+// TODO: Avoid having duplicate strings for parsing / display.
+
 /// A playable faction in the game.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter, TS)]
-#[ts(export)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter, EnumString, Display,
+)]
+#[strum(serialize_all = "snake_case")]
 #[allow(missing_docs)]
 pub enum Faction {
     // Vanilla
@@ -51,7 +51,7 @@ pub enum Faction {
     // Thunder's Edge expansion
     LastBastion,
     RalNelConsortium,
-    DeepwroughtScolarate,
+    DeepwroughtScholarate,
     CrimsonRebellion,
     FirmamentObsidian,
 }
@@ -87,7 +87,7 @@ impl Faction {
             Faction::CouncilKeleres => Expansion::CodexIII,
             Faction::LastBastion => Expansion::ThundersEdge,
             Faction::RalNelConsortium => Expansion::ThundersEdge,
-            Faction::DeepwroughtScolarate => Expansion::ThundersEdge,
+            Faction::DeepwroughtScholarate => Expansion::ThundersEdge,
             Faction::CrimsonRebellion => Expansion::ThundersEdge,
             Faction::FirmamentObsidian => Expansion::ThundersEdge,
         }
@@ -123,7 +123,7 @@ impl Faction {
             Faction::CouncilKeleres => "The Council Keleres",
             Faction::LastBastion => "Last Bastion",
             Faction::RalNelConsortium => "The Ral Nel Consortium",
-            Faction::DeepwroughtScolarate => "The Deepwrought Scolorate",
+            Faction::DeepwroughtScholarate => "The Deepwrought Scholarate",
             Faction::CrimsonRebellion => "The Crimson Rebellion",
             Faction::FirmamentObsidian => "The Firmament / The Obsidian",
         })
@@ -195,7 +195,7 @@ impl Faction {
             Faction::CouncilKeleres => vec![/* Gets to pick starting techs */],
             Faction::LastBastion => vec![/* Gets to pick starting techs */],
             Faction::RalNelConsortium => vec![/* Gets to pick starting techs */],
-            Faction::DeepwroughtScolarate => {
+            Faction::DeepwroughtScholarate => {
                 vec![/* Gets to research twice at the start of the game */]
             }
             Faction::CrimsonRebellion => vec![/* Gets to pick a starting tech */],
@@ -204,80 +204,5 @@ impl Faction {
         .into_iter()
         .filter(|tech| tech.is_enabled_in(expansions))
         .collect()
-    }
-
-    /// Tries to parse the name of a faction into a faction (note: Must match w/e naming scheme milty draft is using!)
-    pub fn parse(name: &str) -> GDResult<Self> {
-        Ok(match name {
-            "Sardakk N'orr" => Faction::SardakkNorr,
-            "The Arborec" => Faction::Arborec,
-            "The Barony of Letnev" => Faction::BaronyOfLetnev,
-            "The Clan of Saar" => Faction::ClanOfSaar,
-            "The Embers of Muaat" => Faction::EmbersOfMuaat,
-            "The Emirates of Hacan" => Faction::EmiratesOfHacan,
-            "The Federation of Sol" => Faction::FederationOfSol,
-            "The Ghosts of Creuss" => Faction::GhostsOfCreuss,
-            "The L1z1x Mindnet" => Faction::L1Z1XMindnet,
-            "The Mentak Coalition" => Faction::MentakCoalition,
-            "The Naalu Collective" => Faction::NaaluCollective,
-            "The Nekro Virus" => Faction::NekroVirus,
-            "The Universities of Jol-Nar" => Faction::UniversitiesOfJolNar,
-            "The Winnu" => Faction::Winnu,
-            "The Xxcha Kingdom" => Faction::XxchaKingdom,
-            "The Yin Brotherhood" => Faction::YinBrotherhood,
-            "The Yssaril Tribes" => Faction::YssarilTribes,
-            "The Argent Flight" => Faction::ArgentFlight,
-            "The Empyrean" => Faction::Empyrean,
-            "The Mahact Gene-sorcerers" => Faction::MahactGeneSorcerers,
-            "The Naaz-Rokha Alliance" => Faction::NaazRokhaAlliance,
-            "The Nomad" => Faction::Nomad,
-            "The Titans of Ul" => Faction::TitansOfUl,
-            "The Vuil'raith Cabal" => Faction::VuilRaithCabal,
-            "The Council Keleres" => Faction::CouncilKeleres,
-            "Last Bastion" => Faction::LastBastion,
-            "The Ral Nel Consortium" => Faction::RalNelConsortium,
-            "The Deepwrought Scholarate" => Faction::DeepwroughtScolarate,
-            "The Crimson Rebellion" => Faction::CrimsonRebellion,
-            "The Firmament / The Obsidian" => Faction::FirmamentObsidian,
-            "Augurs of Ilyxum"
-            | "Celdauri Trade Confederation"
-            | "Dih-Mohn Flotilla"
-            | "Florzen Profiteers"
-            | "Free Systems Compact"
-            | "Ghemina Raiders"
-            | "Glimmer of Mortheus"
-            | "Kollecc Society"
-            | "Kortali Tribunal"
-            | "Li-Zho Dynasty"
-            | "L'Tokk Khrask"
-            | "Mirveda Protectorate"
-            | "Myko-Mentori"
-            | "Nivyn Star Kings"
-            | "Olradin League"
-            | "Roh'Dhna Mechatronics"
-            | "Savages of Cymiae"
-            | "Shipwrights of Axis"
-            | "Tnelis Syndicate"
-            | "Vaden Banking Clans"
-            | "Vaylerian Scourge"
-            | "Veldyr Sovereignty"
-            | "Zealots of Rhodun"
-            | "Zelian Purifier"
-            | "Bentor Conglomerate"
-            | "Berserkers of Kjalengard"
-            | "Cheiran Hordes"
-            | "Edyn Mandate"
-            | "Ghoti Wayfarers"
-            | "Gledge Union"
-            | "Kyro Sodality"
-            | "Lanefir Remnants"
-            | "The Monks of Kolume"
-            | "Nokar Sellships" => {
-                return Err(GameDataError::DiscordantStarsFactionsNotSupported(
-                    name.to_string(),
-                ));
-            }
-            other => return Err(GameDataError::UnknownFaction(name.to_string())),
-        })
     }
 }

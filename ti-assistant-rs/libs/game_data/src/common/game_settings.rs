@@ -1,12 +1,10 @@
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 use super::expansions::Expansion;
 
 /// Settings for a game.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct GameSettings {
     /// The points required to trigger win-condition for this game.
     pub max_points: u32,
@@ -24,9 +22,8 @@ impl Default for GameSettings {
 }
 
 /// Which expansions are in use.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 #[allow(missing_docs)]
 pub struct Expansions {
     pub prophecy_of_kings: bool,

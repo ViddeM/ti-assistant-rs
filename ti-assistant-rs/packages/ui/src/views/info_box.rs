@@ -1,49 +1,61 @@
-use dioxus::{logger::tracing, prelude::*};
+use dioxus::prelude::*;
 use ti_helper_game_data::game_id::GameId;
 
-use crate::data::{
-    event_context::EventContext, game_context::GameContext, view_mode::ViewModeContext,
+use crate::{
+    components::button::Button,
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+        view_mode::ViewMode,
+    },
 };
 
+const INFO_BOX_SCSS: Asset = asset!("/assets/styling/views/info_box.scss");
+
 #[component]
-pub fn InfoBox() -> Element {
+pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
     let game_id = use_context::<GameId>();
     let game_context = use_context::<GameContext>();
-    let view = use_context::<ViewModeContext>();
+    let player = use_context::<PlayerViewContext>();
     let ec = use_context::<EventContext>();
 
     let game_state = game_context.game_state();
 
-    tracing::info!(
-        "Infobox was refreshed time tracking is now {}",
-        game_state.time_tracking_paused
-    );
-
     rsx! {
-        div {
+        document::Stylesheet { href: INFO_BOX_SCSS }
+
+        div { class: "card",
             b { "Game: {game_id}" }
-            div {
-                button { "Game" }
-                button { "Score" }
-                button { "Techs" }
-                button { "Planets" }
-                button { "Law" }
-                button { "Map" }
+            div { class: "view-mode-button-group",
+                ViewModeButton { view_mode: ViewMode::Game, current: view_mode }
+                ViewModeButton { view_mode: ViewMode::Score, current: view_mode }
+                ViewModeButton { view_mode: ViewMode::Techs, current: view_mode }
+                ViewModeButton { view_mode: ViewMode::Planets, current: view_mode }
+                ViewModeButton { view_mode: ViewMode::Laws, current: view_mode }
+                ViewModeButton { view_mode: ViewMode::Map, current: view_mode }
             }
             div {
                 b { "Round: {game_state.round}" }
             }
             div {
-                b { "Currently viewing: {view.display()}" }
+                b { "Currently viewing: {player.display()}" }
             }
             div {
                 if game_state.time_tracking_paused {
-                    button { onclick: move |_| ec.pause(), "Pause" }
+                    Button { onclick: move |_| ec.pause(), "Pause" }
                 } else {
-                    button { onclick: move |_| ec.play(), "Play" }
+                    Button { onclick: move |_| ec.play(), "Play" }
                 }
-                button { onclick: move |_| ec.undo(), "Undo" }
+                Button { onclick: move |_| ec.undo(), "Undo" }
             }
         }
+    }
+}
+
+#[component]
+fn ViewModeButton(current: Signal<ViewMode>, view_mode: ViewMode) -> Element {
+    let disabled = current.read().eq(&view_mode);
+
+    rsx! {
+        Button { disabled, onclick: move |_| current.set(view_mode), "{view_mode.to_string()}" }
     }
 }

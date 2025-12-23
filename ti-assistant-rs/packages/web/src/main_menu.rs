@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use ui::components::button::Button;
 
 use crate::Route;
 
@@ -9,7 +10,7 @@ pub fn MainMenu() -> Element {
     rsx! {
         div {
             Link { to: Route::NewGame,
-                button { "New Game" }
+                Button { "New Game" }
             }
 
             input {
@@ -24,7 +25,7 @@ pub fn MainMenu() -> Element {
             }
 
             Link { to: Route::Game { id: game_id() },
-                button { disabled: game_id().len() != 8, "Join Game" }
+                Button { disabled: game_id().len() != 8, "Join Game" }
             }
         }
     }

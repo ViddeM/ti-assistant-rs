@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// An expansion for Twilight Imperial 4th edition.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum Expansion {
     /// The base game without any expansions.
     Base,

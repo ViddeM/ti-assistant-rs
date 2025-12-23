@@ -18,6 +18,8 @@ pub fn Game(id: String) -> Element {
     };
 
     rsx! {
-        GameView { game_id }
+        div {
+            GameView { game_id }
+        }
     }
 }

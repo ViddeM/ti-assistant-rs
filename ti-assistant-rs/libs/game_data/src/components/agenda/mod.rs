@@ -1,14 +1,12 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::{EnumDiscriminants, EnumIter};
-use ts_rs::TS;
 
 use crate::common::{expansions::Expansion, player_id::PlayerId};
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
 /// All information concerning an agenda.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct AgendaInfo {
     /// The name of the agenda card.
     pub name: String,
@@ -23,8 +21,7 @@ pub struct AgendaInfo {
 }
 
 /// The type of agenda this is.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, TS)]
-#[ts(export)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 pub enum AgendaKind {
     /// A law that will either be enacted or denied.
     Law,
@@ -33,8 +30,7 @@ pub enum AgendaKind {
 }
 
 /// A vote type where players can either vote For or Against.
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Serialize, Deserialize, TS)]
-#[ts(export)]
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Serialize, Deserialize)]
 #[allow(missing_docs)]
 pub enum ForOrAgainst {
     For,
@@ -44,11 +40,9 @@ pub enum ForOrAgainst {
 /// What is to be elected for an agenda.
 #[derive(EnumDiscriminants)]
 #[strum_discriminants(name(AgendaElectKind))]
-#[strum_discriminants(derive(PartialOrd, Ord, Hash, Serialize, Deserialize, TS))]
-#[strum_discriminants(ts(export))]
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, TS)]
+#[strum_discriminants(derive(PartialOrd, Ord, Hash, Serialize, Deserialize))]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(tag = "electKind", content = "value")]
-#[ts(export)]
 pub enum AgendaElect {
     /// Select either a for or against alternative.
     ForOrAgainst(ForOrAgainst),
@@ -83,9 +77,8 @@ pub enum AgendaElect {
 
 /// An agenda in the game.
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumIter, TS,
+    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumIter,
 )]
-#[ts(export)]
 #[allow(missing_docs)]
 pub enum Agenda {
     // Base-game laws

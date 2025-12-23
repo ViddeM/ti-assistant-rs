@@ -1,7 +1,6 @@
 use std::{fmt::Display, str::FromStr};
 
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 use crate::components::system::{SystemId, systems};
 
@@ -18,7 +17,7 @@ pub enum HexMapError {
 }
 
 /// The galactic map.
-#[derive(Default, Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Default, Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct HexMap {
     /// All tiles that are in the game (at start).
     pub tiles: Vec<Tile>,
@@ -129,7 +128,7 @@ impl HexMap {
 }
 
 /// A tile in play.
-#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Tile {
     /// The id of the system.
     pub system: SystemId,
@@ -138,7 +137,7 @@ pub struct Tile {
 }
 
 /// A position of a tile in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum HexPosition {
     /// Outside of the galaxy, e.g. Creuss home system and Mallice.
     OutsideGalaxy,
@@ -147,7 +146,7 @@ pub enum HexPosition {
 }
 
 /// A coordinate of a tile in the system.
-#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct Coordinate {
     /// Which ring the coordinate is in (starting with mecatol rex on 0).
     pub ring: u32,

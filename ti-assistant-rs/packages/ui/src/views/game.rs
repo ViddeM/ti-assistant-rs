@@ -14,8 +14,11 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    data::{event_context::EventContext, game_context::GameContext, view_mode::ViewModeContext},
-    views::info_box::InfoBox,
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+        view_mode::ViewMode,
+    },
+    views::{info_box::InfoBox, phase_view::PhaseView},
 };
 
 #[component]
@@ -84,9 +87,29 @@ fn MainGameView(
     game_state: ReadSignal<Arc<GameState>>,
 ) -> Element {
     use_context_provider(|| GameContext::new(game_state, game_options));
-    use_context_provider(|| ViewModeContext::new());
+    use_context_provider(|| PlayerViewContext::new());
+
+    let view_mode = use_signal(|| ViewMode::Game);
 
     rsx! {
-        div { InfoBox {} }
+        div {
+            InfoBox { view_mode }
+            DisplayViewMode { view_mode }
+        }
+    }
+}
+
+#[component]
+fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
+    let mode = *view_mode.read();
+    match mode {
+        ViewMode::Game => rsx! {
+            PhaseView {}
+        },
+        ViewMode::Score => rsx! { "Score" },
+        ViewMode::Techs => rsx! { "Techs" },
+        ViewMode::Planets => rsx! { "Planets" },
+        ViewMode::Laws => rsx! { "Laws" },
+        ViewMode::Map => rsx! { "Map" },
     }
 }

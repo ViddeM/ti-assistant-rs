@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
-use ts_rs::TS;
 
 use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
@@ -22,9 +21,8 @@ use crate::{
 const MIN_PLAYER_COUNT: usize = 3;
 
 /// All information that is static for a game of TI4.
-#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct GameOptions {
     /// The minimum number of players allowed for the game.
     pub min_players: usize,
@@ -140,9 +138,8 @@ impl GameOptions {
 }
 
 /// A faction in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct FactionResponse {
     /// The faction ID.
     pub faction: Faction,

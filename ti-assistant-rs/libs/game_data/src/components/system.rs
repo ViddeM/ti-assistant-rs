@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 use crate::{
     common::{expansions::Expansion, faction::Faction},
@@ -11,8 +10,7 @@ use crate::{
 use super::planet::Planet;
 
 /// What type of wormhole this is.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[allow(missing_docs)]
 pub enum WormHoleType {
     Alpha,
@@ -23,8 +21,7 @@ pub enum WormHoleType {
 }
 
 /// A type of system.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[allow(missing_docs)]
 pub enum SystemType {
     Anomaly(Vec<AnomalyType>),
@@ -34,8 +31,7 @@ pub enum SystemType {
 }
 
 /// A type of anomaly.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[allow(missing_docs)]
 pub enum AnomalyType {
     AsteroidField,
@@ -50,9 +46,8 @@ pub enum AnomalyType {
 pub type SystemId = String;
 
 /// A system.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct System {
     /// A unique id for the system.
     pub id: SystemId,
@@ -628,7 +623,7 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "95",
-            SystemType::HomeSystem(Faction::DeepwroughtScolarate),
+            SystemType::HomeSystem(Faction::DeepwroughtScholarate),
             vec![Planet::Ikatena],
             vec![],
             Expansion::ThundersEdge

@@ -7,15 +7,13 @@ pub use commander::*;
 pub use hero::*;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
-use ts_rs::TS;
 
 use crate::common::{faction::Faction, game_settings::Expansions};
 
 /// A leader, i.e. an agent, commander, or hero.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize, TS)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(untagged)]
 #[allow(missing_docs)]
-#[ts(export)]
 pub enum Leader {
     Agent(Agent),
     Commander(Commander),
@@ -23,9 +21,8 @@ pub enum Leader {
 }
 
 /// Information about a leader, i.e. an agent, commander, or hero.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type")]
-#[ts(export)]
 #[allow(missing_docs)]
 pub enum LeaderInfo {
     Agent(AgentInfo),
@@ -34,8 +31,7 @@ pub enum LeaderInfo {
 }
 
 /// Information about a leader ability, i.e. if it's an Action, etc.
-#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq, TS)]
-#[ts(export)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum LeaderAbilityKind {
     /// Leader ability is an Action.
     Action,

@@ -6,7 +6,6 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize, Serializer};
-use ts_rs::{Dummy, TS};
 
 /// A wrapper around [HashMap] that generates correct [TS] bindings for enum keys.
 ///
@@ -63,44 +62,6 @@ where
         Ok(Self {
             inner: Deserialize::deserialize(deserializer)?,
         })
-    }
-}
-
-impl<K: TS, V: TS> TS for EnumMap<K, V> {
-    type WithoutGenerics = EnumMap<Dummy, Dummy>;
-
-    fn name() -> String {
-        format!("{{ [key in {}]: {} }}", K::name(), V::name())
-    }
-
-    fn inline() -> String {
-        format!("{{ [key in {}]: {} }}", K::name(), V::name())
-    }
-
-    fn decl() -> String {
-        panic!("{} cannot be declared", Self::name())
-    }
-
-    fn decl_concrete() -> String {
-        panic!("{} cannot be declared", Self::name())
-    }
-
-    fn inline_flattened() -> String {
-        panic!("{} cannot be flattened", Self::name())
-    }
-
-    fn dependency_types() -> impl ts_rs::typelist::TypeList
-    where
-        Self: 'static,
-    {
-        HashMap::<K, V>::dependency_types()
-    }
-
-    fn generics() -> impl ts_rs::typelist::TypeList
-    where
-        Self: 'static,
-    {
-        HashMap::<K, V>::generics()
     }
 }
 

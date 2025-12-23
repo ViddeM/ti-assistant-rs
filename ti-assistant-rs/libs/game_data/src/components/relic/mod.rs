@@ -1,11 +1,9 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
-use ts_rs::TS;
 
 use crate::common::expansions::Expansion;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 #[allow(missing_docs)]
 pub enum Relic {
     /* PoK */
@@ -26,8 +24,7 @@ pub enum Relic {
 }
 
 /// When this relic can be used.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 pub enum RelicPlay {
     /// As an action.
     Action,
@@ -42,8 +39,7 @@ pub enum RelicPlay {
 }
 
 /// All relevant information for a relic card.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct RelicInfo {
     /// Which card this refers to.
     pub card: Relic,

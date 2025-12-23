@@ -7,7 +7,6 @@ edition = "2024"
 
 [dependencies]
 serde = { version = "1", features = ["derive", "rc"] }
-ts-rs = "8.1.0"
 chrono = { version = "0.4.31", features = ["serde"] }
 strum = "0.25"
 strum_macros = "0.25"

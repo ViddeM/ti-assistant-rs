@@ -6,7 +6,6 @@ use std::{
 use anyhow::{Context, anyhow, bail, ensure};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 use crate::{
     actions::strategic::{
@@ -41,8 +40,7 @@ use super::{
 };
 
 /// A snapshot of the game state.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
-#[ts(export)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct GameState {
     /// The current round number of the game.
@@ -112,11 +110,9 @@ pub struct GameState {
     ///
     /// This does not include the time taken for the current round, that will be calculated and
     /// included when the current player ends their turn.
-    #[ts(type = "{ [playerId: string]: { secs: number, nanos: number } }")]
     pub players_play_time: HashMap<PlayerId, Duration>,
 
     /// When the current player started their turn.
-    #[ts(type = "string | null")]
     pub current_turn_start_time: Option<DateTime<Utc>>,
 
     /// The player (if any) currently using [Faction::NaaluCollective]s faction ability:
@@ -127,8 +123,7 @@ pub struct GameState {
 }
 
 /// Information relevant to things that has happened on the gameboard.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
-#[ts(export)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct MapData {
     /// Map information relevant to games imported from milty draft.
@@ -138,8 +133,7 @@ pub struct MapData {
 }
 
 /// Information relevant to things that has happened on the gameboard.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct AgendaOverrideState {
     /// The vote state of this agenda override.
@@ -147,8 +141,7 @@ pub struct AgendaOverrideState {
 }
 
 /// Map information only relevant / obtainable for games imported from milty draft.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
-#[ts(export)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct MiltyInformation {
     /// The hex map for the game.
@@ -158,9 +151,8 @@ pub struct MiltyInformation {
 }
 
 /// The current progress of an action-phase action.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "t")]
-#[ts(export)]
 pub enum ActionPhaseProgress {
     /// The progress of a strategy card.
     Strategic(StrategicProgress),
@@ -189,9 +181,8 @@ impl ActionPhaseProgress {
 }
 
 /// Progress of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct StrategicProgress {
     /// The strategy card being played.
     pub card: StrategyCard,
@@ -202,8 +193,7 @@ pub struct StrategicProgress {
 }
 
 /// The progress of the primary section of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub enum StrategicPrimaryProgress {
     /// Primary progress for the technology strategy card.
     Technology {
@@ -243,9 +233,8 @@ impl StrategicPrimaryProgress {
 }
 
 /// Progress during a tactical action.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct TacticalProgress {
     /// What system was activated, if any.
     pub activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
@@ -257,19 +246,17 @@ pub struct TacticalProgress {
 }
 
 /// The progress of an action card being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct ActionCardProgress {
     /// Which card is being played.
     pub card: ActionCard,
 }
 
 /// The progress of a leader action being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 #[serde(tag = "action")]
-#[ts(export)]
 #[allow(missing_docs)]
 pub enum LeaderProgress {
     /// This leader needs no special handling.
@@ -277,18 +264,16 @@ pub enum LeaderProgress {
 }
 
 /// The progress of a frontier card being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct FrontierCardProgress {
     /// Which card is being played.
     pub card: FrontierCard,
 }
 
 /// The progress of a frontier card being played.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct RelicProgress {
     /// The relic whose action is being taken.
     pub relic: Relic,

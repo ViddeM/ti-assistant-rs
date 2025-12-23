@@ -4,7 +4,6 @@ use std::{
 };
 
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 use crate::{
     common::player_id::PlayerId,
@@ -19,9 +18,8 @@ use crate::{
 use super::{agenda::AgendaRecord, player::Player};
 
 /// Everything game state that to player points.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct Score {
     /// The amount of points required to win the game.
     pub max_points: i8,
@@ -247,9 +245,8 @@ impl Score {
 }
 
 /// Agendas that provide points and to whom.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "electableAgendaKind", content = "value")]
-#[ts(export)]
 pub enum ScorableAgenda {
     /// The owner of this planet has a point.
     HolyPlanetOfIxth {

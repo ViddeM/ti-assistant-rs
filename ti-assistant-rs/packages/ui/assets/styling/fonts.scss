@@ -1,0 +1,19 @@
+@font-face {
+    font-family: 'slider-font';
+    // Ensure that this is served by the wrapping package.
+    src: url(/fonts/slider_regular.ttf) format('truetype');
+    font-display: swap;
+}
+    
+@font-face {
+    font-family: 'slider-font-fallback';
+    src: local("Arial");
+    ascent-override: 84.18%;
+    descent-override: 20.79%;
+    line-gap-override: 0.00%;
+    size-adjust: 109.17%
+}
+
+.font {
+    font-family: 'slider-font', 'slider-font-fallback'
+}

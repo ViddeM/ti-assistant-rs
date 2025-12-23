@@ -13,11 +13,15 @@ use ti_helper_game_data::common::{
     milty_data::{MiltyData, MiltyPlayer},
 };
 
-use crate::error::{MiltyError, MiltyResult};
+use crate::{
+    error::{MiltyError, MiltyResult},
+    faction_parser::parse_faction,
+};
 
 /// Errors that can occurr when importing from milty draft.
 pub mod error;
 
+mod faction_parser;
 mod milty_response;
 
 impl TryFrom<&MiltyPlayerResponse> for MiltyPlayer {
@@ -26,7 +30,7 @@ impl TryFrom<&MiltyPlayerResponse> for MiltyPlayer {
     fn try_from(value: &MiltyPlayerResponse) -> Result<Self, Self::Error> {
         Ok(MiltyPlayer {
             name: html_escape::decode_html_entities(&value.name).to_string(),
-            faction: Faction::parse(&value.faction).map_err(|err| {
+            faction: parse_faction(&value.faction).map_err(|err| {
                 MiltyError::FactionParseError {
                     player: value.name.clone(),
                     faction: value.faction.clone(),
@@ -82,7 +86,9 @@ impl MiltyImport for MiltyData {
 
         let milty_conf = get_milty_data_response.draft.config;
         if milty_conf.any_ds_enabled() {
-            return Err(MiltyError::DiscordantStarsNotSupported);
+            return Err(MiltyError::DiscordantStarsNotSupported(
+                "Discordant stars options were enabled in milty config".to_string(),
+            ));
         }
 
         let players = get_milty_data_response

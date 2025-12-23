@@ -1,12 +1,10 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
-use ts_rs::TS;
 
 use crate::common::expansions::Expansion;
 
 /// A frontier card.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 #[allow(missing_docs)]
 pub enum FrontierCard {
     /* PoK */
@@ -27,8 +25,7 @@ pub enum FrontierCard {
 }
 
 /// When this frontier card can be played.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 pub enum FrontierCardType {
     /// As an action.
     Action,
@@ -37,9 +34,8 @@ pub enum FrontierCardType {
 }
 
 /// All relevant information for a frontier card.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct FrontierCardInfo {
     /// Which frontier card this is in regards to.
     pub card: FrontierCard,

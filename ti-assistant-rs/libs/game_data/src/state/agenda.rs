@@ -6,7 +6,6 @@ use std::{
 use anyhow::{bail, ensure};
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
-use ts_rs::TS;
 
 use crate::{
     common::player_id::PlayerId,
@@ -20,9 +19,8 @@ use crate::{
 };
 
 /// State for the agenda phase.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct AgendaState {
     /// Round number (e.g.. 1 or 2)
     pub round: AgendaRound,
@@ -32,10 +30,7 @@ pub struct AgendaState {
 }
 
 /// Agenda phase rounds.
-#[derive(
-    Clone, Copy, Default, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, TS,
-)]
-#[ts(export)]
+#[derive(Clone, Copy, Default, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AgendaRound {
     /// First round of the Agenda phase.
     #[default]
@@ -59,9 +54,8 @@ impl AgendaRound {
 }
 
 /// Record of a previously completed agenda vote.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct AgendaRecord {
     /// The round number at the time.
     pub round: u32,
@@ -75,9 +69,8 @@ pub struct AgendaRecord {
 }
 
 /// State of an agenda vote.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct VoteState {
     /// The revealed agenda.
     pub agenda: Agenda,
@@ -229,9 +222,8 @@ impl VoteState {
 }
 
 /// Votes for an elect option.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct Vote {
     votes: u16,
     outcome: AgendaElect,

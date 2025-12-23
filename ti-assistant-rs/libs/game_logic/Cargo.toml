@@ -10,7 +10,6 @@ ti_helper_game_data = { workspace = true }
 serde = { version = "1", features = ["derive", "rc"] }
 chrono = { version = "0.4.31", features = ["serde"] }
 log = "0.4.20"
-ts-rs = "8.1.0"
 strum = "0.25"
 strum_macros = "0.25"
 anyhow = "1"

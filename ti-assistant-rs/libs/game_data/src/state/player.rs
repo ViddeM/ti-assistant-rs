@@ -2,7 +2,6 @@ use std::collections::HashSet;
 
 use anyhow::ensure;
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
@@ -13,9 +12,8 @@ use crate::{
 };
 
 /// A new player that is currently being created.
-#[derive(Clone, Debug, Serialize, Deserialize, TS)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct NewPlayer {
     /// The name of the player.
     pub name: String,
@@ -26,9 +24,8 @@ pub struct NewPlayer {
 }
 
 /// A player in a running game.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-#[ts(export)]
 pub struct Player {
     /// The name of the player.
     pub name: String,

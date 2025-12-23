@@ -25,8 +25,8 @@ pub enum MiltyError {
     NonSuccessResponse { response: MiltyDataResponse },
     #[error("Milty draft not finished")]
     DraftNotComplete,
-    #[error("Discordant stars addon not supported but was enabled in milty")]
-    DiscordantStarsNotSupported,
+    #[error("Discordant stars addon not supported but was enabled in milty, found {0}")]
+    DiscordantStarsNotSupported(String),
     #[error(
         "Milty contained faction ({faction:?}) from expansion ({expansion:?}) that was not enabled"
     )]
@@ -40,4 +40,6 @@ pub enum MiltyError {
     DuplicatePlayerFactions,
     #[error("Failed to parse hex map, err: {0}")]
     HexMapError(#[from] HexMapError),
+    #[error("Unknown faction: {0}")]
+    UnknownFaction(String),
 }

@@ -3,7 +3,6 @@ use crate::common::expansions::Expansion;
 use super::{ObjectiveInfo, ObjectiveKind};
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
-use ts_rs::TS;
 
 macro_rules! o {
     ($stage:ident, $name:literal, $condition: literal, $expansion: expr) => {
@@ -21,8 +20,7 @@ macro_rules! o {
 }
 
 /// A public objective.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
 #[allow(missing_docs)]
 pub enum PublicObjective {
     // Base 1 point objectives
@@ -85,7 +83,12 @@ impl PublicObjective {
                 Expansion::Base
             ),
             PublicObjective::DevelopWeaponry => {
-                o!(StageI, "Develop Weaponry", "Own 2 unit upgrade technologies.", Expansion::Base)
+                o!(
+                    StageI,
+                    "Develop Weaponry",
+                    "Own 2 unit upgrade technologies.",
+                    Expansion::Base
+                )
             }
             PublicObjective::DiversifyResearch => {
                 o!(
@@ -96,13 +99,18 @@ impl PublicObjective {
                 )
             }
             PublicObjective::ErectAMonument => {
-                o!(StageI, "Erect a Monument", "Spend 8 resources.", Expansion::Base)
+                o!(
+                    StageI,
+                    "Erect a Monument",
+                    "Spend 8 resources.",
+                    Expansion::Base
+                )
             }
             PublicObjective::ExpandBorders => {
                 o!(
                     StageI,
                     "Expand Borders",
-                    "Control 6 planets in non-home systems.", 
+                    "Control 6 planets in non-home systems.",
                     Expansion::Base
                 )
             }
@@ -116,45 +124,60 @@ impl PublicObjective {
                 o!(
                     StageI,
                     "Intimidate Council",
-                    "Have 1 or more ships in 2 systems that are adjacent to Mectrol Rex's System.", 
+                    "Have 1 or more ships in 2 systems that are adjacent to Mectrol Rex's System.",
                     Expansion::Base
                 )
             }
             PublicObjective::LeadFromTheFront => o!(
                 StageI,
                 "Lead from the Front",
-                "Spend a total of 3 tokens from your tactic and/or strategy pools.", 
+                "Spend a total of 3 tokens from your tactic and/or strategy pools.",
                 Expansion::Base
             ),
             PublicObjective::NegotiateTradeRoutes => {
-                o!(StageI, "Negotiate Trade Routes", "Spend 5 trade goods.", Expansion::Base)
+                o!(
+                    StageI,
+                    "Negotiate Trade Routes",
+                    "Spend 5 trade goods.",
+                    Expansion::Base
+                )
             }
-            PublicObjective::SwayTheCouncil => o!(StageI, "Sway the Council", "Spend 8 influence.", Expansion::Base),
+            PublicObjective::SwayTheCouncil => o!(
+                StageI,
+                "Sway the Council",
+                "Spend 8 influence.",
+                Expansion::Base
+            ),
             PublicObjective::AmassWealth => o!(
                 StageI,
                 "Amass wealth",
-                "Spend 3 influence, 3 resources, and 3 trade goods.", 
+                "Spend 3 influence, 3 resources, and 3 trade goods.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::BuildDefenses => {
-                o!(StageI, "Build Defenses", "Have 4 or more structures.", Expansion::ProphecyOfKings)
+                o!(
+                    StageI,
+                    "Build Defenses",
+                    "Have 4 or more structures.",
+                    Expansion::ProphecyOfKings
+                )
             }
             PublicObjective::DiscoverLostOutposts => o!(
                 StageI,
                 "Discover Lost Outposts",
-                "Control 2 planets that have attachments.", 
+                "Control 2 planets that have attachments.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::EngineerAMarvel => o!(
                 StageI,
                 "Engineer a Marvel",
-                "Have your flagship or a war sun on the game board.", 
+                "Have your flagship or a war sun on the game board.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::ExploreDeepSpace => o!(
                 StageI,
                 "Explore Deep Space",
-                "Have units in 3 systems that do not contain planets.", 
+                "Have units in 3 systems that do not contain planets.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::ImproveInfrastructure => o!(
@@ -184,16 +207,21 @@ impl PublicObjective {
             PublicObjective::RaiseAFleet => o!(
                 StageI,
                 "Raise a Fleet",
-                "Have 5 or more non-fighter ships in 1 system.", 
+                "Have 5 or more non-fighter ships in 1 system.",
                 Expansion::Base
             ),
             PublicObjective::CentralizeGalacticTrade => {
-                o!(StageII, "Centralize Galactic Trade", "Spend 10 trade goods.", Expansion::Base)
+                o!(
+                    StageII,
+                    "Centralize Galactic Trade",
+                    "Spend 10 trade goods.",
+                    Expansion::Base
+                )
             }
             PublicObjective::ConquerTheWeak => o!(
                 StageII,
                 "Conquer the Weak",
-                "Control 1 planet that is in another player's home system.", 
+                "Control 1 planet that is in another player's home system.",
                 Expansion::Base
             ),
             PublicObjective::FormGalacticBrainTrust => o!(
@@ -202,7 +230,12 @@ impl PublicObjective {
                 "Control 5 planets that have technology specialties.",
                 Expansion::Base
             ),
-            PublicObjective::FoundAGoldenAge => o!(StageII, "Found a Golden Age", "Spend 16 resources.", Expansion::Base),
+            PublicObjective::FoundAGoldenAge => o!(
+                StageII,
+                "Found a Golden Age",
+                "Spend 16 resources.",
+                Expansion::Base
+            ),
             PublicObjective::GalvanizeThePeople => o!(
                 StageII,
                 "Galvanize the People",
@@ -210,7 +243,12 @@ impl PublicObjective {
                 Expansion::Base
             ),
             PublicObjective::ManipulateGalacticLaw => {
-                o!(StageII, "Manipulate Galactic Law", "Spend 16 influence", Expansion::Base)
+                o!(
+                    StageII,
+                    "Manipulate Galactic Law",
+                    "Spend 16 influence",
+                    Expansion::Base
+                )
             }
             PublicObjective::MasterTheSciences => o!(
                 StageII,
@@ -233,66 +271,67 @@ impl PublicObjective {
             PublicObjective::UnifyTheColonies => o!(
                 StageII,
                 "Unify the Colonies",
-                "Control 6 planets that each have the same planet trait.", 
+                "Control 6 planets that each have the same planet trait.",
                 Expansion::Base
             ),
             PublicObjective::AchieveSupremacy => o!(
                 StageII,
                 "Achieve Supremacy",
-                "Have your flagship or a war sun in another player's home system or the Mecatol Rex system.", 
+                "Have your flagship or a war sun in another player's home system or the Mecatol Rex system.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::BecomeALegend => o!(
                 StageII,
                 "Become a Legend",
-                "Have units in 4 systems that contain legendary planets, Mecatol Rex, or anomalies.", 
+                "Have units in 4 systems that contain legendary planets, Mecatol Rex, or anomalies.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::CommandAnArmada => o!(
                 StageII,
-                "Command an Armada", "Have 8 or more non-fighter ships in 1 system.", 
+                "Command an Armada",
+                "Have 8 or more non-fighter ships in 1 system.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::ConstructMassiveCities => o!(
                 StageII,
                 "Construct Massive Cities",
-                "Have 7 or more structures.", 
+                "Have 7 or more structures.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::ControlTheBorderlands => o!(
                 StageII,
                 "Control the Borderlands",
-                "Have units in 5 systems on the edge of the game board other than your home system.", 
+                "Have units in 5 systems on the edge of the game board other than your home system.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::HoldVastReserves => o!(
                 StageII,
                 "Hold Vast Reserves",
-                "Spend 6 influence, 6 resources, and 6 trade goods.", 
+                "Spend 6 influence, 6 resources, and 6 trade goods.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::PatrolVastTerritories => o!(
                 StageII,
                 "Patrol Vast Territories",
-                "Have units in 5 systems that do not contain planets.", 
+                "Have units in 5 systems that do not contain planets.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::ProtectTheBorder => o!(
                 StageII,
                 "Protect the Border",
-                "Have structures on 5 planets outside of your home system.", 
+                "Have structures on 5 planets outside of your home system.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::ReclaimAncientMonuments => o!(
                 StageII,
                 "Reclaim Ancient Monuments",
-                "Control 3 planets that have attachments.", 
+                "Control 3 planets that have attachments.",
                 Expansion::ProphecyOfKings
             ),
             PublicObjective::RuleDistantLands => o!(
                 StageII,
                 "Rule Distant Lands",
-                "Control 2 planets that are each in or adjacent to a different, other player's home system.", 
+                "Control 2 planets that are each in or adjacent to a different, other player's home system.",
                 Expansion::ProphecyOfKings
             ),
         }

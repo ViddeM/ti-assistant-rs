@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 use crate::{
     common::player_id::PlayerId,
@@ -82,8 +81,7 @@ impl StrategicSecondaryAction {
 }
 
 /// The progress of the secondary portion of a strategy card.
-#[derive(Clone, Debug, Serialize, Deserialize, TS, PartialEq)]
-#[ts(export)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[allow(missing_docs)]
 pub enum StrategicSecondaryProgress {
     Leadership,

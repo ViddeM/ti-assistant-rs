@@ -6,6 +6,7 @@ mod new_game;
 use new_game::NewGame;
 mod game;
 use game::Game;
+use ui::Setup;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -19,7 +20,7 @@ enum Route {
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
-const MAIN_CSS: Asset = asset!("/assets/main.css");
+const MAIN_SCSS: Asset = asset!("/assets/main.scss");
 
 fn main() {
     #[cfg(not(feature = "server"))]
@@ -40,12 +41,12 @@ fn main() {
 
 #[component]
 fn App() -> Element {
-    // Build cool things ✌️
-
     rsx! {
         // Global app resources
         document::Link { rel: "icon", href: FAVICON }
-        document::Link { rel: "stylesheet", href: MAIN_CSS }
+        document::Link { rel: "stylesheet", href: MAIN_SCSS }
+
+        Setup {}
 
         Router::<Route> {}
     }
