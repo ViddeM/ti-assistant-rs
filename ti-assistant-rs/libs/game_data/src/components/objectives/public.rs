@@ -1,8 +1,10 @@
+use std::cmp::Ordering;
+
 use crate::common::expansions::Expansion;
 
 use super::{ObjectiveInfo, ObjectiveKind};
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumIter;
+use strum_macros::{Display, EnumIter, EnumString};
 
 macro_rules! o {
     ($stage:ident, $name:literal, $condition: literal, $expansion: expr) => {
@@ -20,8 +22,11 @@ macro_rules! o {
 }
 
 /// A public objective.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
+)]
 #[allow(missing_docs)]
+#[strum(serialize_all = "snake_case")]
 pub enum PublicObjective {
     // Base 1 point objectives
     CornerTheMarket,
@@ -335,5 +340,20 @@ impl PublicObjective {
                 Expansion::ProphecyOfKings
             ),
         }
+    }
+}
+
+impl PartialOrd for PublicObjective {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for PublicObjective {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
     }
 }

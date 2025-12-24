@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumIter;
+use strum_macros::{Display, EnumIter, EnumString};
 
 use crate::{
     common::{expansions::Expansion, faction::Faction, game_settings::Expansions},
@@ -33,7 +33,10 @@ pub enum TechOrigin {
 }
 
 /// Technologies in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
+)]
+#[strum(serialize_all = "snake_case")]
 #[allow(missing_docs)]
 pub enum Technology {
     // Biotic
@@ -132,6 +135,21 @@ pub enum Technology {
     MagmusReactor,
     MagmusReactorOmega,
     ValkyrieParticleWeave,
+}
+
+impl PartialOrd for Technology {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Technology {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
+    }
 }
 
 /// All relevant information about a tech.

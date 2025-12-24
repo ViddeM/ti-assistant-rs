@@ -452,6 +452,11 @@ impl GameState {
         self.speaker.as_ref().ok_or(anyhow!("No speaker"))
     }
 
+    /// Returns weather the provided player is the speaker.
+    pub fn is_speaker(&self, player: &PlayerId) -> bool {
+        self.speaker.as_ref().eq(&Some(player))
+    }
+
     /// Asserts that the provided player is the currently active player.
     pub fn assert_player_turn(&self, player: &PlayerId) -> anyhow::Result<()> {
         let current_player = self.current_player()?;

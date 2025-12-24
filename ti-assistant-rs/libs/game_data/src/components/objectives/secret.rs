@@ -1,8 +1,10 @@
+use std::cmp::Ordering;
+
 use crate::{common::expansions::Expansion, components::phase::Phase};
 
 use super::{ObjectiveInfo, ObjectiveKind};
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumIter;
+use strum_macros::{Display, EnumIter, EnumString};
 
 macro_rules! s {
     ($phase:expr, $name:literal, $condition: literal, $expansion: expr) => {
@@ -18,8 +20,9 @@ macro_rules! s {
 
 /// A secret objective.
 #[derive(
-    Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq, PartialOrd, Ord, EnumIter,
+    Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
 )]
+#[strum(serialize_all = "snake_case")]
 #[allow(missing_docs)]
 pub enum SecretObjective {
     // Action phase base cards
@@ -315,5 +318,20 @@ impl SecretObjective {
                 Expansion::Base
             ),
         }
+    }
+}
+
+impl PartialOrd for SecretObjective {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for SecretObjective {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
     }
 }
