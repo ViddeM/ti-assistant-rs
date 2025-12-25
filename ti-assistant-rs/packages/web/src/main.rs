@@ -8,15 +8,20 @@ mod game;
 use game::Game;
 use ui::Setup;
 
+use crate::source_code_button::SourceCodeLinkButton;
+
+mod source_code_button;
+
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
-    #[route("/")]
-    MainMenu,
-    #[route("/game/new")]
-    NewGame,
-    #[route("/game/:id")]
-    Game { id: String }
+    #[layout(Wrapper)]
+        #[route("/")]
+        MainMenu,
+        #[route("/game/new")]
+        NewGame,
+        #[route("/game/:id")]
+        Game { id: String }
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.ico");
@@ -49,5 +54,13 @@ fn App() -> Element {
         Setup {}
 
         Router::<Route> {}
+    }
+}
+
+#[component]
+fn Wrapper() -> Element {
+    rsx! {
+        main { class: "main", Outlet::<Route> {} }
+        SourceCodeLinkButton {}
     }
 }

@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 dioxus = { workspace = true, features = ["router", "fullstack"] }
+dioxus-free-icons = { version = "0.10.0", features = ["font-awesome-brands", "font-awesome-regular", "font-awesome-solid"] }
 ui = { workspace = true }
 
 [features]
