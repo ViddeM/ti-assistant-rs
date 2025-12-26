@@ -10,21 +10,27 @@ use dioxus::{
     prelude::*,
 };
 use ti_helper_game_data::{
-    game_id::GameId, game_options::GameOptions, state::game_state::GameState,
+    components::phase::Phase, game_id::GameId, game_options::GameOptions,
+    state::game_state::GameState,
 };
 
 use crate::{
+    components::{button::Button, spinner::Spinner},
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
         view_mode::ViewMode,
     },
-    views::{info_box::InfoBox, phase_view::PhaseView},
+    views::{info_box::InfoBox, phase_view::PhaseView, players_sidebar::PlayersSidebar},
 };
+
+const GAME_SCSS: Asset = asset!("/assets/styling/views/game.scss");
 
 #[component]
 pub fn GameView(game_id: GameId) -> Element {
     use_context_provider(|| game_id);
-    let mut socket = use_websocket(move || join_game(game_id, WebSocketOptions::new()));
+    let mut socket = use_websocket(move || {
+        join_game(game_id, WebSocketOptions::new().with_automatic_reconnect())
+    });
     let mut ws_error = use_signal(|| None);
 
     let send_event = use_callback(move |msg: WsMessageIn| {
@@ -39,8 +45,6 @@ pub fn GameView(game_id: GameId) -> Element {
 
     let mut game_state = use_signal(|| None);
     let mut game_options = use_signal(|| None);
-
-    tracing::info!("Gamestate updated {game_state:?}");
 
     use_future(move || async move {
         while let Ok(message) = socket.recv().await {
@@ -64,8 +68,20 @@ pub fn GameView(game_id: GameId) -> Element {
 
     if let Some(err) = ws_error() {
         return rsx! {
-            div {
-                p { "Game Err: {err}" }
+            div { class: "card column",
+                h2 { "Invalid event" }
+                p { "Error: {err}" }
+                Button {
+                    onclick: move |_| async move {
+                        let new_socket = join_game(
+                                game_id,
+                                WebSocketOptions::new().with_automatic_reconnect(),
+                            )
+                            .await;
+                        socket.set(new_socket);
+                    },
+                    "Reload Game"
+                }
             }
         };
     }
@@ -78,7 +94,10 @@ pub fn GameView(game_id: GameId) -> Element {
         }
     }
 
-    rsx! { "Game loading..." }
+    rsx! {
+        "Game loading..."
+        Spinner {}
+    }
 }
 
 #[component]
@@ -92,19 +111,35 @@ fn MainGameView(
     let view_mode = use_signal(|| ViewMode::Game);
 
     rsx! {
-        div {
-            InfoBox { view_mode }
-            DisplayViewMode { view_mode }
-        }
+        document::Stylesheet { href: GAME_SCSS }
+        InfoBox { view_mode }
+        DisplayViewMode { view_mode }
     }
 }
 
 #[component]
 fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
     let mode = *view_mode.read();
+    let gc = use_context::<GameContext>();
+    let show_sidebar = use_memo(move || match gc.game_state().phase {
+        Phase::Creation | Phase::Setup => false,
+        _ => true,
+    });
+
+    let sidebar = if show_sidebar() {
+        rsx! {
+            PlayersSidebar {}
+        }
+    } else {
+        rsx! {}
+    };
+
     match mode {
         ViewMode::Game => rsx! {
-            PhaseView {}
+            div { class: "game-page-container",
+                {sidebar}
+                div { class: "phase-container", PhaseView {} } // TODO: Sidebar should also be in here.
+            }
         },
         ViewMode::Score => rsx! { "Score" },
         ViewMode::Techs => rsx! { "Techs" },

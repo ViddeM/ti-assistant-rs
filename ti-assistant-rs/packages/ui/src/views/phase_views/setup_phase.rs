@@ -92,44 +92,45 @@ fn PlayersSetup() -> Element {
     rsx! {
         div { class: "player-specific-setup-container",
             h3 { "Player specific setup" }
-            // Players...
-            {
-                players()
-                    .into_iter()
-                    .map(|(name, player)| {
-                        let player = Arc::new(player);
-                        let n = Arc::clone(&name);
-                        rsx! {
-                            fieldset {
-                                class: format!("player-color-border-{} setup-player-fieldset", player.color.name())
-                                    .as_str(),
-                                legend { class: format!("player-color-border-{} setup-player-legend", player.color.name()).as_str(),
-                                    "{&name}"
-                                }
-
-                                div { class: "setup-row",
-                                    if gc.game_state().is_speaker(&name) {
-                                        p { "Speaker" }
-                                    } else {
-                                        Button {
-                                            disabled: gc.game_state().is_speaker(&name),
-                                            onclick: move |_| {
-                                                event
-                                                    .send_event(Event::SetupSpeaker {
-                                                        player: n.clone(),
-                                                    })
-                                            },
-                                            "Set Speaker"
-                                        }
+            div { class: "players-setup-container",
+                {
+                    players()
+                        .into_iter()
+                        .map(|(name, player)| {
+                            let player = Arc::new(player);
+                            let n = Arc::clone(&name);
+                            rsx! {
+                                fieldset {
+                                    class: format!("player-color-border-{} setup-player-fieldset", player.color.name())
+                                        .as_str(),
+                                    legend { class: format!("player-color-border-{} setup-player-legend", player.color.name()).as_str(),
+                                        "{&name}"
                                     }
-                                    FactionIcon { faction: player.faction }
-                                }
 
-                                {player.faction.name()}
-                                FactionSpecificSetup { player_id: Arc::clone(&name), player: Arc::clone(&player) }
+                                    div { class: "setup-row",
+                                        if gc.game_state().is_speaker(&name) {
+                                            p { "Speaker" }
+                                        } else {
+                                            Button {
+                                                disabled: gc.game_state().is_speaker(&name),
+                                                onclick: move |_| {
+                                                    event
+                                                        .send_event(Event::SetupSpeaker {
+                                                            player: n.clone(),
+                                                        })
+                                                },
+                                                "Set Speaker"
+                                            }
+                                        }
+                                        FactionIcon { faction: player.faction }
+                                    }
+
+                                    {player.faction.name()}
+                                    FactionSpecificSetup { player_id: Arc::clone(&name), player: Arc::clone(&player) }
+                                }
                             }
-                        }
-                    })
+                        })
+                }
             }
         }
     }
@@ -194,7 +195,7 @@ fn WinnuSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                     }
                 } else {
                     rsx! {
-                        div {
+                        div { class: "setup-column",
                             TechDropdown {
                                 value: selected_tech,
                                 options: available_techs(),

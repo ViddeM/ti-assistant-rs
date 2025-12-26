@@ -1,6 +1,5 @@
-use std::fmt::Display;
-
 use dioxus::prelude::*;
+use strum::{Display, EnumString};
 use ti_helper_game_data::common::player_id::PlayerId;
 
 #[derive(Clone, Copy)]
@@ -25,26 +24,20 @@ impl PlayerViewContext {
         })
     }
 
+    pub fn get(&self) -> ReadSignal<PlayerView> {
+        self.current.into()
+    }
+
     pub fn display(&self) -> String {
         self.current.read().to_string()
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Display)]
 pub enum PlayerView {
     Global,
-    Player { player_id: PlayerId },
-}
-
-impl Display for PlayerView {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            match self {
-                PlayerView::Global => "Global".to_string(),
-                PlayerView::Player { player_id } => format!("Player: {player_id}"),
-            },
-        )
-    }
+    #[strum(to_string = "Player: {player_id}")]
+    Player {
+        player_id: PlayerId,
+    },
 }

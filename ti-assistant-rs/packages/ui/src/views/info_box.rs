@@ -1,4 +1,8 @@
 use dioxus::prelude::*;
+use dioxus_free_icons::{
+    icons::fa_solid_icons::{FaPause, FaPlay},
+    Icon,
+};
 use ti_helper_game_data::game_id::GameId;
 
 use crate::{
@@ -14,17 +18,39 @@ const INFO_BOX_SCSS: Asset = asset!("/assets/styling/views/info_box.scss");
 #[component]
 pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
     let game_id = use_context::<GameId>();
-    let game_context = use_context::<GameContext>();
+    let gc = use_context::<GameContext>();
     let player = use_context::<PlayerViewContext>();
-    let ec = use_context::<EventContext>();
+    let event = use_context::<EventContext>();
 
-    let game_state = game_context.game_state();
+    let round = use_memo(move || gc.game_state().round);
+
+    let play_pause_icon = use_memo(move || {
+        if gc.game_state().time_tracking_paused {
+            rsx! {
+                Icon {
+                    class: "inline-icon",
+                    width: None,
+                    height: None,
+                    icon: FaPlay,
+                }
+            }
+        } else {
+            rsx! {
+                Icon {
+                    class: "inline-icon",
+                    width: None,
+                    height: None,
+                    icon: FaPause,
+                }
+            }
+        }
+    });
 
     rsx! {
         document::Stylesheet { href: INFO_BOX_SCSS }
 
-        div { class: "card",
-            b { "Game: {game_id}" }
+        div { class: "card game-info-card",
+            h4 { "Game: {game_id}" }
             div { class: "view-mode-button-group",
                 ViewModeButton { view_mode: ViewMode::Game, current: view_mode }
                 ViewModeButton { view_mode: ViewMode::Score, current: view_mode }
@@ -33,19 +59,18 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
                 ViewModeButton { view_mode: ViewMode::Laws, current: view_mode }
                 ViewModeButton { view_mode: ViewMode::Map, current: view_mode }
             }
+            p { class: "margin-top", "Round: {round()}" }
+            "Currently viewing: {player.display()}"
+            p { "Current phase: {gc.game_state().phase}" }
             div {
-                b { "Round: {game_state.round}" }
-            }
-            div {
-                b { "Currently viewing: {player.display()}" }
-            }
-            div {
-                if game_state.time_tracking_paused {
-                    Button { onclick: move |_| ec.pause(), "Pause" }
-                } else {
-                    Button { onclick: move |_| ec.play(), "Play" }
+                Button {
+                    class: "margin-right",
+                    onclick: move |_| {
+                        if gc.game_state().time_tracking_paused { event.play() } else { event.pause() }
+                    },
+                    {play_pause_icon}
                 }
-                Button { onclick: move |_| ec.undo(), "Undo" }
+                Button { onclick: move |_| event.undo(), "Undo" }
             }
         }
     }

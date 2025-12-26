@@ -125,6 +125,12 @@ fieldset {
   margin-left: $margin-large;
 }
 
+.inline-icon {
+  display: inline-block;
+  height: 1em;
+  vertical-align: -0.125em;
+}
+
 .warning-text {
   margin: $margin;
   margin-top: 0;

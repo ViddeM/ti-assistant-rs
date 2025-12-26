@@ -17,8 +17,8 @@ pub fn PhaseView() -> Element {
         Phase::Setup => rsx! {
             SetupPhaseView {}
         },
-        p => rsx! {
-            p { "Phase {gc.game_state().phase} is not yet implemented" }
+        phase => rsx! {
+            p { "Phase {phase} is not yet implemented" }
         },
     }
 }

@@ -58,7 +58,6 @@ pub fn MainMenu<R: PartialEq + Clone + 'static + Routable>(
                 },
                 div { class: "source-code-pro-font game-id-container",
                     input {
-                        placeholder: "Game ID",
                         value: "{game_id()}",
                         oninput: move |evt| {
                             let value = evt.value();

@@ -1,0 +1,25 @@
+@keyframes rotation {
+  from {
+    -webkit-transform: rotate(359deg);
+  }
+
+  to {
+    -webkit-transform: rotate(0deg);
+  }
+}
+
+.spinner-svg * {
+  -webkit-transform-origin: 50% 50%;
+  -ms-transform-origin: 50% 50%;
+  transform-origin: 50% 50%;
+}
+
+.circle {
+  animation: rotation 8s infinite linear;
+  -webkit-animation: rotation 8s infinite linear;
+}
+
+.circle-s {
+  animation: rotation 4s infinite linear;
+  -webkit-animation: rotation 4s infinite linear;
+}

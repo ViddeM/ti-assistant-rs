@@ -22,11 +22,11 @@ impl EventContext {
 
     pub fn pause(&self) {
         self.send_event
-            .call(WsMessageIn::Event(Event::TrackTime { paused: false }))
+            .call(WsMessageIn::Event(Event::TrackTime { paused: true }))
     }
 
     pub fn play(&self) {
         self.send_event
-            .call(WsMessageIn::Event(Event::TrackTime { paused: true }))
+            .call(WsMessageIn::Event(Event::TrackTime { paused: false }))
     }
 }

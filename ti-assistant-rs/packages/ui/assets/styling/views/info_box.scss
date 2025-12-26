@@ -1,5 +1,16 @@
 @import "../vars.scss";
 
+.game-info-card {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > :last-child {
+    margin-top: 0.5em;
+  }
+}
+
 .view-mode-button-group {
   display: flex;
   flex-direction: row;
