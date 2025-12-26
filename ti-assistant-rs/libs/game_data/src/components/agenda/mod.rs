@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 use strum_macros::{EnumDiscriminants, EnumIter};
 
@@ -27,6 +29,19 @@ pub enum AgendaKind {
     Law,
     /// A directive for an action to be taken.
     Directive,
+}
+
+impl Display for AgendaKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                AgendaKind::Law => "Law",
+                AgendaKind::Directive => "Directive",
+            }
+        )
+    }
 }
 
 /// A vote type where players can either vote For or Against.

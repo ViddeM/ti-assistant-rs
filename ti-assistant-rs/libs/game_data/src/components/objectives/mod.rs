@@ -83,6 +83,20 @@ pub enum ObjectiveKind {
     },
 }
 
+impl Display for ObjectiveKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                ObjectiveKind::StageI => "Objective, Stage I",
+                ObjectiveKind::StageII => "Objective, Stage II",
+                ObjectiveKind::Secret { .. } => "Secret Objective",
+            }
+        )
+    }
+}
+
 impl Objective {
     /// Get the [ObjectiveInfo] for this objective.
     pub fn info(&self) -> ObjectiveInfo {

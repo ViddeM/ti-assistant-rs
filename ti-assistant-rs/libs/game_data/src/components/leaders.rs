@@ -20,6 +20,16 @@ pub enum Leader {
     Hero(Hero),
 }
 
+impl Leader {
+    pub fn type_name(&self) -> &'static str {
+        match self {
+            Leader::Agent(..) => "Agent",
+            Leader::Commander(..) => "Commander",
+            Leader::Hero(..) => "Hero",
+        }
+    }
+}
+
 /// Information about a leader, i.e. an agent, commander, or hero.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type")]

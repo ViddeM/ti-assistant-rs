@@ -1,9 +1,20 @@
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumIter;
+use strum_macros::{Display, EnumIter};
 
 /// A strategy card.
 #[derive(
-    Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumIter,
+    Clone,
+    Copy,
+    Debug,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    Display,
 )]
 #[allow(missing_docs)]
 pub enum StrategyCard {
@@ -29,6 +40,19 @@ impl StrategyCard {
             StrategyCard::Warfare => 6,
             StrategyCard::Technology => 7,
             StrategyCard::Imperial => 8,
+        }
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            StrategyCard::Leadership => "leadership",
+            StrategyCard::Diplomacy => "diplomacy",
+            StrategyCard::Politics => "politics",
+            StrategyCard::Construction => "construction",
+            StrategyCard::Trade => "trade",
+            StrategyCard::Warfare => "warfare",
+            StrategyCard::Technology => "technology",
+            StrategyCard::Imperial => "imperial",
         }
     }
 }

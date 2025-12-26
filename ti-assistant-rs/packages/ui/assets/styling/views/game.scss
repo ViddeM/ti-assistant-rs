@@ -6,6 +6,10 @@
   align-items: center;
   flex-direction: column-reverse;
 
+  :last-child {
+    margin-bottom: $margin-large;
+  }
+
   @media (min-width: $width-large) {
     flex-direction: row;
     align-items: flex-start;

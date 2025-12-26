@@ -21,7 +21,7 @@ pub fn FactionIcon(
 ) -> Element {
     rsx! {
         img {
-            src: get_asset(faction),
+            src: get_faction_icon(&faction),
             alt: format!("Faction Icon ${faction}"),
             width: width.unwrap_or(32),
             height: height.unwrap_or(32),
@@ -63,7 +63,7 @@ const DEEPWROUGHT_SCHOLARATE_ICON: Asset =
     asset!("/assets/icons/factions/DeepwroughtScholarate.png");
 const FIRMAMENT_ICON: Asset = asset!("/assets/icons/factions/Firmament.png");
 
-fn get_asset(faction: Faction) -> Asset {
+pub fn get_faction_icon(faction: &Faction) -> Asset {
     match faction {
         Faction::Arborec => ARBOREC_ICON,
         Faction::BaronyOfLetnev => BARONY_OF_LETNEV_ICON,

@@ -15,10 +15,10 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    components::{button::Button, spinner::Spinner},
+    components::{button::Button, info_modal::InfoModal, spinner::Spinner},
     data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-        view_mode::ViewMode,
+        event_context::EventContext, game_context::GameContext, info_context::InfoContext,
+        player_view::PlayerViewContext, view_mode::ViewMode,
     },
     views::{info_box::InfoBox, phase_view::PhaseView, players_sidebar::PlayersSidebar},
 };
@@ -108,10 +108,14 @@ fn MainGameView(
     use_context_provider(|| GameContext::new(game_state, game_options));
     use_context_provider(|| PlayerViewContext::new());
 
+    let info = use_signal(|| None);
+    use_context_provider(|| InfoContext::new(info));
+
     let view_mode = use_signal(|| ViewMode::Game);
 
     rsx! {
         document::Stylesheet { href: GAME_SCSS }
+        InfoModal {}
         InfoBox { view_mode }
         DisplayViewMode { view_mode }
     }

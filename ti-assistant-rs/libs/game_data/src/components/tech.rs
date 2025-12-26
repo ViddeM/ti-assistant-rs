@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
@@ -7,7 +9,9 @@ use crate::{
 };
 
 /// What category the tech belongs to.
-#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumString, Display,
+)]
 #[allow(missing_docs)]
 pub enum TechCategory {
     Biotic,
@@ -22,6 +26,19 @@ pub enum TechCategory {
 pub enum TechType {
     Category(TechCategory),
     UnitUpgrade,
+}
+
+impl Display for TechType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            match self {
+                TechType::UnitUpgrade => "Unit Upgrade".to_string(),
+                TechType::Category(tech_category) => format!("Technology, {}", tech_category),
+            }
+        )
+    }
 }
 
 /// Weather the game is general or faction specific.
