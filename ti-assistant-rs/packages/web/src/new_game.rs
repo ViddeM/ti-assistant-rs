@@ -48,6 +48,8 @@ pub fn NewGame() -> Element {
         }
         None => {
             rsx! {
+                div { class: "card create-game-container" }
+
                 div {
                     label { r#for: "winning_score", "Winning Score" }
                     input {

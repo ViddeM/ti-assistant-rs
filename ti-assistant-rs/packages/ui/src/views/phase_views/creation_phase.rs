@@ -28,7 +28,7 @@ pub fn CreationPhaseView() -> Element {
     rsx! {
         document::Stylesheet { href: CREATION_PHASE_SCSS }
 
-        div { class: "card screen-container ",
+        div { class: "card screen-container setup-card",
             h2 { "Add Players" }
             {
                 players
@@ -174,7 +174,7 @@ fn AddPlayer() -> Element {
                         .map(|c| {
                             rsx! {
                                 div { class: "color-container",
-                                    label { r#for: "id-{c}",
+                                    label { r#for: "id-{c.name()}",
                                         div {
                                             class: format!(
                                                 "color-button {}",

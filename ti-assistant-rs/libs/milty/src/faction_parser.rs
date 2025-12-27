@@ -32,7 +32,7 @@ pub fn parse_faction(name: &str) -> MiltyResult<Faction> {
         "The Council Keleres" => Faction::CouncilKeleres,
         "Last Bastion" => Faction::LastBastion,
         "The Ral Nel Consortium" => Faction::RalNelConsortium,
-        "The Deepwrought Scholarate" => Faction::DeepwroughtScholarate,
+        "The Deepwrought Scolarate" => Faction::DeepwroughtScholarate, // Milty data contains a typo :cry:
         "The Crimson Rebellion" => Faction::CrimsonRebellion,
         "The Firmament / The Obsidian" => Faction::FirmamentObsidian,
         "Augurs of Ilyxum"
