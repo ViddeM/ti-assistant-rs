@@ -3,7 +3,10 @@ use ti_helper_game_data::components::phase::Phase;
 
 use crate::{
     data::game_context::GameContext,
-    views::phase_views::{creation_phase::CreationPhaseView, setup_phase::SetupPhaseView},
+    views::phase_views::{
+        creation_phase::CreationPhaseView, setup_phase::SetupPhaseView,
+        strategy_phase::StrategyPhaseView,
+    },
 };
 
 #[component]
@@ -16,6 +19,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::Setup => rsx! {
             SetupPhaseView {}
+        },
+        Phase::Strategy => rsx! {
+            StrategyPhaseView {}
         },
         phase => rsx! {
             p { "Phase {phase} is not yet implemented" }
