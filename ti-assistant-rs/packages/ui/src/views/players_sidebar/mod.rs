@@ -1,15 +1,18 @@
 use std::sync::Arc;
 
 use dioxus::prelude::*;
-use ti_helper_game_data::{common::player_id::PlayerId, components::strategy_card::StrategyCard};
+use ti_helper_game_data::common::player_id::PlayerId;
 
 use crate::{
-    components::{dropdown::Dropdown, faction_icon::get_faction_icon, info_button::InfoButton},
+    components::{dropdown::Dropdown, faction_icon::get_faction_icon},
     data::{
         game_context::GameContext,
         player_view::{PlayerView, PlayerViewContext},
     },
-    views::players_sidebar::parts::strategy_card_info::StrategyCardInfo,
+    views::players_sidebar::parts::{
+        player_resources::PlayerResources, player_score_info::PlayerScoreInfo,
+        player_time_info::PlayerTimeInfo, strategy_card_info::StrategyCardInfo,
+    },
 };
 
 pub mod parts;
@@ -158,9 +161,12 @@ fn PlayerBox(player_id: PlayerId) -> Element {
             }
             div { class: "content-row",
                 StrategyCardInfo { cards: player_strategy_cards() }
-                div { class: "score-time-container" }
+                div { class: "score-time-container",
+                    PlayerScoreInfo { player_id: player_id.clone() }
+                    PlayerTimeInfo { player_id: player_id.clone() }
+                }
             }
-                // TOOD: Player resources
+            PlayerResources { player_id: Arc::clone(&player_id) }
         }
     }
 }

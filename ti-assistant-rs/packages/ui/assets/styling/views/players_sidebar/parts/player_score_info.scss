@@ -1,11 +1,11 @@
-@import "../../../../resources/styles/vars.scss";
+@import "../../../vars.scss";
 
-.scoreText {
+.score-text {
   color: white;
   margin-right: 1em;
 }
 
-.scoreContainer {
+.score-container {
   display: flex;
   flex-direction: row;
 

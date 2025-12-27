@@ -2691,6 +2691,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "dioxus-sdk"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79a653986dc3151f00a2be4cf04f83ec6c2af24b600ab926d5fcbcd159c6dadf"
+
+[[package]]
 name = "dioxus-server"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6779,8 +6785,10 @@ name = "ui"
 version = "0.1.0"
 dependencies = [
  "api",
+ "chrono",
  "dioxus",
  "dioxus-free-icons",
+ "dioxus-sdk",
  "strum 0.27.2",
  "ti_helper_game_data",
 ]

@@ -10,6 +10,8 @@ api = { workspace = true }
 ti_helper_game_data = { workspace = true }
 dioxus-free-icons = { version = "0.10.0", features = ["font-awesome-solid"] }
 strum = { version = "0.27.2", features = ["derive"] }
+chrono = "0.4.42"
+dioxus-sdk = "0.7.0"
 
 [features]
 server = ["api/server"]
