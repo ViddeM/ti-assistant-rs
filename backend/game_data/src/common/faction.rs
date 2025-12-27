@@ -6,7 +6,7 @@ use ts_rs::TS;
 
 use crate::components::{
     planet::Planet,
-    system::{systems, SystemType},
+    system::{SystemType, systems},
     tech::Technology,
 };
 
@@ -48,7 +48,7 @@ pub enum Faction {
     // Thunder's Edge expansion
     LastBastion,
     RalNelConsortium,
-    DeepwroughtScolarate,
+    DeepwroughtScholarate,
     CrimsonRebellion,
     FirmamentObsidian,
 }
@@ -84,7 +84,7 @@ impl Faction {
             Faction::CouncilKeleres => Expansion::CodexIII,
             Faction::LastBastion => Expansion::ThundersEdge,
             Faction::RalNelConsortium => Expansion::ThundersEdge,
-            Faction::DeepwroughtScolarate => Expansion::ThundersEdge,
+            Faction::DeepwroughtScholarate => Expansion::ThundersEdge,
             Faction::CrimsonRebellion => Expansion::ThundersEdge,
             Faction::FirmamentObsidian => Expansion::ThundersEdge,
         }
@@ -120,7 +120,7 @@ impl Faction {
             Faction::CouncilKeleres => "The Council Keleres",
             Faction::LastBastion => "Last Bastion",
             Faction::RalNelConsortium => "The Ral Nel Consortium",
-            Faction::DeepwroughtScolarate => "The Deepwrought Scolorate",
+            Faction::DeepwroughtScholarate => "The Deepwrought Scolorate",
             Faction::CrimsonRebellion => "The Crimson Rebellion",
             Faction::FirmamentObsidian => "The Firmament / The Obsidian",
         })
@@ -192,7 +192,7 @@ impl Faction {
             Faction::CouncilKeleres => vec![/* Gets to pick starting techs */],
             Faction::LastBastion => vec![/* Gets to pick starting techs */],
             Faction::RalNelConsortium => vec![/* Gets to pick starting techs */],
-            Faction::DeepwroughtScolarate => {
+            Faction::DeepwroughtScholarate => {
                 vec![/* Gets to research twice at the start of the game */]
             }
             Faction::CrimsonRebellion => vec![/* Gets to pick a starting tech */],
@@ -233,7 +233,7 @@ impl Faction {
             "The Council Keleres" => Faction::CouncilKeleres,
             "Last Bastion" => Faction::LastBastion,
             "The Ral Nel Consortium" => Faction::RalNelConsortium,
-            "The Deepwrought Scholarate" => Faction::DeepwroughtScolarate,
+            "The Deepwrought Scholarate" => Faction::DeepwroughtScholarate,
             "The Crimson Rebellion" => Faction::CrimsonRebellion,
             "The Firmament / The Obsidian" => Faction::FirmamentObsidian,
             "Augurs of Ilyxum"
