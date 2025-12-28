@@ -1,9 +1,13 @@
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::common::expansions::Expansion;
 
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
+)]
+#[strum(serialize_all = "snake_case")]
 #[allow(missing_docs)]
 pub enum Relic {
     /* PoK */
@@ -21,6 +25,21 @@ pub enum Relic {
     DynamisCore,
     JrXs4550,
     NanoForge,
+}
+
+impl PartialOrd for Relic {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Relic {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
+    }
 }
 
 /// When this relic can be used.

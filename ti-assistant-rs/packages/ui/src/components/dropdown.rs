@@ -3,7 +3,7 @@ use std::str::FromStr;
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::faction::Faction,
-    components::{action_card::ActionCard, objectives::Objective, tech::Technology},
+    components::{action_card::ActionCard, objectives::Objective, relic::Relic, tech::Technology},
 };
 
 #[derive(PartialEq, Debug, Clone, Props)]
@@ -120,7 +120,7 @@ pub fn ObjectiveDropdown(
         if new_value.is_empty() {
             on_select(None);
         } else {
-            let objective = Objective::from_str(&new_value).expect("Unexpected faction");
+            let objective = Objective::from_str(&new_value).expect("Unexpected objective");
             on_select(Some(objective));
         }
     };
@@ -155,7 +155,7 @@ pub fn ActionCardDropdown(
         if new_value.is_empty() {
             on_select(None);
         } else {
-            let action_card = ActionCard::from_str(&new_value).expect("Unexpected faction");
+            let action_card = ActionCard::from_str(&new_value).expect("Unexpected action card");
             on_select(Some(action_card));
         }
     };
@@ -169,6 +169,45 @@ pub fn ActionCardDropdown(
                     .map(|o| {
                         rsx! {
                             option { value: "{o}", "{o.info().name}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn RelicDropdown(
+    value: ReadSignal<Option<Relic>>,
+    options: Vec<Relic>,
+    on_select: EventHandler<Option<Relic>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|r| r.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let relic = Relic::from_str(&new_value).expect("Unexpected relic");
+            on_select(Some(relic));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            value: "{current_value()}",
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            option { value: "", "--Select Relic--" }
+            {
+                options
+                    .iter()
+                    .map(|r| {
+                        rsx! {
+                            option { value: "{r}", "{r.info().name}" }
                         }
                     })
             }

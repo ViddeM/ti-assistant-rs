@@ -7,6 +7,7 @@ use ti_helper_game_data::{
     components::{
         action_card::{ActionCard, ActionCardPlay},
         leaders::LeaderAbilityKind,
+        relic::RelicPlay,
         strategy_card::StrategyCard,
     },
     state::game_state::GameState,
@@ -15,7 +16,7 @@ use ti_helper_game_data::{
 use crate::{
     components::{
         button::Button,
-        dropdown::{ActionCardDropdown, Dropdown},
+        dropdown::{ActionCardDropdown, Dropdown, RelicDropdown},
     },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
@@ -228,8 +229,12 @@ fn DisplayComponentMode(mode: ReadSignal<ComponentMode>) -> Element {
         ComponentMode::ActionCard => rsx! {
             ActionCardSelectView {}
         },
-        ComponentMode::PlayRelic => todo!(),
-        ComponentMode::GainRelic => todo!(),
+        ComponentMode::PlayRelic => rsx! {
+            PlayRelicView {}
+        },
+        ComponentMode::GainRelic => rsx! {
+            GainRelicView {}
+        },
         ComponentMode::FrontierCard => todo!(),
         ComponentMode::PlayLeader => todo!(),
         ComponentMode::None => rsx! {
@@ -276,6 +281,126 @@ fn ActionCardSelectView() -> Element {
                         })
                 },
                 "Play"
+            }
+        }
+    }
+}
+
+#[component]
+fn PlayRelicView() -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected_relic = use_signal(|| None);
+
+    let current_player_id = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist in action phase")
+    });
+
+    let available_relics = use_memo(move || {
+        let mut relics = gc
+            .game_state()
+            .players
+            .get(&current_player_id())
+            .expect("Current player to exist")
+            .relics
+            .iter()
+            .filter(|r| r.info().play == RelicPlay::Action)
+            .cloned()
+            .collect::<Vec<_>>();
+
+        relics.sort();
+
+        relics
+    });
+
+    rsx! {
+        div {
+            fieldset { class: "play-action-card-container",
+                legend { "Play Relic" }
+                RelicDropdown {
+                    value: selected_relic(),
+                    disabled: available_relics().is_empty(),
+                    on_select: move |r| selected_relic.set(r),
+                    options: available_relics(),
+                }
+                Button {
+                    disabled: selected_relic().is_none(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::RelicActionBegin {
+                                player: current_player_id(),
+                                relic: selected_relic().expect("Relic to be set"),
+                            })
+                    },
+                    "Play"
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn GainRelicView() -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected_relic = use_signal(|| None);
+
+    let taken_relics = use_memo(move || {
+        gc.game_state()
+            .players
+            .values()
+            .map(|p| p.relics.iter())
+            .flatten()
+            .cloned()
+            .collect::<Vec<_>>()
+    });
+
+    let available_relics = use_memo(move || {
+        let mut relics = gc
+            .game_options()
+            .relics
+            .keys()
+            .filter(|r| !taken_relics().contains(r))
+            .cloned()
+            .collect::<Vec<_>>();
+
+        relics.sort();
+
+        relics
+    });
+
+    let current_player_id = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to be set in action phase")
+    });
+
+    rsx! {
+        div {
+            fieldset { class: "play-action-card-container",
+                legend { "Gain Relic" }
+                RelicDropdown {
+                    value: selected_relic(),
+                    options: available_relics(),
+                    on_select: move |r| selected_relic.set(r),
+                }
+                Button {
+                    disabled: selected_relic().is_none(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::GainRelicAction {
+                                player: current_player_id(),
+                                relic: selected_relic().expect("Relic to be set"),
+                            })
+                    },
+                    "Gain"
+                }
             }
         }
     }
