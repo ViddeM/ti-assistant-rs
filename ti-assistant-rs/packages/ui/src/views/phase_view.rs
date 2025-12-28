@@ -5,8 +5,8 @@ use crate::{
     data::game_context::GameContext,
     views::phase_views::{
         action_card::ActionCardView, action_phase::ActionPhaseView,
-        creation_phase::CreationPhaseView, setup_phase::SetupPhaseView,
-        strategy_phase::StrategyPhaseView,
+        creation_phase::CreationPhaseView, end_action_phase::EndActionPhaseView,
+        setup_phase::SetupPhaseView, strategy_phase::StrategyPhaseView,
     },
 };
 
@@ -29,6 +29,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::ActionCardAction => rsx! {
             ActionCardView {}
+        },
+        Phase::EndActionTurn => rsx! {
+            EndActionPhaseView {}
         },
         phase => rsx! {
             p { "Phase {phase} is not yet implemented" }
