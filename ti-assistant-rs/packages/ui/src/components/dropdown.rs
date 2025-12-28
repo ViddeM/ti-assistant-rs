@@ -3,7 +3,10 @@ use std::str::FromStr;
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::faction::Faction,
-    components::{action_card::ActionCard, objectives::Objective, relic::Relic, tech::Technology},
+    components::{
+        action_card::ActionCard, objectives::Objective, planet::Planet, relic::Relic,
+        tech::Technology,
+    },
 };
 
 #[derive(PartialEq, Debug, Clone, Props)]
@@ -208,6 +211,45 @@ pub fn RelicDropdown(
                     .map(|r| {
                         rsx! {
                             option { value: "{r}", "{r.info().name}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn PlanetDropdown(
+    value: ReadSignal<Option<Planet>>,
+    options: Vec<Planet>,
+    on_select: EventHandler<Option<Planet>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|p| p.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let planet = Planet::from_str(&new_value).expect("Unexpected planet");
+            on_select(Some(planet));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            value: "{current_value()}",
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            option { value: "", "--Select Planet--" }
+            {
+                options
+                    .iter()
+                    .map(|p| {
+                        rsx! {
+                            option { value: "{p}", "{p.info().name}" }
                         }
                     })
             }

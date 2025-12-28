@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::common::expansions::Expansion;
@@ -86,7 +87,21 @@ macro_rules! space_station {
 }
 
 /// A planet
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    EnumString,
+    Display,
+)]
+#[strum(serialize_all = "snake_case")]
 #[allow(missing_docs)]
 pub enum Planet {
     Nestphar,
@@ -1072,6 +1087,14 @@ impl Planet {
                 1,
                 Expansion::ThundersEdge
             ),
+        }
+    }
+
+    pub fn is_mecatol_rex(&self) -> bool {
+        match self {
+            Planet::MecatolRex => true,
+            Planet::MecatolRexOmega => true,
+            _ => false,
         }
     }
 }

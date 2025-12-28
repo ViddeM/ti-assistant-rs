@@ -6,7 +6,7 @@ use crate::{
     views::phase_views::{
         action_card::ActionCardView, action_phase::ActionPhaseView,
         creation_phase::CreationPhaseView, end_action_phase::EndActionPhaseView,
-        setup_phase::SetupPhaseView, strategy_phase::StrategyPhaseView,
+        relic_card::RelicCardView, setup_phase::SetupPhaseView, strategy_phase::StrategyPhaseView,
     },
 };
 
@@ -32,6 +32,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::EndActionTurn => rsx! {
             EndActionPhaseView {}
+        },
+        Phase::RelicAction => rsx! {
+            RelicCardView {}
         },
         phase => rsx! {
             p { "Phase {phase} is not yet implemented" }
