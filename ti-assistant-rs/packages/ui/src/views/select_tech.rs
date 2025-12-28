@@ -1,5 +1,4 @@
 use dioxus::prelude::*;
-use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     common::player_id::PlayerId,
     components::tech::{TechCategory, TechOrigin, TechType, Technology},
@@ -16,11 +15,11 @@ use crate::{
 
 const SELECT_TECH_SCSS: Asset = asset!("/assets/styling/views/select_tech.scss");
 const ALL_TECH_TYPES: [TechType; 5] = [
-    TechType::UnitUpgrade,
     TechType::Category(TechCategory::Biotic),
     TechType::Category(TechCategory::Cybernetic),
     TechType::Category(TechCategory::Propulsion),
     TechType::Category(TechCategory::Warfare),
+    TechType::UnitUpgrade,
 ];
 
 #[component]
@@ -45,17 +44,22 @@ pub fn SelectTechView(
     let player_techs = use_memo(move || player().technologies.iter().cloned().collect::<Vec<_>>());
     let filtered_techs = use_memo(move || filtered_techs.clone().unwrap_or_default());
     let available_techs = use_memo(move || {
-        gc.game_options()
+        let mut techs = gc
+            .game_options()
             .technologies
             .keys()
-            .filter(|&t| player_techs().contains(t))
-            .filter(|&t| filtered_techs().contains(t))
+            .filter(|&t| !player_techs().contains(t))
+            .filter(|&t| !filtered_techs().contains(t))
             .filter(|&t| match t.info().origin {
                 TechOrigin::Base => true,
                 TechOrigin::Faction(faction) => player().faction == faction,
             })
             .cloned()
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>();
+
+        techs.sort();
+
+        techs
     });
     let selected_techs = use_memo(move || {
         available_techs()
@@ -83,10 +87,15 @@ pub fn SelectTechView(
                                 },
                                 selected_tech: selected_tech(),
                                 tech_options: selected_techs(),
-                                set_selected_tech: move |tech| selected_tech.set(Some(tech)),
+                                set_selected_tech: move |tech| selected_tech.set(tech),
                             }
                         }
                     })
+            }
+            Button {
+                disabled: selected_tech().is_none(),
+                onclick: move |_| on_select(selected_tech().expect("No tech selected")),
+                "Select tech"
             }
         }
     }
@@ -97,9 +106,9 @@ struct TechCategoryButtonProps {
     tech_type: TechType,
     is_selected: bool,
     set_selected: EventHandler<()>,
-    selected_tech: Option<Technology>,
+    selected_tech: ReadSignal<Option<Technology>>,
     tech_options: Vec<Technology>,
-    set_selected_tech: EventHandler<Technology>,
+    set_selected_tech: EventHandler<Option<Technology>>,
 }
 
 #[component]
@@ -121,7 +130,7 @@ fn TechCategoryButton(
     if !is_selected {
         return rsx! {
             Button { onclick: move |_| set_selected(()), class: base_style,
-                "{tech_type.to_type_name()}"
+                "{tech_type.to_display_name()}"
                 {
                     if let TechType::Category(t) = &tech_type {
                         rsx! {
@@ -150,7 +159,9 @@ fn TechCategoryButton(
                 }
             }
             TechDropdown {
-                value:
+                value: selected_tech,
+                options: tech_options,
+                on_select: move |tech| set_selected_tech(tech),
             }
         }
     }

@@ -4,8 +4,9 @@ use ti_helper_game_data::components::phase::Phase;
 use crate::{
     data::game_context::GameContext,
     views::phase_views::{
-        action_phase::ActionPhaseView, creation_phase::CreationPhaseView,
-        setup_phase::SetupPhaseView, strategy_phase::StrategyPhaseView,
+        action_card::ActionCardView, action_phase::ActionPhaseView,
+        creation_phase::CreationPhaseView, setup_phase::SetupPhaseView,
+        strategy_phase::StrategyPhaseView,
     },
 };
 
@@ -25,6 +26,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::Action => rsx! {
             ActionPhaseView {}
+        },
+        Phase::ActionCardAction => rsx! {
+            ActionCardView {}
         },
         phase => rsx! {
             p { "Phase {phase} is not yet implemented" }

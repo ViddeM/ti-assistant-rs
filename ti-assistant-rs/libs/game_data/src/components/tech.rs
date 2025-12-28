@@ -46,6 +46,13 @@ impl TechType {
             TechType::UnitUpgrade => "unit-upgrade".to_string(),
         }
     }
+
+    pub fn to_display_name(&self) -> String {
+        match self {
+            TechType::Category(tech_category) => tech_category.to_string(),
+            TechType::UnitUpgrade => String::from("Unit Upgrade"),
+        }
+    }
 }
 
 impl Display for TechType {
