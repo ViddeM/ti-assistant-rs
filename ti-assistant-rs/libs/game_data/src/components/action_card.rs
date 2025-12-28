@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::common::expansions::Expansion;
@@ -6,7 +7,10 @@ use crate::common::expansions::Expansion;
 use super::phase::Phase;
 
 /// An action card.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
+)]
+#[strum(serialize_all = "snake_case")]
 #[allow(missing_docs)]
 pub enum ActionCard {
     /* Base */

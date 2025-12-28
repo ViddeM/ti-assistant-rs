@@ -106,7 +106,7 @@ fn MainGameView(
     game_state: ReadSignal<Arc<GameState>>,
 ) -> Element {
     use_context_provider(|| GameContext::new(game_state, game_options));
-    use_context_provider(|| PlayerViewContext::new());
+    use_context_provider(|| PlayerViewContext::new(game_state));
 
     let info = use_signal(|| None);
     use_context_provider(|| InfoContext::new(info));

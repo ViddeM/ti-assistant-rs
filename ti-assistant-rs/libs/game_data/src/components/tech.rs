@@ -10,7 +10,18 @@ use crate::{
 
 /// What category the tech belongs to.
 #[derive(
-    Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumString, Display,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    EnumString,
+    Display,
 )]
 #[allow(missing_docs)]
 pub enum TechCategory {
@@ -26,6 +37,15 @@ pub enum TechCategory {
 pub enum TechType {
     Category(TechCategory),
     UnitUpgrade,
+}
+
+impl TechType {
+    pub fn to_type_name(&self) -> String {
+        match self {
+            TechType::Category(tech_category) => tech_category.to_string().to_lowercase(),
+            TechType::UnitUpgrade => "unit-upgrade".to_string(),
+        }
+    }
 }
 
 impl Display for TechType {

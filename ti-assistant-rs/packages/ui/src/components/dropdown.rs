@@ -3,7 +3,7 @@ use std::str::FromStr;
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::faction::Faction,
-    components::{objectives::Objective, tech::Technology},
+    components::{action_card::ActionCard, objectives::Objective, tech::Technology},
 };
 
 #[derive(PartialEq, Debug, Clone, Props)]
@@ -122,6 +122,41 @@ pub fn ObjectiveDropdown(
         } else {
             let objective = Objective::from_str(&new_value).expect("Unexpected faction");
             on_select(Some(objective));
+        }
+    };
+
+    rsx! {
+        Dropdown { value: "{current_value()}", oninput,
+            option { value: "", "--Select Objective--" }
+            {
+                options
+                    .iter()
+                    .map(|o| {
+                        rsx! {
+                            option { value: "{o}", "{o.info().name}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn ActionCardDropdown(
+    value: ReadSignal<Option<ActionCard>>,
+    options: Vec<ActionCard>,
+    on_select: EventHandler<Option<ActionCard>>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|a| a.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let action_card = ActionCard::from_str(&new_value).expect("Unexpected faction");
+            on_select(Some(action_card));
         }
     };
 
