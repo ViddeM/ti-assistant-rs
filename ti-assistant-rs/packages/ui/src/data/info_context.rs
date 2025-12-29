@@ -30,7 +30,7 @@ impl InfoContext {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Info {
     Agenda(Agenda),
     Leader(Leader),
@@ -106,7 +106,7 @@ impl Info {
     }
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum InfoDescription {
     Description(String),
     Custom(Element),

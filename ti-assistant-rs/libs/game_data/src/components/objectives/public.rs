@@ -23,7 +23,7 @@ macro_rules! o {
 
 /// A public objective.
 #[derive(
-    Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
+    Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
 )]
 #[allow(missing_docs)]
 #[strum(serialize_all = "snake_case")]

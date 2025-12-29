@@ -13,7 +13,7 @@ use self::{public::PublicObjective, secret::SecretObjective};
 use super::phase::Phase;
 
 /// An objective in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq)]
 #[serde(untagged)] // crimes
 pub enum Objective {
     /// A public objective.

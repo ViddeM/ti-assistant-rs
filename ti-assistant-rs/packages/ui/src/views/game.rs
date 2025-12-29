@@ -20,7 +20,10 @@ use crate::{
         event_context::EventContext, game_context::GameContext, info_context::InfoContext,
         player_view::PlayerViewContext, view_mode::ViewMode,
     },
-    views::{info_box::InfoBox, phase_view::PhaseView, players_sidebar::PlayersSidebar},
+    views::{
+        info_box::InfoBox, phase_view::PhaseView, players_sidebar::PlayersSidebar,
+        score_view_mode::ScoreViewMode,
+    },
 };
 
 const GAME_SCSS: Asset = asset!("/assets/styling/views/game.scss");
@@ -145,7 +148,9 @@ fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
                 div { class: "phase-container", PhaseView {} } // TODO: Sidebar should also be in here.
             }
         },
-        ViewMode::Score => rsx! { "Score" },
+        ViewMode::Score => rsx! {
+            ScoreViewMode {}
+        },
         ViewMode::Techs => rsx! { "Techs" },
         ViewMode::Planets => rsx! { "Planets" },
         ViewMode::Laws => rsx! { "Laws" },
