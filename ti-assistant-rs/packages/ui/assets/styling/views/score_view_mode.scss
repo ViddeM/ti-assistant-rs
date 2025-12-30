@@ -178,14 +178,14 @@ $extra-color: hsl(120, 70%, 40%);
   }
 }
 
-.faction-buttonSelected {
+.faction-button-selected {
   filter: brightness(1) contrast(1);
   &:hover {
     filter: brightness(0.9) contrast(0.8);
   }
 }
 
-.playerSecretTitle-row {
+.player-secret-title-row {
   display: flex;
   flex-direction: row;
   align-items: center;
