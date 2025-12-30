@@ -114,6 +114,7 @@ pub fn ObjectiveDropdown(
     value: ReadSignal<Option<Objective>>,
     options: Vec<Objective>,
     on_select: EventHandler<Option<Objective>>,
+    default_text: Option<&'static str>,
 ) -> Element {
     let current_value =
         use_memo(move || value().as_ref().map(|t| t.to_string()).unwrap_or_default());
@@ -128,9 +129,11 @@ pub fn ObjectiveDropdown(
         }
     };
 
+    let default_text = default_text.unwrap_or("--Select Objective--");
+
     rsx! {
         Dropdown { value: "{current_value()}", oninput,
-            option { value: "", "--Select Objective--" }
+            option { value: "", "{default_text}" }
             {
                 options
                     .iter()
