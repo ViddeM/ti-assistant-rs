@@ -2,7 +2,11 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{actions::event::Event, common::player_id::PlayerId};
 
 use crate::{
-    components::{button::Button, dropdown::Dropdown, faction_icon::FactionIcon},
+    components::{
+        button::Button,
+        dropdown::{Dropdown, PlayerDropdown},
+        faction_icon::FactionIcon,
+    },
     data::{event_context::EventContext, game_context::GameContext},
 };
 
@@ -85,19 +89,10 @@ fn PlayerSupportForTheThroneView(player_id: PlayerId) -> Element {
             td { "{player_id}" }
             td { "->" }
             td {
-                Dropdown {
-                    value: "{selected_player()}",
-                    oninput: move |e: FormEvent| selected_player.set(e.value().into()),
-                    option { value: "", "None" }
-                    {
-                        players()
-                            .iter()
-                            .map(|p| {
-                                rsx! {
-                                    option { key: "{p}", value: "{p}", "{p}" }
-                                }
-                            })
-                    }
+                PlayerDropdown {
+                    value: selected_player(),
+                    on_select: move |p| selected_player.set(p),
+                    options: players(),
                 }
             }
             td {

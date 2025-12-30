@@ -9,7 +9,11 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    components::{button::Button, dropdown::Dropdown, faction_icon::FactionIcon},
+    components::{
+        button::Button,
+        dropdown::{Dropdown, FactionDropdown},
+        faction_icon::FactionIcon,
+    },
     data::{event_context::EventContext, game_context::GameContext},
 };
 
@@ -103,12 +107,6 @@ fn AddPlayer() -> Element {
         }
     };
 
-    let faction_name = use_memo(move || {
-        new_player_faction()
-            .map(|f| f.to_string())
-            .unwrap_or(NO_FACTION_SELECTED.to_string())
-    });
-
     let add_player = move || {
         event.send_event(Event::AddPlayer {
             player: NewPlayer {
@@ -149,21 +147,12 @@ fn AddPlayer() -> Element {
             }
             div { class: "margin-top",
                 label { r#for: "player_faction_dropdown", "Faction: " }
-                Dropdown {
+                FactionDropdown {
                     id: "player_faction_dropdown",
                     required: true,
-                    value: "{faction_name()}",
-                    oninput: set_faction,
-                    option { value: NO_FACTION_SELECTED, "--Select a faction--" }
-                    {
-                        available_factions
-                            .iter()
-                            .map(|f| {
-                                rsx! {
-                                    option { key: "{f}", value: "{f.to_string()}", "{f.name()}" }
-                                }
-                            })
-                    }
+                    value: new_player_faction(),
+                    options: available_factions(),
+                    on_select: move |f| new_player_faction.set(f),
                 }
             }
             div { class: "colors-container",

@@ -3,6 +3,7 @@ pub mod info_box;
 pub mod main_menu;
 pub mod phase_view;
 pub mod phase_views;
+pub mod planet_view_mode;
 pub mod players_sidebar;
 pub mod score_view_mode;
 pub mod select_tech;

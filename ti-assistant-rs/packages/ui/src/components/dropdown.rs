@@ -44,6 +44,7 @@ pub fn TechDropdown(
     value: ReadSignal<Option<Technology>>,
     options: Vec<Technology>,
     on_select: EventHandler<Option<Technology>>,
+    disabled: Option<bool>,
 ) -> Element {
     let current_value =
         use_memo(move || value().as_ref().map(|t| t.to_string()).unwrap_or_default());
@@ -76,6 +77,8 @@ pub fn TechDropdown(
 
 #[component]
 pub fn FactionDropdown(
+    id: Option<String>,
+    required: Option<bool>,
     value: ReadSignal<Option<Faction>>,
     options: Vec<Faction>,
     on_select: EventHandler<Option<Faction>>,
@@ -94,7 +97,11 @@ pub fn FactionDropdown(
     };
 
     rsx! {
-        Dropdown { value: "{current_value()}", oninput,
+        Dropdown {
+            id,
+            required,
+            value: "{current_value()}",
+            oninput,
             option { value: "", "--Select Faction--" }
             {
                 options
@@ -253,6 +260,39 @@ pub fn PlanetDropdown(
                     .map(|p| {
                         rsx! {
                             option { key: "{p}", value: "{p}", "{p.info().name}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn PlayerDropdown(
+    value: ReadSignal<PlayerId>,
+    options: Vec<PlayerId>,
+    on_select: EventHandler<PlayerId>,
+    disabled: Option<bool>,
+) -> Element {
+    let mut current_value = use_memo(move || value());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        current_value.set(new_value.into());
+    };
+
+    rsx! {
+        Dropdown {
+            value: "{current_value()}",
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            option { value: "", "--Select Player--" }
+            {
+                options
+                    .iter()
+                    .map(|p| {
+                        rsx! {
+                            option { key: "{p}", value: "{p}", "{p}" }
                         }
                     })
             }

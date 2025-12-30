@@ -266,4 +266,15 @@ impl PlanetAttachment {
             (attachment, _) => attachment,
         }
     }
+
+    /// Returns true if this is a real attachment and false if it is one that only exists for technical reasons.
+    pub fn is_real(&self) -> bool {
+        match self {
+            PlanetAttachment::BioticResearchFacilityResources => false,
+            PlanetAttachment::CyberneticResearchFacilityResources => false,
+            PlanetAttachment::PropulsionResearchFacilityResources => false,
+            PlanetAttachment::WarfareResearchFacilityResources => false,
+            _ => true,
+        }
+    }
 }

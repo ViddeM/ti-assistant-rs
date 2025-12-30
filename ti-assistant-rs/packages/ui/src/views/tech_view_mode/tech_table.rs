@@ -286,24 +286,26 @@ pub fn TechTable() -> Element {
 
                 // Player Techs
                 for (player_id , techs) in player_faction_specific_techs().iter() {
-                    TableSectionHeading {
-                        title: players()
-                            .iter()
-                            .find(|(id, _)| id.eq(&player_id))
-                            .map(|(id, p)| format!("{id} - {}", p.faction.name()))
-                            .expect("Player to exist"),
-                        section: players()
-                            .iter()
-                            .find(|(id, _)| id.eq(&player_id))
-                            .map(|(_, p)| (&p.color).into())
-                            .expect("Player to exist"),
-                        player_count: players().len(),
-                    }
-                    TechRows {
-                        techs: techs.clone(),
-                        player_techs: player_techs(),
-                        player_factions: player_factions(),
-                        toggle_tech_for_player: move |(a, b)| toggle_tech_for_player(a, b),
+                    Fragment { key: "{player_id}",
+                        TableSectionHeading {
+                            title: players()
+                                .iter()
+                                .find(|(id, _)| id.eq(&player_id))
+                                .map(|(id, p)| format!("{id} - {}", p.faction.name()))
+                                .expect("Player to exist"),
+                            section: players()
+                                .iter()
+                                .find(|(id, _)| id.eq(&player_id))
+                                .map(|(_, p)| (&p.color).into())
+                                .expect("Player to exist"),
+                            player_count: players().len(),
+                        }
+                        TechRows {
+                            techs: techs.clone(),
+                            player_techs: player_techs(),
+                            player_factions: player_factions(),
+                            toggle_tech_for_player: move |(a, b)| toggle_tech_for_player(a, b),
+                        }
                     }
                 }
             }
