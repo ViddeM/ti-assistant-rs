@@ -333,7 +333,7 @@ impl ScorableAgenda {
         0
     }
 
-    fn get_agenda(&self) -> Agenda {
+    pub fn get_agenda(&self) -> Agenda {
         match self {
             ScorableAgenda::HolyPlanetOfIxth { .. } => Agenda::HolyPlanetOfIxth,
             ScorableAgenda::ShardOfTheThrone { .. } => Agenda::ShardOfTheThrone,
