@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
 use serde::{Deserialize, Serialize};
+use strum::Display;
 use strum_macros::{EnumDiscriminants, EnumIter};
 
 use crate::common::{expansions::Expansion, player_id::PlayerId};
@@ -92,8 +93,20 @@ pub enum AgendaElect {
 
 /// An agenda in the game.
 #[derive(
-    Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, EnumIter,
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    Display,
 )]
+#[strum(serialize_all = "kebab-case")]
 #[allow(missing_docs)]
 pub enum Agenda {
     // Base-game laws

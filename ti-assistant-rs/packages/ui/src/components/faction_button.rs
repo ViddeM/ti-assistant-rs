@@ -18,16 +18,10 @@ pub fn FactionButton(
         onclick,
     }: FactionButtonProps,
 ) -> Element {
-    let selected_style = use_memo(move || {
-        if selected {
-            "faction-button-selected"
-        } else {
-            ""
-        }
-    });
     rsx! {
         button {
-            class: format!("{} faction-button", selected_style()),
+            class: "faction-button",
+            class: if selected { "faction-button-selected" },
             onclick: move |_| onclick(()),
             FactionIcon { faction, width: 32, height: 32 }
         }

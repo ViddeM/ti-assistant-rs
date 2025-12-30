@@ -56,7 +56,7 @@ pub fn CreationPhaseView() -> Element {
 fn DisplayPlayer(player: Player) -> Element {
     let faction = player.faction;
     rsx! {
-        div { class: "display-player-container",
+        div { key: "{player.name}", class: "display-player-container",
             h3 { {player.name} }
             div { class: "faction-row",
                 FactionIcon { faction }
@@ -160,7 +160,7 @@ fn AddPlayer() -> Element {
                             .iter()
                             .map(|f| {
                                 rsx! {
-                                    option { value: "{f.to_string()}", "{f.name()}" }
+                                    option { key: "{f}", value: "{f.to_string()}", "{f.name()}" }
                                 }
                             })
                     }
@@ -173,7 +173,7 @@ fn AddPlayer() -> Element {
                         .cloned()
                         .map(|c| {
                             rsx! {
-                                div { class: "color-container",
+                                div { key: "{c.name()}", class: "color-container",
                                     label { r#for: "id-{c.name()}",
                                         div {
                                             class: format!(

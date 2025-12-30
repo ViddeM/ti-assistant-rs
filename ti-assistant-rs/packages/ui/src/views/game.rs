@@ -22,7 +22,7 @@ use crate::{
     },
     views::{
         info_box::InfoBox, phase_view::PhaseView, players_sidebar::PlayersSidebar,
-        score_view_mode::ScoreViewMode,
+        score_view_mode::ScoreViewMode, tech_view_mode::TechViewMode,
     },
 };
 
@@ -151,7 +151,9 @@ fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
         ViewMode::Score => rsx! {
             ScoreViewMode {}
         },
-        ViewMode::Techs => rsx! { "Techs" },
+        ViewMode::Techs => rsx! {
+            TechViewMode {}
+        },
         ViewMode::Planets => rsx! { "Planets" },
         ViewMode::Laws => rsx! { "Laws" },
         ViewMode::Map => rsx! { "Map" },

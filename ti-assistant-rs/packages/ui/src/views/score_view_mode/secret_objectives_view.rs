@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_free_icons::{icons::fa_solid_icons::FaTrash, Icon};
 use ti_helper_game_data::{
     actions::event::Event, common::player_id::PlayerId, components::objectives::Objective,
 };
@@ -26,7 +27,7 @@ pub fn SecretObjectivesView() -> Element {
             h2 { "Secret objectives" }
 
             {players().into_iter().map(|p| rsx! {
-                PlayerSecretView { player_id: p }
+                PlayerSecretView { key: "{p}", player_id: p }
             })}
         }
     }
@@ -95,7 +96,7 @@ fn PlayerSecretView(player_id: PlayerId) -> Element {
                 .map(|secret| {
                     let p3 = player_id.clone();
                     rsx! {
-                        div { class: "secret-objective-row",
+                        div { key: "{secret}", class: "secret-objective-row",
                             "{secret.clone().info().name}"
                             InfoButton { info: Info::Objective(Objective::Secret(secret.clone())) }
                             Button {
@@ -107,6 +108,12 @@ fn PlayerSecretView(player_id: PlayerId) -> Element {
                                             objective: secret.clone(),
                                         })
                                 },
+                                Icon {
+                                    icon: FaTrash,
+                                    width: None,
+                                    height: None,
+                                    class: "inline-icon",
+                                }
                             }
                         }
                     }

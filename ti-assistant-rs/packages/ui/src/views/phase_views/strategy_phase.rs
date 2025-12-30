@@ -77,7 +77,7 @@ pub fn StrategyPhaseView() -> Element {
             h2 { "Select a strategy card" }
             div { class: "strategy-cards-container",
                 {StrategyCard::iter().map(|s| rsx! {
-                    div { class: "select-card-row",
+                    div { key: "{s}", class: "select-card-row",
                         InfoButton { info: Info::Strategy(s) }
                         StrategyCardButton {
                             strategy_card: s,
@@ -175,9 +175,9 @@ fn NaaluTelepathy() -> Element {
                             br {}
                             div {
                                 "Place this card face-up in your play area and place the
-                                                                                                                                                                                                                                                                        Naalu 0 token on your strategy card; you are first in the
-                                                                                                                                                                                                                                                                        initiative order. The Naalu player cannot use their
-                                                                                                                                                                                                                                                                        TELEPATHIC faction ability during this game round."
+                                                                                                                                                                                                                                                                                                                        Naalu 0 token on your strategy card; you are first in the
+                                                                                                                                                                                                                                                                                                                        initiative order. The Naalu player cannot use their
+                                                                                                                                                                                                                                                                                                                        TELEPATHIC faction ability during this game round."
                             }
                             br {}
                             div { "Return this card to the Naalu player at the end of the status phase." }
@@ -209,7 +209,7 @@ fn NaaluTelepathy() -> Element {
                             .iter()
                             .map(|p| {
                                 rsx! {
-                                    option { value: "{p}", "{p}" }
+                                    option { key: "{p}", value: "{p}", "{p}" }
                                 }
                             })
                     }

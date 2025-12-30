@@ -101,11 +101,22 @@ fn PlayersSetup() -> Element {
                             let n = Arc::clone(&name);
                             rsx! {
                                 fieldset {
+                                    key: "{n}",
                                     class: format!("player-color-border-{} setup-player-fieldset", player.color.name())
                                         .as_str(),
                                     legend { class: format!("player-color-border-{} setup-player-legend", player.color.name()).as_str(),
                                         "{&name}"
                                     }
+
+
+
+
+
+
+
+
+
+
 
                                     div { class: "setup-row",
                                         if gc.game_state().is_speaker(&name) {
@@ -252,7 +263,7 @@ fn ArgentFlightSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                                 .iter()
                                 .map(|t| {
                                     rsx! {
-                                        p { "{t.info().name}" }
+                                        p { key: "{t}", "{t.info().name}" }
                                     }
                                 })
                         }
@@ -361,7 +372,7 @@ fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                                 .iter()
                                 .map(|t| {
                                     rsx! {
-                                        p { "{t.info().name}" }
+                                        p { key: "{t}", "{t.info().name}" }
                                     }
                                 })
                         }
@@ -423,7 +434,7 @@ fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                                 .iter()
                                 .map(|(p, _)| {
                                     rsx! {
-                                        p { "{p.info().name}" }
+                                        p { key: "{p}", "{p.info().name}" }
                                     }
                                 })
                         }
@@ -520,7 +531,7 @@ fn ObjectivesSetup() -> Element {
                                 .iter()
                                 .map(|obj| {
                                     rsx! {
-                                        p { "{obj.info().name}" }
+                                        p { key: "{obj}", "{obj.info().name}" }
                                     }
                                 })
                         }

@@ -79,6 +79,7 @@ pub fn SelectTechView(
                     .map(|tech_type| {
                         rsx! {
                             TechCategoryButton {
+                                key: "{tech_type}",
                                 tech_type: tech_type.clone(),
                                 is_selected: selected_tech_type().as_ref().eq(&Some(&tech_type)),
                                 set_selected: move |_| {

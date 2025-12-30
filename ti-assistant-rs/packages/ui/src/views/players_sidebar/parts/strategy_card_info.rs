@@ -13,7 +13,7 @@ pub fn StrategyCardInfo(cards: Vec<StrategyCard>) -> Element {
 
         div { class: "strategy-cards-container",
             {cards.iter().map(|c| rsx! {
-                div { class: format!("card-container style-{}", c.name()),
+                div { key: "{c}", class: format!("card-container style-{}", c.name()),
                     p { "{c}" }
                     InfoButton { info: Info::Strategy(c.clone()) }
                 }

@@ -66,7 +66,7 @@ pub fn TechDropdown(
                     .iter()
                     .map(|t| {
                         rsx! {
-                            option { value: "{t}", "{t.info().name}" }
+                            option { key: "{t}", value: "{t}", "{t.info().name}" }
                         }
                     })
             }
@@ -101,7 +101,7 @@ pub fn FactionDropdown(
                     .iter()
                     .map(|f| {
                         rsx! {
-                            option { value: "{f}", "{f.name()}" }
+                            option { key: "{f}", value: "{f}", "{f.name()}" }
                         }
                     })
             }
@@ -139,7 +139,7 @@ pub fn ObjectiveDropdown(
                     .iter()
                     .map(|o| {
                         rsx! {
-                            option { value: "{o}", "{o.info().name}" }
+                            option { key: "{o}", value: "{o}", "{o.info().name}" }
                         }
                     })
             }
@@ -174,7 +174,7 @@ pub fn ActionCardDropdown(
                     .iter()
                     .map(|o| {
                         rsx! {
-                            option { value: "{o}", "{o.info().name}" }
+                            option { key: "{o}", value: "{o}", "{o.info().name}" }
                         }
                     })
             }
@@ -213,7 +213,7 @@ pub fn RelicDropdown(
                     .iter()
                     .map(|r| {
                         rsx! {
-                            option { value: "{r}", "{r.info().name}" }
+                            option { key: "{r}", value: "{r}", "{r.info().name}" }
                         }
                     })
             }
@@ -252,44 +252,7 @@ pub fn PlanetDropdown(
                     .iter()
                     .map(|p| {
                         rsx! {
-                            option { value: "{p}", "{p.info().name}" }
-                        }
-                    })
-            }
-        }
-    }
-}
-
-#[component]
-pub fn PlayerDropdown(
-    value: ReadSignal<Option<PlayerId>>,
-    options: Vec<PlayerId>,
-    on_select: EventHandler<Option<PlayerId>>,
-    disabled: Option<bool>,
-) -> Element {
-    let current_value = use_memo(move || value().unwrap_or_default());
-
-    let oninput = move |event: FormEvent| {
-        let new_value = event.value();
-        if new_value.is_empty() {
-            on_select(None);
-        } else {
-            on_select(Some(new_value.into()));
-        }
-    };
-
-    rsx! {
-        Dropdown {
-            value: "{current_value()}",
-            disabled: disabled.unwrap_or(false),
-            oninput,
-            option { value: "", "None" }
-            {
-                options
-                    .iter()
-                    .map(|p| {
-                        rsx! {
-                            option { value: "{p}", "{p}" }
+                            option { key: "{p}", value: "{p}", "{p.info().name}" }
                         }
                     })
             }

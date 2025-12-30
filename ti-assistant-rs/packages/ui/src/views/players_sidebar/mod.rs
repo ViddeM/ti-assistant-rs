@@ -147,6 +147,7 @@ fn PlayerBox(player_id: PlayerId) -> Element {
 
     rsx! {
         fieldset {
+            key: "{player_id}",
             background_image: format!("url(\"{}\")", get_faction_icon(&player().faction)),
             background_size: "contain",
             background_repeat: "no-repeat",

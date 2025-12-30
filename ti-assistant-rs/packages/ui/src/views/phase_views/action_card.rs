@@ -251,6 +251,7 @@ fn PlagiarizeView(send_commit_message: Callback<Option<ActionCardAction>>) -> El
                         .map(|p| {
                             rsx! {
                                 PlagiarizePlayerRow {
+                                    key: "{p}",
                                     player_id: p.clone(),
                                     selected_player: selected_player.clone(),
                                     selected_tech: selected_tech.clone(),
@@ -363,7 +364,7 @@ fn PlagiarizePlayerRow(
                             .iter()
                             .map(|(t, info)| {
                                 rsx! {
-                                    option { value: "{t.to_string()}", "{info.name}" }
+                                    option { key: "{t}", value: "{t.to_string()}", "{info.name}" }
                                 }
                             })
                     }

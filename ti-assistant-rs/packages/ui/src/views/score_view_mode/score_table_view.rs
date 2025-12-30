@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 use strum::{Display, EnumString};
 use ti_helper_game_data::{
     actions::event::Event,
-    common::player_id::PlayerId,
+    common::{faction::Faction, player_id::PlayerId},
     components::{agenda::Agenda, objectives::ObjectiveKind, relic::Relic},
     state::{player::Player, score::ScorableAgenda},
 };
@@ -32,7 +32,7 @@ pub fn ScoreTableView() -> Element {
         players
     });
     let player_count = use_memo(move || players.len());
-    let custodian = use_memo(move || gc.game_state().score.custodians.clone());
+    let custodians = use_memo(move || gc.game_state().score.custodians.clone());
 
     let revealed_stage_one_objectives = use_memo(move || {
         let mut objectives = gc
@@ -66,7 +66,7 @@ pub fn ScoreTableView() -> Element {
     let sftt_scores = use_memo(move || {
         gc.game_state().score.support_for_the_throne.iter().fold(
             HashMap::<PlayerId, usize>::new(),
-            |mut map, (a, b)| {
+            |mut map, (_, b)| {
                 map.entry(b.clone())
                     .and_modify(|curr| *curr += 1)
                     .or_insert(1);
@@ -79,15 +79,15 @@ pub fn ScoreTableView() -> Element {
         table { class: "card score-view-table",
             thead {
                 tr {
-                    {players().into_iter().map(|(_, p)| rsx! {
-                        th { class: "score-view-table-header",
+                    {players().into_iter().map(|(id, p)| rsx! {
+                        th { key: "{id}", class: "score-view-table-header",
                             FactionIcon { faction: p.faction }
                         }
                     })}
                 }
                 tr {
                     {players().into_iter().map(|(p, _)| rsx! {
-                        td { class: "align-center", "{gc.game_state().score.player_points.get(&p).unwrap()}p" }
+                        td { key: "{p}", class: "align-center", "{gc.game_state().score.player_points.get(&p).unwrap()}p" }
                     })}
                 }
             }
@@ -99,24 +99,14 @@ pub fn ScoreTableView() -> Element {
                     styling_prefix: StylingPrefix::Custodians,
                 }
                 tr {
-                    {players().into_iter().map(move |(id, p)| rsx! {
-                        td { class: "align-center",
-                            FactionButton {
-                                faction: p.faction,
-                                selected: custodian().eq(&Some(id.clone())),
-                                onclick: move |_| {
-                                    event
-                                        .send_event(Event::SetCustodians {
-                                            player: if custodian().eq(&Some(id.clone())) {
-                                                None
-                                            } else {
-                                                Some(id.clone())
-                                            },
-                                        })
-                                },
-                            }
+                    for (id , player) in players().iter() {
+                        CustodianItem {
+                            key: "{id}",
+                            player_id: id.clone(),
+                            faction: player.faction.clone(),
+                            is_custodian: custodians().as_ref().eq(&Some(&id)),
                         }
-                    })}
+                    }
                 }
 
                 // STAGE I Public Objectives
@@ -125,42 +115,36 @@ pub fn ScoreTableView() -> Element {
                     title: "Stage I",
                     styling_prefix: StylingPrefix::StageOne,
                 }
-                {
-                    revealed_stage_one_objectives()
-                        .into_iter()
-                        .enumerate()
-                        .map(|(i, o)| {
-                            rsx! {
-                                FactionIconsRow {
-                                    players: players(),
-                                    index: i,
-                                    name: o.info().name,
-                                    info: Info::Objective(o),
-                                    selected: move |p| {
-                                        gc.game_state()
-                                            .score
-                                            .revealed_objectives
-                                            .get(&o)
-                                            .expect("Objective to exist")
-                                            .contains(&p)
-                                    },
-                                    enable: move |p| {
-                                        event
-                                            .send_event(Event::ScorePublicObjective {
-                                                player: p,
-                                                objective: Some(o.clone()),
-                                            })
-                                    },
-                                    disable: move |p| {
-                                        event
-                                            .send_event(Event::UnscoreObjective {
-                                                player: p,
-                                                objective: o.clone(),
-                                            })
-                                    },
-                                }
-                            }
-                        })
+                for (i , o) in revealed_stage_one_objectives().into_iter().enumerate() {
+                    FactionIconsRow {
+                        key: "{o}",
+                        players: players(),
+                        index: i,
+                        name: o.info().name,
+                        info: Info::Objective(o.clone()),
+                        selected: move |p| {
+                            gc.game_state()
+                                .score
+                                .revealed_objectives
+                                .get(&o)
+                                .expect("Objective to exist")
+                                .contains(&p)
+                        },
+                        enable: move |p| {
+                            event
+                                .send_event(Event::ScoreExtraPublicObjective {
+                                    player: p,
+                                    objective: o.clone(),
+                                })
+                        },
+                        disable: move |p| {
+                            event
+                                .send_event(Event::UnscoreObjective {
+                                    player: p,
+                                    objective: o.clone(),
+                                });
+                        },
+                    }
                 }
 
                 // STAGE II Public Objectives
@@ -176,6 +160,7 @@ pub fn ScoreTableView() -> Element {
                         .map(|(i, o)| {
                             rsx! {
                                 FactionIconsRow {
+                                    key: "{o}",
                                     players: players(),
                                     index: i,
                                     name: o.info().name,
@@ -190,9 +175,9 @@ pub fn ScoreTableView() -> Element {
                                     },
                                     enable: move |p| {
                                         event
-                                            .send_event(Event::ScorePublicObjective {
+                                            .send_event(Event::ScoreExtraPublicObjective {
                                                 player: p,
-                                                objective: Some(o.clone()),
+                                                objective: o.clone(),
                                             });
                                     },
                                     disable: move |p| {
@@ -215,7 +200,7 @@ pub fn ScoreTableView() -> Element {
                 }
                 tr {
                     {players().into_iter().map(|(id, _)| rsx! {
-                        td { class: "align-center",
+                        td { key: "{id}", class: "align-center",
                             PlayerSecretObjectivesScore { player_id: id }
                         }
                     })}
@@ -229,6 +214,7 @@ pub fn ScoreTableView() -> Element {
                 }
                 {agenda_scores().into_iter().enumerate().map(|(i, a)| rsx! {
                     AgendaScoreRow {
+                        key: "{a.get_agenda()}",
                         scorable_agenda: a,
                         top_border: i > 0,
                         players: players().into_iter().map(|(p, _)| p).collect::<Vec<_>>(),
@@ -256,7 +242,7 @@ pub fn ScoreTableView() -> Element {
                             .map(|(id, _)| {
                                 let score = sftt_scores().get(&id).cloned().unwrap_or_default();
                                 rsx! {
-                                    td { class: "align-center", "{score}" }
+                                    td { key: "{id}", class: "align-center", "{score}" }
                                 }
                             })
                     }
@@ -281,7 +267,7 @@ pub fn ScoreTableView() -> Element {
                                     .cloned()
                                     .unwrap_or_default();
                                 rsx! {
-                                    td { class: "align-center",
+                                    td { key: "{id}", class: "align-center",
                                         IncDecView {
                                             points: score,
                                             change_points: move |new_points| {
@@ -318,7 +304,7 @@ pub fn ScoreTableView() -> Element {
                                     .cloned()
                                     .unwrap_or_default();
                                 rsx! {
-                                    td { class: "align-center",
+                                    td { key: "{id}", class: "align-center",
                                         IncDecView {
                                             points: score,
                                             change_points: move |new_points| {
@@ -334,6 +320,26 @@ pub fn ScoreTableView() -> Element {
                             })
                     }
                 }
+            }
+        }
+    }
+}
+
+#[component]
+fn CustodianItem(player_id: PlayerId, faction: Faction, is_custodian: bool) -> Element {
+    let event = use_context::<EventContext>();
+
+    rsx! {
+        td { class: "align-center",
+            FactionButton {
+                faction,
+                selected: is_custodian,
+                onclick: move |_| {
+                    event
+                        .send_event(Event::SetCustodians {
+                            player: if is_custodian { None } else { Some(player_id.clone()) },
+                        })
+                },
             }
         }
     }
@@ -459,7 +465,7 @@ fn FactionIconsRow(
                     .map(|(id, p)| {
                         let s = selected(id.clone());
                         rsx! {
-                            td { class: "align-center",
+                            td { key: "{id}", class: "align-center",
                                 FactionButton {
                                     faction: p.faction,
                                     selected: s,
@@ -542,7 +548,7 @@ fn AgendaScoreRow(
                                 0
                             };
                             rsx! {
-                                td { class: "align-center", "{score}" }
+                                td { key: "{p}", class: "align-center", "{score}" }
                             }
                         })
                 }
@@ -567,7 +573,7 @@ fn AgendaScoreRow(
                             .map(|p| {
                                 let score = if planet_owner.eq(p) { 1 } else { 0 };
                                 rsx! {
-                                    td { class: "align-center", "{score}" }
+                                    td { key: "{p}", class: "align-center", "{score}" }
                                 }
                             })
                     }
@@ -583,7 +589,7 @@ fn AgendaScoreRow(
                         .map(|p| {
                             let score = if players_elected.contains(p) { 1 } else { 0 };
                             rsx! {
-                                td { class: "align-center", "{score}" }
+                                td { key: "{p}", class: "align-center", "{score}" }
                             }
                         })
                 }
@@ -599,7 +605,7 @@ fn AgendaScoreRow(
                         .map(|p| {
                             let score = if player.eq(p) { 1 } else { 0 };
                             rsx! {
-                                td { class: "align-center", "{score}" }
+                                td { key: "{p}", class: "align-center", "{score}" }
                             }
                         })
                 }
@@ -614,7 +620,7 @@ fn AgendaScoreRow(
                         .map(|p| {
                             let score = if player.eq(p) { 1 } else { 0 };
                             rsx! {
-                                td { class: "align-center", "{score}" }
+                                td { key: "{p}", class: "align-center", "{score}" }
                             }
                         })
                 }
@@ -629,7 +635,7 @@ fn AgendaScoreRow(
                         .map(|p| {
                             let score = if player.eq(p) { 1 } else { 0 };
                             rsx! {
-                                td { class: "align-center", "{score}" }
+                                td { key: "{p}", class: "align-center", "{score}" }
                             }
                         })
                 }
@@ -679,7 +685,7 @@ fn RelicPointRows() -> Element {
                                 let is_owner = crown_of_emphidia_holder().eq(&Some(id.clone()));
 
                                 rsx! {
-                                    td { class: "align-center",
+                                    td { key: "{id}", class: "align-center",
                                         FactionButton {
                                             faction: p.faction,
                                             selected: is_owner,
@@ -724,7 +730,7 @@ fn RelicPointRows() -> Element {
                             .map(|(id, p)| {
                                 let is_holder = shard_of_the_throne_holder().eq(&Some(id.clone()));
                                 rsx! {
-                                    td { class: "align-center",
+                                    td { key: "{id}", class: "align-center",
                                         FactionButton {
                                             faction: p.faction,
                                             selected: is_holder,

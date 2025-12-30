@@ -91,23 +91,20 @@ pub fn ActionPhaseView() -> Element {
                                     },
                                     "Pass"
                                 }
-                                {
-                                    playable_strategy_cards()
-                                        .into_iter()
-                                        .map(|card| rsx! {
-                                            Button {
-                                                class: "action-button",
-                                                onclick: move |_| {
-                                                    event
-                                                        .send_event(Event::StrategicActionBegin {
-                                                            player: current_player_id(),
-                                                            card,
-                                                        })
-                                                },
-                                                "{card}"
-                                            }
-                                        })
-                                }
+                                {playable_strategy_cards().into_iter().map(|card| rsx! {
+                                    Button {
+                                        key: "{card}",
+                                        class: "action-button",
+                                        onclick: move |_| {
+                                            event
+                                                .send_event(Event::StrategicActionBegin {
+                                                    player: current_player_id(),
+                                                    card,
+                                                })
+                                        },
+                                        "{card}"
+                                    }
+                                })}
                                 Button {
                                     class: "action-button",
                                     onclick: move |_| {
