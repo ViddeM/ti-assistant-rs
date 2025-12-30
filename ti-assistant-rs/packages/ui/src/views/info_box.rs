@@ -22,6 +22,14 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
     let player = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .as_ref()
+            .map(|p| p.to_string())
+            .unwrap_or("None".to_string())
+    });
+
     let round = use_memo(move || gc.game_state().round);
 
     let play_pause_icon = use_memo(move || {
@@ -60,7 +68,8 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
                 ViewModeButton { view_mode: ViewMode::Map, current: view_mode }
             }
             p { class: "margin-top", "Round: {round()}" }
-            "Currently viewing: {player.display()}"
+            p { "Current player: {current_player}" }
+            p { "Currently viewing: {player.display()}" }
             p { "Current phase: {gc.game_state().phase}" }
             div {
                 Button {
