@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    common::faction::Faction,
+    common::{faction::Faction, player_id::PlayerId},
     components::{
         action_card::ActionCard, objectives::Objective, planet::Planet, relic::Relic,
         tech::Technology,
@@ -253,6 +253,43 @@ pub fn PlanetDropdown(
                     .map(|p| {
                         rsx! {
                             option { value: "{p}", "{p.info().name}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn PlayerDropdown(
+    value: ReadSignal<Option<PlayerId>>,
+    options: Vec<PlayerId>,
+    on_select: EventHandler<Option<PlayerId>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value = use_memo(move || value().unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            on_select(Some(new_value.into()));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            value: "{current_value()}",
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            option { value: "", "None" }
+            {
+                options
+                    .iter()
+                    .map(|p| {
+                        rsx! {
+                            option { value: "{p}", "{p}" }
                         }
                     })
             }
