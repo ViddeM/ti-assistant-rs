@@ -1,7 +1,7 @@
-use std::fmt::Display;
+use std::{cmp::Ordering, fmt::Display};
 
 use serde::{Deserialize, Serialize};
-use strum::Display;
+use strum::{Display, EnumString};
 use strum_macros::{EnumDiscriminants, EnumIter};
 
 use crate::common::{expansions::Expansion, player_id::PlayerId};
@@ -53,6 +53,15 @@ pub enum ForOrAgainst {
     Against,
 }
 
+impl Display for ForOrAgainst {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ForOrAgainst::For => write!(f, "For"),
+            ForOrAgainst::Against => write!(f, "Against"),
+        }
+    }
+}
+
 /// What is to be elected for an agenda.
 #[derive(EnumDiscriminants)]
 #[strum_discriminants(name(AgendaElectKind))]
@@ -91,20 +100,26 @@ pub enum AgendaElect {
     IndustrialPlanet(Planet),
 }
 
+impl AgendaElect {
+    pub fn to_display_value(&self) -> String {
+        match self {
+            AgendaElect::StrategyCard(strategy_card) => strategy_card.to_string(),
+            AgendaElect::Law(agenda) => agenda.info().name,
+            AgendaElect::SecretObjective(secret_objective) => secret_objective.info().name,
+            AgendaElect::Planet(planet) => planet.info().name,
+            AgendaElect::PlanetWithTrait(planet) => planet.info().name,
+            AgendaElect::CulturalPlanet(planet) => planet.info().name,
+            AgendaElect::HazardousPlanet(planet) => planet.info().name,
+            AgendaElect::IndustrialPlanet(planet) => planet.info().name,
+            AgendaElect::ForOrAgainst(f_o_a) => f_o_a.to_string(),
+            AgendaElect::Player(player) => player.to_string(),
+        }
+    }
+}
+
 /// An agenda in the game.
 #[derive(
-    Debug,
-    Clone,
-    Copy,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-    Serialize,
-    Deserialize,
-    EnumIter,
-    Display,
+    Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter, EnumString, Display,
 )]
 #[strum(serialize_all = "kebab-case")]
 #[allow(missing_docs)]
@@ -179,6 +194,21 @@ pub enum Agenda {
     MinisterOfAntiques,
     RearmamentAgreement,
     ResearchGrantReallocation,
+}
+
+impl PartialOrd for Agenda {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Agenda {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
+    }
 }
 
 impl Agenda {

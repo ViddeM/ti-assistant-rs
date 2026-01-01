@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::{faction::Faction, player_id::PlayerId},
     components::{
-        action_card::ActionCard, objectives::Objective, planet::Planet,
+        action_card::ActionCard, agenda::Agenda, objectives::Objective, planet::Planet,
         planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
     },
 };
@@ -260,6 +260,45 @@ pub fn PlanetDropdown(
                     .map(|p| {
                         rsx! {
                             option { key: "{p}", value: "{p}", "{p.info().name}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn AgendaDropdown(
+    value: ReadSignal<Option<Agenda>>,
+    options: Vec<Agenda>,
+    on_select: EventHandler<Option<Agenda>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|p| p.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let agenda = Agenda::from_str(&new_value).expect("Unexpected agenda");
+            on_select(Some(agenda));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            value: "{current_value()}",
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            option { value: "", "--Select Agenda--" }
+            {
+                options
+                    .iter()
+                    .map(|a| {
+                        rsx! {
+                            option { key: "{a}", value: "{a}", "{a.info().name}" }
                         }
                     })
             }

@@ -225,8 +225,8 @@ impl VoteState {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct Vote {
-    votes: u16,
-    outcome: AgendaElect,
+    pub votes: u16,
+    pub outcome: AgendaElect,
 }
 
 impl Vote {
