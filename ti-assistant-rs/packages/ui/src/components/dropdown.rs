@@ -4,8 +4,8 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::{faction::Faction, player_id::PlayerId},
     components::{
-        action_card::ActionCard, objectives::Objective, planet::Planet, relic::Relic,
-        tech::Technology,
+        action_card::ActionCard, objectives::Objective, planet::Planet,
+        planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
     },
 };
 
@@ -279,6 +279,7 @@ pub fn PlayerDropdown(
     let oninput = move |event: FormEvent| {
         let new_value = event.value();
         current_value.set(new_value.into());
+        on_select(current_value());
     };
 
     rsx! {
@@ -295,6 +296,56 @@ pub fn PlayerDropdown(
                             option { key: "{p}", value: "{p}", "{p}" }
                         }
                     })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn PlanetAttachmentDropdown(
+    value: ReadSignal<Option<PlanetAttachment>>,
+    options: Vec<PlanetAttachment>,
+    on_select: EventHandler<Option<PlanetAttachment>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|p| p.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let attachment =
+                PlanetAttachment::from_str(&new_value).expect("Unexpected planet attachment");
+            on_select(Some(attachment));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            value: "{current_value()}",
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            {
+                if options.is_empty() {
+                    rsx! {
+                        option { value: "", "No attachments available" }
+                    }
+                } else {
+                    rsx! {
+                        option { value: "", "--Select Attachment--" }
+                        {
+                            options
+                                .iter()
+                                .map(|p| {
+                                    rsx! {
+                                        option { key: "{p}", value: "{p}", "{p.info().name}" }
+                                    }
+                                })
+                        }
+                    }
+                }
             }
         }
     }

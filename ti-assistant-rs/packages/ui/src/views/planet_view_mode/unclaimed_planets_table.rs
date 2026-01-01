@@ -1,4 +1,4 @@
-use dioxus::{logger::tracing, prelude::*};
+use dioxus::prelude::*;
 use ti_helper_game_data::actions::event::Event;
 
 use crate::{
@@ -46,8 +46,6 @@ pub fn UnclaimedPlanetsTable() -> Element {
         planets
     });
 
-    tracing::info!("Planets: {:?}", unclaimed_planets);
-
     rsx! {
         div { class: "unclaimed-planets-container",
             div { class: "card screen-container",
@@ -61,6 +59,7 @@ pub fn UnclaimedPlanetsTable() -> Element {
                         tr {
                             th { colspan: players().len(),
                                 input {
+                                    class: "planet-filter",
                                     placeholder: "Filter planets",
                                     value: planets_filter,
                                     oninput: move |e: FormEvent| {

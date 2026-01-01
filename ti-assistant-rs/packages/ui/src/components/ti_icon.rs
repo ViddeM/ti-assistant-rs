@@ -1,4 +1,7 @@
 use dioxus::prelude::*;
+use ti_helper_game_data::components::{
+    planet::PlanetTrait, planet_attachment::PlanetAttachment, tech::TechCategory,
+};
 
 const BIOTIC_FILLED_PNG: Asset = asset!("/assets/icons/resources/biotic_filled.png");
 const BIOTIC_PNG: Asset = asset!("/assets/icons/resources/biotic.png");
@@ -86,6 +89,27 @@ impl TiIconType {
             TiIconType::TombOfEmphida => TOMB_OF_EMPHIDA_PNG,
             TiIconType::WarfareFilled => WARFARE_FILLED_PNG,
             TiIconType::Warfare => WARFARE_PNG,
+        }
+    }
+}
+
+impl From<&PlanetTrait> for TiIconType {
+    fn from(value: &PlanetTrait) -> Self {
+        match value {
+            PlanetTrait::Cultural => Self::Cultural,
+            PlanetTrait::Hazardous => Self::Hazardous,
+            PlanetTrait::Industrial => Self::Industrial,
+        }
+    }
+}
+
+impl From<&TechCategory> for TiIconType {
+    fn from(value: &TechCategory) -> Self {
+        match value {
+            TechCategory::Biotic => Self::BioticFilled,
+            TechCategory::Propulsion => Self::PropulsionFilled,
+            TechCategory::Cybernetic => Self::CyberneticFilled,
+            TechCategory::Warfare => Self::WarfareFilled,
         }
     }
 }

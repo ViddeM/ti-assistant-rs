@@ -1,21 +1,26 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
+    actions::event::Event,
     common::player_id::PlayerId,
     components::{planet::Planet, planet_attachment::PlanetAttachment, system::SystemType},
 };
 
 use crate::{
-    components::dropdown::{PlanetDropdown, PlayerDropdown},
-    data::game_context::GameContext,
+    components::{
+        button::Button,
+        dropdown::{PlanetAttachmentDropdown, PlanetDropdown, PlayerDropdown},
+    },
+    data::{event_context::EventContext, game_context::GameContext},
 };
 
 #[component]
 pub fn AddPlanetAttachment() -> Element {
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
 
-    let player: Signal<PlayerId> = use_signal(|| "".into());
-    let planet: Signal<Option<Planet>> = use_signal(|| None);
-    let attachment: Signal<Option<PlanetAttachment>> = use_signal(|| None);
+    let mut player: Signal<PlayerId> = use_signal(|| "".into());
+    let mut planet: Signal<Option<Planet>> = use_signal(|| None);
+    let mut attachment: Signal<Option<PlanetAttachment>> = use_signal(|| None);
 
     let available_players = use_memo(move || {
         let mut players = gc
@@ -26,6 +31,14 @@ pub fn AddPlanetAttachment() -> Element {
             .collect::<Vec<_>>();
         players.sort_by(|(a, _), (b, _)| a.cmp(&b));
         players
+    });
+
+    let player_options = use_memo(move || {
+        available_players()
+            .iter()
+            .map(|(p, _)| p)
+            .cloned()
+            .collect::<Vec<_>>()
     });
 
     let available_planets = use_memo(move || {
@@ -44,7 +57,7 @@ pub fn AddPlanetAttachment() -> Element {
             .systems
             .values()
             .filter(|system| matches!(system.system_type, SystemType::HomeSystem(..)))
-            .flat_map(|system| system.planets)
+            .flat_map(|system| system.planets.clone())
             .collect::<Vec<_>>();
         planets.sort();
         planets
@@ -61,8 +74,8 @@ pub fn AddPlanetAttachment() -> Element {
             .iter()
             .filter(|(a, _)| a.is_real())
             .filter(|(a, i)| {
-                if let Some(t) = i.planet_trait {
-                    planet.info().planet_traits.contains(&t)
+                if let Some(t) = i.planet_trait.as_ref() {
+                    planet.info().planet_traits.contains(t)
                 } else {
                     true
                 }
@@ -103,12 +116,38 @@ pub fn AddPlanetAttachment() -> Element {
     rsx! {
         div { class: "card add-planet-attachment-container",
             h2 { "Attach to planet" }
-            PlayerDropdown { value: player(), oninput: move |p| player.set(p) }
+            PlayerDropdown {
+                value: player(),
+                options: player_options(),
+                on_select: move |p| player.set(p),
+            }
             PlanetDropdown {
+                value: planet(),
+                disabled: player().is_empty(),
+                options: available_planets(),
+                on_select: move |p| planet.set(p),
             }
-            Dropdown {
+            PlanetAttachmentDropdown {
+                value: attachment(),
+                disabled: player().is_empty() || planet().is_none(),
+                options: available_attachments(),
+                on_select: move |a| attachment.set(a),
             }
-            Button { "Add attachment" }
+            Button {
+                disabled: player().is_empty() || planet().is_none() || attachment().is_none(),
+                onclick: move |_| {
+                    event
+                        .send_event(Event::AddPlanetAttachment {
+                            player: player(),
+                            planet: planet().expect("Planet to be set"),
+                            attachment: attachment().expect("Attachment to be set"),
+                        });
+                    attachment.set(None);
+                    planet.set(None);
+                    player.set("".into());
+                },
+                "Add attachment"
+            }
         }
     }
 }

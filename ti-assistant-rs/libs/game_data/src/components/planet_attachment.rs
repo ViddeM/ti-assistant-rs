@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::common::expansions::Expansion;
@@ -9,7 +10,21 @@ use super::{
 };
 
 /// A planet attachment.
-#[derive(Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    EnumIter,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    Hash,
+    EnumString,
+    Display,
+)]
+#[strum(serialize_all = "kebab-case")]
 #[allow(missing_docs)]
 pub enum PlanetAttachment {
     DemilitarizedZone,

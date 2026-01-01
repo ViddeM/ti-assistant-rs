@@ -7,7 +7,7 @@ use crate::common::expansions::Expansion;
 use super::tech::TechCategory;
 
 /// A planetary trait.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[allow(missing_docs)]
 pub enum PlanetTrait {
     Cultural,
