@@ -1,11 +1,13 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{icons::fa_solid_icons::FaTrash, Icon};
-use ti_helper_game_data::{actions::event::Event, common::player_id::PlayerId};
+use ti_helper_game_data::{
+    actions::event::Event, common::player_id::PlayerId, components::agenda::AgendaElect,
+};
 
 use crate::{
     components::{
         button::Button,
-        dropdown::{AgendaDropdown, PlayerDropdown},
+        dropdown::{AgendaDropdown, PlayerDropdown, VoteOptionDropdown},
         info_button::InfoButton,
     },
     data::{event_context::EventContext, game_context::GameContext, info_context::Info},
@@ -21,6 +23,7 @@ pub fn LawsViewMode() -> Element {
         div { class: "laws-view-container",
             ActiveLawsTable {}
             AddLawForm {}
+            AgendaHistoryView {}
         }
     }
 }
@@ -93,7 +96,7 @@ fn AddLawForm() -> Element {
 
     let mut player: Signal<PlayerId> = use_signal(|| "".into());
     let mut votes = use_signal(|| 0);
-    let mut vote_option = use_signal(|| String::new());
+    let mut vote_option = use_signal(|| None);
 
     let vote_state = use_memo(move || {
         gc.game_state()
@@ -101,7 +104,6 @@ fn AddLawForm() -> Element {
             .clone()
             .map(|s| s.vote_state)
     });
-    let outcome = use_signal(|| vote_state().map(|s| s.expected_outcome).flatten());
 
     let all_agendas = use_memo(move || {
         let mut laws = gc
@@ -136,13 +138,39 @@ fn AddLawForm() -> Element {
             .unwrap_or_default()
     });
     let players_left_to_vote = use_memo(move || {
-        gc.game_state()
+        let mut players = gc
+            .game_state()
             .players
             .keys()
             .filter(|&p| !players_that_have_voted().contains(p))
             .cloned()
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>();
+        players.sort();
+        players
     });
+
+    let vote_options = use_signal(move || {
+        let mut options = vote_state()
+            .map(|state| state.candidates)
+            .unwrap_or_default();
+        options.sort();
+        options
+    });
+
+    let mut outcome = use_signal(|| None);
+    let outcome_display = use_memo(move || {
+        outcome()
+            .map(|o: AgendaElect| o.to_display_value())
+            .unwrap_or_default()
+    });
+
+    use_effect(move || {
+        if let Some(s) = vote_state() {
+            outcome.set(s.expected_outcome);
+        }
+    });
+
+    // TODO: FIgure out why page reloads when we add an agenda.
 
     rsx! {
         div { class: "card column",
@@ -155,6 +183,12 @@ fn AddLawForm() -> Element {
                                 "{state.agenda.info().name}"
                                 InfoButton { info: Info::Agenda(state.agenda.clone()) }
                             }
+
+                        // TODO: FIgure out why page reloads when we add an agenda.
+
+                        // TODO: FIgure out why page reloads when we add an agenda.
+
+
 
 
 
@@ -178,7 +212,7 @@ fn AddLawForm() -> Element {
                                         event
                                             .send_event(Event::AddAgendaPlayerVote {
                                                 player: player(),
-                                                outcome: outcome().expect("Outcome to be selected"),
+                                                outcome: vote_option().expect("Outcome to be selected"),
                                                 votes: votes(),
                                             })
                                     },
@@ -195,14 +229,49 @@ fn AddLawForm() -> Element {
                                         max: 1000,
                                         value: votes(),
                                         onchange: move |e| {
-                                            if let Ok(val) = e.value().parse() {
-                                                votes.set(val);
+                                            let v = e.value();
+                                            if let Ok(num) = v.parse::<u16>() {
+                                                votes.set(num);
                                             } else {
                                                 votes.set(votes());
                                             }
                                         },
                                     }
-                                    "TODO"
+                                    VoteOptionDropdown {
+                                        value: vote_option(),
+                                        on_select: move |o| vote_option.set(o),
+                                        options: vote_options(),
+                                    }
+                                    Button {
+                                        r#type: "submit",
+                                        disabled: vote_option().is_none() || player().is_empty(),
+                                        "Cast Votes"
+                                    }
+                                }
+                            }
+
+                            fieldset {
+                                legend { "Resolve" }
+                                div { class: "resolve-outcome-container",
+                                    label { r#for: "outcome-override-dropdown", "Override outcome" }
+
+                                    VoteOptionDropdown {
+                                        id: "outcome-override-dropdown",
+                                        value: outcome(),
+                                        on_select: move |o| outcome.set(o),
+                                        options: vote_options(),
+                                    }
+
+                                    Button {
+                                        disabled: outcome().is_none(),
+                                        onclick: move |_| {
+                                            event
+                                                .send_event(Event::AddAgendaResolve {
+                                                    elected_outcome: outcome().expect("Outcome to be selected"),
+                                                })
+                                        },
+                                        "Resolve {outcome_display()}"
+                                    }
                                 }
                             }
                         }
@@ -231,6 +300,31 @@ fn AddLawForm() -> Element {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn AgendaHistoryView() -> Element {
+    let gc = use_context::<GameContext>();
+
+    let previous_agendas = use_memo(move || {
+        gc.game_state()
+            .agenda_vote_history
+            .iter()
+            .cloned()
+            .collect::<Vec<_>>()
+    });
+
+    rsx! {
+        div { class: "card",
+            h2 { "Agenda history" }
+            for record in previous_agendas().iter() {
+                div { key: "{record.vote.agenda}",
+                    h3 { "{record.vote.agenda.info().name}" }
+                    "Result: {record.outcome.as_ref().map(|o| o.to_display_value()).unwrap_or_default()}"
                 }
             }
         }

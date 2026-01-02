@@ -1,10 +1,14 @@
-use std::{cmp::Ordering, fmt::Display};
+use std::{cmp::Ordering, fmt::Display, str::FromStr};
 
+use anyhow::{Context, bail, ensure};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::{EnumDiscriminants, EnumIter};
 
-use crate::common::{expansions::Expansion, player_id::PlayerId};
+use crate::{
+    common::{expansions::Expansion, player_id::PlayerId},
+    components::planet::PlanetTrait,
+};
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
@@ -56,9 +60,22 @@ pub enum ForOrAgainst {
 impl Display for ForOrAgainst {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ForOrAgainst::For => write!(f, "For"),
-            ForOrAgainst::Against => write!(f, "Against"),
+            ForOrAgainst::For => write!(f, "{}", Self::FOR),
+            ForOrAgainst::Against => write!(f, "{}", Self::AGAINST),
         }
+    }
+}
+
+impl ForOrAgainst {
+    const FOR: &'static str = "For";
+    const AGAINST: &'static str = "Against";
+
+    fn parse(value: &str) -> anyhow::Result<Self> {
+        Ok(match value {
+            Self::FOR => Self::For,
+            Self::AGAINST => Self::Against,
+            _ => anyhow::bail!("Invalid for or against value {value}"),
+        })
     }
 }
 
@@ -114,6 +131,102 @@ impl AgendaElect {
             AgendaElect::ForOrAgainst(f_o_a) => f_o_a.to_string(),
             AgendaElect::Player(player) => player.to_string(),
         }
+    }
+
+    const SEPARATOR: &'static str = "::";
+
+    const FOR_OR_AGAINST: &'static str = "for_or_against";
+    const PLAYER: &'static str = "player";
+    const STRATEGY_CARD: &'static str = "strategy_card";
+    const LAW: &'static str = "agenda";
+    const SECRET_OBJECTIVE: &'static str = "secret_objective";
+    const PLANET: &'static str = "planet";
+    const PLANET_WITH_TRAIT: &'static str = "planet_with_trait";
+    const CULTURAL_PLANET: &'static str = "cultural_planet";
+    const HAZARDOUS_PLANET: &'static str = "hazardous_planet";
+    const INDUSTRIAL_PLANET: &'static str = "industrial_planet";
+
+    pub fn name(&self) -> String {
+        let (prefix, value): (&'static str, String) = match self {
+            AgendaElect::ForOrAgainst(for_or_against) => {
+                (Self::FOR_OR_AGAINST, for_or_against.to_string())
+            }
+            AgendaElect::Player(player) => (Self::PLAYER, player.to_string()),
+            AgendaElect::StrategyCard(strategy_card) => {
+                (Self::STRATEGY_CARD, strategy_card.name().to_string())
+            }
+            AgendaElect::Law(agenda) => (Self::LAW, agenda.to_string()),
+            AgendaElect::SecretObjective(secret_objective) => {
+                (Self::SECRET_OBJECTIVE, secret_objective.to_string())
+            }
+            AgendaElect::Planet(planet) => (Self::PLANET, planet.to_string()),
+            AgendaElect::PlanetWithTrait(planet) => (Self::PLANET_WITH_TRAIT, planet.to_string()),
+            AgendaElect::CulturalPlanet(planet) => (Self::CULTURAL_PLANET, planet.to_string()),
+            AgendaElect::HazardousPlanet(planet) => (Self::HAZARDOUS_PLANET, planet.to_string()),
+            AgendaElect::IndustrialPlanet(planet) => (Self::INDUSTRIAL_PLANET, planet.to_string()),
+        };
+
+        format!("{prefix}{}{value}", Self::SEPARATOR)
+    }
+
+    pub fn parse(value: &str) -> anyhow::Result<Self> {
+        let (variant, v) = value
+            .split_once(Self::SEPARATOR)
+            .context("Invalid agenda elect value")?;
+
+        Ok(match variant {
+            Self::FOR_OR_AGAINST => {
+                Self::ForOrAgainst(ForOrAgainst::parse(v).context("invalid for or against value")?)
+            }
+            Self::PLAYER => Self::Player(v.into()),
+            Self::STRATEGY_CARD => {
+                Self::StrategyCard(StrategyCard::from_str(v).context("Invalid strategy card")?)
+            }
+            Self::LAW => Self::Law(Agenda::from_str(v).context("Invalid agenda")?),
+            Self::SECRET_OBJECTIVE => Self::SecretObjective(
+                SecretObjective::from_str(v).context("Invalid secret objective")?,
+            ),
+            Self::PLANET => Self::Planet(Planet::from_str(v).context("Invalid planet")?),
+            Self::PLANET_WITH_TRAIT => {
+                let planet = Planet::from_str(v).context("Invalid planet")?;
+                ensure!(
+                    !planet.info().planet_traits.is_empty(),
+                    "Planet without traits provided for planet with trait agenda"
+                );
+                Self::PlanetWithTrait(planet)
+            }
+            Self::CULTURAL_PLANET => {
+                let planet = Planet::from_str(v).context("Invalid planet")?;
+                ensure!(
+                    !planet.info().planet_traits.contains(&PlanetTrait::Cultural),
+                    "Planet without cultural trait provided for cultural planet"
+                );
+                Self::CulturalPlanet(planet)
+            }
+            Self::HAZARDOUS_PLANET => {
+                let planet = Planet::from_str(v).context("Invalid planet")?;
+                ensure!(
+                    !planet
+                        .info()
+                        .planet_traits
+                        .contains(&PlanetTrait::Hazardous),
+                    "Planet without hazardous trait provided for hazardous planet"
+                );
+                Self::HazardousPlanet(planet)
+            }
+            Self::INDUSTRIAL_PLANET => {
+                let planet = Planet::from_str(v).context("Invalid planet")?;
+                ensure!(
+                    !planet
+                        .info()
+                        .planet_traits
+                        .contains(&PlanetTrait::Industrial),
+                    "Planet without industrial trait provided for industrial planet"
+                );
+                Self::IndustrialPlanet(planet)
+            }
+            v => bail!("Invalid vote option {v}"),
+        })
     }
 }
 

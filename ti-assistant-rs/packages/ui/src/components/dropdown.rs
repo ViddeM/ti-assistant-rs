@@ -4,8 +4,13 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::{faction::Faction, player_id::PlayerId},
     components::{
-        action_card::ActionCard, agenda::Agenda, objectives::Objective, planet::Planet,
-        planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
+        action_card::ActionCard,
+        agenda::{Agenda, AgendaElect},
+        objectives::Objective,
+        planet::Planet,
+        planet_attachment::PlanetAttachment,
+        relic::Relic,
+        tech::Technology,
     },
 };
 
@@ -380,6 +385,58 @@ pub fn PlanetAttachmentDropdown(
                                 .map(|p| {
                                     rsx! {
                                         option { key: "{p}", value: "{p}", "{p.info().name}" }
+                                    }
+                                })
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn VoteOptionDropdown(
+    id: Option<String>,
+    value: ReadSignal<Option<AgendaElect>>,
+    options: Vec<AgendaElect>,
+    on_select: EventHandler<Option<AgendaElect>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value = use_memo(move || value().as_ref().map(|p| p.name()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let elect = AgendaElect::parse(&new_value).expect("Unexpected agenda elect");
+            on_select(Some(elect));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            id,
+            value: "{current_value()}",
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            {
+                if options.is_empty() {
+                    rsx! {
+                        option { value: "", "No vote options available" }
+                    }
+                } else {
+                    rsx! {
+                        option { value: "", "--Select vote option--" }
+                        {
+                            options
+                                .iter()
+                                .map(|o| {
+                                    let v = o.name();
+                                    let display = o.to_display_value();
+                                    rsx! {
+                                        option { key: "{v}", value: "{v}", "{display}" }
                                     }
                                 })
                         }

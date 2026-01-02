@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum::EnumString;
 use strum_macros::{Display, EnumIter};
 
 /// A strategy card.
@@ -14,6 +15,7 @@ use strum_macros::{Display, EnumIter};
     Serialize,
     Deserialize,
     EnumIter,
+    EnumString,
     Display,
 )]
 #[allow(missing_docs)]
