@@ -16,7 +16,7 @@ use ti_helper_game_data::{
 use crate::{
     components::{
         button::Button,
-        dropdown::{ActionCardDropdown, Dropdown, RelicDropdown},
+        dropdown::{ActionCardDropdown, RelicDropdown},
     },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
@@ -64,80 +64,68 @@ pub fn ActionPhaseView() -> Element {
 
         div { class: "card action-phase-view-container",
             h2 { "ACTION PHASE" }
-            {
-                if view.is_active() {
-                    rsx! {
-                        fieldset {
-                            class: format!(
-                                "player-color-border-{} action-player-container",
-                                current_player().color.name(),
-                            ),
-                            legend {
-                                class: format!(
-                                    "player-color-border-{} action-player-container",
-                                    current_player().color.name(),
-                                ),
-                                h4 { "{player_name}" }
+            if view.is_active() {
+                fieldset {
+                    class: format!(
+                        "player-color-border-{} action-player-container",
+                        current_player().color.name(),
+                    ),
+                    legend {
+                        class: format!(
+                            "player-color-border-{} action-player-container",
+                            current_player().color.name(),
+                        ),
+                        h4 { "{player_name}" }
+                    }
+                    div { class: "actions-container",
+                        Button {
+                            class: "action-button",
+                            disabled: !playable_strategy_cards().is_empty(),
+                            onclick: move |_| {
+                                event
+                                    .send_event(Event::PassAction {
+                                        player: current_player_id(),
+                                    })
+                            },
+                            "Pass"
+                        }
+                        {playable_strategy_cards().into_iter().map(|card| rsx! {
+                            Button {
+                                key: "{card}",
+                                class: "action-button",
+                                onclick: move |_| {
+                                    event
+                                        .send_event(Event::StrategicActionBegin {
+                                            player: current_player_id(),
+                                            card,
+                                        })
+                                },
+                                "{card}"
                             }
-                            div { class: "actions-container",
-                                Button {
-                                    class: "action-button",
-                                    disabled: !playable_strategy_cards().is_empty(),
-                                    onclick: move |_| {
-                                        event
-                                            .send_event(Event::PassAction {
-                                                player: current_player_id(),
-                                            })
-                                    },
-                                    "Pass"
-                                }
-                                {playable_strategy_cards().into_iter().map(|card| rsx! {
-                                    Button {
-                                        key: "{card}",
-                                        class: "action-button",
-                                        onclick: move |_| {
-                                            event
-                                                .send_event(Event::StrategicActionBegin {
-                                                    player: current_player_id(),
-                                                    card,
-                                                })
-                                        },
-                                        "{card}"
-                                    }
-                                })}
-                                Button {
-                                    class: "action-button",
-                                    onclick: move |_| {
-                                        event
-                                            .send_event(Event::TacticalActionBegin {
-                                                player: current_player_id(),
-                                            })
-                                    },
-                                    "Tactical"
-                                }
-                                Button {
-                                    class: "action-button",
-                                    disabled: is_component(),
-                                    onclick: move |_| { is_component.set(true) },
-                                    "Component"
-                                }
-                            }
-                            {
-                                if is_component() {
-                                    rsx! {
-                                        ComponentSelectRow {}
-                                    }
-                                } else {
-                                    rsx! {}
-                                }
-                            }
+                        })}
+                        Button {
+                            class: "action-button",
+                            onclick: move |_| {
+                                event
+                                    .send_event(Event::TacticalActionBegin {
+                                        player: current_player_id(),
+                                    })
+                            },
+                            "Tactical"
+                        }
+                        Button {
+                            class: "action-button",
+                            disabled: is_component(),
+                            onclick: move |_| { is_component.set(true) },
+                            "Component"
                         }
                     }
-                } else {
-                    rsx! {
-                        p { "Not your turn, current {current_player_id()} is playing" }
+                    if is_component() {
+                        ComponentSelectRow {}
                     }
                 }
+            } else {
+                p { "Not your turn, current {current_player_id()} is playing" }
             }
         }
     }
@@ -208,14 +196,8 @@ fn ComponentSelectRow() -> Element {
                 "Play Leader"
             }
         }
-        {
-            if !component_mode.read().eq(&ComponentMode::None) {
-                rsx! {
-                    DisplayComponentMode { mode: component_mode() }
-                }
-            } else {
-                rsx! {}
-            }
+        if !component_mode.read().eq(&ComponentMode::None) {
+            DisplayComponentMode { mode: component_mode() }
         }
     }
 }
@@ -432,6 +414,6 @@ fn player_emoji(name: &PlayerId) -> &str {
         "håll" => "🧬",
         "hoidi" => "🐦",
         "gurr" => "⛴️️",
-        n => n,
+        _ => "",
     }
 }

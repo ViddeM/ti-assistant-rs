@@ -141,7 +141,7 @@ fn PlayerBox(player_id: PlayerId) -> Element {
             .map(|(card, _)| card)
             .cloned()
             .collect::<Vec<_>>();
-        strategy_cards.sort_by(|a, b| b.card_number().cmp(&a.card_number()));
+        strategy_cards.sort_by(|a, b| a.card_number().cmp(&b.card_number()));
         strategy_cards
     });
 

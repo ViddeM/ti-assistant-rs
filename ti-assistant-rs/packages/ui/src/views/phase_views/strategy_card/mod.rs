@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
@@ -31,7 +29,7 @@ pub fn StrategyCardView() -> Element {
     let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
-    let card = use_memo(move || {
+    let progress = use_memo(move || {
         gc.game_state()
             .action_progress
             .clone()
@@ -40,51 +38,43 @@ pub fn StrategyCardView() -> Element {
                 _ => None,
             })
             .flatten()
+            .expect("There to be strategic progress")
     });
 
-    // TODO: Solve reactivity here.
-    let Some(progress) = card() else {
-        return rsx! {};
-    };
-
-    let progress = Arc::new(progress);
-
-    let p1 = progress.clone();
-    let card = use_memo(move || p1.card);
+    let card = use_memo(move || progress().card.clone());
 
     let expected_secondaries = use_memo(move || {
         gc.game_state()
             .players
             .iter()
-            .filter(|&(id, _)| gc.game_state().current_player.as_ref().eq(&Some(id)))
+            .filter(|&(id, _)| !gc.game_state().current_player.as_ref().eq(&Some(id)))
             .filter(|&(_, p)| {
-                p.faction == Faction::NekroVirus && card() == StrategyCard::Technology
+                !(p.faction == Faction::NekroVirus && card == StrategyCard::Technology)
             })
             .count()
     });
 
-    let p2 = progress.clone();
-    let primary_done = use_memo(move || p2.is_done());
-    let p3 = progress.clone();
-    let secondary_done = use_memo(move || p3.other_players.len() == expected_secondaries());
+    let primary_done = use_memo(move || progress().is_done());
+
+    let secondary_done = use_memo(move || progress().other_players.len() == expected_secondaries());
 
     rsx! {
         document::Stylesheet { href: STRATEGY_CARD_SCSS }
 
         div { class: "card strategy-card-view",
-            h2 { "{card()}" }
+            h2 { "{card}" }
 
             InfoButton { info: Info::Strategy(card()) }
 
             div { class: "part-divider" }
             h6 { "Primary" }
-            StrategyCardPrimary { progress: progress.clone() }
+            StrategyCardPrimary { progress }
 
             div { class: "part-divider" }
             h6 { "Secondary" }
+            StrategyCardSecondary { progress }
 
             if view.is_active() {
-                "{primary_done()} :: {secondary_done()} :: {view.is_active()}"
                 Button {
                     class: "margin-top",
                     disabled: !primary_done() || !secondary_done() || !view.is_active(),
@@ -97,16 +87,16 @@ pub fn StrategyCardView() -> Element {
 }
 
 #[component]
-fn StrategyCardPrimary(progress: Arc<StrategicProgress>) -> Element {
-    match progress.card {
+fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
+    match progress().card {
         StrategyCard::Politics => rsx! {
-            PoliticsPrimaryView {}
+            PoliticsPrimaryView { progress }
         },
         StrategyCard::Technology => todo!(),
         StrategyCard::Imperial => todo!(),
         _ => {
             rsx! {
-                if progress.card == StrategyCard::Leadership {
+                if progress().card == StrategyCard::Leadership {
                     p { class: "warning-text", "Remember: pay 3 influence per extra token" }
                 }
                 p { "Primary not tracked" }
@@ -116,11 +106,11 @@ fn StrategyCardPrimary(progress: Arc<StrategicProgress>) -> Element {
 }
 
 #[component]
-fn StrategyCardSecondary(progress: Arc<StrategicProgress>) -> Element {
-    match progress.card {
+fn StrategyCardSecondary(progress: ReadSignal<StrategicProgress>) -> Element {
+    match progress().card {
         StrategyCard::Technology => todo!(),
         _ => rsx! {
-            GenericStrategyCard { progress: progress.clone() }
+            GenericStrategyCard { progress }
         },
     }
 }

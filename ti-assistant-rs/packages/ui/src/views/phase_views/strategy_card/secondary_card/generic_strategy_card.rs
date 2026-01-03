@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use dioxus::prelude::*;
 use dioxus_free_icons::{
     icons::fa_regular_icons::{FaCircleCheck, FaCircleXmark},
@@ -22,7 +20,7 @@ use crate::{
 };
 
 #[component]
-pub fn GenericStrategyCard(progress: Arc<StrategicProgress>) -> Element {
+pub fn GenericStrategyCard(progress: ReadSignal<StrategicProgress>) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
     let view = use_context::<PlayerViewContext>();
@@ -39,33 +37,36 @@ pub fn GenericStrategyCard(progress: Arc<StrategicProgress>) -> Element {
         players
     });
 
+    let other_players = use_memo(move || progress().other_players);
+
     rsx! {
-        div { class: "generic-secondary-container" }
-        for (id , player) in secondary_players() {
-            fieldset { key: "{id}", class: "generic-player-container",
-                legend { class: "aligned-legend",
-                    h6 { class: "horizontal-padding", "{id}" }
-                    " "
-                    FactionIcon { faction: player.faction }
-                }
-                if let Some(state) = progress.other_players.get(&id) {
-                    RenderPerformedAction { skipped: state.eq(&StrategicSecondaryProgress::Skipped) }
-                } else if view.display_for(id.clone()) {
-                    RenderSecondaryAction {
-                        card: progress.card.clone(),
-                        send_secondary_message: {
-                            let p = id.clone();
-                            move |action| {
-                                event
-                                    .send_event(Event::StrategicActionSecondary {
-                                        player: p.clone(),
-                                        action,
-                                    })
-                            }
-                        },
+        div { class: "generic-secondary-container",
+            for (id , player) in secondary_players() {
+                fieldset { key: "{id}", class: "generic-player-container",
+                    legend { class: "aligned-legend",
+                        h6 { class: "horizontal-padding", "{id}" }
+                        " "
+                        FactionIcon { faction: player.faction }
                     }
-                } else {
-                    p { "Has yet to choose" }
+                    if let Some(state) = other_players().get(&id) {
+                        RenderPerformedAction { skipped: state.eq(&StrategicSecondaryProgress::Skipped) }
+                    } else if view.display_for(id.clone()) {
+                        RenderSecondaryAction {
+                            card: progress().card,
+                            send_secondary_message: {
+                                let p = id.clone();
+                                move |action| {
+                                    event
+                                        .send_event(Event::StrategicActionSecondary {
+                                            player: p.clone(),
+                                            action,
+                                        })
+                                }
+                            },
+                        }
+                    } else {
+                        p { "Has yet to choose" }
+                    }
                 }
             }
         }

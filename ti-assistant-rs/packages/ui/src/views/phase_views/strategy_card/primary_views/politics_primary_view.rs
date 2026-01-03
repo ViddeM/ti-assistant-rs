@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::{event::Event, strategic::StrategicPrimaryAction},
-    state::game_state::{ActionPhaseProgress, StrategicPrimaryProgress},
+    state::game_state::{StrategicPrimaryProgress, StrategicProgress},
 };
 
 use crate::{
@@ -12,17 +12,10 @@ use crate::{
 };
 
 #[component]
-pub fn PoliticsPrimaryView() -> Element {
+pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
     let view = use_context::<PlayerViewContext>();
-
-    let progress = use_memo(move || {
-        gc.game_state()
-            .action_progress
-            .clone()
-            .expect("Progress to exist")
-    });
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -32,10 +25,6 @@ pub fn PoliticsPrimaryView() -> Element {
     });
 
     let mut new_speaker = use_signal(|| "".into());
-
-    let ActionPhaseProgress::Strategic(progress) = progress() else {
-        return rsx! {};
-    };
 
     let non_speaker_players = use_memo(move || {
         let speaker = gc.game_state().speaker.clone();
@@ -50,9 +39,11 @@ pub fn PoliticsPrimaryView() -> Element {
         players
     });
 
+    let primary = use_memo(move || progress().primary);
+
     rsx! {
         div {
-            if let Some(StrategicPrimaryProgress::Politics { new_speaker }) = progress.primary {
+            if let Some(StrategicPrimaryProgress::Politics { new_speaker }) = primary() {
                 p { "new speaker {new_speaker}" }
             } else if view.is_active() {
                 fieldset {
