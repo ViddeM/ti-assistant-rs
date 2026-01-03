@@ -32,7 +32,7 @@ pub enum StrategicPrimaryAction {
 }
 
 /// The actions taken for the secondary part of a strategy card.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[allow(missing_docs)]
 pub enum StrategicSecondaryAction {
     Skip,

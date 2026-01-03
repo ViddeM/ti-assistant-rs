@@ -36,6 +36,13 @@ impl PlayerViewContext {
         self.current.read().to_string()
     }
 
+    pub fn display_for(&self, id: PlayerId) -> bool {
+        match self.get()() {
+            PlayerView::Global => true,
+            PlayerView::Player { player_id } => player_id == id,
+        }
+    }
+
     pub fn is_active(&self) -> bool {
         match &*self.current.read() {
             PlayerView::Global => true,

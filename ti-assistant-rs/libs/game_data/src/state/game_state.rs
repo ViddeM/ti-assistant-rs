@@ -192,6 +192,17 @@ pub struct StrategicProgress {
     pub other_players: HashMap<PlayerId, StrategicSecondaryProgress>,
 }
 
+impl StrategicProgress {
+    pub fn is_done(&self) -> bool {
+        match self.card {
+            StrategyCard::Politics | StrategyCard::Technology | StrategyCard::Imperial => {
+                self.primary.is_some()
+            }
+            _ => true,
+        }
+    }
+}
+
 /// The progress of the primary section of a strategy card.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub enum StrategicPrimaryProgress {

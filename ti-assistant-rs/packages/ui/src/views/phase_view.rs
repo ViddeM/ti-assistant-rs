@@ -6,7 +6,8 @@ use crate::{
     views::phase_views::{
         action_card::ActionCardView, action_phase::ActionPhaseView,
         creation_phase::CreationPhaseView, end_action_phase::EndActionPhaseView,
-        relic_card::RelicCardView, setup_phase::SetupPhaseView, strategy_phase::StrategyPhaseView,
+        relic_card::RelicCardView, setup_phase::SetupPhaseView, strategy_card::StrategyCardView,
+        strategy_phase::StrategyPhaseView,
     },
 };
 
@@ -23,6 +24,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::Strategy => rsx! {
             StrategyPhaseView {}
+        },
+        Phase::StrategicAction => rsx! {
+            StrategyCardView {}
         },
         Phase::Action => rsx! {
             ActionPhaseView {}
