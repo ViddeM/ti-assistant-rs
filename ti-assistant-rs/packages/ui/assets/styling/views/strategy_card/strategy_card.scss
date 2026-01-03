@@ -1,0 +1,125 @@
+@import "../../vars.scss";
+
+.strategy-card-view {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+
+  @media (min-width: $width-medium) {
+    max-width: 400px;
+  }
+}
+
+.part-divider {
+  width: 100%;
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  margin-top: 1em;
+
+  &:nth-child(2) {
+    margin-top: 0;
+  }
+}
+
+.select-primary-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.margin-top {
+  margin-top: $margin-large;
+}
+
+.primary-container {
+  width: 100%;
+}
+
+.primary-choice-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.action-buttons-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  margin-top: $margin-large;
+}
+
+.action-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: -1em;
+}
+
+.performed {
+  width: 2em;
+  height: 2em;
+  color: green;
+}
+
+.skipped {
+  width: 2em;
+  height: 2em;
+  color: #c02525;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  > * {
+    flex: 1;
+    &:first-child {
+      margin-right: $margin;
+    }
+
+    &:last-child {
+      margin-left: $margin;
+    }
+  }
+}
+
+.generic-secondary-container {
+  width: 100%;
+}
+
+.aligned-legend {
+  display: flex;
+  flex-direction: row;
+}
+
+.horizontal-padding {
+  padding: 0 $padding-large;
+}
+
+.generic-player-container {
+  margin-top: 0;
+}
+
+.tech-secondary-fieldset {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tech-skip-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: $margin-large;
+}
+
+.skip-divider {
+  margin-top: $margin-large;
+  border-bottom: 4px dotted rgb(240, 240, 240);
+}

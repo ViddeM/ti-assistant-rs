@@ -1,0 +1,296 @@
+{
+  "draft": {
+    "done": false,
+    "id": "66f689a384410",
+    "draft": {
+      "players": {
+        "p_54cca4441b1ca4008d36fc5ee2ad45ac": {
+          "id": "p_54cca4441b1ca4008d36fc5ee2ad45ac",
+          "name": "Gurr",
+          "claimed": true,
+          "position": null,
+          "slice": "6",
+          "faction": null,
+          "team": null
+        },
+        "p_c50bbf3bf8ee61ac034ac1be7f63c424": {
+          "id": "p_c50bbf3bf8ee61ac034ac1be7f63c424",
+          "name": "Portals",
+          "claimed": true,
+          "position": null,
+          "slice": "1",
+          "faction": null,
+          "team": null
+        },
+        "p_28b12ce3c3b8a9acad2124e2d7bfc81a": {
+          "id": "p_28b12ce3c3b8a9acad2124e2d7bfc81a",
+          "name": "Håll",
+          "claimed": true,
+          "position": null,
+          "slice": null,
+          "faction": "The Universities of Jol-Nar",
+          "team": null
+        },
+        "p_093c40af9fe322e6ed08a52976882d8f": {
+          "id": "p_093c40af9fe322e6ed08a52976882d8f",
+          "name": "Sponken",
+          "claimed": true,
+          "position": null,
+          "slice": "5",
+          "faction": null,
+          "team": null
+        },
+        "p_13a06043fb9a1c6de97f3752e2c205dc": {
+          "id": "p_13a06043fb9a1c6de97f3752e2c205dc",
+          "name": "Vidde",
+          "claimed": true,
+          "position": null,
+          "slice": "4",
+          "faction": "The Nomad",
+          "team": null
+        },
+        "p_fb508687f660a920a2ddb21478fd0e88": {
+          "id": "p_fb508687f660a920a2ddb21478fd0e88",
+          "name": "Swexbe",
+          "claimed": true,
+          "position": null,
+          "slice": "7",
+          "faction": "The Mahact Gene-sorcerers",
+          "team": null
+        },
+        "p_68cd27ef4d633acc1746f9459384b8e3": {
+          "id": "p_68cd27ef4d633acc1746f9459384b8e3",
+          "name": "Yoda",
+          "claimed": true,
+          "position": null,
+          "slice": "0",
+          "faction": "The Arborec",
+          "team": null
+        },
+        "p_67474e925573e3488328aa4e299f61a6": {
+          "id": "p_67474e925573e3488328aa4e299f61a6",
+          "name": "Tux",
+          "claimed": true,
+          "position": null,
+          "slice": "2",
+          "faction": "The Titans of Ul",
+          "team": null
+        }
+      },
+      "log": [
+        {
+          "player": "p_54cca4441b1ca4008d36fc5ee2ad45ac",
+          "category": "slice",
+          "value": "6"
+        },
+        {
+          "player": "p_c50bbf3bf8ee61ac034ac1be7f63c424",
+          "category": "slice",
+          "value": "1"
+        },
+        {
+          "player": "p_28b12ce3c3b8a9acad2124e2d7bfc81a",
+          "category": "faction",
+          "value": "The Universities of Jol-Nar"
+        },
+        {
+          "player": "p_093c40af9fe322e6ed08a52976882d8f",
+          "category": "slice",
+          "value": "5"
+        },
+        {
+          "player": "p_13a06043fb9a1c6de97f3752e2c205dc",
+          "category": "faction",
+          "value": "The Nomad"
+        },
+        {
+          "player": "p_fb508687f660a920a2ddb21478fd0e88",
+          "category": "slice",
+          "value": "7"
+        },
+        {
+          "player": "p_68cd27ef4d633acc1746f9459384b8e3",
+          "category": "faction",
+          "value": "The Arborec"
+        },
+        {
+          "player": "p_67474e925573e3488328aa4e299f61a6",
+          "category": "faction",
+          "value": "The Titans of Ul"
+        },
+        {
+          "player": "p_67474e925573e3488328aa4e299f61a6",
+          "category": "slice",
+          "value": "2"
+        },
+        {
+          "player": "p_68cd27ef4d633acc1746f9459384b8e3",
+          "category": "slice",
+          "value": "0"
+        },
+        {
+          "player": "p_fb508687f660a920a2ddb21478fd0e88",
+          "category": "faction",
+          "value": "The Mahact Gene-sorcerers"
+        },
+        {
+          "player": "p_13a06043fb9a1c6de97f3752e2c205dc",
+          "category": "slice",
+          "value": "4"
+        }
+      ],
+      "current": "p_093c40af9fe322e6ed08a52976882d8f"
+    },
+    "slices": [
+      {
+        "tiles": [29, 66, 40, 42, 21],
+        "specialties": ["propulsion"],
+        "wormholes": ["beta"],
+        "has_legendaries": true,
+        "legendaries": [
+          "You may exhaust this card at the end of your turn to place 1 mech from your reinforcements on any planet you control, or draw 1 action card"
+        ],
+        "total_influence": 6,
+        "total_resources": 5,
+        "optimal_influence": 5.5,
+        "optimal_resources": 3.5
+      },
+      {
+        "tiles": [23, 33, 43, 44, 37],
+        "specialties": ["warfare"],
+        "wormholes": [],
+        "has_legendaries": false,
+        "legendaries": [],
+        "total_influence": 10,
+        "total_resources": 6,
+        "optimal_influence": 9,
+        "optimal_resources": 3
+      },
+      {
+        "tiles": [64, 30, 80, 48, 59],
+        "specialties": ["propulsion"],
+        "wormholes": ["beta"],
+        "has_legendaries": false,
+        "legendaries": [],
+        "total_influence": 7,
+        "total_resources": 7,
+        "optimal_influence": 5,
+        "optimal_resources": 6
+      },
+      {
+        "tiles": [32, 63, 41, 47, 74],
+        "specialties": ["propulsion", "biotic"],
+        "wormholes": [],
+        "has_legendaries": false,
+        "legendaries": [],
+        "total_influence": 8,
+        "total_resources": 4,
+        "optimal_influence": 6.5,
+        "optimal_resources": 2.5
+      },
+      {
+        "tiles": [46, 49, 62, 34, 75],
+        "specialties": ["propulsion", "cybernetic"],
+        "wormholes": [],
+        "has_legendaries": false,
+        "legendaries": [],
+        "total_influence": 8,
+        "total_resources": 9,
+        "optimal_influence": 5.5,
+        "optimal_resources": 6.5
+      },
+      {
+        "tiles": [79, 65, 70, 19, 68],
+        "specialties": ["cybernetic"],
+        "wormholes": ["alpha"],
+        "has_legendaries": true,
+        "legendaries": [
+          "You may exhaust this card at the end of your turn to place up to 2 infantry from your reinforcements on any planet you control"
+        ],
+        "total_influence": 7,
+        "total_resources": 8,
+        "optimal_influence": 4,
+        "optimal_resources": 7
+      },
+      {
+        "tiles": [50, 67, 27, 24, 71],
+        "specialties": ["biotic", "warfare"],
+        "wormholes": [],
+        "has_legendaries": false,
+        "legendaries": [],
+        "total_influence": 8,
+        "total_resources": 11,
+        "optimal_influence": 4,
+        "optimal_resources": 9
+      },
+      {
+        "tiles": [69, 78, 45, 25, 76],
+        "specialties": ["biotic"],
+        "wormholes": ["beta"],
+        "has_legendaries": false,
+        "legendaries": [],
+        "total_influence": 11,
+        "total_resources": 8,
+        "optimal_influence": 9.5,
+        "optimal_resources": 2.5
+      },
+      {
+        "tiles": [20, 77, 28, 31, 39],
+        "specialties": ["cybernetic"],
+        "wormholes": ["alpha"],
+        "has_legendaries": false,
+        "legendaries": [],
+        "total_influence": 6,
+        "total_resources": 7,
+        "optimal_influence": 4,
+        "optimal_resources": 6
+      }
+    ],
+    "factions": [
+      "The Naalu Collective",
+      "The Nomad",
+      "The Titans of Ul",
+      "The Barony of Letnev",
+      "The Arborec",
+      "The Universities of Jol-Nar",
+      "The Argent Flight",
+      "The Mahact Gene-sorcerers",
+      "The Winnu"
+    ],
+    "config": {
+      "players": [
+        "Gurr",
+        "Portals",
+        "Håll",
+        "Sponken",
+        "Vidde",
+        "Swexbe",
+        "Yoda",
+        "Tux"
+      ],
+      "name": "TI4 Fall Edition 24",
+      "num_slices": 9,
+      "num_factions": 9,
+      "include_pok": true,
+      "include_ds_tiles": false,
+      "include_base_factions": true,
+      "include_pok_factions": true,
+      "include_keleres": true,
+      "include_discordant": false,
+      "include_discordantexp": false,
+      "preset_draft_order": false,
+      "min_wormholes": 2,
+      "min_legendaries": 2,
+      "max_1_wormhole": true,
+      "minimum_optimal_influence": 4,
+      "minimum_optimal_resources": 2.5,
+      "minimum_optimal_total": 9,
+      "maximum_optimal_total": 13,
+      "custom_factions": null,
+      "custom_slices": null,
+      "alliance": null
+    },
+    "name": "TI4 Fall Edition 24"
+  },
+  "success": true
+}

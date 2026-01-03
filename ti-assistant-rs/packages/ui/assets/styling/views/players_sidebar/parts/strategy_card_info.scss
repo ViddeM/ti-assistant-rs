@@ -1,0 +1,33 @@
+@import "../../../vars.scss";
+
+.strategy-cards-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-container {
+  color: white;
+  background-color: $background-color;
+  border-width: 2px;
+  border-style: solid;
+  padding: $padding;
+  border-radius: $border-radius;
+  margin-bottom: 4px;
+  min-width: 8rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  & > :last-child {
+    margin: 0 $margin;
+  }
+}
+
+.card-played {
+  filter: brightness(0.5) saturate(0.3);
+}
+
+.card-active {
+  background-color: #a08000;
+}

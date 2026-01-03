@@ -1,0 +1,35 @@
+[package]
+name = "ti_helper_map_render"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { version = "0.14.2", features = ["webp"] }
+chrono = { version = "0.4.38", features = ["serde"] }
+eyre = "0.6.8"
+log = "0.4.20"
+wasm-bindgen = "0.2.92"
+js-sys = "0.3.70"
+web-sys = { version = "0.3.70", features = [
+  "BinaryType",
+  "Blob",
+  "ErrorEvent",
+  "FileReader",
+  "MessageEvent",
+  "ProgressEvent",
+  "WebSocket",
+  "UrlSearchParams",
+  "Window",
+  "Location"
+]}
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.128"
+bevy_pancam = "0.14.0"
+
+[dependencies.ti_helper_game_data]
+path = "../game_data"
+
+[dependencies.ti_helper_game_logic]
+path = "../game_logic"

@@ -1,0 +1,61 @@
+.button-base {
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 6px;
+    padding: 4px;
+    font-size: 1em;
+
+    &:hover {
+        filter: brightness(0.8);
+        cursor: pointer;
+    }
+
+    &:active {
+        filter: brightness(0.6);
+    }
+
+    &:disabled {
+        border-color: #a0a0a0;
+        color: #a0a0a0;
+
+        &:hover {
+        cursor: default;
+        filter: none;
+        }
+
+        &:active {
+        filter: none;
+        }
+    }
+}
+
+.button {
+    background-color: inherit;
+    color: white;
+    min-width: 60px;
+}
+
+.info-button {
+    background: none;
+    color: inherit;
+    border: none;
+    font: inherit;
+    outline: inherit;
+
+    border: 2px solid white;
+    border-radius: 50%;
+    height: 1.4rem;
+    width: 1.4rem;
+    margin-left: 1em;
+    margin-right: 1em;
+    color: white;
+
+    padding: 4px;
+    padding-top: 0;
+
+    cursor: pointer;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+}
