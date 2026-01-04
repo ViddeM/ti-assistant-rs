@@ -44,7 +44,7 @@ pub fn AddPlanetAttachment() -> Element {
     let available_planets = use_memo(move || {
         let mut planets = available_players()
             .iter()
-            .find(|(id, p)| id.eq(&player()))
+            .find(|(id, _)| id.eq(&player()))
             .map(|(_, p)| p.planets.keys().cloned().collect::<Vec<_>>())
             .unwrap_or(vec![]);
         planets.sort();
@@ -73,7 +73,7 @@ pub fn AddPlanetAttachment() -> Element {
             .planet_attachments
             .iter()
             .filter(|(a, _)| a.is_real())
-            .filter(|(a, i)| {
+            .filter(|(_, i)| {
                 if let Some(t) = i.planet_trait.as_ref() {
                     planet.info().planet_traits.contains(t)
                 } else {

@@ -101,7 +101,7 @@ macro_rules! space_station {
     EnumString,
     Display,
 )]
-#[strum(serialize_all = "snake_case")]
+#[strum(serialize_all = "kebab-case")]
 #[allow(missing_docs)]
 pub enum Planet {
     Nestphar,
