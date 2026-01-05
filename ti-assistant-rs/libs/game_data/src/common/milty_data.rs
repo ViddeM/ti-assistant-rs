@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::{faction::Faction, game_settings::Expansions, map::HexMap};
 
 /// Data imported from miltydraft.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MiltyData {
     /// Map from name to [MiltyPlayer] for the players participating in this game.
     pub players: HashMap<String, MiltyPlayer>,
@@ -18,7 +18,7 @@ pub struct MiltyData {
 }
 
 /// Player imported from miltydraft.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct MiltyPlayer {
     /// The name of the player.
     pub name: String,

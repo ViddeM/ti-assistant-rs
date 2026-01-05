@@ -4,19 +4,11 @@ use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub struct MiltyDataResponse {
-    pub draft: MiltyDraftResponse,
-    pub success: bool,
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "snake_case")]
 pub struct MiltyDraftResponse {
     pub done: bool,
     pub id: String,
     pub draft: MiltyDraftDataResponse,
     pub config: MiltyConfigDataResponse,
-    pub name: String,
     pub slices: Vec<MiltySliceResponse>,
     pub factions: Vec<String>,
 }
@@ -24,7 +16,7 @@ pub struct MiltyDraftResponse {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct MiltySliceResponse {
-    pub tiles: Vec<u32>,
+    pub tiles: Vec<String>,
     // We don't need these...
     // specialities, wormholes, has_legendary, legendaries, total_influence, total_reources, optimal_influcuence, optimal_resources
 }
@@ -48,17 +40,17 @@ pub struct MiltyPlayerResponse {
 pub struct MiltyConfigDataResponse {
     pub players: Vec<String>,
     pub name: Option<String>,
-    pub include_pok: bool,
     pub include_ds_tiles: bool,
     pub include_te_tiles: bool,
     pub include_discordant: bool,
     pub include_discordantexp: bool,
     pub include_base_factions: bool,
+    pub include_pok: bool,
     pub include_pok_factions: bool, // prophecy of kings
     pub include_keleres: bool,
     pub include_te_factions: bool, // thunder's edge
-    pub custom_factions: Option<bool>,
-    pub custom_slices: Option<bool>,
+    pub custom_factions: Vec<String>,
+    pub custom_slices: Vec<String>,
     pub alliance: Option<bool>,
     pub seed: u128,
 }

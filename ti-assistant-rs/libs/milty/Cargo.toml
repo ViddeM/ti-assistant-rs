@@ -13,5 +13,8 @@ reqwest = { version = "0.12.8", default-features = false, features = [
 ] }
 serde = { version = "1.0.210", features = ["derive"] }
 
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+
 [dependencies.ti_helper_game_data]
 path = "../game_data"

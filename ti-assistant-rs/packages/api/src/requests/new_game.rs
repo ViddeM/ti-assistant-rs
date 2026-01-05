@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "server")]
-use ti_helper_game_data::actions::event::Event;
 
 #[cfg(feature = "server")]
 use {
+    anyhow::Context,
+    ti_helper_game_data::actions::event::Event,
     ti_helper_game_data::common::{
         game_settings::{Expansions, GameSettings},
         milty_data::MiltyData,
@@ -48,6 +48,7 @@ impl NewGame {
     #[cfg(feature = "server")]
     /// Creates the appropriate new game event for this [NewGame].
     pub async fn to_new_game_event(&self) -> anyhow::Result<Event> {
+        log::info!("Trying to create new game event");
         Ok(match &self.game_config {
             GameConfig::CustomGameConfig {
                 pok,
@@ -55,24 +56,29 @@ impl NewGame {
                 cod2,
                 cod3,
                 te,
-            } => Event::SetSettings {
-                settings: GameSettings {
-                    max_points: self.points,
-                    expansions: Expansions {
-                        prophecy_of_kings: *pok,
-                        codex_1: *cod1,
-                        codex_2: *cod2,
-                        codex_3: *cod3,
-                        thunders_edge: *te,
+            } => {
+                log::info!("Creating new game event from settings");
+                Event::SetSettings {
+                    settings: GameSettings {
+                        max_points: self.points,
+                        expansions: Expansions {
+                            prophecy_of_kings: *pok,
+                            codex_1: *cod1,
+                            codex_2: *cod2,
+                            codex_3: *cod3,
+                            thunders_edge: *te,
+                        },
                     },
-                },
-            },
+                }
+            }
             GameConfig::ImportFromMilty {
                 milty_game_id,
                 milty_tts_string,
             } => {
-                let milty_data =
-                    MiltyData::import_from_milty(milty_game_id, milty_tts_string).await?;
+                log::info!("Importing game from milty");
+                let milty_data = MiltyData::import_from_milty(milty_game_id, milty_tts_string)
+                    .await
+                    .context("Failed to import game from milty")?;
                 log::debug!("Milty data import {milty_data:?}");
                 Event::ImportFromMilty {
                     max_points: self.points,

@@ -23,13 +23,23 @@ use {
     tokio::{select, sync::RwLock},
 };
 
-/// Echo the user input on the server.
 #[post("/api/game", ext: Extension<Arc<state::State>>)]
 pub async fn new_game(data: NewGame) -> Result<GameId, ServerFnError> {
+    match new_game_inner(data, &ext).await {
+        Ok(game_id) => Ok(game_id),
+        Err(err) => {
+            error!("Failed to create new game {err:?}");
+            Err(ServerFnError::new(err))
+        }
+    }
+}
+
+#[cfg(feature = "server")]
+async fn new_game_inner(data: NewGame, state: &state::State) -> anyhow::Result<GameId> {
     let id = GameId::random();
     let name = generate_game_name(id);
 
-    if let Some(db_pool) = &ext.db_pool {
+    if let Some(db_pool) = &state.db_pool {
         log::info!("persisting new game {id:?} in database");
         queries::create_game(db_pool, id.into(), name)
             .await
@@ -47,7 +57,7 @@ pub async fn new_game(data: NewGame) -> Result<GameId, ServerFnError> {
     game.apply_or_err(set_settings_event.clone(), now)
         .context("failed to apply event to game")?;
 
-    if let Some(db_pool) = &ext.db_pool {
+    if let Some(db_pool) = &state.db_pool {
         log::info!("persisting event for game {id:?}");
 
         queries::insert_game_event(db_pool, id, serde_json::to_value(&set_settings_event)?, now)
@@ -56,16 +66,16 @@ pub async fn new_game(data: NewGame) -> Result<GameId, ServerFnError> {
     }
 
     let lobby = Lobby::new(game);
-    let mut lobbies = ext.lobbies.list.write().await;
+    let mut lobbies = state.lobbies.list.write().await;
 
     if lobbies.contains_key(&id) {
-        return Err(ServerFnError::new(format!("new game id collision: {id:?}")));
+        anyhow::bail!("New game ID collision {id:?}");
     }
+
     lobbies.insert(id, Arc::clone(&lobby));
 
     log::info!("created new game {id:?}");
 
-    // TODO: GameID should be shared between client & server but isn't currently so we use a string instead.
     Ok(id)
 }
 

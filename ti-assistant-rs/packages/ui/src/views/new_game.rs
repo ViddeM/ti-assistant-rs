@@ -1,5 +1,11 @@
+use api::{
+    endpoints,
+    requests::new_game::{self, GameConfig},
+};
 use dioxus::prelude::*;
 use ti_helper_game_data::game_id::GameId;
+
+use crate::components::button::Button;
 
 const NEW_GAME_SCSS: Asset = asset!("/assets/styling/views/new_game.scss");
 
@@ -10,7 +16,9 @@ enum CreateGameMode {
 }
 
 #[component]
-pub fn NewGame() -> Element {
+pub fn NewGame<R: PartialEq + Clone + 'static + Routable>(
+    join_game: Callback<String, R>,
+) -> Element {
     let mut winning_score = use_signal(|| 10);
     let mut mode = use_signal(|| CreateGameMode::New);
     let nav = navigator();
@@ -22,30 +30,39 @@ pub fn NewGame() -> Element {
             CleanNewGameView { new_game_result, winning_score }
         },
         CreateGameMode::MiltyImport => rsx! {
-            ImportMiltyGame {}
+            ImportMiltyGame { new_game_result, winning_score }
         },
     });
 
     match &new_game_result() {
-        Some(Err(err)) => rsx! {
-            p { "Failed to create game: {err:?}" }
+        Some(Err(ServerFnError::ServerError {
+            message,
+            code: _,
+            details,
+        })) => rsx! {
+            p { "Failed to create game: {message}" }
+            if let Some(d) = details {
+                br {}
+                p { "Details {d}" }
+            }
         },
-        Some(Ok(game_id)) => {
-            match nav.push(Route::Game {
-                id: game_id.to_string(),
-            }) {
-                Some(s) => rsx! {
-                    p { "Failed to navigate... {s:?}" }
-                },
-                None => {
-                    rsx! {
-                        p { "Navigating..." }
-                    }
+        Some(Err(_)) => rsx! {
+            p { "An unknown error occurred" }
+        },
+        Some(Ok(game_id)) => match nav.push(join_game(game_id.to_string())) {
+            Some(s) => rsx! {
+                p { "Failed to navigate... {s:?}" }
+            },
+            None => {
+                rsx! {
+                    p { "Navigating..." }
                 }
             }
-        }
+        },
         None => {
             rsx! {
+                document::Stylesheet { href: NEW_GAME_SCSS }
+
                 div { class: "card create-game-container",
                     h2 { "Create Game" }
                     label { r#for: "winning_score", "Winning Score" }
@@ -160,6 +177,53 @@ fn CleanNewGameView(
 }
 
 #[component]
-fn ImportMiltyGame() -> Element {
-    rsx! {}
+fn ImportMiltyGame(
+    new_game_result: WriteSignal<Option<Result<GameId, ServerFnError>>>,
+    winning_score: ReadSignal<u32>,
+) -> Element {
+    let mut milty_game_id = use_signal(|| String::new());
+    let mut milty_tts_string = use_signal(|| String::new());
+
+    rsx! {
+        div { class: "right-aligned-row",
+            label { r#for: "milty-string-input", "Milty draft ID:" }
+            input {
+                r#type: "text",
+                required: true,
+                id: "milty-string-input",
+                value: milty_game_id(),
+                onchange: move |e: FormEvent| {
+                    milty_game_id.set(e.value());
+                },
+            }
+        }
+
+        div { class: "right-aligned-row",
+            label { r#for: "milty-tts-input", "Milty TTS Map string:" }
+            input {
+                r#type: "text",
+                required: true,
+                id: "milty-tts-input",
+                value: milty_tts_string(),
+                onchange: move |e: FormEvent| {
+                    milty_tts_string.set(e.value());
+                },
+            }
+        }
+
+        Button {
+            onclick: move |_| async move {
+                let ngr = endpoints::new_game(new_game::NewGame {
+                        points: winning_score(),
+                        game_config: GameConfig::ImportFromMilty {
+                            milty_game_id: milty_game_id(),
+                            milty_tts_string: milty_tts_string(),
+                        },
+                    })
+                    .await;
+                *new_game_result.write() = Some(ngr);
+            },
+            "Create Game"
+        }
+    }
 }

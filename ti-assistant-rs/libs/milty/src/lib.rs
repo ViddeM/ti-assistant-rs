@@ -5,7 +5,7 @@
 
 use std::collections::{HashMap, HashSet};
 
-use milty_response::{MiltyDataResponse, MiltyPlayerResponse};
+use milty_response::MiltyPlayerResponse;
 use ti_helper_game_data::common::{
     faction::Faction,
     game_settings::Expansions,
@@ -16,6 +16,7 @@ use ti_helper_game_data::common::{
 use crate::{
     error::{MiltyError, MiltyResult},
     faction_parser::parse_faction,
+    milty_response::MiltyDraftResponse,
 };
 
 /// Errors that can occurr when importing from milty draft.
@@ -62,10 +63,8 @@ impl MiltyImport for MiltyData {
     async fn import_from_milty(milty_id: &str, tts_string: &str) -> MiltyResult<MiltyData> {
         let client = reqwest::Client::new();
 
-        let get_milty_data_response: MiltyDataResponse = client
-            .get(format!(
-                "https://milty.shenanigans.be/api/data?draft={milty_id}",
-            ))
+        let get_milty_data_response: MiltyDraftResponse = client
+            .get(format!("https://milty.shenanigans.be/api/draft/{milty_id}",))
             .send()
             .await?
             .json()
@@ -74,17 +73,11 @@ impl MiltyImport for MiltyData {
 
         log::debug!("Get milty data response {get_milty_data_response:?}");
 
-        if !get_milty_data_response.success {
-            return Err(MiltyError::NonSuccessResponse {
-                response: get_milty_data_response,
-            });
-        }
-
-        if !get_milty_data_response.draft.done {
+        if !get_milty_data_response.done {
             return Err(MiltyError::DraftNotComplete);
         }
 
-        let milty_conf = get_milty_data_response.draft.config;
+        let milty_conf = get_milty_data_response.config;
         if milty_conf.any_ds_enabled() {
             return Err(MiltyError::DiscordantStarsNotSupported(
                 "Discordant stars options were enabled in milty config".to_string(),
@@ -93,14 +86,13 @@ impl MiltyImport for MiltyData {
 
         let players = get_milty_data_response
             .draft
-            .draft
             .players
             .values()
             .map(|player| MiltyPlayer::try_from(player).map(|p| (player.name.clone(), p)))
             .collect::<MiltyResult<HashMap<String, MiltyPlayer>>>()?;
 
         let expansions = Expansions {
-            prophecy_of_kings: milty_conf.include_pok,
+            prophecy_of_kings: milty_conf.include_pok_factions || milty_conf.include_pok,
             codex_1: true, // TODO: not entirely sure about these.
             codex_2: true,
             codex_3: true,
@@ -130,12 +122,42 @@ impl MiltyImport for MiltyData {
             return Err(MiltyError::DuplicatePlayerFactions);
         }
 
+        let game_name = milty_conf.name.clone().unwrap_or_default();
+
         Ok(MiltyData {
             players,
             expansions,
-            game_name: html_escape::decode_html_entities(&get_milty_data_response.draft.name)
-                .to_string(),
+            game_name: html_escape::decode_html_entities(&game_name).to_string(),
             hex_map: HexMap::from_milty_string(tts_string, milty_conf.include_te_tiles)?,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use ti_helper_game_data::common::milty_data::MiltyData;
+
+    use crate::MiltyImport;
+
+    #[tokio::test]
+    async fn test_import_game() {
+        let resp = MiltyData::import_from_milty(
+            "693b2c674a032",
+            "65 74 41 85A0 113 100 63 39 102 28 36 87A2 78 87A0 59 34 32 68 96a 47 49 95 50 64 94 24 83A0 85A0 83A1 35 93 80 67 0 107 110",
+        ).await;
+
+        println!("RESP: {resp:?}");
+        assert_eq!(resp.is_ok(), true);
+
+        let data = resp.unwrap();
+
+        assert_eq!(data.players.len(), 5);
+
+        assert_eq!(data.expansions.codex_1, true);
+        assert_eq!(data.expansions.codex_2, true);
+        assert_eq!(data.expansions.codex_3, true);
+        assert_eq!(data.expansions.thunders_edge, true);
+        assert_eq!(data.expansions.prophecy_of_kings, true);
     }
 }

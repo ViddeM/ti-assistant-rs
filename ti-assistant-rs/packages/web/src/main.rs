@@ -1,15 +1,14 @@
 use dioxus::prelude::*;
 
-mod main_menu;
-use main_menu::MainMenu;
-mod new_game;
-use new_game::NewGame;
-mod game;
 use game::Game;
+use main_menu::MainMenu;
+use new_game::NewGame;
+use source_code_button::SourceCodeLinkButton;
 use ui::Setup;
 
-use crate::source_code_button::SourceCodeLinkButton;
-
+mod game;
+mod main_menu;
+mod new_game;
 mod source_code_button;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -33,11 +32,13 @@ fn main() {
 
     #[cfg(feature = "server")]
     dioxus::serve(|| async {
-        use dioxus::server::axum::Extension;
+        use dioxus::{
+            fullstack::extract::Request,
+            server::axum::{self, middleware::Next, Extension},
+        };
         use ui::server_side::setup;
 
         let state = setup().await.expect("failed to setup server");
-
         let router = dioxus::server::router(App).layer(Extension(state));
 
         Ok(router)

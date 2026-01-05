@@ -1,7 +1,5 @@
 use ti_helper_game_data::common::{expansions::Expansion, faction::Faction, map::HexMapError};
 
-use crate::milty_response::MiltyDataResponse;
-
 /// Result for milty operations.
 pub type MiltyResult<T> = Result<T, MiltyError>;
 
@@ -21,8 +19,6 @@ pub enum MiltyError {
     SendRequestError(#[from] reqwest::Error),
     #[error("Failed to parse milty response, err: {0}")]
     ParseResponseError(reqwest::Error),
-    #[error("Got non successful response from milty, response: {response:#?}")]
-    NonSuccessResponse { response: MiltyDataResponse },
     #[error("Milty draft not finished")]
     DraftNotComplete,
     #[error("Discordant stars addon not supported but was enabled in milty, found {0}")]
