@@ -1,13 +1,7 @@
 use dioxus::prelude::*;
-use ui::{
-    components::button::Button,
-    data::game_context::GameContext,
-    endpoints,
-    game_id::GameId,
-    requests::new_game::{self, GameConfig},
-};
+use ti_helper_game_data::game_id::GameId;
 
-use crate::Route;
+const NEW_GAME_SCSS: Asset = asset!("/assets/styling/views/new_game.scss");
 
 #[derive(PartialEq)]
 enum CreateGameMode {
@@ -17,16 +11,15 @@ enum CreateGameMode {
 
 #[component]
 pub fn NewGame() -> Element {
-    let event = use_context::<GameContext>();
     let mut winning_score = use_signal(|| 10);
     let mut mode = use_signal(|| CreateGameMode::New);
     let nav = navigator();
 
-    let mut new_game_result: Signal<Option<Result<GameId, ServerFnError>>> = use_signal(|| None);
+    let new_game_result: Signal<Option<Result<GameId, ServerFnError>>> = use_signal(|| None);
 
     let view_mode = use_memo(move || match *mode.read() {
         CreateGameMode::New => rsx! {
-            CleanNewGameView {}
+            CleanNewGameView { new_game_result, winning_score }
         },
         CreateGameMode::MiltyImport => rsx! {
             ImportMiltyGame {}
@@ -89,7 +82,10 @@ pub fn NewGame() -> Element {
 }
 
 #[component]
-fn CleanNewGameView() -> Element {
+fn CleanNewGameView(
+    new_game_result: WriteSignal<Option<Result<GameId, ServerFnError>>>,
+    winning_score: ReadSignal<u32>,
+) -> Element {
     let mut pok = use_signal(|| false);
     let mut te = use_signal(|| false);
     let mut codexI = use_signal(|| false);
@@ -97,40 +93,49 @@ fn CleanNewGameView() -> Element {
     let mut codexIII = use_signal(|| false);
 
     rsx! {
-
-        label { r#for: "pok_cb", "Prophecy of Kings" }
-        input {
-            r#type: "checkbox",
-            name: "pok_cb",
-            onchange: move |_| pok.toggle(),
+        div { class: "create-game-row",
+            input {
+                r#type: "checkbox",
+                name: "pok_cb",
+                onchange: move |_| pok.toggle(),
+            }
+            label { r#for: "pok_cb", "Prophecy of Kings" }
         }
 
-        label { r#for: "pok_codI_cb", "Codex I" }
-        input {
-            r#type: "checkbox",
-            name: "pok_codI_cb",
-            onchange: move |_| codexI.toggle(),
+        div { class: "create-game-row",
+            input {
+                r#type: "checkbox",
+                name: "pok_codI_cb",
+                onchange: move |_| codexI.toggle(),
+            }
+            label { r#for: "pok_codI_cb", "Codex I" }
         }
 
-        label { r#for: "pok_codII_cb", "Codex II" }
-        input {
-            r#type: "checkbox",
-            name: "pok_codII_cb",
-            onchange: move |_| codexII.toggle(),
+        div { class: "create-game-row",
+            input {
+                r#type: "checkbox",
+                name: "pok_codII_cb",
+                onchange: move |_| codexII.toggle(),
+            }
+            label { r#for: "pok_codII_cb", "Codex II" }
         }
 
-        label { r#for: "pok_codIII_cb", "Codex III" }
-        input {
-            r#type: "checkbox",
-            name: "pok_codIII_cb",
-            onchange: move |_| codexIII.toggle(),
+        div { class: "create-game-row",
+            input {
+                r#type: "checkbox",
+                name: "pok_codIII_cb",
+                onchange: move |_| codexIII.toggle(),
+            }
+            label { r#for: "pok_codIII_cb", "Codex III" }
         }
 
-        label { r#for: "te_cb", "Thunder's Edge" }
-        input {
-            r#type: "checkbox",
-            name: "te_cb",
-            onchange: move |_| te.toggle(),
+        div { class: "create-game-row",
+            input {
+                r#type: "checkbox",
+                name: "te_cb",
+                onchange: move |_| te.toggle(),
+            }
+            label { r#for: "te_cb", "Thunder's Edge" }
         }
 
         Button {
