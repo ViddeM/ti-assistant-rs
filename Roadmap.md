@@ -234,10 +234,16 @@
  - x  fracture? (option for picking relic after taking those planets?)
    - x styx planet score
  - x  new anomaly?
- - x  galactic events (could be difficult!)
  - x  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
  - x  updated strategy cards
  - x  thunder's edge
    - x  planet
    - x  exploration
  - x  update milty import
+
+## Codex IV
+  - x  galactic events (could be difficult!)
+  - x  relics?
+  - TODO
+
+TODO: Look over all strategy cards to see that we always display the correct variant.

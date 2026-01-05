@@ -1,0 +1,77 @@
+@import "../../vars.scss";
+
+.setup-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > :last-child {
+    margin: $margin-large 0;
+  }
+}
+
+.setup-player-fieldset {
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
+}
+
+.setup-player-legend {
+  border-radius: $border-radius;
+  border-width: 4px;
+  border-style: solid;
+}
+
+.players-setup-container {
+  display: grid;
+  grid-template-columns: 1fr;
+
+  border-bottom: 1px solid black;
+  padding-bottom: $margin-large;
+
+  > fieldset {
+    margin: 0;
+  }
+
+  @media (min-width: $width-large) {
+    grid-template-columns: 1fr 1fr;
+    column-gap: $margin-large;
+    row-gap: $margin-large;
+  }
+}
+
+.setup-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.setup-column {
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    margin: $margin 0;
+  }
+}
+
+.player-specific-setup-container {
+  text-align: center;
+  border-top: 1px solid black;
+}
+
+.reveal-objectives-container {
+  width: 100%;
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > * {
+    margin-top: $margin-large;
+  }
+
+  > :last-child {
+    margin-bottom: $margin-large;
+  }
+}
