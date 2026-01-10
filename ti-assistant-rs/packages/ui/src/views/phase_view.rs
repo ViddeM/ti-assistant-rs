@@ -7,7 +7,7 @@ use crate::{
         action_card::ActionCardView, action_phase::ActionPhaseView,
         creation_phase::CreationPhaseView, end_action_phase::EndActionPhaseView,
         relic_card::RelicCardView, setup_phase::SetupPhaseView, strategy_card::StrategyCardView,
-        strategy_phase::StrategyPhaseView,
+        strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
     },
 };
 
@@ -27,6 +27,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::StrategicAction => rsx! {
             StrategyCardView {}
+        },
+        Phase::TacticalAction => rsx! {
+            TacticalActionView {}
         },
         Phase::Action => rsx! {
             ActionPhaseView {}

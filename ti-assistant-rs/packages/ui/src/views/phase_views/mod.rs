@@ -6,3 +6,4 @@ pub mod relic_card;
 pub mod setup_phase;
 pub mod strategy_card;
 pub mod strategy_phase;
+pub mod tactical_action;

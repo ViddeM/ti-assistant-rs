@@ -59,7 +59,7 @@ impl PlayerViewContext {
 #[derive(Debug, Clone, Display)]
 pub enum PlayerView {
     Global,
-    #[strum(to_string = "Player: {player_id}")]
+    #[strum(to_string = "{player_id}")]
     Player {
         player_id: PlayerId,
     },
