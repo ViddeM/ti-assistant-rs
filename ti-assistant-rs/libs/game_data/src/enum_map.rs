@@ -88,6 +88,15 @@ impl<K, V> EnumMap<K, V> {
     }
 }
 
+impl<K, V> EnumMap<K, V>
+where
+    K: Eq + Hash,
+{
+    pub fn get(&self, key: &K) -> Option<&V> {
+        self.inner.get(key)
+    }
+}
+
 impl<K, V> Deref for EnumMap<K, V> {
     type Target = HashMap<K, V>;
 
