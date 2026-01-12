@@ -72,81 +72,140 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
     });
 
     let current_player_planets = use_memo(move || {
-        let (_, player) = gc.game_state().players.iter().find(|(p, _)| p.eq(&current_player())).expect("Current player to be in list of players");
+        let player = gc
+            .game_state()
+            .players
+            .iter()
+            .find(|&(p, _)| p.eq(&current_player()))
+            .map(|(_, p)| p.clone())
+            .expect("Current player to be in list of players");
         let mut planets = player.planets.keys().cloned().collect::<Vec<_>>();
         planets.sort();
         planets
     });
-    
+
     // Only allow players to take mirage if someone else owns it, otherwise they'll need to use a frontier action.
-    let any_player_owns_mirage = use_memo(move || gc.game_state().players.values().find(|p| p.planets.contains_key(&Planet::Mirage)).is_some());
+    let any_player_owns_mirage = use_memo(move || {
+        gc.game_state()
+            .players
+            .values()
+            .find(|p| p.planets.contains_key(&Planet::Mirage))
+            .is_some()
+    });
 
     let activated_system = use_memo(move || progress().activated_system);
-    let available_planets_in_system = use_memo(move || gc.game_options().systems.values().filter(|s| s.id.eq(&activated_system())));
+    let available_planets_in_system = use_memo(move || {
+        let mut planets = gc
+            .game_options()
+            .systems
+            .values()
+            .filter(|&s| activated_system().as_ref().eq(&Some(&s.id)))
+            .flat_map(|s| s.planets.iter())
+            .filter(|&p| {
+                !current_player_planets().contains(p)
+                    && !taken_planets().iter().find(|(ps, _)| ps.eq(p)).is_some()
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        planets.sort();
+        planets
+    });
 
-    let all_planets_not_owned =
-        use_memo(move || 
-            gc.game_options().planet_infos
+    let all_planets_not_owned = use_memo(move || {
+        let mut planets = gc
+            .game_options()
+            .planet_infos
             .iter()
-            .filter(|(p, _)| !p.eq(&Planet::Mirage) || any_player_owns_mirage())
-            .filter(|(p, info)| )
-
-        );
+            .filter(|&(p, _)| !p.eq(&Planet::Mirage) || any_player_owns_mirage())
+            .filter(|(p, _)| !current_player_planets().contains(p))
+            .map(|(p, _)| p.clone())
+            .collect::<Vec<_>>();
+        planets.sort();
+        planets
+    });
 
     let mut selected_planet = use_signal(|| None);
 
     let attachments = use_memo(move || progress().planet_attachments);
 
     rsx! {
-        div {
-            if taken_planets().len() > 0 {
-                for (planet , previous_owner) in taken_planets().iter() {
-                    fieldset { key: "{planet}",
-                        legend { "{planet}" }
+        if taken_planets().len() > 0 {
+            for (planet , previous_owner) in taken_planets().iter() {
+                fieldset { key: "{planet}",
+                    legend { "{planet.info().name}" }
 
-                        div { class: "column",
-                            SelectPlanetAttachment {
-                                planet: planet.clone(),
-                                attachment: attachments().get(planet).cloned(),
-                                previous_owner: previous_owner.clone(),
-                                select_attachment: {
+                    div { class: "column",
+                        SelectPlanetAttachment {
+                            planet: planet.clone(),
+                            attachment: attachments().get(planet).cloned(),
+                            previous_owner: previous_owner.clone(),
+                            select_attachment: {
+                                let planet = planet.clone();
+                                move |attachment| {
+                                    event
+                                        .send_event(Event::TacticalActionAttachPlanetAttachment {
+                                            player: current_player(),
+                                            planet: planet.clone(),
+                                            attachment,
+                                        })
+                                }
+                            },
+                        }
+                    }
+                }
+            }
+            if !available_planets_in_system().is_empty() {
+                fieldset {
+                    legend { "Take another planet" }
+                    div { class: "select-another-planet-container",
+                        for planet in available_planets_in_system() {
+                            Button {
+                                key: "{planet}",
+                                onclick: {
                                     let planet = planet.clone();
-                                    move |attachment| {
+                                    move |_| {
                                         event
-                                            .send_event(Event::TacticalActionAttachPlanetAttachment {
+                                            .send_event(Event::TacticalActionTakePlanet {
                                                 player: current_player(),
                                                 planet: planet.clone(),
-                                                attachment,
                                             })
                                     }
                                 },
+                                "{planet.info().name}"
                             }
                         }
-
-                        "TODO"
                     }
                 }
-            } else {
-                div { class: "take-planet-container",
-                    label { "Taken planet:" }
-                    PlanetDropdown {
-                        options: vec![],
-                        value: selected_planet(),
-                        on_select: move |planet| selected_planet.set(planet),
-                    }
-                    Button { onclick: move |_| {}, "Take" }
+            }
+        } else {
+            div { class: "take-planet-container",
+                label { "Take planet:" }
+                PlanetDropdown {
+                    options: all_planets_not_owned(),
+                    value: selected_planet(),
+                    on_select: move |planet| selected_planet.set(planet),
+                }
+                Button {
+                    disabled: selected_planet().is_none(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::TacticalActionTakePlanet {
+                                player: current_player(),
+                                planet: selected_planet().expect("Selected planet to be set"),
+                            })
+                    },
+                    "Take"
                 }
             }
-
-            Button {
-                onclick: move |_| {
-                    event
-                        .send_event(Event::TacticalActionCommit {
-                            player: current_player(),
-                        })
-                },
-                "End Tactical"
-            }
+        }
+        Button {
+            onclick: move |_| {
+                event
+                    .send_event(Event::TacticalActionCommit {
+                        player: current_player(),
+                    })
+            },
+            "End Tactical"
         }
     }
 }
@@ -174,6 +233,12 @@ fn SelectPlanetAttachment(
         };
     }
 
+    if let Some(a) = attachment() {
+        return rsx! {
+            p { "{a.info().name}" }
+        };
+    }
+
     let available_attachments = use_memo(move || {
         let mut a = gc
             .game_options()
@@ -186,6 +251,7 @@ fn SelectPlanetAttachment(
 
                 planet_info().planet_traits.is_empty()
             })
+            .filter(|(a, _)| a.is_real())
             .map(|(a, _)| a.clone())
             .collect::<Vec<_>>();
 
@@ -200,7 +266,12 @@ fn SelectPlanetAttachment(
             options: available_attachments(),
             on_select: move |att| selected_attachment.set(att),
         }
-        Button { disabled: available_attachments().is_empty() || selected_attachment().is_none(),
+        Button {
+            class: "margin-top",
+            disabled: available_attachments().is_empty() || selected_attachment().is_none(),
+            onclick: move |_| select_attachment(
+                selected_attachment().expect("Attachment to be selected"),
+            ),
             "Attach"
         }
     }

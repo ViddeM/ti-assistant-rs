@@ -295,24 +295,31 @@ impl GameState {
     pub fn calculate_action_turn_order(&mut self) -> anyhow::Result<()> {
         self.turn_order = self.table_order.clone();
 
+        let mut player_nums = HashMap::new();
+        for player in self.players.keys() {
+            if self.naalu_telepathy.as_ref() == Some(player) {
+                player_nums.insert(player, 0);
+            }
+
+            let strat_cards = self
+                .strategy_card_holders
+                .iter()
+                .filter(|(_, p)| player.eq(p))
+                .map(|(card, _)| card.card_number())
+                .min()
+                .with_context(|| format!("Player {player:?} does not hold a strategy card"))?;
+
+            player_nums.insert(player, strat_cards);
+        }
+
         let mut result = Ok(());
-
-        // sort players by the smallest number of the strategy cards they hold (initiative order)
         self.turn_order.sort_by_key(|player| {
-            let strategy_card = (self.strategy_card_holders.iter())
-                .find_map(|(card, holder)| (player == holder).then_some(card));
-
-            // error out of outer function if player doesn't have a strategy card
-            let Some(strategy_card) = strategy_card else {
+            let Some(num) = player_nums.get(player) else {
                 result = Err(anyhow!("Player {player:?} does not have a strategy card."));
                 return 99;
             };
 
-            if self.naalu_telepathy.as_ref() == Some(player) {
-                0 // Naalu's faction ability/promisary note gives initiative 0.
-            } else {
-                strategy_card.card_number()
-            }
+            *num
         });
 
         result

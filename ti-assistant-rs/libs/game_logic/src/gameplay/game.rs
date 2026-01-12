@@ -46,7 +46,8 @@ impl Game {
         let state = Arc::make_mut(&mut self.current);
         update_game_state(state, event.clone(), timestamp)?;
 
-        log::info!("{:#?}", self.current);
+        log::info!("Event applied successfully: {event:?}");
+
         self.history.push((event, timestamp));
 
         Ok(())

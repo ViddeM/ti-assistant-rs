@@ -13,8 +13,13 @@ use crate::{
         player_view::PlayerViewContext,
     },
     views::phase_views::strategy_card::{
-        primary_views::politics_primary_view::PoliticsPrimaryView,
-        secondary_card::generic_strategy_card::GenericStrategyCard,
+        primary_views::{
+            politics_primary_view::PoliticsPrimaryView,
+            technology_primary_view::TechnologyPrimaryView,
+        },
+        secondary_card::{
+            generic_strategy_card::GenericStrategyCard, tech_secondary::TechSecondary,
+        },
     },
 };
 
@@ -92,7 +97,9 @@ fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
         StrategyCard::Politics => rsx! {
             PoliticsPrimaryView { progress }
         },
-        StrategyCard::Technology => todo!(),
+        StrategyCard::Technology => rsx! {
+            TechnologyPrimaryView { progress }
+        },
         StrategyCard::Imperial => todo!(),
         _ => {
             rsx! {
@@ -108,7 +115,9 @@ fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
 #[component]
 fn StrategyCardSecondary(progress: ReadSignal<StrategicProgress>) -> Element {
     match progress().card {
-        StrategyCard::Technology => todo!(),
+        StrategyCard::Technology => rsx! {
+            TechSecondary { progress }
+        },
         _ => rsx! {
             GenericStrategyCard { progress }
         },

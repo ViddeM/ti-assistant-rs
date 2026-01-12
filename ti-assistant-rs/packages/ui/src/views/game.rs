@@ -54,11 +54,11 @@ pub fn GameView(game_id: GameId) -> Element {
         while let Ok(message) = socket.recv().await {
             match message {
                 WsMessageOut::GameOptions(go) => {
-                    tracing::info!("Game options message: {go:?}");
+                    // tracing::info!("Game options message: {go:?}");
                     game_options.set(Some(go));
                 }
                 WsMessageOut::GameState(gs) => {
-                    tracing::info!("Game state message: {gs:?}");
+                    // tracing::info!("Game state message: {gs:?}");
                     game_state.set(Some(gs));
                 }
                 WsMessageOut::HandleEventError(err) => {

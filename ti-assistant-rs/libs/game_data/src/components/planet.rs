@@ -88,18 +88,7 @@ macro_rules! space_station {
 
 /// A planet
 #[derive(
-    Debug,
-    Clone,
-    Serialize,
-    Deserialize,
-    EnumIter,
-    PartialEq,
-    Eq,
-    PartialOrd,
-    Ord,
-    Hash,
-    EnumString,
-    Display,
+    Debug, Clone, Serialize, Deserialize, EnumIter, PartialEq, Eq, Hash, EnumString, Display,
 )]
 #[strum(serialize_all = "kebab-case")]
 #[allow(missing_docs)]
@@ -1096,5 +1085,20 @@ impl Planet {
             Planet::MecatolRexOmega => true,
             _ => false,
         }
+    }
+}
+
+impl PartialOrd for Planet {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Planet {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
     }
 }

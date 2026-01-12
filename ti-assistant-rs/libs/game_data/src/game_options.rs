@@ -90,6 +90,13 @@ impl GameOptions {
             planet_infos: Planet::iter()
                 .map(|p| (p.clone(), p.info()))
                 .filter(|(_, info)| expansions.is_enabled(&info.expansion))
+                .filter(|(planet, _)| {
+                    if expansions.thunders_edge {
+                        planet.ne(&Planet::MecatolRex)
+                    } else {
+                        planet.ne(&Planet::MecatolRexOmega)
+                    }
+                })
                 .collect(),
             planet_attachments: PlanetAttachment::iter()
                 .map(|a| (a.clone(), a.info()))
