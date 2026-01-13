@@ -62,8 +62,8 @@ pub fn TechnologyPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element
             div { class: "column primary-container",
                 if let Some(first) = first_tech() {
                     p { "{first.info().name}" }
-                    fieldset {
-                        label {
+                    fieldset { class: "primary-container",
+                        legend {
                             h6 { "Take another?" }
                         }
                         p { class: "warning-text", "Remember: pay 6 resources" }

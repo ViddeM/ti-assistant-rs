@@ -79,13 +79,11 @@ pub fn StrategyCardView() -> Element {
             h6 { "Secondary" }
             StrategyCardSecondary { progress }
 
-            if view.is_active() {
-                Button {
-                    class: "margin-top",
-                    disabled: !primary_done() || !secondary_done() || !view.is_active(),
-                    onclick: move |_| { event.send_event(Event::StrategicActionCommit) },
-                    "Submit"
-                }
+            Button {
+                class: "margin-top",
+                disabled: !primary_done() || !secondary_done() || !view.is_active(),
+                onclick: move |_| { event.send_event(Event::StrategicActionCommit) },
+                "Submit"
             }
         }
     }
