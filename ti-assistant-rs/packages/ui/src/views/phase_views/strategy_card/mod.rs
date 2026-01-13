@@ -14,7 +14,7 @@ use crate::{
     },
     views::phase_views::strategy_card::{
         primary_views::{
-            politics_primary_view::PoliticsPrimaryView,
+            imperial_primary_view::ImperialPrimaryView, politics_primary_view::PoliticsPrimaryView,
             technology_primary_view::TechnologyPrimaryView,
         },
         secondary_card::{
@@ -98,7 +98,9 @@ fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
         StrategyCard::Technology => rsx! {
             TechnologyPrimaryView { progress }
         },
-        StrategyCard::Imperial => todo!(),
+        StrategyCard::Imperial => rsx! {
+            ImperialPrimaryView { progress }
+        },
         _ => {
             rsx! {
                 if progress().card == StrategyCard::Leadership {
