@@ -1,29 +1,23 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    components::objectives::Objective,
+    actions::{event::Event, strategic::StrategicPrimaryAction},
     state::game_state::{StrategicPrimaryProgress, StrategicProgress},
 };
 
-use crate::{components::dropdown::ObjectiveDropdown, data::game_context::GameContext};
+use crate::{
+    components::{button::Button, dropdown::ObjectiveDropdown},
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+    },
+};
 
 #[component]
 pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
-    let primary = use_memo(move || progress().primary);
-
-    rsx! {
-        if let Some(StrategicPrimaryProgress::Imperial { objective }) = primary() {
-            ImperialPrimaryProgressView { objective }
-        } else {
-
-        }
-    }
-}
-
-#[component]
-fn ImperialPrimaryProgressView(objective: ReadSignal<Option<Objective>>) -> Element {
+    let view = use_context::<PlayerViewContext>();
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
 
-    // let mut selected_objective = use_signal(|| None);
+    let primary = use_memo(move || progress().primary);
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -47,24 +41,70 @@ fn ImperialPrimaryProgressView(objective: ReadSignal<Option<Objective>>) -> Elem
             .score
             .revealed_objectives
             .keys()
-            .filter(|&o| current_player_objectives().contains(o))
+            .filter(|&o| !current_player_objectives().contains(o))
             .cloned()
             .collect::<Vec<_>>();
         objectives.sort();
         objectives
     });
 
+    let mut selected_objective = use_signal(|| None);
+
     rsx! {
         div { class: "primary-container",
-            if let Some(objective) = objective() {
+            if let Some(StrategicPrimaryProgress::Imperial { objective }) = primary() {
                 div { class: "primary-choice-container",
-                    p { "{objective.info().name}" }
+                    p {
+                        if let Some(objective) = objective {
+                            "{objective.info().name}"
+                        } else {
+                            "No objective taken"
+                        }
+                    }
                 }
             } else {
-                ObjectiveDropdown {
-                    value: objective(),
-                    options: objectives(),
-                    on_select: move |s| {},
+                fieldset {
+                    legend { "Score objective" }
+                    if view.is_active() {
+                        div { class: "select-primary-container",
+                            ObjectiveDropdown {
+                                value: selected_objective(),
+                                options: objectives(),
+                                on_select: move |s| selected_objective.set(s),
+                            }
+                            div { class: "action-buttons-container",
+                                Button {
+                                    onclick: move |_| {
+                                        event
+                                            .send_event(Event::StrategicActionPrimary {
+                                                player: current_player(),
+                                                action: StrategicPrimaryAction::Imperial {
+                                                    score_objective: None,
+                                                },
+                                            });
+                                        selected_objective.set(None);
+                                    },
+                                    "Skip"
+                                }
+                                Button {
+                                    onclick: move |_| {
+                                        event
+                                            .send_event(Event::StrategicActionPrimary {
+                                                player: current_player(),
+                                                action: StrategicPrimaryAction::Imperial {
+                                                    score_objective: Some(
+                                                        selected_objective().expect("Selected objective to be set"),
+                                                    ),
+                                                },
+                                            });
+                                        selected_objective.set(None);
+                                    },
+                                    disabled: selected_objective().is_none(),
+                                    "Score"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
