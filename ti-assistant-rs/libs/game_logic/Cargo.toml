@@ -1,0 +1,15 @@
+[package]
+name = "ti_helper_game_logic"
+version = "0.1.0"
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ti_helper_game_data = { workspace = true }
+serde = { version = "1", features = ["derive", "rc"] }
+chrono = { version = "0.4.31", features = ["serde"] }
+log = "0.4.20"
+strum = { workspace = true }
+strum_macros = { workspace = true }
+anyhow = "1"

@@ -1,7 +1,7 @@
 use std::{collections::HashMap, sync::Arc};
 use ti_helper_db::game_id::GameId;
 use ti_helper_game_logic::gameplay::{game::Game, game_state::GameState};
-use tokio::sync::{broadcast, RwLock};
+use tokio::sync::{RwLock, broadcast};
 
 #[derive(Default)]
 pub struct Lobbies {

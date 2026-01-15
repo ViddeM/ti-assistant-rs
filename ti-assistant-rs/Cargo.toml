@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = [
+    "packages/ui",
+    "packages/web",
+    "packages/api",
+    "libs/db",
+    "libs/game_data",
+    "libs/game_logic",
+    "libs/map_render",
+    "libs/milty",
+]
+
+[workspace.dependencies]
+dioxus = { version = "0.7.1" }
+strum = { version = "0.27.2" }
+strum_macros = { version = "0.27.2" }
+
+# workspace
+ui = { path = "packages/ui" }
+api = { path = "packages/api" }
+
+# libs
+ti_helper_db = { path = "libs/db" }
+ti_helper_game_data = { path = "libs/game_data" }
+ti_helper_game_logic = { path = "libs/game_logic" }
+ti_helper_map_render = { path = "libs/map_render" }
+ti_helper_milty = { path = "libs/milty" }

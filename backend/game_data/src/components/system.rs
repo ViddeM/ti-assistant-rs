@@ -624,7 +624,7 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "95",
-            SystemType::HomeSystem(Faction::DeepwroughtScolarate),
+            SystemType::HomeSystem(Faction::DeepwroughtScholarate),
             vec![Planet::Ikatena],
             vec![],
             Expansion::ThundersEdge
