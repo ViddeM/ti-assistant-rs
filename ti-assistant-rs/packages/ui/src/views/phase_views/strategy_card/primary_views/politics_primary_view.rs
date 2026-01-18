@@ -50,7 +50,7 @@ pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                     legend { "Select new speaker" }
                     div { class: "select-primary-container",
                         PlayerDropdown {
-                            value: new_speaker(),
+                            value: new_speaker,
                             options: non_speaker_players(),
                             on_select: move |p| new_speaker.set(p),
                         }

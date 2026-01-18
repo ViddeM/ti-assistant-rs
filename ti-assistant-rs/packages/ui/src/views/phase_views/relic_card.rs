@@ -145,7 +145,7 @@ fn StellarConvertersView() -> Element {
             legend { "Stellar Converters" }
             div { class: "column",
                 PlanetDropdown {
-                    value: selected_planet(),
+                    value: selected_planet,
                     on_select: move |p| {
                         selected_planet.set(p);
                     },

@@ -117,18 +117,18 @@ pub fn AddPlanetAttachment() -> Element {
         div { class: "card add-planet-attachment-container",
             h2 { "Attach to planet" }
             PlayerDropdown {
-                value: player(),
+                value: player,
                 options: player_options(),
                 on_select: move |p| player.set(p),
             }
             PlanetDropdown {
-                value: planet(),
+                value: planet,
                 disabled: player().is_empty(),
                 options: available_planets(),
                 on_select: move |p| planet.set(p),
             }
             PlanetAttachmentDropdown {
-                value: attachment(),
+                value: attachment,
                 disabled: player().is_empty() || planet().is_none(),
                 options: available_attachments(),
                 on_select: move |a| attachment.set(a),

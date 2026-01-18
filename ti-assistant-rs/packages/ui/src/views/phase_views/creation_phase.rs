@@ -9,11 +9,7 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    components::{
-        button::Button,
-        dropdown::{Dropdown, FactionDropdown},
-        faction_icon::FactionIcon,
-    },
+    components::{button::Button, dropdown::FactionDropdown, faction_icon::FactionIcon},
     data::{event_context::EventContext, game_context::GameContext},
 };
 
@@ -150,7 +146,7 @@ fn AddPlayer() -> Element {
                 FactionDropdown {
                     id: "player_faction_dropdown",
                     required: true,
-                    value: new_player_faction(),
+                    value: new_player_faction,
                     options: available_factions(),
                     on_select: move |f| new_player_faction.set(f),
                 }

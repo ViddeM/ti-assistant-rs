@@ -301,7 +301,7 @@ fn PlayRelicView() -> Element {
             fieldset { class: "play-action-card-container",
                 legend { "Play Relic" }
                 RelicDropdown {
-                    value: selected_relic(),
+                    value: selected_relic,
                     disabled: available_relics().is_empty(),
                     on_select: move |r| selected_relic.set(r),
                     options: available_relics(),
@@ -365,7 +365,7 @@ fn GainRelicView() -> Element {
             fieldset { class: "play-action-card-container",
                 legend { "Gain Relic" }
                 RelicDropdown {
-                    value: selected_relic(),
+                    value: selected_relic,
                     options: available_relics(),
                     on_select: move |r| selected_relic.set(r),
                 }

@@ -2,11 +2,7 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{actions::event::Event, common::player_id::PlayerId};
 
 use crate::{
-    components::{
-        button::Button,
-        dropdown::{Dropdown, PlayerDropdown},
-        faction_icon::FactionIcon,
-    },
+    components::{button::Button, dropdown::PlayerDropdown, faction_icon::FactionIcon},
     data::{event_context::EventContext, game_context::GameContext},
 };
 
@@ -90,7 +86,7 @@ fn PlayerSupportForTheThroneView(player_id: PlayerId) -> Element {
             td { "->" }
             td {
                 PlayerDropdown {
-                    value: selected_player(),
+                    value: selected_player,
                     on_select: move |p| selected_player.set(p),
                     options: players(),
                 }

@@ -217,7 +217,7 @@ fn AddLawForm() -> Element {
                                             })
                                     },
                                     PlayerDropdown {
-                                        value: player(),
+                                        value: player,
                                         on_select: move |p| player.set(p),
                                         options: players_left_to_vote(),
                                     }
@@ -238,7 +238,7 @@ fn AddLawForm() -> Element {
                                         },
                                     }
                                     VoteOptionDropdown {
-                                        value: vote_option(),
+                                        value: vote_option,
                                         on_select: move |o| vote_option.set(o),
                                         options: vote_options(),
                                     }
@@ -257,7 +257,7 @@ fn AddLawForm() -> Element {
 
                                     VoteOptionDropdown {
                                         id: "outcome-override-dropdown",
-                                        value: outcome(),
+                                        value: outcome,
                                         on_select: move |o| outcome.set(o),
                                         options: vote_options(),
                                     }
@@ -280,7 +280,7 @@ fn AddLawForm() -> Element {
                     rsx! {
                         form { class: "form-container",
                             AgendaDropdown {
-                                value: agenda(),
+                                value: agenda,
                                 options: available_agendas(),
                                 on_select: move |a| agenda.set(a),
                             }

@@ -68,7 +68,7 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                     if view.is_active() {
                         div { class: "select-primary-container",
                             ObjectiveDropdown {
-                                value: selected_objective(),
+                                value: selected_objective,
                                 options: objectives(),
                                 on_select: move |s| selected_objective.set(s),
                             }
@@ -82,7 +82,6 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                                                     score_objective: None,
                                                 },
                                             });
-                                        selected_objective.set(None);
                                     },
                                     "Skip"
                                 }
@@ -97,7 +96,6 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                                                     ),
                                                 },
                                             });
-                                        selected_objective.set(None);
                                     },
                                     disabled: selected_objective().is_none(),
                                     "Score"

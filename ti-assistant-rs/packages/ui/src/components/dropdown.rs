@@ -16,6 +16,8 @@ use ti_helper_game_data::{
 
 #[derive(PartialEq, Debug, Clone, Props)]
 pub struct DropdownProps {
+    value: ReadSignal<String>,
+
     #[props(default, into)]
     class: String,
 
@@ -31,6 +33,7 @@ pub struct DropdownProps {
 #[component]
 pub fn Dropdown(
     DropdownProps {
+        value,
         class,
         oninput,
         attributes,
@@ -40,7 +43,7 @@ pub fn Dropdown(
     let class = class;
 
     rsx! {
-        select { class, oninput, ..attributes, {children} }
+        select { value: "{value()}", class, oninput, ..attributes, {children} }
     }
 }
 
@@ -65,7 +68,7 @@ pub fn TechDropdown(
     };
 
     rsx! {
-        Dropdown { value: "{current_value()}", oninput,
+        Dropdown { value: current_value, oninput,
             option { value: "", "--Select technology--" }
             {
                 options
@@ -105,7 +108,7 @@ pub fn FactionDropdown(
         Dropdown {
             id,
             required,
-            value: "{current_value()}",
+            value: current_value,
             oninput,
             option { value: "", "--Select Faction--" }
             {
@@ -144,7 +147,7 @@ pub fn ObjectiveDropdown(
     let default_text = default_text.unwrap_or("--Select Objective--");
 
     rsx! {
-        Dropdown { value: "{current_value()}", oninput,
+        Dropdown { value: current_value, oninput,
             option { value: "", "{default_text}" }
             {
                 options
@@ -179,7 +182,7 @@ pub fn ActionCardDropdown(
     };
 
     rsx! {
-        Dropdown { value: "{current_value()}", oninput,
+        Dropdown { value: current_value, oninput,
             option { value: "", "--Select Objective--" }
             {
                 options
@@ -216,7 +219,7 @@ pub fn RelicDropdown(
 
     rsx! {
         Dropdown {
-            value: "{current_value()}",
+            value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
             option { value: "", "--Select Relic--" }
@@ -255,7 +258,7 @@ pub fn PlanetDropdown(
 
     rsx! {
         Dropdown {
-            value: "{current_value()}",
+            value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
             option { value: "", "--Select Planet--" }
@@ -294,7 +297,7 @@ pub fn AgendaDropdown(
 
     rsx! {
         Dropdown {
-            value: "{current_value()}",
+            value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
             option { value: "", "--Select Agenda--" }
@@ -326,9 +329,11 @@ pub fn PlayerDropdown(
         on_select(current_value());
     };
 
+    let display_value = use_memo(move || current_value().to_string());
+
     rsx! {
         Dropdown {
-            value: "{current_value()}",
+            value: display_value,
             disabled: disabled.unwrap_or(false),
             oninput,
             option { value: "", "--Select Player--" }
@@ -368,7 +373,7 @@ pub fn PlanetAttachmentDropdown(
 
     rsx! {
         Dropdown {
-            value: "{current_value()}",
+            value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
             {
@@ -418,7 +423,7 @@ pub fn VoteOptionDropdown(
     rsx! {
         Dropdown {
             id,
-            value: "{current_value()}",
+            value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
             {

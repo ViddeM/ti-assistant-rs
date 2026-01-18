@@ -60,7 +60,7 @@ pub fn RevealObjectiveForm() -> Element {
             h2 { "Reveal Objectives" }
             div { class: "reveal-objective-row",
                 ObjectiveDropdown {
-                    value: selected_stage_one(),
+                    value: selected_stage_one,
                     options: stage_one_objectives(),
                     on_select: move |o| { selected_stage_one.set(o) },
                     default_text: "--Select Stage I objective",
@@ -82,7 +82,7 @@ pub fn RevealObjectiveForm() -> Element {
             }
             div { class: "reveal-objective-row",
                 ObjectiveDropdown {
-                    value: selected_stage_two(),
+                    value: selected_stage_two,
                     options: stage_two_objectives(),
                     on_select: move |o| selected_stage_two.set(o),
                     default_text: "--Select Stage II objective",

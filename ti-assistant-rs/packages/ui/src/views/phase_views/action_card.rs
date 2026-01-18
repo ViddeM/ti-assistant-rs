@@ -348,7 +348,7 @@ fn PlagiarizePlayerRow(
             td { class: "align-left",
                 Dropdown {
                     disabled: available_player_techs().is_empty(),
-                    value: value(),
+                    value,
                     oninput: move |e: FormEvent| {
                         selected_player.set(Some(player_id.clone()));
                         let v = e.value();
