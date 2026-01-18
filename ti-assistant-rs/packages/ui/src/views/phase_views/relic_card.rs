@@ -79,6 +79,7 @@ fn RelicProgressView(card: Relic) -> Element {
                             data: None,
                         })
                 },
+                "Commit"
             }
         },
     }
