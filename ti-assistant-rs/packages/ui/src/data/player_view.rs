@@ -36,10 +36,10 @@ impl PlayerViewContext {
         self.current.read().to_string()
     }
 
-    pub fn display_for(&self, id: PlayerId) -> bool {
+    pub fn display_for(&self, id: &PlayerId) -> bool {
         match self.get()() {
             PlayerView::Global => true,
-            PlayerView::Player { player_id } => player_id == id,
+            PlayerView::Player { player_id } => &player_id == id,
         }
     }
 
