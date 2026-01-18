@@ -1,10 +1,13 @@
 use serde::{Deserialize, Serialize};
+use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::common::expansions::Expansion;
 
 /// A frontier card.
-#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter)]
+#[derive(
+    Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
+)]
 #[allow(missing_docs)]
 pub enum FrontierCard {
     /* PoK */
@@ -22,6 +25,21 @@ pub enum FrontierCard {
     KeleresShip,
     MajorEntropicField,
     MinorEntropicField,
+}
+
+impl PartialOrd for FrontierCard {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for FrontierCard {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
+    }
 }
 
 /// When this frontier card can be played.

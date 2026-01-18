@@ -43,6 +43,7 @@ pub fn PhaseView() -> Element {
         Phase::RelicAction => rsx! {
             RelicCardView {}
         },
+
         phase => rsx! {
             p { "Phase {phase} is not yet implemented" }
         },

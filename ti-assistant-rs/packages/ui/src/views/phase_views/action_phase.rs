@@ -6,6 +6,7 @@ use ti_helper_game_data::{
     common::player_id::PlayerId,
     components::{
         action_card::{ActionCard, ActionCardPlay},
+        frontier_card::FrontierCardType,
         leaders::LeaderAbilityKind,
         relic::RelicPlay,
         strategy_card::StrategyCard,
@@ -16,7 +17,7 @@ use ti_helper_game_data::{
 use crate::{
     components::{
         button::Button,
-        dropdown::{ActionCardDropdown, RelicDropdown},
+        dropdown::{ActionCardDropdown, FrontierCardDropdown, RelicDropdown},
     },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
@@ -214,7 +215,9 @@ fn DisplayComponentMode(mode: ReadSignal<ComponentMode>) -> Element {
         ComponentMode::GainRelic => rsx! {
             GainRelicView {}
         },
-        ComponentMode::FrontierCard => todo!(),
+        ComponentMode::FrontierCard => rsx! {
+            FrontierCardView {}
+        },
         ComponentMode::PlayLeader => todo!(),
         ComponentMode::None => rsx! {
             p { "Invalid display mode None" }
@@ -379,6 +382,57 @@ fn GainRelicView() -> Element {
                             })
                     },
                     "Gain"
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn FrontierCardView() -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected = use_signal(|| None);
+
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist in action phase")
+    });
+
+    let available_cards = use_memo(move || {
+        let mut cards = gc
+            .game_options()
+            .frontier_cards
+            .iter()
+            .filter(|(_, b)| b.frontier_type == FrontierCardType::Action)
+            .map(|(a, _)| a.clone())
+            .collect::<Vec<_>>();
+        cards.sort();
+        cards
+    });
+
+    rsx! {
+        div {
+            fieldset { class: "play-action-card-container",
+                legend { "Play Frontier Card" }
+                FrontierCardDropdown {
+                    value: selected,
+                    options: available_cards,
+                    on_select: move |card| selected.set(card),
+                }
+                Button {
+                    disabled: selected().is_none(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::FrontierCardActionBegin {
+                                player: current_player(),
+                                card: selected().expect("Selected card to be set"),
+                            })
+                    },
+                    "Play"
                 }
             }
         }

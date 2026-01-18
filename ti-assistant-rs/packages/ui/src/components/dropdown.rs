@@ -6,6 +6,7 @@ use ti_helper_game_data::{
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
+        frontier_card::FrontierCard,
         objectives::Objective,
         planet::Planet,
         planet_attachment::PlanetAttachment,
@@ -440,6 +441,59 @@ pub fn VoteOptionDropdown(
                                 .map(|o| {
                                     let v = o.name();
                                     let display = o.to_display_value();
+                                    rsx! {
+                                        option { key: "{v}", value: "{v}", "{display}" }
+                                    }
+                                })
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn FrontierCardDropdown(
+    id: Option<String>,
+    value: ReadSignal<Option<FrontierCard>>,
+    options: ReadSignal<Vec<FrontierCard>>,
+    on_select: EventHandler<Option<FrontierCard>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|p| p.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let card = FrontierCard::from_str(&new_value).expect("Unexpected frontier card");
+            on_select(Some(card));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            id,
+            value: current_value,
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            {
+                if options.is_empty() {
+                    rsx! {
+                        option { value: "", "No frontier available" }
+                    }
+                } else {
+                    rsx! {
+                        option { value: "", "--Select Frontier Card--" }
+                        {
+                            options
+                                .iter()
+                                .map(|o| {
+                                    let v = o.to_string();
+                                    let display = o.info().name;
                                     rsx! {
                                         option { key: "{v}", value: "{v}", "{display}" }
                                     }
