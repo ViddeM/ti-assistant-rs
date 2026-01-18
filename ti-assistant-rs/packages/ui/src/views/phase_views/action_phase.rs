@@ -218,7 +218,9 @@ fn DisplayComponentMode(mode: ReadSignal<ComponentMode>) -> Element {
         ComponentMode::FrontierCard => rsx! {
             FrontierCardView {}
         },
-        ComponentMode::PlayLeader => todo!(),
+        ComponentMode::PlayLeader => rsx! {
+            PlayLeaderView {}
+        },
         ComponentMode::None => rsx! {
             p { "Invalid display mode None" }
         },
@@ -437,6 +439,11 @@ fn FrontierCardView() -> Element {
             }
         }
     }
+}
+
+#[component]
+fn PlayLeaderView() -> Element {
+    rsx! {}
 }
 
 fn get_playable_strategy_cards(
