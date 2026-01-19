@@ -50,7 +50,7 @@ pub fn GenericStrategyCard(progress: ReadSignal<StrategicProgress>) -> Element {
                     }
                     if let Some(state) = other_players().get(&id) {
                         RenderPerformedAction { skipped: state.eq(&StrategicSecondaryProgress::Skipped) }
-                    } else if view.display_for(id.clone()) {
+                    } else if view.display_for(&id) {
                         RenderSecondaryAction {
                             card: progress().card,
                             send_secondary_message: {

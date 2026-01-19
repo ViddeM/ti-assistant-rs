@@ -32,6 +32,13 @@ impl PlayerViewContext {
         self.current.into()
     }
 
+    pub fn is_global_or_speaker(&self) -> bool {
+        match (self.current)() {
+            PlayerView::Global => true,
+            PlayerView::Player { player_id } => (self.game_state)().is_speaker(&player_id),
+        }
+    }
+
     pub fn display(&self) -> String {
         self.current.read().to_string()
     }
