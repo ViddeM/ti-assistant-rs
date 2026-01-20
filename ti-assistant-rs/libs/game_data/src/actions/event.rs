@@ -554,9 +554,10 @@ pub enum FrontierCardAction {
 pub fn action_matches_frontier_card(
     action: &Option<FrontierCardAction>,
     card: &FrontierCard,
+    faction: &Faction,
 ) -> bool {
     match card {
-        FrontierCard::EnigmaticDevice => {
+        FrontierCard::EnigmaticDevice if faction != &Faction::NekroVirus => {
             matches!(action, Some(FrontierCardAction::EnigmaticDevice { .. }))
         }
         FrontierCard::Mirage => {

@@ -916,8 +916,15 @@ fn try_update_game_state(
                 );
             };
 
+            let current_player_faction = game_state
+                .players
+                .iter()
+                .find(|&(id, _)| &player == id)
+                .context("Current player to exist")?
+                .1
+                .faction;
             ensure!(
-                action_matches_frontier_card(&data, &progress.card),
+                action_matches_frontier_card(&data, &progress.card, &current_player_faction),
                 "Data provided doesn't match the card being played."
             );
 
