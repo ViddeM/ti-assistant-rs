@@ -7,9 +7,7 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
+    data::{event_context::EventContext, game_context::GameContext},
     views::select_tech::SelectTechView,
 };
 
@@ -96,17 +94,5 @@ pub fn TechnologyPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element
                 }
             }
         }
-    }
-}
-
-#[component]
-fn TechnologyPrimaryProgress(
-    tech: ReadSignal<Option<Technology>>,
-    extra: ReadSignal<Option<Technology>>,
-) -> Element {
-    let view = use_context::<PlayerViewContext>();
-
-    rsx! {
-        div {}
     }
 }
