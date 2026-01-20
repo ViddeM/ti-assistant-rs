@@ -68,8 +68,14 @@ pub fn StatusPhaseActionsView() -> Element {
             .collect::<Vec<_>>()
     });
 
-    let reveal_stage_two = use_memo(move || {
+    let num_objectives_revealed = use_memo(move || {
         revealed_objectives.len() - (state().revealed_objective.map(|_| 0).unwrap_or(1))
+    });
+
+    let revealed_objective = use_memo(move || state().revealed_objective);
+
+    let reveal_stage_two = use_memo(move || {
+        num_objectives_revealed() - revealed_objective().map(|_| 1).unwrap_or(0)
             >= state().expected_objectives_before_stage_two
     });
     let stage = use_memo(move || if reveal_stage_two() { "II" } else { "I" });
@@ -85,8 +91,6 @@ pub fn StatusPhaseActionsView() -> Element {
             .cloned()
             .collect::<Vec<_>>()
     });
-
-    let revealed_objective = use_memo(move || state().revealed_objective);
 
     rsx! {
         div { class: "card",
@@ -209,12 +213,14 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                 h4 { "{player()}" }
             }
             if let Some(choice) = public_objective() {
-                p { "Public " }
-                if let Some(p) = choice {
-                    "{p.info().name}"
-                    InfoButton { info: Info::Objective(p) }
-                } else {
-                    "Skipped"
+                p {
+                    "Public "
+                    if let Some(p) = choice {
+                        "{p.info().name}"
+                        InfoButton { info: Info::Objective(p) }
+                    } else {
+                        "Skipped"
+                    }
                 }
             } else {
                 div { class: "score-objectives-container",
