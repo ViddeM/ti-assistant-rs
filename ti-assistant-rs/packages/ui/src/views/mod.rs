@@ -1,3 +1,4 @@
+pub mod frontier_card;
 pub mod game;
 pub mod info_box;
 pub mod laws_view_mode;

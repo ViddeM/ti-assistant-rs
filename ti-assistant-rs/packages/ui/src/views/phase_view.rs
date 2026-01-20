@@ -3,12 +3,15 @@ use ti_helper_game_data::components::phase::Phase;
 
 use crate::{
     data::game_context::GameContext,
-    views::phase_views::{
-        action_card::ActionCardView, action_phase::ActionPhaseView,
-        creation_phase::CreationPhaseView, end_action_phase::EndActionPhaseView,
-        relic_card::RelicCardView, setup_phase::SetupPhaseView,
-        status_phase_view::status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
-        strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
+    views::{
+        frontier_card::FrontierCardView,
+        phase_views::{
+            action_card::ActionCardView, action_phase::ActionPhaseView,
+            creation_phase::CreationPhaseView, end_action_phase::EndActionPhaseView,
+            relic_card::RelicCardView, setup_phase::SetupPhaseView,
+            status_phase_view::status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
+            strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
+        },
     },
 };
 
@@ -47,7 +50,11 @@ pub fn PhaseView() -> Element {
         Phase::Status => rsx! {
             StatusPhaseView {}
         },
+        Phase::FrontierCardAction => rsx! {
+            FrontierCardView {}
+        },
         phase => rsx! {
+            // TODO: Remove this catch-all.
             p { "Phase {phase} is not yet implemented" }
         },
     }

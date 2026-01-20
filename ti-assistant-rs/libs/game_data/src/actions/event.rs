@@ -544,9 +544,9 @@ pub enum FrontierCardAction {
     },
     Mirage {
         /// The system to spawn mirage in.
-        system: SystemId,
+        system: Option<SystemId>,
         /// Any planet attachment that should be assigned to it when it spawns.
-        attachment: PlanetAttachment,
+        attachment: Option<PlanetAttachment>,
     },
 }
 
@@ -555,13 +555,27 @@ pub fn action_matches_frontier_card(
     action: &Option<FrontierCardAction>,
     card: &FrontierCard,
     faction: &Faction,
+    imported_from_milty: bool,
 ) -> bool {
     match card {
         FrontierCard::EnigmaticDevice if faction != &Faction::NekroVirus => {
             matches!(action, Some(FrontierCardAction::EnigmaticDevice { .. }))
         }
         FrontierCard::Mirage => {
-            matches!(action, Some(FrontierCardAction::Mirage { .. }))
+            if imported_from_milty {
+                matches!(
+                    action,
+                    Some(FrontierCardAction::Mirage {
+                        system: Some(..),
+                        ..
+                    })
+                )
+            } else {
+                matches!(
+                    action,
+                    Some(FrontierCardAction::Mirage { system: None, .. })
+                )
+            }
         }
         _ => action.is_none(),
     }

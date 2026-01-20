@@ -211,7 +211,7 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
 }
 
 #[component]
-fn SelectPlanetAttachment(
+pub fn SelectPlanetAttachment(
     planet: ReadSignal<Planet>,
     attachment: ReadSignal<Option<PlanetAttachment>>,
     previous_owner: ReadSignal<Option<PlayerId>>,

@@ -951,16 +951,21 @@ fn try_update_game_state(
                                 .milty_information
                                 .as_ref()
                                 .map(|data| data.mirage_system.is_none())
-                                .unwrap_or(false),
+                                .unwrap_or(true),
                             "Mirage system is already set?"
                         );
                         let player = game_state.get_current_player()?;
-                        let mut attachments = HashSet::new();
-                        attachments.insert(attachment);
-                        player.planets.insert(Planet::Mirage, attachments);
+
+                        if let Some(attachment) = attachment {
+                            let mut attachments = HashSet::new();
+                            attachments.insert(attachment);
+                            player.planets.insert(Planet::Mirage, attachments);
+                        }
 
                         if let Some(milty_info) = game_state.map_data.milty_information.as_mut() {
-                            milty_info.mirage_system = Some(system);
+                            milty_info.mirage_system = Some(
+                                system.context("System to be chosen when milty info is enabled")?,
+                            );
                         }
                     }
                 }

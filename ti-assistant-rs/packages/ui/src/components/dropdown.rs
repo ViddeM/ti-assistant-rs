@@ -11,6 +11,7 @@ use ti_helper_game_data::{
         planet::Planet,
         planet_attachment::PlanetAttachment,
         relic::Relic,
+        system::SystemId,
         tech::Technology,
     },
 };
@@ -497,6 +498,57 @@ pub fn FrontierCardDropdown(
                                     let display = o.info().name;
                                     rsx! {
                                         option { key: "{v}", value: "{v}", "{display}" }
+                                    }
+                                })
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn SystemDropdown(
+    id: Option<String>,
+    value: ReadSignal<Option<SystemId>>,
+    options: ReadSignal<Vec<SystemId>>,
+    on_select: EventHandler<Option<SystemId>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|p| p.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let system_id = SystemId::from_str(&new_value).expect("Unexpected frontier card");
+            on_select(Some(system_id));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            id,
+            value: current_value,
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            {
+                if options.is_empty() {
+                    rsx! {
+                        option { value: "", "No systems available" }
+                    }
+                } else {
+                    rsx! {
+                        option { value: "", "--Select System--" }
+                        {
+                            options
+                                .iter()
+                                .map(|s| {
+                                    rsx! {
+                                        option { key: "{s}", value: "{s}", "System {s}" }
                                     }
                                 })
                         }
