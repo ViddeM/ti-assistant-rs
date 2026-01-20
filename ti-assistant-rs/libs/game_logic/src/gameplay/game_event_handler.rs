@@ -495,7 +495,7 @@ fn try_update_game_state(
             current_player.planets.insert(planet.clone(), attachments);
 
             // Give the current player Custodians if he is the first to take Mecatol Rex
-            if let Planet::MecatolRex = planet {
+            if planet.is_mecatol_rex() {
                 if game_state.score.custodians.is_none() {
                     game_state.score.custodians = Some(current_player_id.clone());
                 }
@@ -670,7 +670,12 @@ fn try_update_game_state(
                     });
 
                     let current_player = game_state.get_current_player()?;
-                    if current_player.planets.contains_key(&Planet::MecatolRex) {
+                    if current_player
+                        .planets
+                        .keys()
+                        .find(|p| p.is_mecatol_rex())
+                        .is_some()
+                    {
                         let imperial_points = game_state.score.imperial.entry(player).or_default();
                         *imperial_points = imperial_points.saturating_add(1);
                     }
@@ -924,7 +929,12 @@ fn try_update_game_state(
                 .1
                 .faction;
             ensure!(
-                action_matches_frontier_card(&data, &progress.card, &current_player_faction),
+                action_matches_frontier_card(
+                    &data,
+                    &progress.card,
+                    &current_player_faction,
+                    game_state.map_data.milty_information.is_some()
+                ),
                 "Data provided doesn't match the card being played."
             );
 
@@ -1057,7 +1067,7 @@ fn try_update_game_state(
                 match data {
                     RelicAction::StellarConverter { planet } => {
                         ensure!(
-                            planet != Planet::MecatolRex,
+                            !planet.is_mecatol_rex(),
                             "Cannot use stellar converter on mecatol rex"
                         );
                         ensure!(
@@ -1653,7 +1663,7 @@ fn try_update_game_state(
                     player.relics.insert(Relic::ShardOfTheThrone);
                 }
 
-                if planet == Planet::MecatolRex && game_state.score.custodians.is_none() {
+                if planet.is_mecatol_rex() && game_state.score.custodians.is_none() {
                     game_state.score.custodians = Some(p.clone())
                 }
 
@@ -1686,7 +1696,7 @@ fn try_update_game_state(
                     );
                 }
                 PlanetAttachment::Terraform => {
-                    ensure!(planet != Planet::MecatolRex, "Cannot terraform Mecatol Rex");
+                    ensure!(!planet.is_mecatol_rex(), "Cannot terraform Mecatol Rex");
                     ensure!(
                         !matches!(
                             System::for_planet(&planet)?.system_type,

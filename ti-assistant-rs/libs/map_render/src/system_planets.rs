@@ -31,6 +31,7 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         | Planet::Vorhal
         | Planet::Primor
         | Planet::HopesEnd
+        | Planet::MecatolRexOmega
         | Planet::MecatolRex => Vec2::new(0.0, 0.0),
         Planet::Maaluuk
         | Planet::ArcPrime
@@ -126,7 +127,6 @@ pub fn planet_offset(planet: &Planet) -> Vec2 {
         Planet::Styx => todo!(),
         Planet::Lethe => todo!(),
         Planet::Phlegethon => todo!(),
-        Planet::MecatolRexOmega => todo!(),
         Planet::ThundersEdge => todo!(),
         Planet::Ordinian => todo!(),
         Planet::Avernus => todo!(),
