@@ -1,0 +1,99 @@
+@import "../../vars.scss";
+
+.agenda-phase-container {
+  display: flex;
+  flex-direction: column;
+
+  & > :first-child {
+    margin-bottom: $margin-large;
+  }
+
+  & > * {
+    width: 100%;
+  }
+
+  @media (min-width: 800px) {
+    width: 100%;
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+
+    & > :last-child {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    & > * {
+      max-width: 400px;
+    }
+  }
+}
+
+.reveal-agenda-title {
+  margin: 0;
+}
+
+.reveal-agenda-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: stretch;
+
+  > * {
+    margin-bottom: $margin-large;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.cast-vote-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > * {
+    width: 100%;
+    margin-bottom: $margin-large;
+
+    &:last-child {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.resolve-outcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  & > * {
+    margin-bottom: $margin-large;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.agenda-phase-complete-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.agenda-info-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  & > * {
+    margin: 0;
+
+    &:not(:last-child) {
+      margin-right: $margin-large;
+    }
+  }
+  margin: $margin 0;
+}

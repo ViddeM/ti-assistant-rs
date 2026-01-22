@@ -7,10 +7,11 @@ use crate::{
         frontier_card::FrontierCardView,
         phase_views::{
             action_card::ActionCardView, action_phase::ActionPhaseView,
-            creation_phase::CreationPhaseView, end_action_phase::EndActionPhaseView,
-            relic_card::RelicCardView, setup_phase::SetupPhaseView,
-            status_phase_view::status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
-            strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
+            agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
+            end_action_phase::EndActionPhaseView, relic_card::RelicCardView,
+            setup_phase::SetupPhaseView, status_phase_view::status_phase_view::StatusPhaseView,
+            strategy_card::StrategyCardView, strategy_phase::StrategyPhaseView,
+            tactical_action::TacticalActionView,
         },
     },
 };
@@ -53,9 +54,10 @@ pub fn PhaseView() -> Element {
         Phase::FrontierCardAction => rsx! {
             FrontierCardView {}
         },
-        phase => rsx! {
-            // TODO: Remove this catch-all.
-            p { "Phase {phase} is not yet implemented" }
+        Phase::Agenda => rsx! {
+            AgendaPhaseView {}
         },
+        Phase::LeaderAction => todo!(),
+        Phase::Relics => todo!(),
     }
 }

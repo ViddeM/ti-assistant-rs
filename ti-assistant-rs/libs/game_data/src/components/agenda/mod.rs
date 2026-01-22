@@ -230,6 +230,23 @@ impl AgendaElect {
     }
 }
 
+impl AgendaElectKind {
+    pub fn display(&self) -> &'static str {
+        match self {
+            AgendaElectKind::ForOrAgainst => "For or Against",
+            AgendaElectKind::Player => "Player",
+            AgendaElectKind::StrategyCard => "Strategy Card",
+            AgendaElectKind::Law => "Law",
+            AgendaElectKind::SecretObjective => "Secret Objective",
+            AgendaElectKind::Planet
+            | AgendaElectKind::PlanetWithTrait
+            | AgendaElectKind::CulturalPlanet
+            | AgendaElectKind::HazardousPlanet
+            | AgendaElectKind::IndustrialPlanet => "Planet",
+        }
+    }
+}
+
 /// An agenda in the game.
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, EnumIter, EnumString, Display,

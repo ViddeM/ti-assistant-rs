@@ -280,6 +280,7 @@ pub fn PlanetDropdown(
 
 #[component]
 pub fn AgendaDropdown(
+    id: Option<String>,
     value: ReadSignal<Option<Agenda>>,
     options: Vec<Agenda>,
     on_select: EventHandler<Option<Agenda>>,
@@ -300,6 +301,7 @@ pub fn AgendaDropdown(
 
     rsx! {
         Dropdown {
+            id,
             value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,

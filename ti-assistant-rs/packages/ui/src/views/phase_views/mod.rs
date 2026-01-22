@@ -1,5 +1,6 @@
 pub mod action_card;
 pub mod action_phase;
+pub mod agenda_phase_view;
 pub mod creation_phase;
 pub mod end_action_phase;
 pub mod relic_card;
