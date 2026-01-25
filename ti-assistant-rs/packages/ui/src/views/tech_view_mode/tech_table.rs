@@ -70,6 +70,7 @@ pub fn TechTable() -> Element {
                 ),
         )
     });
+
     let player_faction_specific_techs = use_memo(move || {
         Arc::new(
             players()
@@ -77,8 +78,8 @@ pub fn TechTable() -> Element {
                 .map(|(id, p)| {
                     let mut techs = faction_techs()
                         .get(&p.faction)
-                        .expect("Players faction to exist")
                         .iter()
+                        .flat_map(|t| t.iter())
                         .cloned()
                         .collect::<Vec<_>>();
 
@@ -300,12 +301,22 @@ pub fn TechTable() -> Element {
                                 .expect("Player to exist"),
                             player_count: players().len(),
                         }
-                        TechRows {
-                            techs: techs.clone(),
-                            player_techs: player_techs(),
-                            player_factions: player_factions(),
-                            toggle_tech_for_player: move |(a, b)| toggle_tech_for_player(a, b),
+
+                        if techs.is_empty() {
+                            tr {
+                                td { colspan: players().len(),
+                                    p { class: "center-text", "Faction has no unique techs" }
+                                }
+                            }
+                        } else {
+                            TechRows {
+                                techs: techs.clone(),
+                                player_techs: player_techs(),
+                                player_factions: player_factions(),
+                                toggle_tech_for_player: move |(a, b)| toggle_tech_for_player(a, b),
+                            }
                         }
+
                     }
                 }
             }

@@ -220,8 +220,9 @@ pub fn systems() -> HashMap<SystemId, System> {
             Expansion::Base
         ),
         s!(
+            // This is the accompanying system that replaces the Creuss home system location but is in fact NOT a home system.
             "17",
-            SystemType::HomeSystem(Faction::GhostsOfCreuss),
+            SystemType::Normal,
             vec![],
             vec![WormHoleType::Delta],
             Expansion::Base
@@ -615,8 +616,9 @@ pub fn systems() -> HashMap<SystemId, System> {
             Expansion::ThundersEdge
         ),
         s!(
+            // This is the accompanying system that replaces the Crimson Rebellion home system location but is in fact NOT a home system.
             "94",
-            SystemType::HomeSystem(Faction::CrimsonRebellion),
+            SystemType::Normal,
             vec![],
             vec![WormHoleType::Epsilon],
             Expansion::ThundersEdge
@@ -772,7 +774,7 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "118",
-            SystemType::Normal,
+            SystemType::HomeSystem(Faction::CrimsonRebellion),
             vec![Planet::AhkCreuxx],
             vec![WormHoleType::Epsilon],
             Expansion::ThundersEdge
