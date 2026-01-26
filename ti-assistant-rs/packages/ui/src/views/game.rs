@@ -65,7 +65,10 @@ pub fn GameView(game_id: GameId) -> Element {
                     ws_error.set(Some(err));
                 }
                 WsMessageOut::JoinedGame(game_id) => tracing::info!("Joined game {game_id}"),
-                WsMessageOut::NotFound(game_id) => ws_error.set(Some(game_id.to_string())),
+                WsMessageOut::NotFound(game_id) => {
+                    // TODO: Ensure that we have a "Back to main menu" button on not found.
+                    ws_error.set(Some(format!("Game {game_id} not found")))
+                }
             }
         }
     });

@@ -123,16 +123,28 @@ async fn join_game_inner(
     } else if let Some(db_pool) = &db_pool {
         log::info!("Loading game {game_id:?} from DB");
 
-        if let Err(e) = queries::get_game_by_id(db_pool, &game_id)
-            .await
-            .with_context(|| format!("Failed to retrieve game {game_id:?} from DB"))
-        {
-            socket
-                .send(WsMessageOut::NotFound(game_id))
-                .await
-                .context("failed to send game not found message to client")?;
+        match queries::try_get_game_by_id(db_pool, &game_id).await {
+            Ok(Some(s)) => {}
+            Ok(None) => {
+                log::warn!("Request game not found {game_id}");
+                socket
+                    .send(WsMessageOut::NotFound(game_id))
+                    .await
+                    .context("Failed to send game not found event to client")?;
 
-            return Err(e);
+                anyhow::bail!("Game not found");
+            }
+            Err(err) => {
+                log::error!("Failed to read game {game_id} from db");
+                socket
+                    .send(WsMessageOut::event_err(
+                        "Failed to read game from DB".to_string(),
+                    ))
+                    .await
+                    .context("failed to send game not found message to client")?;
+
+                return Err(err.into());
+            }
         }
 
         let events = queries::get_events_for_game(db_pool, &game_id)
