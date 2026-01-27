@@ -26,6 +26,8 @@ enum Route {
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 const MAIN_SCSS: Asset = asset!("/assets/main.scss");
 
+// TODO: Cargo clippy....
+
 fn main() {
     #[cfg(not(feature = "server"))]
     dioxus::launch(App);
@@ -34,7 +36,7 @@ fn main() {
     dioxus::serve(|| async {
         use dioxus::{
             fullstack::extract::Request,
-            server::axum::{self, middleware::Next, Extension},
+            server::axum::{self, Extension, middleware::Next},
         };
         use ui::server_side::setup;
 
