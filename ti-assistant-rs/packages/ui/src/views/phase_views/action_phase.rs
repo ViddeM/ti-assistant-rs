@@ -18,9 +18,11 @@ use crate::{
     components::{
         button::Button,
         dropdown::{ActionCardDropdown, FrontierCardDropdown, RelicDropdown},
+        info_button::InfoButton,
     },
     data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+        event_context::EventContext, game_context::GameContext, info_context::Info,
+        player_view::PlayerViewContext,
     },
 };
 
@@ -443,7 +445,44 @@ fn FrontierCardView() -> Element {
 
 #[component]
 fn PlayLeaderView() -> Element {
-    todo!("TODO")
+    let gc = use_context::<GameContext>();
+
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist in action phase")
+    });
+    let available_leaders = use_memo(move || {
+        gc.game_state()
+            .available_leaders
+            .get(&current_player())
+            .map(|leaders| leaders.iter().cloned().collect::<Vec<_>>())
+            .unwrap_or_default()
+    });
+    let action_leaders = use_memo(move || {
+        available_leaders()
+            .iter()
+            .filter(|l| l.info().ability_kind() == LeaderAbilityKind::Action)
+            .cloned()
+            .collect::<Vec<_>>()
+    });
+
+    rsx! {
+        div {
+            fieldset { class: "play-action-card-container",
+                legend { "Play Leader" }
+                table {
+                    for leader in action_leaders().iter() {
+                        tr { key: "{leader}",
+                            Button { onclick: move |_| {}, "{leader}" }
+                            InfoButton { info: Info::Leader(leader.clone()) }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 fn get_playable_strategy_cards(

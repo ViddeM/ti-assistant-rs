@@ -2,6 +2,8 @@ mod agent;
 mod commander;
 mod hero;
 
+use std::fmt::Display;
+
 pub use agent::*;
 pub use commander::*;
 pub use hero::*;
@@ -27,6 +29,12 @@ impl Leader {
             Leader::Commander(..) => "Commander",
             Leader::Hero(..) => "Hero",
         }
+    }
+}
+
+impl Display for Leader {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.info().name())
     }
 }
 
