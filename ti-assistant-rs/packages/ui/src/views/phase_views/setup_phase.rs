@@ -41,7 +41,6 @@ pub fn SetupPhaseView() -> Element {
             .count()
     });
 
-    /* TODO: Should also include faction specific setup not being complete */
     let setup_complete = use_memo(move || speaker_chosen() || revealed_objectives() > 0);
 
     rsx! {
@@ -107,16 +106,6 @@ fn PlayersSetup() -> Element {
                                     legend { class: format!("player-color-border-{} setup-player-legend", player.color.name()).as_str(),
                                         "{&name}"
                                     }
-
-
-
-
-
-
-
-
-
-
 
                                     div { class: "setup-row",
                                         if gc.game_state().is_speaker(&name) {
@@ -307,6 +296,7 @@ fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let mut second_tech: Signal<Option<Technology>> = use_signal(|| None);
     let mut selected_faction: Signal<Option<Faction>> = use_signal(|| None);
 
+    // TODO: This doesn't seem to work maybe?
     let possible_techs = use_memo(move || {
         let mut techs = gc
             .game_state()

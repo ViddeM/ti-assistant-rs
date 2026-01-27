@@ -149,7 +149,7 @@ fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
         ViewMode::Game => rsx! {
             div { class: "game-page-container",
                 {sidebar}
-                div { class: "phase-container", PhaseView {} } // TODO: Sidebar should also be in here.
+                div { class: "phase-container", PhaseView {} }
             }
         },
         ViewMode::Score => rsx! {

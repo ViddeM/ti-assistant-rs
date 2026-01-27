@@ -184,14 +184,6 @@ fn AddLawForm() -> Element {
                                 InfoButton { info: Info::Agenda(state.agenda.clone()) }
                             }
 
-                        // TODO: FIgure out why page reloads when we add an agenda.
-
-                        // TODO: FIgure out why page reloads when we add an agenda.
-
-
-
-
-
                             Button { onclick: move |_| event.send_event(Event::AddAgendaCancel), "Cancel Adding Agenda" }
 
                             for (player , votes) in state.player_votes.iter() {
