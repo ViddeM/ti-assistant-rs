@@ -247,3 +247,4 @@
   - TODO
 
 TODO: Look over all strategy cards to see that we always display the correct variant.
+TODO: Display "Undo event {NAME}" popup or smth when undoing so that it is more clear for other players (and oneself).

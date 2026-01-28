@@ -18,7 +18,7 @@ pub enum WsMessageIn {
 pub enum WsMessageOut {
     /// Initial message sent by the server that contains all general info about game components
     /// that the frontend will need.
-    // TODO: do we still need this when we have a rust frontend? Or should we just build it right into the binary?
+    // TODO: do we still need this when we have a rust frontend? Or should we just build it right into the binary? (Its still useful as game content filtered based on the currently enabled settings, expansions, etc)
     GameOptions(Arc<GameOptions>),
 
     /// An update of the current game state.

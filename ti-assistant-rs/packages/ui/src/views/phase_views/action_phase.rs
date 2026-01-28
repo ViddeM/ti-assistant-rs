@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dioxus::prelude::*;
+use dioxus::{logger::tracing, prelude::*};
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
@@ -150,19 +150,24 @@ fn ComponentSelectRow() -> Element {
 
     let mut component_mode = use_signal(|| ComponentMode::None);
 
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist during action phase")
+    });
+
+    let available_leaders = use_memo(move || {
+        gc.game_state()
+            .available_leaders
+            .get(&current_player())
+            .expect("Current player to be in available_leaders map")
+            .clone()
+    });
+
     let can_play_leaders = use_memo(move || {
-        let current_player = gc.game_state().current_player.clone();
-        let available_leaders = current_player
-            .map(|p| {
-                gc.game_state()
-                    .available_leaders
-                    .get(&p)
-                    .expect("Players leaders to be in map")
-                    .clone()
-            })
-            .unwrap_or_default();
-        available_leaders
-            .into_iter()
+        available_leaders()
+            .iter()
             .filter(|l| l.info().ability_kind() == LeaderAbilityKind::Action)
             .count()
             > 0
@@ -446,6 +451,7 @@ fn FrontierCardView() -> Element {
 #[component]
 fn PlayLeaderView() -> Element {
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -468,7 +474,6 @@ fn PlayLeaderView() -> Element {
             .collect::<Vec<_>>()
     });
 
-    // TODO: Finish
     rsx! {
         div {
             fieldset { class: "play-action-card-container",
@@ -476,7 +481,19 @@ fn PlayLeaderView() -> Element {
                 table {
                     for leader in action_leaders().iter() {
                         tr { key: "{leader}",
-                            Button { onclick: move |_| {}, "{leader}" }
+                            Button {
+                                onclick: {
+                                    let leader = leader.clone();
+                                    move |_| {
+                                        event
+                                            .send_event(Event::LeaderActionBegin {
+                                                player: current_player(),
+                                                leader: leader.clone(),
+                                            });
+                                    }
+                                },
+                                "{leader}"
+                            }
                             InfoButton { info: Info::Leader(leader.clone()) }
                         }
                     }
