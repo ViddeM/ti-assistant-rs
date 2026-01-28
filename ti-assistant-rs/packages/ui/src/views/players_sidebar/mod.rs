@@ -55,6 +55,9 @@ pub fn PlayersSidebar() -> Element {
         PlayerView::Player { player_id } => player_id.to_string(),
     });
 
+    let players = use_memo(move || gc.game_state().players.keys().cloned().collect::<Vec<_>>());
+    let turn_order_players = use_memo(move || gc.game_state().turn_order.clone());
+
     rsx! {
         document::Stylesheet { href: PLAYERS_SIDEBAR_SCSS }
 
@@ -66,30 +69,24 @@ pub fn PlayersSidebar() -> Element {
                 value: "{currently_viewing_as()}",
                 oninput: handle_playing_as_change,
                 option { value: "", "Global view" }
-                {gc.game_state().players.keys().map(|p| rsx! {
-                    option { value: p.to_string(), "{p}" }
-                })}
+                for player in players().iter() {
+                    option { value: player.to_string(), "{player}" }
+                }
             }
             div { class: "player-side-bar-card",
-                {
-                    if let Some(current) = current_player() {
-                        rsx! {
-                            fieldset { class: "player-box-container",
-                                legend { "Current player" }
-                                "{current}"
-                            }
-                            fieldset { class: "player-box-container",
-                                legend { "Next up" }
-                                "{next_player()}"
-                            }
-                        }
-                    } else {
-                        rsx! {}
+                if let Some(current) = current_player() {
+                    fieldset { class: "player-box-container",
+                        legend { "Current player" }
+                        "{current}"
+                    }
+                    fieldset { class: "player-box-container",
+                        legend { "Next up" }
+                        "{next_player()}"
                     }
                 }
-                {gc.game_state().turn_order.iter().map(|p| rsx! {
-                    PlayerBox { player_id: Arc::clone(&p) }
-                })}
+                for player in turn_order_players().iter() {
+                    PlayerBox { player_id: Arc::clone(player) }
+                }
             }
         }
     }

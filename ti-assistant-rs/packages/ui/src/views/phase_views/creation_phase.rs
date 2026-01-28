@@ -79,7 +79,11 @@ fn AddPlayer() -> Element {
     let available_factions = use_memo(move || {
         get_available_factions(&gc.game_options().factions, &gc.game_state().players)
     });
-    let colors = use_memo(move || gc.game_options().colors.iter().cloned().collect::<Vec<_>>());
+    let colors = use_memo(move || {
+        let mut colors = gc.game_options().colors.iter().cloned().collect::<Vec<_>>();
+        colors.sort();
+        colors
+    });
     let taken_colors = use_memo(move || {
         gc.game_state()
             .players
@@ -90,8 +94,8 @@ fn AddPlayer() -> Element {
 
     let mut new_player_name = use_signal(|| String::new());
     let mut new_player_faction: Signal<Option<Faction>> = use_signal(|| None);
-    let mut color: Signal<Color> =
-        use_signal(|| *colors().first().expect("there should be colors"));
+    let mut selected_color: Signal<Color> =
+        use_signal(|| colors().first().cloned().expect("there should be colors"));
 
     let set_faction = move |e: FormEvent| match e.value().as_str() {
         NO_FACTION_SELECTED => {
@@ -108,7 +112,7 @@ fn AddPlayer() -> Element {
             player: NewPlayer {
                 name: new_player_name(),
                 faction: new_player_faction().unwrap(),
-                color: color(),
+                color: selected_color(),
             },
         });
     };
@@ -116,7 +120,7 @@ fn AddPlayer() -> Element {
     let mut reset_form = move || {
         new_player_name.set(String::new());
         new_player_faction.set(None);
-        color.set(
+        selected_color.set(
             colors()
                 .iter()
                 .find(|c| !taken_colors.contains(c))
@@ -152,37 +156,33 @@ fn AddPlayer() -> Element {
                 }
             }
             div { class: "colors-container",
-                {
-                    colors()
-                        .iter()
-                        .cloned()
-                        .map(|c| {
-                            rsx! {
-                                div { key: "{c.name()}", class: "color-container",
-                                    label { r#for: "id-{c.name()}",
-                                        div {
-                                            class: format!(
-                                                "color-button {}",
-                                                if taken_colors.contains(&c) {
-                                                    "disabled-color-button".to_string()
-                                                } else {
-                                                    format!("player-color-background-{}", c.name())
-                                                },
-                                            ),
-                                        }
-                                    }
-                                    input {
-                                        name: "color",
-                                        id: "id-{c.name()}",
-                                        r#type: "radio",
-                                        value: "{c.name()}",
-                                        checked: c == color(),
-                                        disabled: taken_colors.contains(&c),
-                                        onchange: move |_| color.set(c),
-                                    }
-                                }
+                for color in colors().iter() {
+                    div { key: "{color.name()}", class: "color-container",
+                        label { r#for: "id-{color.name()}",
+                            div {
+                                class: format!(
+                                    "color-button {}",
+                                    if taken_colors.contains(color) {
+                                        "disabled-color-button".to_string()
+                                    } else {
+                                        format!("player-color-background-{}", color.name())
+                                    },
+                                ),
                             }
-                        })
+                        }
+                        input {
+                            name: "color",
+                            id: "id-{color.name()}",
+                            r#type: "radio",
+                            value: "{color.name()}",
+                            checked: color == &selected_color(),
+                            disabled: taken_colors.contains(color),
+                            onchange: {
+                                let c = color.clone();
+                                move |_| selected_color.set(c.clone())
+                            },
+                        }
+                    }
                 }
             }
             Button {

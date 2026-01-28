@@ -245,19 +245,13 @@ fn PlagiarizeView(send_commit_message: Callback<Option<ActionCardAction>>) -> El
                 }
             }
             tbody {
-                {
-                    players()
-                        .iter()
-                        .map(|p| {
-                            rsx! {
-                                PlagiarizePlayerRow {
-                                    key: "{p}",
-                                    player_id: p.clone(),
-                                    selected_player: selected_player.clone(),
-                                    selected_tech: selected_tech.clone(),
-                                }
-                            }
-                        })
+                for player in players().iter() {
+                    PlagiarizePlayerRow {
+                        key: "{player}",
+                        player_id: player.clone(),
+                        selected_player: selected_player.clone(),
+                        selected_tech: selected_tech.clone(),
+                    }
                 }
             }
             tfoot {
@@ -359,15 +353,10 @@ fn PlagiarizePlayerRow(
                         }
                     },
                     option { value: "", "--Select a tech--" }
-                    {
-                        available_player_techs()
-                            .iter()
-                            .map(|(t, info)| {
-                                rsx! {
-                                    option { key: "{t}", value: "{t.to_string()}", "{info.name}" }
-                                }
-                            })
+                    for (tech , tech_info) in available_player_techs().iter() {
+                        option { key: "{tech}", value: "{tech.to_string()}", "{tech_info.name}" }
                     }
+
                 }
             }
         }
