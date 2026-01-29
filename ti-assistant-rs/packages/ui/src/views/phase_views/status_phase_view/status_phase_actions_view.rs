@@ -1,8 +1,8 @@
-use dioxus::prelude::*;
+use dioxus::{logger::tracing, prelude::*};
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::objectives::{secret::SecretObjective, Objective, ObjectiveKind},
+    components::objectives::{Objective, ObjectiveKind, secret::SecretObjective},
 };
 
 use crate::{
@@ -68,15 +68,10 @@ pub fn StatusPhaseActionsView() -> Element {
             .collect::<Vec<_>>()
     });
 
-    let num_objectives_revealed = use_memo(move || {
-        revealed_objectives.len() - (state().revealed_objective.map(|_| 0).unwrap_or(1))
-    });
-
     let revealed_objective = use_memo(move || state().revealed_objective);
 
     let reveal_stage_two = use_memo(move || {
-        num_objectives_revealed() - revealed_objective().map(|_| 1).unwrap_or(0)
-            >= state().expected_objectives_before_stage_two
+        revealed_objectives().len() >= state().expected_objectives_before_stage_two
     });
     let stage = use_memo(move || if reveal_stage_two() { "II" } else { "I" });
 

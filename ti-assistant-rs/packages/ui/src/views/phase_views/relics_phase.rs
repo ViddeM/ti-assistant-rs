@@ -1,4 +1,4 @@
-use dioxus::{html::mo, prelude::*};
+use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     components::{planet_attachment::PlanetAttachment, relic::Relic},

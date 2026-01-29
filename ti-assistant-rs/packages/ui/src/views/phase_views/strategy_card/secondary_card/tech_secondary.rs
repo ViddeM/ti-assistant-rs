@@ -140,42 +140,38 @@ fn RenderChoice(
                 p { "Skipped second tech" }
             }
         },
-        Choice::YetToChoose => {
+        Choice::YetToChoose => rsx! {
             if player().faction == Faction::UniversitiesOfJolNar {
-                rsx! {
-                    JolnarTechSecondary { player_id, player }
-                }
+                JolnarTechSecondary { player_id, player }
             } else {
-                rsx! {
-                    p { class: "warning-text", "Remember: pay 1 token and 4 resources" }
-                    SelectTechView {
-                        player_id: player_id(),
-                        on_select: move |tech| {
-                            event
-                                .send_event(Event::StrategicActionSecondary {
-                                    player: player_id(),
-                                    action: StrategicSecondaryAction::Technology {
-                                        tech,
-                                    },
-                                })
-                        },
-                    }
-                    div { class: "skip-divider" }
-                    div { class: "tech-skip-button",
-                        Button {
-                            onclick: move |_| {
-                                event
-                                    .send_event(Event::StrategicActionSecondary {
-                                        player: player_id(),
-                                        action: StrategicSecondaryAction::Skip,
-                                    })
-                            },
-                            "Skip"
-                        }
-                    }
+                p { class: "warning-text", "Remember: pay 1 token and 4 resources" }
+                SelectTechView {
+                    player_id: player_id(),
+                    on_select: move |tech| {
+                        event
+                            .send_event(Event::StrategicActionSecondary {
+                                player: player_id(),
+                                action: StrategicSecondaryAction::Technology {
+                                    tech,
+                                },
+                            })
+                    },
+                }
+                div { class: "skip-divider" }
+            }
+            div { class: "tech-skip-button",
+                Button {
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::StrategicActionSecondary {
+                                player: player_id(),
+                                action: StrategicSecondaryAction::Skip,
+                            })
+                    },
+                    "Skip"
                 }
             }
-        }
+        },
     }
 }
 

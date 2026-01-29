@@ -1320,6 +1320,8 @@ fn try_update_game_state(
             game_state.passed_players = Default::default();
             game_state.spent_strategy_cards = Default::default();
 
+            // TODO: Whilst the Maw of Worlds should be at the end of the agenda phase, Crown of Emphidia should be at the end of the Status phase (snor).
+            // This is relevant before mecatol rex is taken.
             let phase = if game_state.score.custodians.is_some() {
                 if game_state.players.values().any(|p| {
                     p.relics.contains(&Relic::MawOfWorlds)
