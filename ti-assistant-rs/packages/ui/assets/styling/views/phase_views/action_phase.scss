@@ -1,0 +1,55 @@
+@import "../../vars.scss";
+
+.action-phase-view-container {
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: $border-radius;
+  width: 100%;
+
+  @media (min-width: $width-medium) {
+    max-width: 42em;
+  }
+}
+
+.action-player-container {
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding: 1rem 0;
+}
+
+.action-options {
+  padding: 0.5rem 0;
+  border-top: 1px solid black;
+}
+
+.action-button {
+  margin: 0 0.5rem;
+}
+
+.play-action-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > :last-child {
+    margin-top: $margin-large;
+  }
+}
+
+.component-select-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  & > *:not(:last-child) {
+    margin-right: $margin-large;
+  }
+}

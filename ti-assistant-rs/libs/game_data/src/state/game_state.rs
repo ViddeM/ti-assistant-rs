@@ -1,0 +1,672 @@
+use std::{
+    collections::{HashMap, HashSet},
+    time::Duration,
+};
+
+use anyhow::{Context, anyhow, bail, ensure};
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+
+use crate::{
+    actions::strategic::{
+        StrategicPrimaryAction, StrategicSecondaryAction, StrategicSecondaryProgress,
+    },
+    common::{
+        expansions::Expansion, faction::Faction, game_settings::GameSettings, map::HexMap,
+        player_id::PlayerId,
+    },
+    components::{
+        action_card::ActionCard,
+        agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
+        frontier_card::FrontierCard,
+        leaders::{Leader, LeaderAbilityKind},
+        objectives::Objective,
+        phase::Phase,
+        planet::Planet,
+        planet_attachment::PlanetAttachment,
+        relic::Relic,
+        strategy_card::StrategyCard,
+        system::SystemId,
+        tech::Technology,
+    },
+    enum_map::EnumMap,
+};
+
+use super::{
+    agenda::{AgendaRecord, AgendaState, VoteState},
+    player::Player,
+    score::Score,
+    status::StatusPhaseState,
+};
+
+/// A snapshot of the game state.
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct GameState {
+    /// The current round number of the game.
+    pub round: u32,
+
+    /// The settings for the game.
+    pub game_settings: GameSettings,
+
+    /// The current phase of the game.
+    pub phase: Phase,
+
+    /// Information about the map, only available on games imported from milty.
+    pub map_data: MapData,
+
+    /// Which players are in the game.
+    pub players: HashMap<PlayerId, Player>,
+
+    /// The current speaker, if any.
+    pub speaker: Option<PlayerId>,
+
+    /// The order that players are sitting around the table, starting with the speaker.
+    pub table_order: Vec<PlayerId>,
+
+    /// The current turn order, either based on table order or strategy cards (initiative).
+    pub turn_order: Vec<PlayerId>,
+
+    /// Which players hold which strategy cards.
+    pub strategy_card_holders: EnumMap<StrategyCard, PlayerId>,
+
+    /// The current player, if any.
+    pub current_player: Option<PlayerId>,
+
+    /// Which strategy cards have been spent this action phase.
+    pub spent_strategy_cards: HashSet<StrategyCard>,
+
+    /// Which players have passed this phase.
+    pub passed_players: HashSet<PlayerId>,
+
+    /// Tracks progress of the current action (if any) that is being taken.
+    pub action_progress: Option<ActionPhaseProgress>,
+
+    /// All things that concern scoring for the game.
+    pub score: Score,
+
+    /// State for agenda phase.
+    pub agenda: Option<AgendaState>,
+
+    /// List of past things voted on in the agenda phase.
+    pub agenda_vote_history: Vec<AgendaRecord>,
+
+    /// Laws in play.
+    pub laws: EnumMap<Agenda, AgendaElect>,
+
+    /// State required for the agenda 'admin view'.
+    pub agenda_override_state: Option<AgendaOverrideState>,
+
+    /// State for the status phase.
+    pub status_phase_state: Option<StatusPhaseState>,
+
+    /// Leaders available for play for each player.
+    pub available_leaders: HashMap<PlayerId, Vec<Leader>>,
+
+    /// Weather or not time should be tracked.
+    pub time_tracking_paused: bool,
+
+    /// Time taken by each player to complete their rounds during the action phase.
+    ///
+    /// This does not include the time taken for the current round, that will be calculated and
+    /// included when the current player ends their turn.
+    pub players_play_time: HashMap<PlayerId, Duration>,
+
+    /// When the current player started their turn.
+    pub current_turn_start_time: Option<DateTime<Utc>>,
+
+    /// The player (if any) currently using [Faction::NaaluCollective]s faction ability:
+    /// "Telepathic", or the Naalu promisary note "Gift of Prescience".
+    ///
+    /// This player has initiative 0 in the action and status phase.
+    pub naalu_telepathy: Option<PlayerId>,
+}
+
+/// Information relevant to things that has happened on the gameboard.
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MapData {
+    /// Map information relevant to games imported from milty draft.
+    pub milty_information: Option<MiltyInformation>,
+    /// Which planets (if any) has been destroyed by the stellar converter.
+    pub stellar_converter_destroyed_planets: Vec<Planet>,
+}
+
+/// Information relevant to things that has happened on the gameboard.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct AgendaOverrideState {
+    /// The vote state of this agenda override.
+    pub vote_state: VoteState,
+}
+
+/// Map information only relevant / obtainable for games imported from milty draft.
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct MiltyInformation {
+    /// The hex map for the game.
+    pub hex_map: HexMap,
+    /// The system that contains mirage (if any).
+    pub mirage_system: Option<SystemId>,
+}
+
+/// The current progress of an action-phase action.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "t")]
+pub enum ActionPhaseProgress {
+    /// The progress of a strategy card.
+    Strategic(StrategicProgress),
+    /// The progress of a tactical action.
+    Tactical(TacticalProgress),
+    /// The progress of an action card.
+    ActionCard(ActionCardProgress),
+    /// The progress of a leader action.
+    Leader(LeaderProgress),
+    /// The progress of a frontier card.
+    FrontierCard(FrontierCardProgress),
+    /// The progress of a relic action.
+    Relic(RelicProgress),
+}
+
+impl ActionPhaseProgress {
+    /// Weather the progress is for a strategy card.
+    pub fn is_strategy_card(&self) -> bool {
+        matches!(self, ActionPhaseProgress::Strategic(_))
+    }
+
+    /// Weather the progress is for a tactical action.
+    pub fn is_tactical(&self) -> bool {
+        matches!(self, ActionPhaseProgress::Tactical(_))
+    }
+}
+
+/// Progress of a strategy card.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct StrategicProgress {
+    /// The strategy card being played.
+    pub card: StrategyCard,
+    /// What, if any, progress has been made for the primary part of the strategy card.
+    pub primary: Option<StrategicPrimaryProgress>,
+    /// What secondary actions other players have taken.
+    pub other_players: HashMap<PlayerId, StrategicSecondaryProgress>,
+}
+
+impl StrategicProgress {
+    pub fn is_done(&self) -> bool {
+        match self.card {
+            StrategyCard::Politics | StrategyCard::Technology | StrategyCard::Imperial => {
+                self.primary.is_some()
+            }
+            _ => true,
+        }
+    }
+}
+
+/// The progress of the primary section of a strategy card.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+pub enum StrategicPrimaryProgress {
+    /// Primary progress for the technology strategy card.
+    Technology {
+        /// What main technology was taken.
+        tech: Option<Technology>,
+        /// What, if any, extra tech was taken (and paid for).
+        extra: Option<Technology>,
+    },
+    /// Primary progress for the politics strategy card.
+    #[serde(rename_all = "camelCase")]
+    Politics {
+        /// Who the new speaker should be.
+        new_speaker: PlayerId,
+    },
+    /// Primary progress for the imperial strategy card.
+    Imperial {
+        /// What objective, if any, was scored.
+        objective: Option<Objective>,
+    },
+}
+
+impl StrategicPrimaryProgress {
+    /// Returns the default value for the provided strategy card and faction.
+    pub fn default_for_card_and_faction(
+        card: StrategyCard,
+        faction: Faction,
+    ) -> Option<StrategicPrimaryProgress> {
+        if card == StrategyCard::Technology && faction == Faction::NekroVirus {
+            return Some(StrategicPrimaryProgress::Technology {
+                tech: None,
+                extra: None,
+            });
+        }
+
+        None
+    }
+}
+
+/// Progress during a tactical action.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct TacticalProgress {
+    /// What system was activated, if any.
+    pub activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
+    /// Which planets have been taken this far and the player who owned them previously (if any).
+    pub taken_planets: EnumMap<Planet, Option<PlayerId>>,
+    /// What planet attachments have been selected for the taken planets.
+    /// NOTE: Does not include attachments kept when taken from another player.
+    pub planet_attachments: EnumMap<Planet, PlanetAttachment>,
+}
+
+/// The progress of an action card being played.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ActionCardProgress {
+    /// Which card is being played.
+    pub card: ActionCard,
+}
+
+/// The progress of a leader action being played.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+#[serde(tag = "action")]
+#[allow(missing_docs)]
+pub enum LeaderProgress {
+    /// This leader needs no special handling.
+    Nothing { leader: Leader },
+}
+
+/// The progress of a frontier card being played.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FrontierCardProgress {
+    /// Which card is being played.
+    pub card: FrontierCard,
+}
+
+/// The progress of a frontier card being played.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RelicProgress {
+    /// The relic whose action is being taken.
+    pub relic: Relic,
+}
+
+impl GameState {
+    /// Update the turn order according to initiative order.
+    pub fn calculate_action_turn_order(&mut self) -> anyhow::Result<()> {
+        self.turn_order = self.table_order.clone();
+
+        let mut player_nums = HashMap::new();
+        for player in self.players.keys() {
+            if self.naalu_telepathy.as_ref() == Some(player) {
+                player_nums.insert(player, 0);
+            }
+
+            let strat_cards = self
+                .strategy_card_holders
+                .iter()
+                .filter(|(_, p)| player.eq(p))
+                .map(|(card, _)| card.card_number())
+                .min()
+                .with_context(|| format!("Player {player:?} does not hold a strategy card"))?;
+
+            player_nums.insert(player, strat_cards);
+        }
+
+        let mut result = Ok(());
+        self.turn_order.sort_by_key(|player| {
+            let Some(num) = player_nums.get(player) else {
+                result = Err(anyhow!("Player {player:?} does not have a strategy card."));
+                return 99;
+            };
+
+            *num
+        });
+
+        result
+    }
+
+    /// Update the turn order according to table-order, starting with the speaker.
+    pub fn calculate_strategy_turn_order(&mut self) -> anyhow::Result<()> {
+        let speaker = self.speaker()?;
+        let speaker_index = self
+            .table_order
+            .iter()
+            .position(|p| p == speaker)
+            .ok_or(anyhow!("No speaker index?"))?;
+
+        self.turn_order = self.table_order.clone();
+        self.turn_order.rotate_left(speaker_index); // speaker goes first
+
+        Ok(())
+    }
+
+    /// Update the turn order according to table-order, ending with the speaker.
+    pub fn calculate_agenda_turn_order(&mut self) -> anyhow::Result<()> {
+        let speaker = self.speaker()?;
+        let speaker_index = self
+            .table_order
+            .iter()
+            .position(|p| p == speaker)
+            .ok_or(anyhow!("No speaker index?"))?;
+
+        self.turn_order = self.table_order.clone();
+        self.turn_order.rotate_left(speaker_index + 1); // speaker goes last
+        self.turn_order
+            // Argent Flight always votes first
+            .sort_by_key(|p| self.players[p].faction != Faction::ArgentFlight);
+
+        Ok(())
+    }
+
+    /// If we're tracking turn time, save the result for the current player and return true.
+    /// Otherwise return false.
+    pub fn commit_turn_time(&mut self, timestamp: DateTime<Utc>) -> anyhow::Result<bool> {
+        let current_turn_start_time = self.current_turn_start_time.take();
+
+        if let Some(turn_start_time) = current_turn_start_time {
+            let current_player = self.current_player()?;
+            let turn_time_elapsed = timestamp - turn_start_time;
+            let turn_time_elapsed = turn_time_elapsed
+                .to_std()
+                .context("turn time out of range")?;
+            *self.players_play_time.entry(current_player).or_default() += turn_time_elapsed;
+        }
+
+        Ok(current_turn_start_time.is_some())
+    }
+
+    /// Advance to the next players turn, if all players have passed, advance to the next phase.
+    pub fn advance_turn(&mut self, timestamp: DateTime<Utc>) -> anyhow::Result<()> {
+        let current_player = self.current_player()?;
+        let next_player = self.next_player_after(&current_player)?;
+
+        if self.commit_turn_time(timestamp)? {
+            self.current_turn_start_time = Some(timestamp);
+        }
+
+        // everyone has passed, i guess. what do?
+        if next_player.is_none() {
+            match self.phase {
+                Phase::Action => {
+                    self.calculate_action_turn_order()?;
+                    self.passed_players.clear();
+                    self.phase = Phase::Status;
+                    self.current_turn_start_time = None;
+
+                    self.status_phase_state = Some(StatusPhaseState::new(
+                        self.expected_objectives_before_stage_two(),
+                    ))
+                }
+                _ => bail!("wtf"),
+            }
+        } else {
+            self.current_player = next_player;
+        }
+
+        Ok(())
+    }
+
+    /// Set the phase to the provided `phase` and update turn order accordingly.
+    pub fn change_phase(&mut self, phase: Phase, timestamp: DateTime<Utc>) -> anyhow::Result<()> {
+        self.phase = phase;
+        match phase {
+            Phase::Strategy => {
+                self.calculate_strategy_turn_order()?;
+                self.round = self.round.saturating_add(1);
+                self.naalu_telepathy = (self.players.iter())
+                    .find(|(_player_id, player)| player.faction == Faction::NaaluCollective)
+                    .map(|(player_id, _player)| player_id.clone());
+            }
+            Phase::Action => {
+                self.calculate_action_turn_order()?;
+            }
+            Phase::Status => {
+                self.calculate_action_turn_order()?;
+            }
+            Phase::Agenda => {
+                self.calculate_agenda_turn_order()?;
+                self.agenda = Some(AgendaState::default());
+            }
+            Phase::Relics => { /* Nein */ }
+            _ => bail!(
+                "reset turn order called in unexpected phase: {:?}",
+                self.phase
+            ),
+        }
+
+        self.commit_turn_time(timestamp)?;
+        if !self.time_tracking_paused {
+            self.current_turn_start_time = Some(timestamp);
+        }
+
+        self.current_player = self.turn_order.first().cloned();
+
+        Ok(())
+    }
+
+    /// Returns the player after the provided player.
+    pub fn next_player_after(&self, after: &PlayerId) -> anyhow::Result<Option<PlayerId>> {
+        let next_player = self
+            .turn_order
+            .iter()
+            .skip_while(|&player| player != after)
+            .skip(1)
+            .chain(self.turn_order.iter())
+            .find(|&player| !self.passed_players.contains(player))
+            .cloned();
+
+        Ok(next_player)
+    }
+
+    /// Returns the current players [PlyerId].
+    pub fn current_player(&self) -> anyhow::Result<PlayerId> {
+        self.current_player
+            .clone()
+            .ok_or(anyhow!("no active player"))
+    }
+
+    /// Returns the current speaker.
+    pub fn speaker(&self) -> anyhow::Result<&PlayerId> {
+        self.speaker.as_ref().ok_or(anyhow!("No speaker"))
+    }
+
+    /// Returns weather the provided player is the speaker.
+    pub fn is_speaker(&self, player: &PlayerId) -> bool {
+        self.speaker.as_ref().eq(&Some(player))
+    }
+
+    /// Asserts that the provided player is the currently active player.
+    pub fn assert_player_turn(&self, player: &PlayerId) -> anyhow::Result<()> {
+        let current_player = self.current_player()?;
+        if &current_player != player {
+            bail!("wrong players turn, current player is {current_player:?} got  {player:?}");
+        }
+
+        Ok(())
+    }
+
+    /// Assert that the provided phase is the current phase.
+    pub fn assert_phase(&self, phase: Phase) -> anyhow::Result<()> {
+        if self.phase != phase {
+            bail!(
+                "invalid game state, expected {phase:?}, was {:?}",
+                self.phase
+            );
+        }
+        Ok(())
+    }
+
+    /// Asserts that the provided expansion is enabled.
+    pub fn assert_expansion(&self, expansion: &Expansion) -> anyhow::Result<()> {
+        if !self.game_settings.expansions.is_enabled(expansion) {
+            bail!("Expansion is not enabled {expansion:?}");
+        }
+        Ok(())
+    }
+
+    /// Asserts that the configured expansions is valid for the provided action.
+    pub fn assert_action_expansion(&self, action: &StrategicPrimaryAction) -> anyhow::Result<()> {
+        match action {
+            StrategicPrimaryAction::Technology { tech, extra } => {
+                self.assert_expansion(&tech.info().expansion)?;
+                if let Some(t) = extra {
+                    self.assert_expansion(&t.info().expansion)?;
+                }
+            }
+            StrategicPrimaryAction::Imperial { score_objective } => {
+                if let Some(obj) = score_objective {
+                    self.assert_expansion(&obj.info().expansion)?;
+                }
+            }
+            StrategicPrimaryAction::Politics { .. } => {}
+        }
+        Ok(())
+    }
+
+    /// Asserts that the configured expansions is valid for the provided action.
+    pub fn assert_secondary_action_expansion(
+        &self,
+        action: &StrategicSecondaryAction,
+    ) -> anyhow::Result<()> {
+        match action {
+            StrategicSecondaryAction::Technology { tech } => {
+                self.assert_expansion(&tech.info().expansion)?;
+            }
+            StrategicSecondaryAction::TechnologyJolNar {
+                first_tech,
+                second_tech,
+            } => {
+                self.assert_expansion(&first_tech.info().expansion)?;
+                if let Some(t) = second_tech {
+                    self.assert_expansion(&t.info().expansion)?;
+                }
+            }
+            StrategicSecondaryAction::Skip => {}
+            StrategicSecondaryAction::Leadership => {}
+            StrategicSecondaryAction::Diplomacy => {}
+            StrategicSecondaryAction::Politics => {}
+            StrategicSecondaryAction::Construction => {}
+            StrategicSecondaryAction::Trade => {}
+            StrategicSecondaryAction::Warfare => {}
+            StrategicSecondaryAction::Imperial => {}
+        }
+        Ok(())
+    }
+
+    /// Get a mutable reference to the currently active player.
+    pub fn get_current_player(&mut self) -> anyhow::Result<&mut Player> {
+        let current_player_id = match self.current_player.as_ref() {
+            Some(p) => p,
+            None => bail!("invalid game state, expected there to be a player"),
+        };
+
+        let current_player = match self.players.get_mut(current_player_id) {
+            Some(p) => p,
+            None => bail!(
+                "invalid game state, expected current player (id: {current_player_id:?}) to be in the players map"
+            ),
+        };
+
+        Ok(current_player)
+    }
+
+    /// Returns the number of cards that is expected to have been revealed before we can start revealing stage II cards.
+    pub fn expected_objectives_before_stage_two(&self) -> usize {
+        let extras = self
+            .laws
+            .keys()
+            .filter(|l| l == &&Agenda::IncentiveProgram || l == &&Agenda::ClassifiedDocumentLeaks)
+            .count();
+
+        5 + extras
+    }
+
+    /// Returns true if the player has performed any required initialization for their faction.
+    pub fn player_initialization_finished(&self, player_id: &PlayerId) -> anyhow::Result<bool> {
+        let Some(player) = self.players.get(player_id) else {
+            anyhow::bail!("player does not exist (this is a bug)");
+        };
+
+        Ok(match player.faction {
+            Faction::Winnu => player.technologies.len() == 1,
+            Faction::ArgentFlight => player.technologies.len() == 2,
+            Faction::CouncilKeleres => player.technologies.len() == 2 && !player.planets.is_empty(),
+            _ => true,
+        })
+    }
+
+    /// The max number of players allowed for this game.
+    pub fn max_players(&self) -> usize {
+        self.game_settings.expansions.max_number_of_players()
+    }
+
+    /// Update [GameState::available_leaders].
+    pub fn update_available_leaders(&mut self) {
+        for (player_id, player) in self.players.iter() {
+            let can_play_hero = self.score.scored_objectives_count(player_id) >= 3;
+
+            // Yssaril can play everyones agents
+            let yssaril_agent = |leader: &Leader| {
+                if player.faction != Faction::YssarilTribes {
+                    return false;
+                }
+
+                if !matches!(leader, Leader::Agent(..)) {
+                    return false;
+                }
+
+                self.players
+                    .values()
+                    .any(|player| player.faction == leader.info().faction())
+            };
+
+            let available_to_this_player = Leader::iter()
+                // TODO: there may be cases where players can use other players factions
+                .filter(|leader| leader.info().faction() == player.faction || yssaril_agent(leader))
+                .filter(|leader| leader.info().ability_kind() == LeaderAbilityKind::Action)
+                .filter(|leader| can_play_hero || !matches!(leader, Leader::Hero(..)))
+                .collect();
+
+            self.available_leaders
+                .insert(player_id.clone(), available_to_this_player);
+        }
+    }
+
+    /// Resolve an agenda.
+    pub fn resolve_agenda(
+        &mut self,
+        vote: VoteState,
+        outcome: Option<AgendaElect>,
+    ) -> anyhow::Result<()> {
+        if let Some(outcome) = &outcome {
+            ensure!(
+                AgendaElectKind::from(outcome) == vote.elect,
+                "invalid elect kind, expected {:?}",
+                vote.elect
+            )
+        }
+
+        let agenda_record = AgendaRecord {
+            round: self.round,
+            vote: vote.clone(),
+            outcome: outcome.clone(),
+        };
+
+        if let Some(outcome) = outcome.as_ref() {
+            if vote.kind == AgendaKind::Law
+                && outcome != &AgendaElect::ForOrAgainst(ForOrAgainst::Against)
+            {
+                self.laws.insert(vote.agenda, outcome.clone());
+            }
+
+            self.score.add_agenda_record(&agenda_record);
+
+            // TODO: resolve any other vote effects such as VPs or techs
+        } else {
+            // Do nothing, i.e. discard agenda without resolving it.
+        }
+
+        self.agenda_vote_history.push(agenda_record);
+        Ok(())
+    }
+}

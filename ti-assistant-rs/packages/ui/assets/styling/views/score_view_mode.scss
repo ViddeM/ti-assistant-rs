@@ -1,0 +1,267 @@
+@import "../vars.scss";
+
+.score-view-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > * {
+    margin-bottom: $margin-large;
+  }
+}
+
+.reveal-objective-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.reveal-objective-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  &:not(:last-child) {
+    margin-bottom: $margin-large;
+  }
+
+  > :first-child {
+    flex: 1;
+    margin-right: $margin-large;
+  }
+}
+
+.border-top {
+  border-top: 1px solid black;
+  padding: $padding 0;
+}
+
+.border-bottom {
+  border-bottom: 1px solid black;
+}
+
+.score-view-table-wrapper {
+  max-width: 100%;
+  overflow-x: scroll;
+}
+
+.score-view-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reveal-objective-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score-view-table-header {
+  padding: 4px;
+}
+
+.stage-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.horizontal-line {
+  height: 4px;
+  flex: 1;
+}
+
+.stage-text {
+  min-width: 300px;
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
+}
+
+$stage-one-color: hsl(39, 100%, 50%);
+$stage-two-color: hsl(240, 100%, 72%);
+$secret-color: hsl(0, 70%, 55%);
+$agenda-color: hsl(0, 0%, 100%);
+$custodians-color: hsl(0, 0%, 70%);
+$imperial-color: hsl(276, 100%, 68%);
+$relic-color: hsl(51, 100%, 50%);
+$spftt-color: hsl(360, 60%, 60%);
+$extra-color: hsl(120, 70%, 40%);
+
+.stage-one-color {
+  color: $stage-one-color;
+}
+
+.stage-two-color {
+  color: $stage-two-color;
+}
+
+.secret-color {
+  color: $secret-color;
+}
+
+.agenda-color {
+  color: $agenda-color;
+}
+
+.custodians-color {
+  color: $custodians-color;
+}
+
+.imperial-color {
+  color: $imperial-color;
+}
+
+.spftt-color {
+  color: $spftt-color;
+}
+
+.extra-color {
+  color: $extra-color;
+}
+
+.relic-color {
+  color: $relic-color;
+}
+
+.stage-one-background-color {
+  background-color: $stage-one-color;
+}
+
+.stage-two-background-color {
+  background-color: $stage-two-color;
+}
+
+.secret-background-color {
+  background-color: $secret-color;
+}
+
+.agenda-background-color {
+  background-color: $agenda-color;
+}
+
+.custodians-background-color {
+  background-color: $custodians-color;
+}
+
+.imperial-background-color {
+  background-color: $imperial-color;
+}
+
+.spftt-background-color {
+  background-color: $spftt-color;
+}
+
+.extra-background-color {
+  background-color: $extra-color;
+}
+
+.relic-background-color {
+  background-color: $relic-color;
+}
+
+.faction-button {
+  filter: brightness(0.3) contrast(0.5);
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+
+  &:hover {
+    filter: brightness(0.6) contrast(0.85);
+  }
+}
+
+.faction-button-selected {
+  filter: brightness(1) contrast(1);
+  &:hover {
+    filter: brightness(0.9) contrast(0.8);
+  }
+}
+
+.player-secret-title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  & > h6 {
+    margin-left: $margin-large;
+    margin-right: $margin-large;
+  }
+
+  & > :last-child {
+    flex: 1;
+    background-color: $primary-text-color;
+    height: 2px;
+  }
+}
+
+.support-for-the-throne-table {
+  width: 100%;
+
+  & tr {
+    td:nth-child(1) {
+      width: 35px;
+    }
+
+    td:nth-child(2) {
+      > * {
+        width: 100%;
+      }
+    }
+
+    td:nth-child(3) {
+      width: 1.5rem;
+    }
+
+    td:nth-child(4) {
+      > * {
+        width: 100%;
+      }
+    }
+
+    td:nth-child(5) {
+      width: 50px;
+
+      > * {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.inc-dec-button {
+  border: none;
+  background-color: inherit;
+  font-size: 1.2rem;
+  padding: 0;
+  margin: 0;
+
+  &:disabled {
+    background-color: inherit;
+    filter: brightness(0.3);
+
+    &:hover {
+      filter: brightness(0.3);
+    }
+  }
+}
+
+.secret-objective-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.delete-secret-objective-button {
+  background-color: inherit;
+  border: none;
+  color: white;
+  margin-left: 0.5rem;
+}

@@ -1,0 +1,123 @@
+@import "../vars.scss";
+
+.planet-view-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > :first-child {
+    margin-bottom: $margin-large;
+  }
+}
+
+.player-planet-cards-container {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (min-width: 700px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-around;
+  }
+}
+
+.player-planets-table-container {
+  padding: $padding;
+  padding-top: 0;
+  margin: $margin-large;
+}
+
+.player-planets-table {
+  width: 320px;
+  border-collapse: collapse;
+}
+
+.player-name-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.border-bottom-row {
+  border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+}
+
+.unclaim-planet-button {
+  border: none;
+  background-color: inherit;
+  color: black;
+  height: 16px;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  :hover {
+    color: #500000;
+  }
+}
+
+.planet-filter {
+  width: 100%;
+  border-radius: $border-radius;
+  padding: 0 $padding;
+}
+
+.unclaimed-planets-container {
+  min-height: 100vh; /* To prevent from scrolling up whenever we filter the planets list */
+  width: 100%;
+  margin-top: $margin-large;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  > * {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.planet-row {
+  > td {
+    border-top: 2px solid black;
+  }
+}
+
+.attachment-row {
+  > td {
+    border-top: 1px solid rgba(0, 0, 0, 0.8);
+  }
+}
+
+.attachment-row-text {
+  color: limegreen;
+}
+
+.add-planet-attachment-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: $margin-large 0;
+  > * {
+    margin-bottom: $margin-large;
+  }
+}
+
+.white-text {
+  color: white;
+}
+
+.gray-text {
+  color: gray;
+}
+
+.rotate90 {
+  rotate: 90deg;
+}

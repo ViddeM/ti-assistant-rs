@@ -1,0 +1,35 @@
+@import "../vars.scss";
+
+.select-tech-table {
+  & select {
+    width: 100%;
+  }
+}
+
+.tech-category-button-container {
+  margin-top: $margin-large;
+  margin-bottom: $margin-large;
+  width: 100%;
+  border-width: 4px;
+  border-style: solid;
+}
+
+.color-biotic {
+  border-color: #97c669;
+}
+
+.color-cybernetic {
+  border-color: yellow;
+}
+
+.color-propulsion {
+  border-color: #37b7e0;
+}
+
+.color-warfare {
+  border-color: #d95e60;
+}
+
+.color-unit-upgrade {
+  border-color: #010101;
+}

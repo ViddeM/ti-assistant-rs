@@ -1,0 +1,42 @@
+@import "../../vars.scss";
+
+.tactical-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  @media (min-width: $width-medium) {
+    max-width: 400px;
+  }
+}
+
+.column {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.select-another-planet-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+
+  & > :not(:last-child) {
+    margin-right: $margin-large;
+  }
+}
+
+.take-planet-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: $margin-large;
+
+  > * {
+    flex: 1;
+    margin-top: $margin-large;
+  }
+}

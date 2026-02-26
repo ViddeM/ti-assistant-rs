@@ -1,0 +1,26 @@
+$main-color: #e0e0ff;
+$git-color: #f14e32;
+
+.source-code-button {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 100;
+  padding: 4px;
+  background-color: $main-color;
+  color: $git-color;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+
+  & > * {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &:hover {
+    background-color: $git-color;
+    color: $main-color;
+  }
+}

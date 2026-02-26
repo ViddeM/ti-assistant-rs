@@ -4,7 +4,6 @@ import { StrategyCardSecondary } from "./StrategyCardSecondary";
 import { StrategyCardPrimary } from "./StrategyCardPrimary";
 import { useGameContext } from "@/hooks/GameContext";
 import { StrategicProgress } from "@/api/bindings/StrategicProgress";
-import Image from "next/image";
 import { InfoButton } from "@/components/elements/button/InfoButton";
 
 export const StrategyCardView = () => {
@@ -34,7 +33,6 @@ export const StrategyCardView = () => {
   const primaryDone = isPrimaryDone(strategicAction);
 
   const card = strategicAction.card;
-  const cardImageName = "leadership.webp";
 
   return (
     <div className={`card ${styles.strategyCardView}`}>

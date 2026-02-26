@@ -1,0 +1,52 @@
+@import "../vars.scss";
+
+.info-modal-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4rem;
+  background: #603040a0;
+  z-index: 99;
+
+  animation-duration: 0.3s;
+  animation-name: info-modal-bg-appear;
+}
+
+.info-modal {
+  position: relative;
+  padding: 2rem;
+  width: 100%;
+  margin-bottom: auto;
+  background: black;
+  border: solid 0.2rem white;
+  border-radius: 2rem;
+
+  animation-duration: 0.5s;
+  animation-name: info-modal-appear;
+
+  @media (min-width: $width-medium) {
+    max-width: 35rem;
+  }
+}
+
+@keyframes info-modal-bg-appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes info-modal-appear {
+  0% {
+    scale: 0.8;
+  }
+  100% {
+    scale: 1;
+  }
+}
