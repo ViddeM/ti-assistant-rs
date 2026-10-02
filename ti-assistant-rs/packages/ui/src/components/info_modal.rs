@@ -18,7 +18,18 @@ pub fn InfoModal() -> Element {
     rsx! {
         document::Stylesheet { href: INFO_MODAL_SCSS }
 
-        div { class: "info-modal-bg", onclick: move |_| info.close(),
+        div {
+            class: "info-modal-bg",
+            tabindex: "0",
+            onmounted: move |e| async move {
+                let _ = e.set_focus(true).await;
+            },
+            onkeydown: move |e| {
+                if e.key() == Key::Escape {
+                    info.close();
+                }
+            },
+            onclick: move |_| info.close(),
             div { class: "info-modal", onclick: |e| e.stop_propagation(),
                 h1 { "{i.title()}" }
                 hr {}
