@@ -11,9 +11,9 @@ pub enum StrategicPrimaryAction {
     /// The primary action for the technology card.
     Technology {
         /// What tech shall be taken.
-        tech: Technology,
+        first_tech: Option<Technology>,
         /// What extra tech shall be taken (if any).
-        extra: Option<Technology>,
+        second_tech: Option<Technology>,
     },
 
     /// The primary action for the politics card.

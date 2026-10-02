@@ -630,18 +630,31 @@ fn try_update_game_state(
             );
 
             match (progress.card, action) {
-                (StrategyCard::Technology, StrategicPrimaryAction::Technology { tech, extra }) => {
+                (
+                    StrategyCard::Technology,
+                    StrategicPrimaryAction::Technology {
+                        first_tech,
+                        second_tech,
+                    },
+                ) => {
+                    ensure!(
+                        second_tech.is_none() || first_tech.is_some(),
+                        "Cannot take a second tech without a first tech"
+                    );
+
                     /* Set the progress */
                     progress.primary = Some(StrategicPrimaryProgress::Technology {
-                        tech: Some(tech.clone()),
-                        extra: extra.clone(),
+                        first_tech: first_tech.clone(),
+                        second_tech: second_tech.clone(),
                     });
 
                     /* Give the tech(s) to the current player */
                     let current_player = game_state.get_current_player()?;
 
-                    current_player.research_tech(tech.clone())?;
-                    if let Some(t) = extra.clone() {
+                    if let Some(t) = first_tech.clone() {
+                        current_player.research_tech(t.clone())?;
+                    }
+                    if let Some(t) = second_tech.clone() {
                         current_player.research_tech(t.clone())?;
                     }
                 }

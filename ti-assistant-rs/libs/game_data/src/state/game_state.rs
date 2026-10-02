@@ -209,9 +209,9 @@ pub enum StrategicPrimaryProgress {
     /// Primary progress for the technology strategy card.
     Technology {
         /// What main technology was taken.
-        tech: Option<Technology>,
+        first_tech: Option<Technology>,
         /// What, if any, extra tech was taken (and paid for).
-        extra: Option<Technology>,
+        second_tech: Option<Technology>,
     },
     /// Primary progress for the politics strategy card.
     #[serde(rename_all = "camelCase")]
@@ -234,8 +234,8 @@ impl StrategicPrimaryProgress {
     ) -> Option<StrategicPrimaryProgress> {
         if card == StrategyCard::Technology && faction == Faction::NekroVirus {
             return Some(StrategicPrimaryProgress::Technology {
-                tech: None,
-                extra: None,
+                first_tech: None,
+                second_tech: None,
             });
         }
 
@@ -507,8 +507,13 @@ impl GameState {
     /// Asserts that the configured expansions is valid for the provided action.
     pub fn assert_action_expansion(&self, action: &StrategicPrimaryAction) -> anyhow::Result<()> {
         match action {
-            StrategicPrimaryAction::Technology { tech, extra } => {
-                self.assert_expansion(&tech.info().expansion)?;
+            StrategicPrimaryAction::Technology {
+                first_tech: tech,
+                second_tech: extra,
+            } => {
+                if let Some(t) = tech {
+                    self.assert_expansion(&t.info().expansion)?;
+                }
                 if let Some(t) = extra {
                     self.assert_expansion(&t.info().expansion)?;
                 }
