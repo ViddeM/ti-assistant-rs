@@ -80,10 +80,7 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                                 on_select: move |s| selected_objective.set(s),
                             }
                             if has_mecatol_rex() {
-                                p {
-                                    class: "info-text margin-top",
-                                    "You have Mecatol Rex"
-                                }
+                                p { class: "info-text margin-top", "You have Mecatol Rex" }
                             }
                             div { class: "action-buttons-container",
 
