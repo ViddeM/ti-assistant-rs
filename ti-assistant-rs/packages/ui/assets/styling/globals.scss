@@ -143,6 +143,14 @@ fieldset {
   text-align: right;
 }
 
+.info-text {
+  margin: $margin;
+  margin-top: 0;
+  font-weight: bold;
+  border: 4px dotted lightgreen;
+  padding: $padding;
+}
+
 .warning-text {
   margin: $margin;
   margin-top: 0;

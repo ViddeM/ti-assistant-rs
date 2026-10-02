@@ -48,6 +48,13 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
         objectives
     });
 
+    let has_mecatol_rex = use_memo(move || {
+        gc.game_state().players[&current_player()]
+            .planets
+            .keys()
+            .any(|p| p.is_mecatol_rex())
+    });
+
     let mut selected_objective = use_signal(|| None);
 
     rsx! {
@@ -72,7 +79,14 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                                 options: objectives(),
                                 on_select: move |s| selected_objective.set(s),
                             }
+                            if has_mecatol_rex() {
+                                p {
+                                    class: "info-text margin-top",
+                                    "You have Mecatol Rex"
+                                }
+                            }
                             div { class: "action-buttons-container",
+
                                 Button {
                                     onclick: move |_| {
                                         event
@@ -83,7 +97,11 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                                                 },
                                             });
                                     },
-                                    "Skip"
+                                    if has_mecatol_rex() {
+                                        "Take 1p"
+                                    } else {
+                                        "Skip"
+                                    }
                                 }
                                 Button {
                                     onclick: move |_| {
