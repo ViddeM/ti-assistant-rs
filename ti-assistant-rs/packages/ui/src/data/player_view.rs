@@ -50,6 +50,7 @@ impl PlayerViewContext {
         }
     }
 
+    /// Returns true if its either viewed from the active players perspective or the global view.
     pub fn is_active(&self) -> bool {
         match &*self.current.read() {
             PlayerView::Global => true,

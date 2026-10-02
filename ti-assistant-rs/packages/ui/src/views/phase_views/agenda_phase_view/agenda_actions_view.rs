@@ -166,16 +166,15 @@ fn PlayerVoteView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteState>)
     rsx! {
         fieldset { class: "agenda-actions-container",
             legend { "{player_id()}" }
-            PlayerVoteActionsView { player_id, state }
+            PlayerVoteStateView { player_id, state }
         }
     }
 }
 
 #[component]
-fn PlayerVoteActionsView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteState>) -> Element {
+fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteState>) -> Element {
     let gc = use_context::<GameContext>();
     let view = use_context::<PlayerViewContext>();
-    let event = use_context::<EventContext>();
 
     let player = use_memo(move || {
         gc.game_state()
@@ -191,19 +190,40 @@ fn PlayerVoteActionsView(player_id: ReadSignal<PlayerId>, state: ReadSignal<Vote
         };
     }
 
-    let player_vote = use_memo(move || state().player_votes[&player_id()].clone());
+    if state().player_votes.contains_key(&player_id()) == false {
+        // Player has not yet voted.
 
-    if let Some(vote) = player_vote() {
-        todo!("NOT DONE");
-    } else if !view.is_global_or_speaker() {
-        todo!("NOT DONE");
+        if !view.is_active() {
+            return rsx! {
+                p { "Has not voted yet" }
+            };
+        }
+
         return rsx! {
-            p {}
+            PlayerVoteActionsView { player_id, state }
         };
     }
 
-    let mut vote_option = use_signal(|| None);
+    let player_vote = use_memo(move || state().player_votes[&player_id()].clone());
+
+    match player_vote() {
+        None => rsx! { div { p { "Abstained" } } },
+        Some(vote) => {
+            rsx! {
+                div {
+                    p { "{vote.get_outcome().to_display_value()} - {vote.votes}" }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn PlayerVoteActionsView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteState>) -> Element {
+    let event = use_context::<EventContext>();
+
     let mut votes = use_signal(|| 0);
+    let mut vote_option = use_signal(|| None);
     let candidates = use_memo(move || state().candidates.clone());
 
     rsx! {

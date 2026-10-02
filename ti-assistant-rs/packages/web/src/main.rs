@@ -34,10 +34,7 @@ fn main() {
 
     #[cfg(feature = "server")]
     dioxus::serve(|| async {
-        use dioxus::{
-            fullstack::extract::Request,
-            server::axum::{self, Extension, middleware::Next},
-        };
+        use dioxus::server::axum::Extension;
         use ui::server_side::setup;
 
         let state = setup().await.expect("failed to setup server");
