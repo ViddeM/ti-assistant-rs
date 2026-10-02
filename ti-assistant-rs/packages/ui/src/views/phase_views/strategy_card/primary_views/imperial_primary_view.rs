@@ -95,7 +95,7 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                                             });
                                     },
                                     if has_mecatol_rex() {
-                                        "Take 1p"
+                                        "Gain 1 VP"
                                     } else {
                                         "Skip"
                                     }
