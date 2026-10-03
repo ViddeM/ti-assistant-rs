@@ -30,7 +30,7 @@ fn format_duration(duration: &Duration) -> String {
     format!(
         "{:02}:{:02}:{:02}",
         duration.num_hours(),
-        duration.num_minutes(),
-        duration.num_seconds()
+        duration.num_minutes() % 60,
+        duration.num_seconds() % 60
     )
 }
