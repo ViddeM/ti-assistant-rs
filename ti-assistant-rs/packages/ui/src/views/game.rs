@@ -5,7 +5,7 @@ use api::{
     messages::{WsMessageIn, WsMessageOut},
 };
 use dioxus::{
-    fullstack::{use_websocket, WebSocketOptions},
+    fullstack::{WebSocketOptions, use_websocket},
     logger::tracing,
     prelude::*,
 };
