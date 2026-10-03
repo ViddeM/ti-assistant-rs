@@ -25,7 +25,7 @@ pub fn AgendaActionsView(state: ReadSignal<AgendaState>) -> Element {
             if state().round == AgendaRound::Completed {
                 div { class: "agenda-phase-complete-container",
                     h3 { "Ready all planets!" }
-                    Button { onclick: move |_| event.send_event(Event::CompleteAgendaPhase) }
+                    Button { onclick: move |_| event.send_event(Event::CompleteAgendaPhase), "Begin Strategy Phase" }
                 }
             } else if let Some(vote) = state().vote {
                 ActiveAgendaView { state: vote }
