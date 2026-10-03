@@ -3,7 +3,6 @@ import { TechnologyPrimaryView } from "./primary_views/TechPrimaryView";
 import { ImperialPrimaryView } from "./primary_views/ImperialPrimaryView";
 import { useGameContext } from "@/hooks/GameContext";
 import { StrategyCard } from "@/api/bindings/StrategyCard";
-import styles from "./StrategyCardView.module.scss";
 
 export const StrategyCardPrimary = () => {
   const { gameState } = useGameContext();

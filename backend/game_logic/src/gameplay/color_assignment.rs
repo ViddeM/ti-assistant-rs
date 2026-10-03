@@ -103,7 +103,7 @@ fn get_faction_color_prio(faction: &Faction) -> BinaryHeap<ColorPrio> {
         // TODO: Thunder's Edge factions aren't yet covered by the color tables so these are just improvised.
         Faction::LastBastion => prio!(w!(Orange, 1.5), w!(Blue, 0.6)),
         Faction::RalNelConsortium => prio!(w!(Green, 1.05), w!(Yellow, 0.25), w!(Blue, 0.15)),
-        Faction::DeepwroughtScolarate => prio!(w!(Blue, 0.95), w!(Green, 0.22)),
+        Faction::DeepwroughtScholarate => prio!(w!(Blue, 0.95), w!(Green, 0.22)),
         Faction::CrimsonRebellion => prio!(w!(Red, 100.0)),
         Faction::FirmamentObsidian => prio!(w!(Black, 1.2), w!(Purple, 0.5)),
     }
@@ -139,7 +139,9 @@ fn select_color_for_faction<'a>(
                 other_faction
             );
             if my_prio.weight <= other_prio.weight {
-                log::debug!("They ({other_faction:?} :: {other_prio:?}) had higher prio than us ({faction:?} :: {my_prio:?})");
+                log::debug!(
+                    "They ({other_faction:?} :: {other_prio:?}) had higher prio than us ({faction:?} :: {my_prio:?})"
+                );
                 // Just check the next color.
                 continue;
             }
@@ -161,7 +163,10 @@ fn select_color_for_faction<'a>(
             );
             map.insert(my_prio.color.clone(), (my_prio, faction));
 
-            log::debug!("Trying to find a new color for other faction {other_faction:?} who previously had {:?}, remaining prios for them {remaining_prios:?}", other_prio.color);
+            log::debug!(
+                "Trying to find a new color for other faction {other_faction:?} who previously had {:?}, remaining prios for them {remaining_prios:?}",
+                other_prio.color
+            );
             if remaining_prios.is_empty() {
                 // They ran out of colors, pick an unused one.
                 let color = get_random_unused_color(map)?;

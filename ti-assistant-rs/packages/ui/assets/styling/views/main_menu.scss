@@ -1,0 +1,113 @@
+@import "../vars.scss";
+@import "../fonts.scss";
+
+.main-menu-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-text {
+  margin: 1em;
+  margin-bottom: 3em;
+
+  > h1 {
+    color: white;
+    text-transform: uppercase;
+    margin: 0;
+  }
+}
+
+// NEW GAME
+
+.main-menu-link {
+  position: relative;
+  text-decoration: none;
+  margin-bottom: $margin;
+
+  &::before {
+    content: "";
+    position: absolute;
+    display: block;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    transition: width 200ms ease;
+    border-radius: 4px;
+
+    background: linear-gradient(
+      to right,
+      #223a98 0%,
+      #2b67b0 51%,
+      #9ad0d8 100%
+    );
+  }
+
+  &:hover {
+    text-decoration: none;
+    -webkit-text-stroke: 1px white;
+
+    &::before {
+      width: 100%;
+    }
+
+    h2 {
+      background-image: linear-gradient(
+        to bottom right,
+        #223a98 0%,
+        #2b67b0 51%,
+        #9ad0d8 100%
+      );
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  h2 {
+    overflow: hidden;
+    text-transform: uppercase;
+    margin-bottom: 0;
+  }
+}
+
+.main-menu-link-disabled {
+  color: gray;
+  cursor: default;
+}
+
+// JOIN GAME
+
+$char-w: 1ch;
+$gap: 0.5 * $char-w;
+$n-char: 8;
+$in-w: $n-char * ($char-w + $gap);
+$underline-color: white;
+
+.game-id-container {
+  & > input {
+    display: block;
+    border: none;
+    padding: 0;
+    width: $in-w;
+    color: white;
+    background: repeating-linear-gradient(
+        90deg,
+        $underline-color 0,
+        $underline-color $char-w,
+        transparent 0,
+        transparent $char-w + $gap
+      )
+      0 100% / #{$in-w - $gap} 2px no-repeat;
+    font-family: $source-code-pro;
+    letter-spacing: $gap;
+  }
+}
+
+.game-id-input-content {
+  position: relative;
+  color: white;
+  max-width: 150px;
+  align-self: center;
+  margin-top: 1em;
+}

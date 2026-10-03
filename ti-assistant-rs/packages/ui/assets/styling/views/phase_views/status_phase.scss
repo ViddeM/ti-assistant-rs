@@ -1,0 +1,53 @@
+@import "../../vars.scss";
+
+.status-view-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.status-step-list {
+  margin: 0;
+  padding-left: 30px;
+}
+
+.status-phase-container {
+  display: flex;
+  flex-direction: column;
+
+  & > :first-child {
+    margin-bottom: $margin-large;
+  }
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    & > :first-child {
+      margin-right: $margin-large;
+    }
+  }
+}
+
+.score-objectives-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.score-objective-buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: $margin-large 0;
+}
+
+.reveal-objective-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  & > :last-child {
+    margin-top: $margin-large;
+  }
+}

@@ -1,0 +1,11 @@
+@import "../../vars.scss";
+
+.end-action-phase-view-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  & > *:not(:last-child) {
+    margin-bottom: $margin-large;
+  }
+}

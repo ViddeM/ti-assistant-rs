@@ -1,0 +1,50 @@
+@import "../vars.scss";
+
+.laws-view-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > * {
+    margin-bottom: $margin-large;
+  }
+}
+
+.laws-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  & th {
+    border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+  }
+}
+
+.delete-law-button {
+  border: none;
+  background-color: inherit;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  > * {
+    margin: $margin-large 0 0 0;
+  }
+}
+
+.resolve-outcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  & > * {
+    margin-bottom: $margin-large;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -13,7 +13,7 @@ import { useGameContext } from "@/hooks/GameContext";
 import { nameSort, stringSort } from "@/utils/Utils";
 
 export const SecretObjectivesView = () => {
-  const { gameState, showInfo } = useGameContext();
+  const { gameState } = useGameContext();
 
   const players = Object.keys(gameState.players)
     .map((p) => {
@@ -60,7 +60,7 @@ const PlayerSecretView = ({
   player,
   playerSecrets,
 }: PlayerSecretViewProps) => {
-  const { gameState, gameOptions, sendEvent, showInfo } = useGameContext();
+  const { gameState, gameOptions, sendEvent } = useGameContext();
 
   const [secret, setSecret] = useState<SecretObjective | "">("");
 
