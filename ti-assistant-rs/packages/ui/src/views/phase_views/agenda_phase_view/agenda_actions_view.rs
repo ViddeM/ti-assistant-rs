@@ -248,15 +248,17 @@ fn PlayerVoteActionsView(player_id: ReadSignal<PlayerId>, state: ReadSignal<Vote
                 min: 0,
                 max: 1000,
                 value: votes,
-                onchange: move |e: FormEvent| {
+                oninput: move |e: FormEvent| {
                     let s = e.value();
 
-                    if let Ok(v) = s.parse() {
-                        votes.set(v);
-                    } else {
-                        votes.set(votes());
-                    }
-                },
+                    let new_votes = match s.parse() {
+                        Ok(v) => v,
+                        _ if s.len() == 0 => 0,
+                        _ => votes()
+                    };
+
+                    votes.set(new_votes);
+                }
             }
             div {
                 Button {
