@@ -184,6 +184,8 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
             .expect("Player to exist")
     });
 
+    let player_vote = use_memo(move || state().player_votes.get(&player_id()).cloned());
+
     if player().faction == Faction::NekroVirus {
         return rsx! {
             p { "Nekro Virus cannot vote" }
@@ -204,11 +206,18 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
         };
     }
 
-    let player_vote = use_memo(move || state().player_votes[&player_id()].clone());
-
     match player_vote() {
-        None => rsx! { div { p { "Abstained" } } },
-        Some(vote) => {
+        None => rsx! {
+            div {
+                p { "Has not voted yet" }
+            }
+        },
+        Some(None) => rsx! {
+            div {
+                p { "Abstained" }
+            }
+        },
+        Some(Some(vote)) => {
             rsx! {
                 div {
                     p { "{vote.get_outcome().to_display_value()} - {vote.votes}" }
@@ -283,9 +292,18 @@ fn ResolveOutcome(state: ReadSignal<VoteState>) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
-    let mut outcome = use_signal(|| None);
+    let expected_outcome = use_memo(move || state().expected_outcome.clone());
+    let mut outcome_override = use_signal(|| None);
 
     let candidates = use_memo(move || state().candidates.clone());
+
+    let outcome = use_memo(move || {
+        if let Some(option) = outcome_override() {
+            return Some(option);
+        }
+
+        expected_outcome()
+    });
 
     let resolve = use_memo(move || {
         outcome()
@@ -312,8 +330,8 @@ fn ResolveOutcome(state: ReadSignal<VoteState>) -> Element {
             div { class: "resolve-outcome-container",
                 label { "Override outcome" }
                 VoteOptionDropdown {
-                    value: outcome,
-                    on_select: move |o| outcome.set(o),
+                    value: outcome_override,
+                    on_select: move |o| outcome_override.set(o),
                     options: candidates(),
                 }
                 Button {
