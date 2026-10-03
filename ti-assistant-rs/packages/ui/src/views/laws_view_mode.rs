@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_free_icons::{icons::fa_solid_icons::FaTrash, Icon};
+use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaTrash};
 use ti_helper_game_data::{
     actions::event::Event, common::player_id::PlayerId, components::agenda::AgendaElect,
 };
@@ -15,6 +15,7 @@ use crate::{
 
 const LAWS_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/laws_view_mode.scss");
 
+// TODO: This view is not finished and seems to be very buggy!
 #[component]
 pub fn LawsViewMode() -> Element {
     rsx! {
@@ -170,8 +171,6 @@ fn AddLawForm() -> Element {
         }
     });
 
-    // TODO: FIgure out why page reloads when we add an agenda.
-
     rsx! {
         div { class: "card column",
             h2 { "Add Agenda" }
@@ -200,7 +199,8 @@ fn AddLawForm() -> Element {
 
                                 form {
                                     class: "form-container",
-                                    onsubmit: move |_| {
+                                    onsubmit: move |e| {
+                                        e.prevent_default();
                                         event
                                             .send_event(Event::AddAgendaPlayerVote {
                                                 player: player(),
@@ -271,6 +271,9 @@ fn AddLawForm() -> Element {
                 } else {
                     rsx! {
                         form { class: "form-container",
+                        onsubmit: |e| {
+                            e.prevent_default();
+                        },
                             AgendaDropdown {
                                 value: agenda,
                                 options: available_agendas(),
