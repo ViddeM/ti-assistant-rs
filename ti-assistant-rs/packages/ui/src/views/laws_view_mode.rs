@@ -73,7 +73,7 @@ fn ActiveLawsTable() -> Element {
                                                 Icon { class: "inline-icon", icon: FaTrash }
                                             }
                                         }
-                                        td { "{law.info().name" }
+                                        td { "{law.info().name}" }
                                         td {
                                             InfoButton { info: Info::Agenda(law.clone()) }
                                         }
