@@ -1,6 +1,5 @@
 import { CreationPhase } from "../creation/CreationPhase";
 import { SelectStrategyCardView } from "../strategy_card_select/SelectStrategyCard";
-import { StrategyCard } from "@/resources/types/strategyCards";
 import { ActionPhaseView } from "../action_phase_View/ActionPhaseView";
 import { StrategyCardView } from "../strategy_card_view/StrategyCardView";
 import { TacticalView } from "../tactical_view/TacticalView";
