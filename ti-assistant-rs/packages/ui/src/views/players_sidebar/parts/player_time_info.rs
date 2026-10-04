@@ -1,5 +1,8 @@
-use chrono::Duration;
+use std::time::Duration as StdDuration;
+
+use chrono::{Duration, Utc};
 use dioxus::prelude::*;
+use dioxus_sdk::time::use_interval;
 use ti_helper_game_data::common::player_id::PlayerId;
 
 use crate::data::game_context::GameContext;
@@ -9,20 +12,43 @@ pub fn PlayerTimeInfo(player_id: PlayerId) -> Element {
     let gc = use_context::<GameContext>();
 
     let p1 = player_id.clone();
-    let play_time = use_memo(move || {
-        let dur = gc
-            .game_state()
+    let logged = use_memo(move || {
+        gc.game_state()
             .players_play_time
             .get(&p1)
             .cloned()
-            .unwrap_or_default();
-        format_duration(&Duration::from_std(dur).expect("Duration to be in range"))
+            .map(|d| Duration::from_std(d).expect("Duration to be in range"))
+            .unwrap_or_default()
     });
 
-    // TODO: Make the time 'tick' whilst the player is active.
+    let p2 = player_id.clone();
+    let running_since = use_memo(move || {
+        if gc.game_state().current_player.as_ref() == Some(&p2) {
+            gc.game_state().current_turn_start_time
+        } else {
+            None
+        }
+    });
+
+    let mut now = use_signal(Utc::now);
+    use_interval(StdDuration::from_secs(1), move |()| {
+        // Check if we're the active player and if so ensure that the timer is updated.
+        if running_since.peek().is_some() {
+            now.set(Utc::now());
+        }
+    });
+
+    let total = {
+        let extra = match running_since() {
+            Some(start) => (now() - start).max(Duration::zero()),
+            None => Duration::zero(),
+        };
+
+        logged() + extra
+    };
 
     rsx! {
-        p { "{play_time()}" }
+        p { "{format_duration(&total)}" }
     }
 }
 
