@@ -214,6 +214,7 @@ impl Hero {
                 faction: VuilRaithCabal,
                 kind: Action,
             },
+            // TODO: Implement
             Hero::MathisMathinus => info! {
                 tag: MathisMathinus,
                 name: "Mathis Mathinus",
