@@ -3,6 +3,7 @@ pub mod game;
 pub mod info_box;
 pub mod laws_view_mode;
 pub mod main_menu;
+pub mod map_view_mode;
 pub mod new_game;
 pub mod phase_view;
 pub mod phase_views;
