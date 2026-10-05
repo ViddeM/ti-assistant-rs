@@ -96,6 +96,7 @@ pub fn planet_offset(planet: &Planet) -> (f32, f32) {
         Planet::RigelI | Planet::Ashtroth | Planet::Kamdorn | Planet::Avar => (0.15, -0.26),
         Planet::Mallice => (0.20, 0.12),
         Planet::Mirage => (0.12, -0.25),
+        // TODO: Handle thunder's edge planets (probably skip the catch-all).
         _ => (0.0, 0.0),
     }
 }

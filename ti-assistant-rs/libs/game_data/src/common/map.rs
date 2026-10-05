@@ -175,8 +175,8 @@ enum Variant {
 impl Display for Variant {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            Variant::A => "a",
-            Variant::B => "b",
+            Variant::A => "A",
+            Variant::B => "B",
         })
     }
 }
@@ -186,8 +186,8 @@ impl TryFrom<char> for Variant {
 
     fn try_from(value: char) -> Result<Self, Self::Error> {
         match value {
-            'a' => Ok(Self::A),
-            'b' => Ok(Self::B),
+            'a' | 'A' => Ok(Self::A),
+            'b' | 'B' => Ok(Self::B),
             v => Err(format!("Unsupported system variant {v}")),
         }
     }
@@ -275,4 +275,27 @@ struct HyperLaneTile {
     system_id: u32,
     variant: String,
     rotation: u32,
+}
+
+#[cfg(test)]
+mod test {
+    use crate::components::system::systems;
+
+    use super::MiltySystemId;
+
+    #[test]
+    fn milty_variants_match_system_ids() {
+        let systems = systems();
+        for milty_id in ["96a", "96A", "96b", "96B"] {
+            let id = milty_id
+                .parse::<MiltySystemId>()
+                .expect("to parse")
+                .to_system_id()
+                .expect("to have a system id");
+            assert!(
+                systems.contains_key(&id),
+                "{milty_id} became {id}, which is not a known system"
+            );
+        }
+    }
 }

@@ -631,14 +631,14 @@ pub fn systems() -> HashMap<SystemId, System> {
             Expansion::ThundersEdge
         ),
         s!(
-            "96a",
+            "96A",
             SystemType::HomeSystem(Faction::FirmamentObsidian),
             vec![Planet::Cronos, Planet::Tallin],
             vec![],
             Expansion::ThundersEdge
         ),
         s!(
-            "96b",
+            "96B",
             SystemType::HomeSystem(Faction::FirmamentObsidian),
             vec![Planet::CronosHollow, Planet::TallinHollow],
             vec![],
