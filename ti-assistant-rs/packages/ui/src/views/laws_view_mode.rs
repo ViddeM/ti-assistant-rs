@@ -110,7 +110,7 @@ fn AddLawForm() -> Element {
         let mut laws = gc
             .game_options()
             .agendas
-            .keys()
+            .iter()
             .cloned()
             .collect::<Vec<_>>();
         laws.sort();
@@ -270,10 +270,11 @@ fn AddLawForm() -> Element {
                     }
                 } else {
                     rsx! {
-                        form { class: "form-container",
-                        onsubmit: |e| {
-                            e.prevent_default();
-                        },
+                        form {
+                            class: "form-container",
+                            onsubmit: |e| {
+                                e.prevent_default();
+                            },
                             AgendaDropdown {
                                 value: agenda,
                                 options: available_agendas(),

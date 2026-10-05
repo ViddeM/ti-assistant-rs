@@ -52,8 +52,8 @@ pub fn TechTable() -> Element {
             gc.game_options()
                 .technologies
                 .iter()
-                .filter_map(|(t, i)| {
-                    if let TechOrigin::Faction(f) = i.origin {
+                .filter_map(|t| {
+                    if let TechOrigin::Faction(f) = t.info().origin {
                         Some((f, t))
                     } else {
                         None
@@ -123,7 +123,7 @@ pub fn TechTable() -> Element {
         let mut techs = gc
             .game_options()
             .technologies
-            .keys()
+            .iter()
             .cloned()
             .collect::<Vec<_>>();
         techs.sort();

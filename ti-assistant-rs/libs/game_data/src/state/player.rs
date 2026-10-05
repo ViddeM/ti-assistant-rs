@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use anyhow::ensure;
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,6 @@ use crate::{
     components::{
         planet::Planet, planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
     },
-    enum_map::EnumMap,
 };
 
 /// A new player that is currently being created.
@@ -34,7 +33,7 @@ pub struct Player {
     /// Which color the player has.
     pub color: Color,
     /// Which planets the player controls and their attachments.
-    pub planets: EnumMap<Planet, HashSet<PlanetAttachment>>,
+    pub planets: HashMap<Planet, HashSet<PlanetAttachment>>,
     /// Which technologies the player has.
     pub technologies: HashSet<Technology>,
     /// Which relics the player currently owns.

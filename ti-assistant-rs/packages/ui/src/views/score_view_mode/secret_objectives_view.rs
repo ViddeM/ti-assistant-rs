@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_free_icons::{icons::fa_solid_icons::FaTrash, Icon};
+use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaTrash};
 use ti_helper_game_data::{
     actions::event::Event, common::player_id::PlayerId, components::objectives::Objective,
 };
@@ -73,7 +73,7 @@ fn PlayerSecretView(player_id: PlayerId) -> Element {
             .game_options()
             .objectives
             .iter()
-            .filter_map(|(o, _)| match o {
+            .filter_map(|o| match o {
                 Objective::Public(_) => None,
                 Objective::Secret(secret_objective) => Some(secret_objective),
             })

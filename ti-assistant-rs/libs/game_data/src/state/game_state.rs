@@ -29,7 +29,6 @@ use crate::{
         system::SystemId,
         tech::Technology,
     },
-    enum_map::EnumMap,
 };
 
 use super::{
@@ -68,7 +67,7 @@ pub struct GameState {
     pub turn_order: Vec<PlayerId>,
 
     /// Which players hold which strategy cards.
-    pub strategy_card_holders: EnumMap<StrategyCard, PlayerId>,
+    pub strategy_card_holders: HashMap<StrategyCard, PlayerId>,
 
     /// The current player, if any.
     pub current_player: Option<PlayerId>,
@@ -92,7 +91,7 @@ pub struct GameState {
     pub agenda_vote_history: Vec<AgendaRecord>,
 
     /// Laws in play.
-    pub laws: EnumMap<Agenda, AgendaElect>,
+    pub laws: HashMap<Agenda, AgendaElect>,
 
     /// State required for the agenda 'admin view'.
     pub agenda_override_state: Option<AgendaOverrideState>,
@@ -250,10 +249,10 @@ pub struct TacticalProgress {
     /// What system was activated, if any.
     pub activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
     /// Which planets have been taken this far and the player who owned them previously (if any).
-    pub taken_planets: EnumMap<Planet, Option<PlayerId>>,
+    pub taken_planets: HashMap<Planet, Option<PlayerId>>,
     /// What planet attachments have been selected for the taken planets.
     /// NOTE: Does not include attachments kept when taken from another player.
-    pub planet_attachments: EnumMap<Planet, PlanetAttachment>,
+    pub planet_attachments: HashMap<Planet, PlanetAttachment>,
 }
 
 /// The progress of an action card being played.

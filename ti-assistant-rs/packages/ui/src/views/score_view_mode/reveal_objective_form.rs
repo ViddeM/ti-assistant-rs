@@ -32,7 +32,7 @@ pub fn RevealObjectiveForm() -> Element {
         let mut objectives = gc
             .game_options()
             .objectives
-            .keys()
+            .iter()
             .filter(|o| o.info().kind == ObjectiveKind::StageI)
             .filter(|o| !revealed_objectives().contains(o))
             .cloned()
@@ -44,7 +44,7 @@ pub fn RevealObjectiveForm() -> Element {
         let mut objectives = gc
             .game_options()
             .objectives
-            .keys()
+            .iter()
             .filter(|o| o.info().kind == ObjectiveKind::StageII)
             .filter(|o| !revealed_objectives().contains(o))
             .cloned()

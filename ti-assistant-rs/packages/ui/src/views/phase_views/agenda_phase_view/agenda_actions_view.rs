@@ -25,7 +25,9 @@ pub fn AgendaActionsView(state: ReadSignal<AgendaState>) -> Element {
             if state().round == AgendaRound::Completed {
                 div { class: "agenda-phase-complete-container",
                     h3 { "Ready all planets!" }
-                    Button { onclick: move |_| event.send_event(Event::CompleteAgendaPhase), "Begin Strategy Phase" }
+                    Button { onclick: move |_| event.send_event(Event::CompleteAgendaPhase),
+                        "Begin Strategy Phase"
+                    }
                 }
             } else if let Some(vote) = state().vote {
                 ActiveAgendaView { state: vote }
@@ -54,7 +56,7 @@ fn RevealAgendaView() -> Element {
     let all_agendas = use_memo(move || {
         gc.game_options()
             .agendas
-            .keys()
+            .iter()
             .cloned()
             .collect::<Vec<_>>()
     });
@@ -254,11 +256,11 @@ fn PlayerVoteActionsView(player_id: ReadSignal<PlayerId>, state: ReadSignal<Vote
                     let new_votes = match s.parse() {
                         Ok(v) => v,
                         _ if s.len() == 0 => 0,
-                        _ => votes()
+                        _ => votes(),
                     };
 
                     votes.set(new_votes);
-                }
+                },
             }
             div {
                 Button {

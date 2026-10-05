@@ -177,8 +177,10 @@ fn WinnuSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         let mut techs = game_options
             .technologies
             .iter()
-            .filter(|(_, info)| info.origin == TechOrigin::Base && info.requirements.is_empty())
-            .map(|(tech, _)| tech.clone())
+            .filter(|tech| {
+                tech.info().origin == TechOrigin::Base && tech.info().requirements.is_empty()
+            })
+            .cloned()
             .collect::<Vec<_>>();
         techs.sort();
         techs
@@ -448,8 +450,7 @@ fn ObjectivesSetup() -> Element {
             .game_options()
             .objectives
             .iter()
-            .filter(|(_, i)| i.kind == ObjectiveKind::StageI)
-            .map(|(o, _)| o)
+            .filter(|o| o.info().kind == ObjectiveKind::StageI)
             .cloned()
             .collect::<Vec<_>>();
         objectives.sort();

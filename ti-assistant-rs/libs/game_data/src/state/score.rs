@@ -12,7 +12,6 @@ use crate::{
         objectives::{Objective, secret::SecretObjective},
         planet::Planet,
     },
-    enum_map::EnumMap,
 };
 
 use super::{agenda::AgendaRecord, player::Player};
@@ -28,7 +27,7 @@ pub struct Score {
     pub player_points: HashMap<PlayerId, i8>,
 
     /// Map from revealed objectives to the players that have scored them.
-    pub revealed_objectives: EnumMap<Objective, HashSet<PlayerId>>,
+    pub revealed_objectives: HashMap<Objective, HashSet<PlayerId>>,
 
     /// Completed secret objectives, by player.
     pub secret_objectives: HashMap<PlayerId, HashSet<SecretObjective>>,

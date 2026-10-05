@@ -243,8 +243,7 @@ fn ActionCardSelectView() -> Element {
         gc.game_options()
             .action_cards
             .iter()
-            .filter(|(_, info)| info.play == ActionCardPlay::Action)
-            .map(|(c, _)| c)
+            .filter(|ac| ac.info().play == ActionCardPlay::Action)
             .cloned()
             .collect::<Vec<_>>()
     });
@@ -355,7 +354,7 @@ fn GainRelicView() -> Element {
         let mut relics = gc
             .game_options()
             .relics
-            .keys()
+            .iter()
             .filter(|r| !taken_relics().contains(r))
             .cloned()
             .collect::<Vec<_>>();
@@ -416,8 +415,8 @@ fn FrontierCardView() -> Element {
             .game_options()
             .frontier_cards
             .iter()
-            .filter(|(_, b)| b.frontier_type == FrontierCardType::Action)
-            .map(|(a, _)| a.clone())
+            .filter(|fc| fc.info().frontier_type == FrontierCardType::Action)
+            .map(|fc| fc.clone())
             .collect::<Vec<_>>();
         cards.sort();
         cards

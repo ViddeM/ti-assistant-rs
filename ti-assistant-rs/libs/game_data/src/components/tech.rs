@@ -1,12 +1,9 @@
-use std::fmt::Display;
+use std::{collections::HashMap, fmt::Display};
 
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
-use crate::{
-    common::{expansions::Expansion, faction::Faction, game_settings::Expansions},
-    enum_map::EnumMap,
-};
+use crate::common::{expansions::Expansion, faction::Faction, game_settings::Expansions};
 
 /// What category the tech belongs to.
 #[derive(
@@ -207,7 +204,7 @@ pub struct TechInfo {
     /// Weather the tech is general or belongs to a faction.
     pub origin: TechOrigin,
     /// What requirements there are for the technology.
-    pub requirements: EnumMap<TechCategory, u32>,
+    pub requirements: HashMap<TechCategory, u32>,
     /// Which expansion this tech belongs to.
     pub expansion: Expansion,
     /// The effects of the technology. Each element corresponds to an effect of the technology.

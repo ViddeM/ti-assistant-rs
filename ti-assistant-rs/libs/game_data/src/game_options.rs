@@ -1,21 +1,22 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
 use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
     components::{
-        action_card::{ActionCard, ActionCardInfo},
-        agenda::{Agenda, AgendaInfo},
-        frontier_card::{FrontierCard, FrontierCardInfo},
-        leaders::{Leader, LeaderInfo},
-        objectives::{Objective, ObjectiveInfo, public::PublicObjective, secret::SecretObjective},
+        action_card::ActionCard,
+        agenda::Agenda,
+        frontier_card::FrontierCard,
+        leaders::Leader,
+        objectives::{Objective, public::PublicObjective, secret::SecretObjective},
         planet::{Planet, PlanetInfo},
         planet_attachment::{PlanetAttachment, PlanetAttachmentInfo},
-        relic::{Relic, RelicInfo},
+        relic::Relic,
         system::{System, SystemId, systems},
-        tech::{TechInfo, Technology},
+        tech::Technology,
     },
-    enum_map::EnumMap,
 };
 
 const MIN_PLAYER_COUNT: usize = 3;
@@ -33,31 +34,31 @@ pub struct GameOptions {
     /// What factions exist within the game.
     pub factions: Vec<FactionResponse>,
     /// What systems exists in the game.
-    pub systems: EnumMap<SystemId, System>,
+    pub systems: HashMap<SystemId, System>,
     /// What technologies exist in the game.
-    pub technologies: EnumMap<Technology, TechInfo>,
+    pub technologies: Vec<Technology>,
     /// What planets exist in the game.
-    pub planet_infos: EnumMap<Planet, PlanetInfo>,
+    pub planet_infos: HashMap<Planet, PlanetInfo>,
     /// What planet attachments exist in the game.
-    pub planet_attachments: EnumMap<PlanetAttachment, PlanetAttachmentInfo>,
+    pub planet_attachments: HashMap<PlanetAttachment, PlanetAttachmentInfo>,
     /// What objectives exist in the game.
-    pub objectives: EnumMap<Objective, ObjectiveInfo>,
+    pub objectives: Vec<Objective>,
     /// What action cards exist in the game.
-    pub action_cards: EnumMap<ActionCard, ActionCardInfo>,
+    pub action_cards: Vec<ActionCard>,
     /// What agendas exist in the game.
-    pub agendas: EnumMap<Agenda, AgendaInfo>,
+    pub agendas: Vec<Agenda>,
     /// What leaders exist in the game.
-    pub leaders: EnumMap<Leader, LeaderInfo>,
+    pub leaders: Vec<Leader>,
     /// Map from all factions in the game to the leaders of that faction.
-    pub leaders_by_faction: EnumMap<Faction, Vec<Leader>>,
+    pub leaders_by_faction: HashMap<Faction, Vec<Leader>>,
     /// What frontier cards exists in the game.
-    pub frontier_cards: EnumMap<FrontierCard, FrontierCardInfo>,
+    pub frontier_cards: Vec<FrontierCard>,
     /// What relics exists in the game.
-    pub relics: EnumMap<Relic, RelicInfo>,
+    pub relics: Vec<Relic>,
 }
 
 impl std::ops::Deref for GameOptions {
-    type Target = EnumMap<Faction, Vec<Leader>>;
+    type Target = HashMap<Faction, Vec<Leader>>;
 
     fn deref(&self) -> &Self::Target {
         &self.leaders_by_faction
@@ -67,9 +68,8 @@ impl std::ops::Deref for GameOptions {
 impl GameOptions {
     /// Returns GameOptions for the specified expansions.
     pub fn new(expansions: &Expansions) -> Self {
-        let leaders: EnumMap<_, _> = Leader::iter()
+        let leaders: Vec<Leader> = Leader::iter()
             .filter(|leader| leader.is_enabled_in(expansions))
-            .map(|leader| (leader, leader.info()))
             .collect();
 
         Self {
@@ -105,40 +105,31 @@ impl GameOptions {
             objectives: PublicObjective::iter()
                 .map(Objective::from)
                 .chain(SecretObjective::iter().map(Objective::from))
-                .map(|o| {
-                    let info = o.info();
-                    (o, info)
-                })
-                .filter(|(_, o)| expansions.is_enabled(&o.expansion))
+                .filter(|o| expansions.is_enabled(&o.info().expansion))
                 .collect(),
             technologies: Technology::iter()
                 .filter(|tech| tech.is_enabled_in(expansions))
-                .map(|t| (t.clone(), t.info()))
                 .collect(),
             action_cards: ActionCard::iter()
-                .map(|card| (card.clone(), card.info()))
-                .filter(|(_, card)| expansions.is_enabled(&card.expansion))
+                .filter(|card| expansions.is_enabled(&card.info().expansion))
                 .collect(),
             agendas: Agenda::iter()
-                .map(|agenda| (agenda, agenda.info()))
-                .filter(|(_, agenda)| expansions.is_enabled(&agenda.expansion))
-                .filter(|(agenda, _)| !(expansions.prophecy_of_kings && agenda.disabled_in_pok()))
+                .filter(|agenda| expansions.is_enabled(&agenda.info().expansion))
+                .filter(|agenda| !(expansions.prophecy_of_kings && agenda.disabled_in_pok()))
                 .collect(),
             leaders_by_faction: leaders
                 .iter()
-                .map(|(leader, info)| (info.faction(), leader))
-                .fold(EnumMap::new(), |mut acc, (faction, leader)| {
+                .map(|leader| (leader.info().faction(), leader))
+                .fold(HashMap::new(), |mut acc, (faction, leader)| {
                     acc.entry(faction).or_default().push(*leader);
                     acc
                 }),
             leaders,
             frontier_cards: FrontierCard::iter()
-                .map(|f| (f.clone(), f.info()))
-                .filter(|(_, card)| expansions.is_enabled(&card.expansion))
+                .filter(|card| expansions.is_enabled(&card.info().expansion))
                 .collect(),
             relics: Relic::iter()
-                .map(|relic| (relic.clone(), relic.info()))
-                .filter(|(_, relic)| expansions.is_enabled(&relic.expansion))
+                .filter(|relic| expansions.is_enabled(&relic.info().expansion))
                 .collect(),
         }
     }

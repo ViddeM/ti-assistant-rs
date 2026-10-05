@@ -62,7 +62,7 @@ pub fn StatusPhaseActionsView() -> Element {
     let unrevealed_objectives = use_memo(move || {
         gc.game_options()
             .objectives
-            .keys()
+            .iter()
             .filter(|&o| !revealed_objectives().contains(o))
             .cloned()
             .collect::<Vec<_>>()
@@ -190,7 +190,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
         let mut objs = gc
             .game_options()
             .objectives
-            .keys()
+            .iter()
             .filter_map(|o| match o {
                 Objective::Public(_) => None,
                 Objective::Secret(secret) => Some((o.clone(), secret.clone())),

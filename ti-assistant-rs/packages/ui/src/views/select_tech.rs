@@ -47,7 +47,7 @@ pub fn SelectTechView(
         let mut techs = gc
             .game_options()
             .technologies
-            .keys()
+            .iter()
             .filter(|&t| !player_techs().contains(t))
             .filter(|&t| !filtered_techs().contains(t))
             .filter(|&t| match t.info().origin {

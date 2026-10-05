@@ -664,7 +664,7 @@ fn RelicPointRows() -> Element {
     let crown_of_emphidia_enabled = use_memo(move || {
         gc.game_options()
             .relics
-            .contains_key(&Relic::TheCrownOfEmphidia)
+            .contains(&Relic::TheCrownOfEmphidia)
     });
     let crown_of_emphidia_holder =
         use_memo(move || gc.game_state().score.crown_of_emphidia.clone());
@@ -707,11 +707,8 @@ fn RelicPointRows() -> Element {
         }
     });
 
-    let shard_of_the_throne_enabled = use_memo(move || {
-        gc.game_options()
-            .relics
-            .contains_key(&Relic::ShardOfTheThrone)
-    });
+    let shard_of_the_throne_enabled =
+        use_memo(move || gc.game_options().relics.contains(&Relic::ShardOfTheThrone));
     let shard_of_the_throne_holder =
         use_memo(move || gc.game_state().score.shard_of_the_throne.clone());
     let shard_of_the_throne_render = use_memo(move || {
