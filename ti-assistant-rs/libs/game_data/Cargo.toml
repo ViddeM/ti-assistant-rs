@@ -6,7 +6,7 @@ edition = "2024"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-strum = { workspace = true }
+strum = { workspace = true, features = ["derive"] }
 strum_macros = { workspace = true }
 serde = { version = "1", features = ["derive", "rc"] }
 chrono = { version = "0.4.31", features = ["serde"] }

@@ -5,6 +5,7 @@ members = [
     "packages/web",
     "packages/api",
     "libs/db",
+    "libs/demo_game_creator",
     "libs/game_data",
     "libs/game_logic",
     "libs/milty",
