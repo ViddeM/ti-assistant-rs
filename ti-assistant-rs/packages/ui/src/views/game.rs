@@ -29,13 +29,49 @@ use crate::{
 
 const GAME_SCSS: Asset = asset!("/assets/styling/views/game.scss");
 
+#[derive(Debug, Clone, PartialEq, Props)]
+pub struct GameViewProps<R>
+where
+    R: PartialEq + Clone + 'static + Routable,
+{
+    game_id: GameId,
+    main_menu: Callback<(), R>,
+}
+
+#[derive(Debug, Clone, PartialEq, Props)]
+struct BackToMainMenuButtonProps<R>
+where
+    R: PartialEq + Clone + 'static + Routable,
+{
+    main_menu: Callback<(), R>,
+}
+
 #[component]
-pub fn GameView(game_id: GameId) -> Element {
+fn BackToMainMenuButton<R: PartialEq + Clone + 'static + Routable>(
+    BackToMainMenuButtonProps { main_menu }: BackToMainMenuButtonProps<R>,
+) -> Element {
+    let nav = navigator();
+
+    rsx! {
+        Button {
+            onclick: move |_| {
+                nav.push(main_menu(()));
+            },
+            "Back to main menu"
+        }
+    }
+}
+
+#[component]
+pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
+    GameViewProps { game_id, main_menu }: GameViewProps<R>,
+) -> Element {
     use_context_provider(|| game_id);
     let mut socket = use_websocket(move || {
         join_game(game_id, WebSocketOptions::new().with_automatic_reconnect())
     });
     let mut ws_error = use_signal(|| None);
+    let mut not_found = use_signal(|| false);
 
     let send_event = use_callback(move |msg: WsMessageIn| {
         spawn(async move {
@@ -66,8 +102,8 @@ pub fn GameView(game_id: GameId) -> Element {
                 }
                 WsMessageOut::JoinedGame(game_id) => tracing::info!("Joined game {game_id}"),
                 WsMessageOut::NotFound(game_id) => {
-                    // TODO: Ensure that we have a "Back to main menu" button on not found.
-                    ws_error.set(Some(format!("Game {game_id} not found")))
+                    ws_error.set(Some(format!("Game {game_id} not found")));
+                    not_found.set(true);
                 }
             }
         }
@@ -76,19 +112,22 @@ pub fn GameView(game_id: GameId) -> Element {
     if let Some(err) = ws_error() {
         return rsx! {
             div { class: "card column",
-                h2 { "Invalid event" }
+                h2 { "Something went wrong" }
                 p { "Error: {err}" }
-                Button {
-                    onclick: move |_| async move {
-                        let new_socket = join_game(
-                                game_id,
-                                WebSocketOptions::new().with_automatic_reconnect(),
-                            )
-                            .await;
-                        socket.set(new_socket);
-                    },
-                    "Reload Game"
+                if !not_found() {
+                    Button {
+                        onclick: move |_| async move {
+                            let new_socket = join_game(
+                                    game_id,
+                                    WebSocketOptions::new().with_automatic_reconnect(),
+                                )
+                                .await;
+                            socket.set(new_socket);
+                        },
+                        "Reload Game"
+                    }
                 }
+                BackToMainMenuButton { main_menu }
             }
         };
     }

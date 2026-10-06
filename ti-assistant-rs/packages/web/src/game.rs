@@ -2,6 +2,8 @@ use dioxus::prelude::*;
 use std::str::FromStr;
 use ui::{game_id::GameId, views::game::GameView};
 
+use crate::Route;
+
 #[component]
 pub fn Game(id: String) -> Element {
     let game_id = GameId::from_str(&id);
@@ -12,12 +14,18 @@ pub fn Game(id: String) -> Element {
                 div {
                     p { "Invalid Game ID: {id}" }
                     p { "Err: {err}" }
+                    nav {
+                        Link {
+                            to: Route::MainMenu, "Back to main menu"
+                        }
+                    }
+                    Outlet::<Route> {}
                 }
-            }
+            };
         }
     };
 
     rsx! {
-        GameView { game_id }
+        GameView { game_id, main_menu: || Route::MainMenu }
     }
 }
