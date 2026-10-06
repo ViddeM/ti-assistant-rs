@@ -30,38 +30,40 @@ pub fn FactionIcon(
     }
 }
 
-const ARBOREC_ICON: Asset = asset!("/assets/icons/factions/Arborec.png");
-const ARGENT_FLIGHT_ICON: Asset = asset!("/assets/icons/factions/ArgentFlight.png");
-const BARONY_OF_LETNEV_ICON: Asset = asset!("/assets/icons/factions/BaronyOfLetnev.png");
-const CLAN_OF_SAAR_ICON: Asset = asset!("/assets/icons/factions/ClanOfSaar.png");
-const COUNCIL_OF_KELERES_ICON: Asset = asset!("/assets/icons/factions/CouncilKeleres.png");
-const EMBERS_OF_MUAAT_ICON: Asset = asset!("/assets/icons/factions/EmbersOfMuaat.png");
-const EMIRATES_OF_HACAN_ICON: Asset = asset!("/assets/icons/factions/EmiratesOfHacan.png");
-const EMPYREAN_ICON: Asset = asset!("/assets/icons/factions/Empyrean.png");
-const FEDERATION_OF_SOL_ICON: Asset = asset!("/assets/icons/factions/FederationOfSol.png");
-const GHOSTS_OF_CREUSS_ICON: Asset = asset!("/assets/icons/factions/GhostsOfCreuss.png");
-const L1Z1X_MINDNET_ICON: Asset = asset!("/assets/icons/factions/L1Z1XMindnet.png");
-const MAHACT_GENE_SORCERERS_ICON: Asset = asset!("/assets/icons/factions/MahactGeneSorcerers.png");
-const MENTAK_COALITION_ICON: Asset = asset!("/assets/icons/factions/MentakCoalition.png");
-const NAALU_COLLECTIVE_ICON: Asset = asset!("/assets/icons/factions/NaaluCollective.png");
-const NAAZ_ROKHA_ALLIANCE_ICON: Asset = asset!("/assets/icons/factions/NaazRokhaAlliance.png");
-const NEKRO_VIRUS_ICON: Asset = asset!("/assets/icons/factions/NekroVirus.png");
-const NOMAD_ICON: Asset = asset!("/assets/icons/factions/Nomad.png");
-const SARDAKK_NORR_ICON: Asset = asset!("/assets/icons/factions/SardakkNorr.png");
-const TITANS_OF_UL_ICON: Asset = asset!("/assets/icons/factions/TitansOfUl.png");
+const ARBOREC_ICON: Asset = asset!("/assets/icons/factions/webp/Arborec.webp");
+const ARGENT_FLIGHT_ICON: Asset = asset!("/assets/icons/factions/webp/ArgentFlight.webp");
+const BARONY_OF_LETNEV_ICON: Asset = asset!("/assets/icons/factions/webp/BaronyOfLetnev.webp");
+const CLAN_OF_SAAR_ICON: Asset = asset!("/assets/icons/factions/webp/ClanOfSaar.webp");
+const COUNCIL_OF_KELERES_ICON: Asset = asset!("/assets/icons/factions/webp/CouncilKeleres.webp");
+const EMBERS_OF_MUAAT_ICON: Asset = asset!("/assets/icons/factions/webp/EmbersOfMuaat.webp");
+const EMIRATES_OF_HACAN_ICON: Asset = asset!("/assets/icons/factions/webp/EmiratesOfHacan.webp");
+const EMPYREAN_ICON: Asset = asset!("/assets/icons/factions/webp/Empyrean.webp");
+const FEDERATION_OF_SOL_ICON: Asset = asset!("/assets/icons/factions/webp/FederationOfSol.webp");
+const GHOSTS_OF_CREUSS_ICON: Asset = asset!("/assets/icons/factions/webp/GhostsOfCreuss.webp");
+const L1Z1X_MINDNET_ICON: Asset = asset!("/assets/icons/factions/webp/L1Z1XMindnet.webp");
+const MAHACT_GENE_SORCERERS_ICON: Asset =
+    asset!("/assets/icons/factions/webp/MahactGeneSorcerers.webp");
+const MENTAK_COALITION_ICON: Asset = asset!("/assets/icons/factions/webp/MentakCoalition.webp");
+const NAALU_COLLECTIVE_ICON: Asset = asset!("/assets/icons/factions/webp/NaaluCollective.webp");
+const NAAZ_ROKHA_ALLIANCE_ICON: Asset =
+    asset!("/assets/icons/factions/webp/NaazRokhaAlliance.webp");
+const NEKRO_VIRUS_ICON: Asset = asset!("/assets/icons/factions/webp/NekroVirus.webp");
+const NOMAD_ICON: Asset = asset!("/assets/icons/factions/webp/Nomad.webp");
+const SARDAKK_NORR_ICON: Asset = asset!("/assets/icons/factions/webp/SardakkNorr.webp");
+const TITANS_OF_UL_ICON: Asset = asset!("/assets/icons/factions/webp/TitansOfUl.webp");
 const UNIVERSITIES_OF_JOL_NAR_ICON: Asset =
-    asset!("/assets/icons/factions/UniversitiesOfJolNar.png");
-const VUIL_RAITH_CABAL_ICON: Asset = asset!("/assets/icons/factions/VuilRaithCabal.png");
-const WINNU_ICON: Asset = asset!("/assets/icons/factions/Winnu.png");
-const XXCHA_KINGDOM_ICON: Asset = asset!("/assets/icons/factions/XxchaKingdom.png");
-const YIN_BROTHERHOOD_ICON: Asset = asset!("/assets/icons/factions/YinBrotherhood.png");
-const YSSARIL_TRIBES_ICON: Asset = asset!("/assets/icons/factions/YssarilTribes.png");
-const LAST_BASTION_ICON: Asset = asset!("/assets/icons/factions/LastBastion.png");
-const RAL_NEL_CONSORTIUM_ICON: Asset = asset!("/assets/icons/factions/RalNelConsortium.png");
-const CRIMSON_REBELLION_ICON: Asset = asset!("/assets/icons/factions/CrimsonRebellion.png");
+    asset!("/assets/icons/factions/webp/UniversitiesOfJolNar.webp");
+const VUIL_RAITH_CABAL_ICON: Asset = asset!("/assets/icons/factions/webp/VuilRaithCabal.webp");
+const WINNU_ICON: Asset = asset!("/assets/icons/factions/webp/Winnu.webp");
+const XXCHA_KINGDOM_ICON: Asset = asset!("/assets/icons/factions/webp/XxchaKingdom.webp");
+const YIN_BROTHERHOOD_ICON: Asset = asset!("/assets/icons/factions/webp/YinBrotherhood.webp");
+const YSSARIL_TRIBES_ICON: Asset = asset!("/assets/icons/factions/webp/YssarilTribes.webp");
+const LAST_BASTION_ICON: Asset = asset!("/assets/icons/factions/webp/LastBastion.webp");
+const RAL_NEL_CONSORTIUM_ICON: Asset = asset!("/assets/icons/factions/webp/RalNelConsortium.webp");
+const CRIMSON_REBELLION_ICON: Asset = asset!("/assets/icons/factions/webp/CrimsonRebellion.webp");
 const DEEPWROUGHT_SCHOLARATE_ICON: Asset =
-    asset!("/assets/icons/factions/DeepwroughtScholarate.png");
-const FIRMAMENT_ICON: Asset = asset!("/assets/icons/factions/Firmament.png");
+    asset!("/assets/icons/factions/webp/DeepwroughtScholarate.webp");
+const FIRMAMENT_ICON: Asset = asset!("/assets/icons/factions/webp/Firmament.webp");
 
 pub fn get_faction_icon(faction: &Faction) -> Asset {
     match faction {
