@@ -2,7 +2,7 @@
 
 A helper app to use alongside Twilight Imperium 4th edition. Written in Rust with [Dioxus](https://dioxuslabs.com/) (fullstack, web).
 
-See [Roadmap.md](../Roadmap.md) for the feature status.
+See [Roadmap.md](./Roadmap.md) for the feature status.
 
 ## Layout
 
