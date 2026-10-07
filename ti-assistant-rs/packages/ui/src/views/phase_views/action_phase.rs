@@ -50,6 +50,10 @@ pub fn ActionPhaseView() -> Element {
     });
 
     let mut is_component = use_signal(|| false);
+    use_effect(move || {
+        let _ = current_player_id();
+        is_component.set(false);
+    });
 
     let playable_strategy_cards =
         use_memo(move || get_playable_strategy_cards(gc.game_state(), current_player_id()));
