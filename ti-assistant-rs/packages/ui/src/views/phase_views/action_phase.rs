@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use dioxus::{logger::tracing, prelude::*};
+use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
