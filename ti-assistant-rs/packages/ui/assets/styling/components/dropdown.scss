@@ -1,0 +1,42 @@
+@import "../vars";
+
+select.dropdown {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: $primary-text-color;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    padding: 4px 24px 4px 8px;
+    font-size: 1em;
+    font-family: inherit;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23b0b0b0'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.35);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &:disabled {
+        opacity: 0.4;
+        cursor: default;
+
+        &:hover {
+            border-color: rgba(255, 255, 255, 0.18);
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+    }
+
+    option {
+        background-color: #383838;
+        color: $primary-text-color;
+    }
+}

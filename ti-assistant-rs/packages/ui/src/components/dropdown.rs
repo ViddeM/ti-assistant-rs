@@ -1,6 +1,8 @@
 use std::str::FromStr;
 
 use dioxus::prelude::*;
+
+const DROPDOWN_SCSS: Asset = asset!("/assets/styling/components/dropdown.scss");
 use ti_helper_game_data::{
     common::{faction::Faction, player_id::PlayerId},
     components::{
@@ -42,9 +44,10 @@ pub fn Dropdown(
         children,
     }: DropdownProps,
 ) -> Element {
-    let class = class;
+    let class = format!("dropdown {class}");
 
     rsx! {
+        document::Stylesheet { href: DROPDOWN_SCSS }
         select { value: "{value()}", class, oninput, ..attributes, {children} }
     }
 }
