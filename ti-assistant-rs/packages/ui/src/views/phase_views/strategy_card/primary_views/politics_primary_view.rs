@@ -42,7 +42,7 @@ pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
     let primary = use_memo(move || progress().primary);
 
     rsx! {
-        div {
+        div { class: "full-width",
             if let Some(StrategicPrimaryProgress::Politics { new_speaker }) = primary() {
                 p { "new speaker {new_speaker}" }
             } else if view.is_active() {

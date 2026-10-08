@@ -18,6 +18,17 @@
     > :last-child {
       flex: 1;
     }
+
+    > :first-child {
+      width: 320px;
+      flex-shrink: 0;
+    }
+  }
+
+  @media (min-width: $width-extra-large) {
+    > :first-child {
+      width: 620px;
+    }
   }
 }
 

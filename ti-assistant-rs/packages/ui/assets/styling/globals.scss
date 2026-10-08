@@ -61,7 +61,13 @@ fieldset {
 
   @media (min-width: 800px) {
     width: fit-content;
-    min-width: 200px;
+    min-width: 240px;
+    max-width: 600px;
+  }
+
+  fieldset {
+    width: 100%;
+    align-self: stretch;
   }
 }
 
@@ -76,7 +82,7 @@ fieldset {
   align-items: center;
   padding: 1rem;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
 
   @media (min-width: $width-small) {
     padding: 1rem 0.5rem;

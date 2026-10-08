@@ -14,9 +14,13 @@
 .view-mode-button-group {
   display: flex;
   flex-direction: row;
+  overflow-x: auto;
+  width: 100%;
+  justify-content: center;
 
   & > button {
     border-radius: 0;
+    flex-shrink: 0;
 
     &:not(:first-child) {
       border-left-width: 0;

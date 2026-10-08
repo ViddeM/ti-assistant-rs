@@ -30,6 +30,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  align-self: stretch;
 
   > * {
     margin: $margin-large 0 0 0;
