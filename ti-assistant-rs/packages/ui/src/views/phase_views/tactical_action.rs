@@ -178,23 +178,27 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
                 }
             }
         } else {
-            div { class: "take-planet-container",
-                label { "Take planet:" }
-                PlanetDropdown {
-                    options: all_planets_not_owned(),
-                    value: selected_planet(),
-                    on_select: move |planet| selected_planet.set(planet),
-                }
-                Button {
-                    disabled: selected_planet().is_none(),
-                    onclick: move |_| {
-                        event
-                            .send_event(Event::TacticalActionTakePlanet {
-                                player: current_player(),
-                                planet: selected_planet().expect("Selected planet to be set"),
-                            })
-                    },
-                    "Take"
+            fieldset {
+                legend { "Take planet" }
+                div {
+                    class: "column",
+                    PlanetDropdown {
+                        options: all_planets_not_owned(),
+                        value: selected_planet(),
+                        on_select: move |planet| selected_planet.set(planet),
+                    }
+                    Button {
+                        class: "margin-top",
+                        disabled: selected_planet().is_none(),
+                        onclick: move |_| {
+                            event
+                                .send_event(Event::TacticalActionTakePlanet {
+                                    player: current_player(),
+                                    planet: selected_planet().expect("Selected planet to be set"),
+                                })
+                        },
+                        "Take"
+                    }
                 }
             }
         }
