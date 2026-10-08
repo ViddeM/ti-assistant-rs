@@ -223,7 +223,8 @@
  - ❌ Go over all planets and see if we have missed any interactions
  - ❌ Go over all factions and see if we have missed anything
  - ❌ Test play with both this and OG ti-assistant
- - x  Go over PoK to see if anything has been missed.
+ - ❌ Go over PoK to see if anything has been missed.
+ - ❌ Go over TE to see if anything has been missed.
 
 ## Thunder's Edge
  - x  Breakthroughs for each faction
@@ -246,5 +247,5 @@
   - x  relics?
   - TODO
 
-TODO: Look over all strategy cards to see that we always display the correct variant.
+TODO: Look overall strategy cards to see that we always display the correct variant.
 TODO: Display "Undo event {NAME}" popup or smth when undoing so that it is more clear for other players (and oneself).
