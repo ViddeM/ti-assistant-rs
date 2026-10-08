@@ -156,7 +156,7 @@ fn MirageView() -> Element {
                         .iter()
                         .filter(|t| systems_without_planets().contains(&t.system))
                         .filter(|t| {
-                            matches!(
+                            !matches!(
                                 gc.game_options()
                                     .systems
                                     .get(&t.system)
@@ -168,6 +168,7 @@ fn MirageView() -> Element {
                         .map(|t| t.system.clone())
                         .collect::<Vec<SystemId>>();
                     s.sort();
+                    s.dedup();
                     s
                 });
         s
