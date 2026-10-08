@@ -47,11 +47,11 @@
   background-color: #909090;
 }
 
-.active-player {
+.player-box-container.active-player {
   background-color: #306030;
 }
 
-.passed-player {
+.player-box-container.passed-player {
   background-color: #202020;
   color: #606060;
 }

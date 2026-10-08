@@ -50,10 +50,9 @@ fieldset {
 }
 
 .card {
-  background-color: $background-color;
-  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
-    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
-    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  background: linear-gradient(160deg, #464c5e 0%, #383838 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.6);
 
   padding: $padding;
   border-radius: $border-radius;
@@ -68,6 +67,15 @@ fieldset {
   fieldset {
     width: 100%;
     align-self: stretch;
+    border-style: solid;
+    border-radius: $border-radius;
+
+    background-color: rgba(0, 0, 0, 0.15);
+
+    &:not([class*="player-color-border"]) {
+      border-color: rgba(255, 255, 255, 0.12);
+      border-width: 1px;
+    }
   }
 }
 

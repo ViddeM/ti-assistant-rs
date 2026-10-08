@@ -16,6 +16,7 @@ pub mod views;
 use dioxus::prelude::*;
 
 const GLOBAL_SCSS: Asset = asset!("/assets/styling/globals.scss");
+
 const FONT_SCSS: Asset = asset!("/assets/styling/fonts.scss");
 
 #[component]
