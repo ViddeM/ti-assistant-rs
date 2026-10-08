@@ -189,7 +189,7 @@ pub fn ActionCardDropdown(
 
     rsx! {
         Dropdown { value: current_value, oninput,
-            option { value: "", "--Select Objective--" }
+            option { value: "", "--Select Action Card--" }
             {
                 options
                     .iter()
