@@ -24,6 +24,7 @@ use crate::{
 
 const ACTION_CARD_SCSS: Asset = asset!("/assets/styling/views/phase_views/action_card.scss");
 
+// TODO: Go over action cards as part of the roadmap.
 #[component]
 pub fn ActionCardView() -> Element {
     let gc = use_context::<GameContext>();
