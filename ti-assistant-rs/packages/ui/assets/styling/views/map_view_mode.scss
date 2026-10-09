@@ -103,6 +103,12 @@
   pointer-events: none;
 }
 
+.map-attachment {
+  border-radius: 4px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+  pointer-events: none;
+}
+
 // Shown for systems that we don't have an image for (yet).
 .map-missing-tile {
   fill: #3b2f5c;

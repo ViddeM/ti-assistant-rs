@@ -1,10 +1,13 @@
 use dioxus::{html::geometry::WheelDelta, prelude::*};
-use ti_helper_game_data::components::phase::Phase;
+use ti_helper_game_data::components::{phase::Phase, planet_attachment::PlanetAttachment};
 
 use crate::{
     data::game_context::GameContext,
     views::map_view_mode::{
-        layout::{Bounds, MapLayout, TILE_HEIGHT, TILE_WIDTH, TokenKind, build_layout},
+        layout::{
+            ATTACHMENT_HEIGHT, ATTACHMENT_WIDTH, Bounds, MapLayout, TILE_HEIGHT, TILE_WIDTH,
+            TokenKind, build_layout,
+        },
         tile_images::get_tile_image,
     },
 };
@@ -18,6 +21,48 @@ const MAP_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/map_view_mode.sc
 const MIRAGE_TOKEN: Asset = asset!("/assets/images/map/tokens/mirage_token.webp");
 const DESTROYED_PLANET_TOKEN: Asset =
     asset!("/assets/images/map/tokens/destroyed_planet_token.webp");
+
+const ATT_DEMILITARIZED_ZONE: Asset =
+    asset!("/assets/images/map/attachments/jpg/demilitarized_zone.jpg");
+const ATT_DYSON_SPHERE: Asset = asset!("/assets/images/map/attachments/jpg/dyson_sphere.jpg");
+const ATT_PARADISE_WORLD: Asset = asset!("/assets/images/map/attachments/jpg/paradise_world.jpg");
+const ATT_TOMB_OF_EMPHIDIA: Asset =
+    asset!("/assets/images/map/attachments/jpg/tomb_of_emphidia.jpg");
+const ATT_LASAX_SURVIVORS: Asset =
+    asset!("/assets/images/map/attachments/jpg/lasax_survivors.jpg");
+const ATT_MINING_WORLD: Asset = asset!("/assets/images/map/attachments/jpg/mining_world.jpg");
+const ATT_RICH_WORLD: Asset = asset!("/assets/images/map/attachments/jpg/rich_world.jpg");
+const ATT_WARFARE_RF: Asset = asset!("/assets/images/map/attachments/jpg/warfare_rf.jpg");
+const ATT_BIOTIC_RF: Asset = asset!("/assets/images/map/attachments/jpg/biotic_rf.jpg");
+const ATT_CYBERNETIC_RF: Asset = asset!("/assets/images/map/attachments/jpg/cybernetic_rf.jpg");
+const ATT_PROPULSION_RF: Asset = asset!("/assets/images/map/attachments/jpg/propulsion_rf.jpg");
+const ATT_UI_THE_PROGENITOR: Asset =
+    asset!("/assets/images/map/attachments/jpg/ui_the_progenitor.jpg");
+const ATT_NANO_FORGE: Asset = asset!("/assets/images/map/attachments/jpg/nano_forge.jpg");
+const ATT_TERRAFORM: Asset = asset!("/assets/images/map/attachments/png/terraform.png");
+
+fn attachment_image(attachment: &PlanetAttachment) -> Asset {
+    match attachment {
+        PlanetAttachment::DemilitarizedZone => ATT_DEMILITARIZED_ZONE,
+        PlanetAttachment::DysonSphere => ATT_DYSON_SPHERE,
+        PlanetAttachment::ParadiseWorld => ATT_PARADISE_WORLD,
+        PlanetAttachment::TombOfEmphidia => ATT_TOMB_OF_EMPHIDIA,
+        PlanetAttachment::LasaxSurvivors => ATT_LASAX_SURVIVORS,
+        PlanetAttachment::MiningWorld => ATT_MINING_WORLD,
+        PlanetAttachment::RichWorld => ATT_RICH_WORLD,
+        PlanetAttachment::BioticResearchFacility
+        | PlanetAttachment::BioticResearchFacilityResources => ATT_BIOTIC_RF,
+        PlanetAttachment::CyberneticResearchFacility
+        | PlanetAttachment::CyberneticResearchFacilityResources => ATT_CYBERNETIC_RF,
+        PlanetAttachment::PropulsionResearchFacility
+        | PlanetAttachment::PropulsionResearchFacilityResources => ATT_PROPULSION_RF,
+        PlanetAttachment::WarfareResearchFacility
+        | PlanetAttachment::WarfareResearchFacilityResources => ATT_WARFARE_RF,
+        PlanetAttachment::UITheProgenitor => ATT_UI_THE_PROGENITOR,
+        PlanetAttachment::NanoForge => ATT_NANO_FORGE,
+        PlanetAttachment::Terraform => ATT_TERRAFORM,
+    }
+}
 
 /// How far (in map units) the camera can be moved from the center of the galaxy.
 const MAX_PAN_X: f64 = 4000.0;
@@ -249,6 +294,18 @@ fn MapContents(layout: ReadSignal<MapLayout>) -> Element {
                     height: 25,
                 }
                 text { class: "map-owner-text", x: owner.x, y: owner.y, "{owner.name}" }
+            }
+        }
+
+        for (i, att) in layout.attachments.iter().enumerate() {
+            image {
+                key: "att-{i}",
+                class: "map-attachment",
+                href: attachment_image(&att.attachment),
+                x: att.x - ATTACHMENT_WIDTH / 2.0,
+                y: att.y - ATTACHMENT_HEIGHT / 2.0,
+                width: ATTACHMENT_WIDTH,
+                height: ATTACHMENT_HEIGHT,
             }
         }
     }

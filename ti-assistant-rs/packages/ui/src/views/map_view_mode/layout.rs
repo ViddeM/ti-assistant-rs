@@ -7,6 +7,7 @@ use ti_helper_game_data::{
     },
     components::{
         planet::Planet,
+        planet_attachment::PlanetAttachment,
         system::{System, SystemId, systems},
     },
     state::game_state::GameState,
@@ -35,6 +36,7 @@ pub struct MapLayout {
     pub tiles: Vec<TileLayout>,
     pub tokens: Vec<TokenLayout>,
     pub owners: Vec<OwnerLabel>,
+    pub attachments: Vec<AttachmentLayout>,
     /// Centers of the positions inside the galaxy that have no tile, so they can be shown as placeholders.
     pub empty_slots: Vec<(f32, f32)>,
 }
@@ -69,6 +71,19 @@ pub struct OwnerLabel {
     pub y: f32,
     pub name: String,
     pub color: Color,
+}
+
+/// Width/height of an attachment card image on the map (in SVG units).
+pub const ATTACHMENT_WIDTH: f32 = 52.0;
+pub const ATTACHMENT_HEIGHT: f32 = 80.0;
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct AttachmentLayout {
+    pub attachment: PlanetAttachment,
+    /// Center x of the attachment image.
+    pub x: f32,
+    /// Center y of the attachment image.
+    pub y: f32,
 }
 
 /// The rectangle (in SVG space) that contains the whole map.
@@ -169,9 +184,27 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         }
     }
 
+    // Collect all planet attachments across all players.
+    let planet_attachments: HashMap<Planet, Vec<PlanetAttachment>> = game_state
+        .players
+        .values()
+        .flat_map(|player| {
+            player.planets.iter().map(|(planet, attachments)| {
+                let real: Vec<PlanetAttachment> = attachments
+                    .iter()
+                    .filter(|a| a.is_real())
+                    .cloned()
+                    .collect();
+                (planet.clone(), real)
+            })
+        })
+        .filter(|(_, atts)| !atts.is_empty())
+        .collect();
+
     let mut tiles = Vec::new();
     let mut tokens = Vec::new();
     let mut owners = Vec::new();
+    let mut attachments = Vec::new();
 
     let mut occupied_slots = HashSet::new();
     let mut outer_ring = 0;
@@ -213,6 +246,32 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
                 name: owner.name.clone(),
                 color: owner.color,
             });
+        }
+
+        // Attachment cards: stack horizontally to the left of the planet center.
+        for planet in system_planets.get(&tile.system).into_iter().flatten() {
+            let Some(planet_atts) = planet_attachments.get(planet) else {
+                continue;
+            };
+            let offset = planet_offset(planet);
+            // Start to the left of the planet; each card is ATTACHMENT_WIDTH wide + a 4px gap.
+            let step = ATTACHMENT_WIDTH + 4.0;
+            let start_x = -(planet_atts.len() as f32 - 1.0) * step / 2.0;
+            for (i, att) in planet_atts.iter().enumerate() {
+                let card_x = start_x + i as f32 * step;
+                let (x, y) = to_svg(tile_with_offset_to_visual_pos(
+                    tile_pos,
+                    (
+                        offset.0 + card_x / TILE_WIDTH,
+                        offset.1 - 0.32,
+                    ),
+                ));
+                attachments.push(AttachmentLayout {
+                    attachment: att.clone(),
+                    x,
+                    y,
+                });
+            }
         }
 
         if milty_information.mirage_system.as_ref() == Some(&tile.system) {
@@ -264,6 +323,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         tiles,
         tokens,
         owners,
+        attachments,
         empty_slots,
     })
 }
