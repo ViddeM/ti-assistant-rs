@@ -156,6 +156,7 @@ fn MirageView() -> Element {
                         .iter()
                         .filter(|t| systems_without_planets().contains(&t.system))
                         .filter(|t| {
+                            // Filter away hyperlane systems.
                             !matches!(
                                 gc.game_options()
                                     .systems
