@@ -1,34 +1,32 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::components::{planet::PlanetTrait, tech::TechCategory};
 
-const BIOTIC_FILLED_PNG: Asset = asset!("/assets/icons/resources/biotic_filled.png");
-const BIOTIC_PNG: Asset = asset!("/assets/icons/resources/biotic.png");
-const CULTURAL_PNG: Asset = asset!("/assets/icons/resources/cultural.png");
-const CUSTODIANS_PNG: Asset = asset!("/assets/icons/resources/custodians.png");
-const CYBERNETIC_FILLED_PNG: Asset = asset!("/assets/icons/resources/cybernetic_filled.png");
-const CYBERNETIC_PNG: Asset = asset!("/assets/icons/resources/cybernetic.png");
-const DEMILITARIZED_ZONE_SVG: Asset = asset!("/assets/icons/resources/demilitarized_zone.svg");
-const DEMILITARIZED_PNG: Asset = asset!("/assets/icons/resources/demilitarized.png");
-const HAZARDOUS_PNG: Asset = asset!("/assets/icons/resources/hazardous.png");
-const INDUSTRIAL_PNG: Asset = asset!("/assets/icons/resources/industrial.png");
-const INFLUENCE_FILLED_PNG: Asset = asset!("/assets/icons/resources/influence_filled.png");
-const INFLUENCE_PNG: Asset = asset!("/assets/icons/resources/influence.png");
-const LEGENDARY_FILLED_PNG: Asset = asset!("/assets/icons/resources/legendary_filled.png");
-const LEGENDARY_PLANET_CIRCLED_PNG: Asset =
-    asset!("/assets/icons/resources/legendary_planet_circled.png");
-const LEGENDARY_PLANET_FILLED_PNG: Asset =
-    asset!("/assets/icons/resources/legendary_planet_filled.png");
-const LEGENDARY_PLANET_PNG: Asset = asset!("/assets/icons/resources/legendary_planet.png");
-const LEGENDARY_PNG: Asset = asset!("/assets/icons/resources/legendary.png");
-const NAALU_0_TOKEN_WEBP: Asset = asset!("/assets/icons/resources/naalu_0_token.webp");
-const PROPULSION_FILLED_PNG: Asset = asset!("/assets/icons/resources/propulsion_filled.png");
-const PROPULSION_PNG: Asset = asset!("/assets/icons/resources/propulsion.png");
-const RESOURCE_FILLED_PNG: Asset = asset!("/assets/icons/resources/resource_filled.png");
-const RESOURCE_PNG: Asset = asset!("/assets/icons/resources/resource.png");
-const TOMB_OF_EMPHIDA_PNG: Asset = asset!("/assets/icons/resources/tomb_of_emphida.png");
-const TOMB_OF_EMPHIDA_WEBP: Asset = asset!("/assets/icons/resources/tomb_of_emphida.webp");
-const WARFARE_FILLED_PNG: Asset = asset!("/assets/icons/resources/warfare_filled.png");
-const WARFARE_PNG: Asset = asset!("/assets/icons/resources/warfare.png");
+const BIOTIC_FILLED: Asset = asset!("/assets/icons/resources/webp/biotic_filled.webp");
+const BIOTIC: Asset = asset!("/assets/icons/resources/webp/biotic.webp");
+const CULTURAL: Asset = asset!("/assets/icons/resources/webp/cultural.webp");
+const CUSTODIANS: Asset = asset!("/assets/icons/resources/webp/custodians.webp");
+const CYBERNETIC_FILLED: Asset = asset!("/assets/icons/resources/webp/cybernetic_filled.webp");
+const CYBERNETIC: Asset = asset!("/assets/icons/resources/webp/cybernetic.webp");
+const DEMILITARIZED_ZONE: Asset = asset!("/assets/icons/resources/webp/demilitarized_zone.webp");
+const HAZARDOUS: Asset = asset!("/assets/icons/resources/webp/hazardous.webp");
+const INDUSTRIAL: Asset = asset!("/assets/icons/resources/webp/industrial.webp");
+const INFLUENCE_FILLED: Asset = asset!("/assets/icons/resources/webp/influence_filled.webp");
+const INFLUENCE: Asset = asset!("/assets/icons/resources/webp/influence.webp");
+const LEGENDARY_FILLED: Asset = asset!("/assets/icons/resources/webp/legendary_filled.webp");
+const LEGENDARY_PLANET_CIRCLED: Asset =
+    asset!("/assets/icons/resources/webp/legendary_planet_circled.webp");
+const LEGENDARY_PLANET_FILLED: Asset =
+    asset!("/assets/icons/resources/webp/legendary_planet_filled.webp");
+const LEGENDARY_PLANET: Asset = asset!("/assets/icons/resources/webp/legendary_planet.webp");
+const LEGENDARY: Asset = asset!("/assets/icons/resources/webp/legendary.webp");
+const NAALU_0_TOKEN: Asset = asset!("/assets/icons/resources/webp/naalu_0_token.webp");
+const PROPULSION_FILLED: Asset = asset!("/assets/icons/resources/webp/propulsion_filled.webp");
+const PROPULSION: Asset = asset!("/assets/icons/resources/webp/propulsion.webp");
+const RESOURCE_FILLED: Asset = asset!("/assets/icons/resources/webp/resource_filled.webp");
+const RESOURCE: Asset = asset!("/assets/icons/resources/webp/resource.webp");
+const TOMB_OF_EMPHIDA: Asset = asset!("/assets/icons/resources/webp/tomb_of_emphida.webp");
+const WARFARE_FILLED: Asset = asset!("/assets/icons/resources/webp/warfare_filled.webp");
+const WARFARE: Asset = asset!("/assets/icons/resources/webp/warfare.webp");
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TiIconType {
@@ -39,7 +37,6 @@ pub enum TiIconType {
     CyberneticFilled,
     Cybernetic,
     DemilitarizedZone,
-    Demilitarized,
     Hazardous,
     Industrial,
     InfluenceFilled,
@@ -54,7 +51,7 @@ pub enum TiIconType {
     Propulsion,
     ResourceFilled,
     Resource,
-    TombOfEmphida,
+    TombOfEmphidia,
     WarfareFilled,
     Warfare,
 }
@@ -62,31 +59,30 @@ pub enum TiIconType {
 impl TiIconType {
     fn get_asset(&self) -> Asset {
         match self {
-            TiIconType::BioticFilled => BIOTIC_FILLED_PNG,
-            TiIconType::Biotic => BIOTIC_PNG,
-            TiIconType::Cultural => CULTURAL_PNG,
-            TiIconType::Custodians => CUSTODIANS_PNG,
-            TiIconType::CyberneticFilled => CYBERNETIC_FILLED_PNG,
-            TiIconType::Cybernetic => CYBERNETIC_PNG,
-            TiIconType::DemilitarizedZone => DEMILITARIZED_ZONE_SVG,
-            TiIconType::Demilitarized => DEMILITARIZED_PNG,
-            TiIconType::Hazardous => HAZARDOUS_PNG,
-            TiIconType::Industrial => INDUSTRIAL_PNG,
-            TiIconType::InfluenceFilled => INFLUENCE_FILLED_PNG,
-            TiIconType::Influence => INFLUENCE_PNG,
-            TiIconType::LegendaryFilled => LEGENDARY_FILLED_PNG,
-            TiIconType::LegendaryPlanetCircled => LEGENDARY_PLANET_CIRCLED_PNG,
-            TiIconType::LegendaryPlanetFilled => LEGENDARY_PLANET_FILLED_PNG,
-            TiIconType::LegendaryPlanet => LEGENDARY_PLANET_PNG,
-            TiIconType::Legendary => LEGENDARY_PNG,
-            TiIconType::Naalu0Token => NAALU_0_TOKEN_WEBP,
-            TiIconType::PropulsionFilled => PROPULSION_FILLED_PNG,
-            TiIconType::Propulsion => PROPULSION_PNG,
-            TiIconType::ResourceFilled => RESOURCE_FILLED_PNG,
-            TiIconType::Resource => RESOURCE_PNG,
-            TiIconType::TombOfEmphida => TOMB_OF_EMPHIDA_PNG,
-            TiIconType::WarfareFilled => WARFARE_FILLED_PNG,
-            TiIconType::Warfare => WARFARE_PNG,
+            TiIconType::BioticFilled => BIOTIC_FILLED,
+            TiIconType::Biotic => BIOTIC,
+            TiIconType::Cultural => CULTURAL,
+            TiIconType::Custodians => CUSTODIANS,
+            TiIconType::CyberneticFilled => CYBERNETIC_FILLED,
+            TiIconType::Cybernetic => CYBERNETIC,
+            TiIconType::DemilitarizedZone => DEMILITARIZED_ZONE,
+            TiIconType::Hazardous => HAZARDOUS,
+            TiIconType::Industrial => INDUSTRIAL,
+            TiIconType::InfluenceFilled => INFLUENCE_FILLED,
+            TiIconType::Influence => INFLUENCE,
+            TiIconType::LegendaryFilled => LEGENDARY_FILLED,
+            TiIconType::LegendaryPlanetCircled => LEGENDARY_PLANET_CIRCLED,
+            TiIconType::LegendaryPlanetFilled => LEGENDARY_PLANET_FILLED,
+            TiIconType::LegendaryPlanet => LEGENDARY_PLANET,
+            TiIconType::Legendary => LEGENDARY,
+            TiIconType::Naalu0Token => NAALU_0_TOKEN,
+            TiIconType::PropulsionFilled => PROPULSION_FILLED,
+            TiIconType::Propulsion => PROPULSION,
+            TiIconType::ResourceFilled => RESOURCE_FILLED,
+            TiIconType::Resource => RESOURCE,
+            TiIconType::TombOfEmphidia => TOMB_OF_EMPHIDA,
+            TiIconType::WarfareFilled => WARFARE_FILLED,
+            TiIconType::Warfare => WARFARE,
         }
     }
 }

@@ -43,7 +43,7 @@ pub enum PlanetAttachment {
     LasaxSurvivors,
     MiningWorld,
     RichWorld,
-    UITheProgenitor,
+    Geoform,
     Terraform,
     NanoForge,
 }
@@ -233,7 +233,7 @@ impl PlanetAttachment {
                     1
                 )
             }
-            PlanetAttachment::UITheProgenitor => {
+            PlanetAttachment::Geoform => {
                 a!("UI, the Progenitor (Geoform)", ProphecyOfKings, 3, 3)
             }
             PlanetAttachment::Terraform => a!(
@@ -291,5 +291,23 @@ impl PlanetAttachment {
                 | PlanetAttachment::PropulsionResearchFacility
                 | PlanetAttachment::WarfareResearchFacility
         )
+    }
+
+    pub fn to_real(self) -> Self {
+        match self {
+            PlanetAttachment::BioticResearchFacilityResources => {
+                PlanetAttachment::BioticResearchFacility
+            }
+            PlanetAttachment::CyberneticResearchFacilityResources => {
+                PlanetAttachment::CyberneticResearchFacility
+            }
+            PlanetAttachment::PropulsionResearchFacilityResources => {
+                PlanetAttachment::PropulsionResearchFacility
+            }
+            PlanetAttachment::WarfareResearchFacilityResources => {
+                PlanetAttachment::WarfareResearchFacility
+            }
+            a => a,
+        }
     }
 }

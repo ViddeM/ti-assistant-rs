@@ -6,3 +6,4 @@ pub mod info_button;
 pub mod info_modal;
 pub mod spinner;
 pub mod ti_icon;
+pub mod ti_token;

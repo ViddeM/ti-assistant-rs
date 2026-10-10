@@ -1,3 +1,5 @@
+use std::collections::{HashMap, HashSet};
+
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
@@ -51,6 +53,22 @@ pub fn AddPlanetAttachment() -> Element {
         planets
     });
 
+    let planet_existing_attachments = use_memo(move || {
+        planet()
+            .map(|planet| {
+                gc.game_state().players.get(&player()).map(|player| {
+                    player.planets.get(&planet).map(|a_s| {
+                        a_s.iter()
+                            .map(|a| a.clone().to_real())
+                            .collect::<HashSet<_>>()
+                    })
+                })
+            })
+            .flatten()
+            .flatten()
+            .unwrap_or_default()
+    });
+
     let home_planets = use_memo(move || {
         let mut planets = gc
             .game_options()
@@ -73,6 +91,10 @@ pub fn AddPlanetAttachment() -> Element {
             .planet_attachments
             .iter()
             .filter(|(a, _)| a.is_real())
+            .filter(|&(a, _)| {
+                // Check that the planet doesn't already have this attachment.
+                !planet_existing_attachments().contains(a)
+            })
             .filter(|(_, i)| {
                 if let Some(t) = i.planet_trait.as_ref() {
                     planet.info().planet_traits.contains(t)
@@ -80,9 +102,7 @@ pub fn AddPlanetAttachment() -> Element {
                     true
                 }
             })
-            .filter(|&(a, _)| {
-                !a.eq(&PlanetAttachment::UITheProgenitor) || planet.eq(&Planet::Elysium)
-            })
+            .filter(|&(a, _)| !a.eq(&PlanetAttachment::Geoform) || planet.eq(&Planet::Elysium))
             .filter(|&(a, _)| {
                 !(a.eq(&PlanetAttachment::Terraform)
                     && (planet.is_mecatol_rex() || planet.info().is_legendary))

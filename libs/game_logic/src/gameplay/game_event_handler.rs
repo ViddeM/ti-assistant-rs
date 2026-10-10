@@ -1699,7 +1699,7 @@ fn try_update_game_state(
             );
 
             match &attachment {
-                PlanetAttachment::UITheProgenitor => {
+                PlanetAttachment::Geoform => {
                     ensure!(
                         planet == Planet::Elysium,
                         "UI The Progenitor can only be used on Elysium"

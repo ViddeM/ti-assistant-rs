@@ -4,7 +4,7 @@ use ti_helper_game_data::components::phase::Phase;
 use crate::{
     data::game_context::GameContext,
     views::map_view_mode::{
-        layout::{Bounds, MapLayout, TILE_HEIGHT, TILE_WIDTH, TokenKind, build_layout},
+        layout::{Bounds, MapLayout, TILE_HEIGHT, TILE_WIDTH, build_layout},
         tile_images::get_tile_image,
     },
 };
@@ -14,10 +14,6 @@ mod planet_offset;
 mod tile_images;
 
 const MAP_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/map_view_mode.scss");
-
-const MIRAGE_TOKEN: Asset = asset!("/assets/images/map/tokens/mirage_token.webp");
-const DESTROYED_PLANET_TOKEN: Asset =
-    asset!("/assets/images/map/tokens/destroyed_planet_token.webp");
 
 /// How far (in map units) the camera can be moved from the center of the galaxy.
 const MAX_PAN_X: f64 = 4000.0;
@@ -66,7 +62,8 @@ impl View {
 
     /// How fast the zoom is: faster when zoomed out and slower when zoomed in close to the tiles.
     fn zoom_speed(&self) -> f64 {
-        let zoomed_out = ((self.scale / MIN_SCALE).ln() / (MAX_SCALE / MIN_SCALE).ln()).clamp(0.0, 1.0);
+        let zoomed_out =
+            ((self.scale / MIN_SCALE).ln() / (MAX_SCALE / MIN_SCALE).ln()).clamp(0.0, 1.0);
         WHEEL_ZOOM_SPEED_CLOSE + (WHEEL_ZOOM_SPEED_FAR - WHEEL_ZOOM_SPEED_CLOSE) * zoomed_out
     }
 
@@ -186,7 +183,7 @@ fn MapContents(layout: ReadSignal<MapLayout>) -> Element {
     let layout = layout.read();
 
     rsx! {
-        for (i, (x, y)) in layout.empty_slots.iter().enumerate() {
+        for (i , (x , y)) in layout.empty_slots.iter().enumerate() {
             polygon {
                 key: "empty-{i}",
                 class: "map-empty-slot",
@@ -195,7 +192,7 @@ fn MapContents(layout: ReadSignal<MapLayout>) -> Element {
             }
         }
 
-        for (i, tile) in layout.tiles.iter().enumerate() {
+        for (i , tile) in layout.tiles.iter().enumerate() {
             g {
                 key: "tile-{i}-{tile.system_id}",
                 transform: "translate({tile.x} {tile.y}) rotate({tile.rotation_degrees})",
@@ -213,13 +210,10 @@ fn MapContents(layout: ReadSignal<MapLayout>) -> Element {
             }
         }
 
-        for (i, token) in layout.tokens.iter().enumerate() {
+        for (i , token) in layout.tokens.iter().enumerate() {
             image {
                 key: "token-{i}",
-                href: match token.kind {
-                    TokenKind::Mirage => MIRAGE_TOKEN,
-                    TokenKind::DestroyedPlanet => DESTROYED_PLANET_TOKEN,
-                },
+                href: token.kind.get_asset(),
                 x: token.x - token.width / 2.0,
                 y: token.y - token.height / 2.0,
                 width: token.width,
@@ -227,7 +221,7 @@ fn MapContents(layout: ReadSignal<MapLayout>) -> Element {
             }
         }
 
-        for (i, tile) in layout.tiles.iter().enumerate() {
+        for (i , tile) in layout.tiles.iter().enumerate() {
             text {
                 key: "tile-id-{i}-{tile.system_id}",
                 class: "map-tile-id",

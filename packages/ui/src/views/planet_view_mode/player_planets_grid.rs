@@ -331,12 +331,12 @@ impl PlayerSummary {
 fn AttachmentIcon(attachment: PlanetAttachment) -> Element {
     match attachment {
         PlanetAttachment::DemilitarizedZone => rsx! {
-            TiIcon { icon: TiIconType::Demilitarized }
+            TiIcon { icon: TiIconType::DemilitarizedZone }
         },
         PlanetAttachment::TombOfEmphidia => rsx! {
-            TiIcon { icon: TiIconType::TombOfEmphida }
+            TiIcon { icon: TiIconType::TombOfEmphidia }
         },
-        PlanetAttachment::UITheProgenitor => rsx! {
+        PlanetAttachment::Geoform => rsx! {
             p { class: "white-text", "✹✹✹" }
         },
         PlanetAttachment::BioticResearchFacility

@@ -66,11 +66,8 @@ pub fn planet_offset(planet: &Planet) -> (f32, f32) {
         | Planet::VegaMajor
         | Planet::Retillion => (-0.1, 0.19),
         Planet::Druaa
-        | Planet::WrenTerra
-        | Planet::Ragh
         | Planet::Jol
         | Planet::Quinarra
-        | Planet::ArchonTau
         | Planet::Starpoint
         | Planet::Torkan
         | Planet::Rarron
@@ -93,7 +90,13 @@ pub fn planet_offset(planet: &Planet) -> (f32, f32) {
         | Planet::Shalloq => (0.09, -0.20),
         Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir => (0.12, 0.21),
         Planet::RigelIII | Planet::Loki | Planet::Hercant | Planet::Valk => (-0.24, 0.05),
-        Planet::RigelI | Planet::Ashtroth | Planet::Kamdorn | Planet::Avar => (0.15, -0.26),
+        Planet::RigelI
+        | Planet::Ashtroth
+        | Planet::Kamdorn
+        | Planet::Avar
+        | Planet::WrenTerra
+        | Planet::Ragh
+        | Planet::ArchonTau => (0.15, -0.26),
         Planet::Mallice => (0.20, 0.12),
         Planet::Mirage => (0.12, -0.25),
         // TODO: Handle thunder's edge planets (probably skip the catch-all).

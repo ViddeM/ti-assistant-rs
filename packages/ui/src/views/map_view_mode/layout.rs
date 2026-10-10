@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+use dioxus::html::link::r#as;
 use ti_helper_game_data::{
     common::{
         color::Color,
@@ -7,10 +8,13 @@ use ti_helper_game_data::{
     },
     components::{
         planet::Planet,
+        planet_attachment::PlanetAttachment,
         system::{System, SystemId, systems},
     },
     state::game_state::GameState,
 };
+
+use crate::components::ti_token::TiToken;
 
 use super::planet_offset::planet_offset;
 
@@ -25,6 +29,16 @@ const ROTATION_STEP_DEGREES: f32 = 60.0;
 
 /// Offset of the owner label relative to the planet position (fraction of tile size).
 const OWNER_LABEL_OFFSET: (f32, f32) = (0.0, 0.08);
+
+// We can have multiple attachments for a single planet, positions for each.
+const ATTACHMENT_OFFSETS: [(f32, f32); 5] = [
+    (-0.12, 0.0),
+    (-0.07, -0.06),
+    (0.0, -0.1),
+    (0.07, -0.06),
+    (0.12, 0.0),
+];
+const ATTACHMENT_TOKEN_SIZE: (f32, f32) = (512.0 * 0.06, 512.0 * 0.06);
 
 const MIRAGE_TOKEN_SIZE: (f32, f32) = (498.0 * 0.3, 448.0 * 0.3);
 const DESTROYED_PLANET_TOKEN_SIZE: (f32, f32) = (512.0 * 0.2, 512.0 * 0.2);
@@ -47,15 +61,9 @@ pub struct TileLayout {
     pub rotation_degrees: f32,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TokenKind {
-    Mirage,
-    DestroyedPlanet,
-}
-
 #[derive(Debug, Clone, PartialEq)]
 pub struct TokenLayout {
-    pub kind: TokenKind,
+    pub kind: TiToken,
     pub x: f32,
     pub y: f32,
     pub width: f32,
@@ -130,7 +138,7 @@ impl MapLayout {
 pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     let milty_information = game_state.map_data.milty_information.as_ref()?;
 
-    let owned_planets = game_state
+    let planet_owner = game_state
         .players
         .values()
         .flat_map(|player| {
@@ -141,6 +149,13 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
                 .map(move |planet| (planet, player))
         })
         .collect::<HashMap<Planet, _>>();
+
+    let planet_attachments = game_state
+        .players
+        .values()
+        .flat_map(|p| &p.planets)
+        .filter(|(_, attachments)| !attachments.is_empty())
+        .collect::<HashMap<&Planet, &HashSet<PlanetAttachment>>>();
 
     let mut system_planets: HashMap<SystemId, Vec<Planet>> = systems()
         .into_iter()
@@ -195,7 +210,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         });
 
         for planet in system_planets.get(&tile.system).into_iter().flatten() {
-            let Some(owner) = owned_planets.get(planet) else {
+            let Some(owner) = planet_owner.get(planet) else {
                 continue;
             };
             let offset = planet_offset(planet);
@@ -213,6 +228,26 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
                 name: owner.name.clone(),
                 color: owner.color,
             });
+
+            if let Some(attachments) = planet_attachments.get(planet) {
+                for (attachment_index, attachment) in attachments.iter().enumerate() {
+                    let offset = planet_offset(planet);
+                    let (x, y) = to_svg(tile_with_offset_to_visual_pos(
+                        tile_pos,
+                        (
+                            offset.0 + ATTACHMENT_OFFSETS[attachment_index].0,
+                            offset.1 + ATTACHMENT_OFFSETS[attachment_index].1,
+                        ),
+                    ));
+                    tokens.push(TokenLayout {
+                        kind: TiToken::from(attachment),
+                        x,
+                        y,
+                        width: ATTACHMENT_TOKEN_SIZE.0,
+                        height: ATTACHMENT_TOKEN_SIZE.1,
+                    });
+                }
+            }
         }
 
         if milty_information.mirage_system.as_ref() == Some(&tile.system) {
@@ -221,7 +256,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
                 planet_offset(&Planet::Mirage),
             ));
             tokens.push(TokenLayout {
-                kind: TokenKind::Mirage,
+                kind: TiToken::Mirage,
                 x,
                 y,
                 width: MIRAGE_TOKEN_SIZE.0,
@@ -239,7 +274,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
                 planet_offset(planet),
             ));
             tokens.push(TokenLayout {
-                kind: TokenKind::DestroyedPlanet,
+                kind: TiToken::DestroyedPlanet,
                 x,
                 y,
                 width: DESTROYED_PLANET_TOKEN_SIZE.0,
