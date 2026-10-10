@@ -1,4 +1,4 @@
-FROM rust:1.93 AS chef
+FROM rust:1.99 AS chef
 RUN cargo install cargo-chef
 WORKDIR /app
 
@@ -27,7 +27,7 @@ COPY ./Cargo.lock .
 
 # Install `dx`
 RUN curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-RUN cargo binstall dioxus-cli --root /.cargo -y --force --version 0.7.2
+RUN cargo binstall dioxus-cli --root /.cargo -y --force --version 0.7.10
 ENV PATH="/.cargo/bin:$PATH"
 
 RUN dx bundle --release --package web
