@@ -6,15 +6,25 @@ html,
 body {
   margin: 0;
   padding: 0;
-  margin: 0;
-  padding: 0;
-  max-width: 100vw;
+  width: 100%;
+  min-height: 100%;
   overflow-x: hidden;
-  min-height: 100vh;
+}
+
+html {
+  background: url("/background_image.jpg") center center / cover no-repeat;
 }
 
 body {
-  background-image: url("/background_image.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: -webkit-fill-available;
+  background: url("/background_image.jpg") center center / cover no-repeat;
+  background-color: #fff;
+}
+
+@supports (height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
 }
