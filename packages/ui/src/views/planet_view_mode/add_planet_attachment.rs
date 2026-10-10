@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use dioxus::prelude::*;
 use ti_helper_game_data::{
@@ -55,7 +55,7 @@ pub fn AddPlanetAttachment() -> Element {
 
     let planet_existing_attachments = use_memo(move || {
         planet()
-            .map(|planet| {
+            .and_then(|planet| {
                 gc.game_state().players.get(&player()).map(|player| {
                     player.planets.get(&planet).map(|a_s| {
                         a_s.iter()
@@ -64,7 +64,6 @@ pub fn AddPlanetAttachment() -> Element {
                     })
                 })
             })
-            .flatten()
             .flatten()
             .unwrap_or_default()
     });
