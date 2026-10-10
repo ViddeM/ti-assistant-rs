@@ -2,10 +2,13 @@ $main-color: #e0e0ff;
 $git-color: #f14e32;
 
 .source-code-button {
-  position: absolute;
-  bottom: 12px;
+  position: fixed;
   right: 12px;
+  bottom: 12px;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px;
   background-color: $main-color;
   color: $git-color;
