@@ -2,6 +2,7 @@ use std::{fs, str::FromStr};
 
 use anyhow::Context;
 use chrono::{DateTime, Utc};
+use dioxus::logger::tracing::info;
 use ti_helper_db::{db::DbPool, queries};
 use ti_helper_game_data::{actions::event::Event, game_id::GameId};
 use ti_helper_game_logic::gameplay::game::Game;
@@ -9,6 +10,11 @@ use ti_helper_game_logic::gameplay::game::Game;
 use crate::server_side::Opts;
 
 pub async fn insert_demo_games(opt: &Opts, db_pool: &DbPool) -> anyhow::Result<()> {
+    info!(
+        "Inserting demo games from directory: {:?}",
+        opt.demo_games_dir
+    );
+
     if !opt.demo_games_dir.exists() {
         anyhow::bail!("Demo games dir does not exist");
     }
@@ -58,7 +64,8 @@ pub async fn insert_demo_games(opt: &Opts, db_pool: &DbPool) -> anyhow::Result<(
             let mut new_game = Game::default();
             for (event, timestamp) in events.into_iter() {
                 new_game
-                    .apply_or_err(event, timestamp)
+                    .apply_or_err(event.clone(), timestamp)
+                    .with_context(|| format!("\n\tGame: '{name}' ({id})\n\tTimestamp: {timestamp:?}\n\tEvent: {event:?}"))
                     .expect("Failed to apply event for demo game");
             }
 
