@@ -1080,11 +1080,7 @@ impl Planet {
     }
 
     pub fn is_mecatol_rex(&self) -> bool {
-        match self {
-            Planet::MecatolRex => true,
-            Planet::MecatolRexOmega => true,
-            _ => false,
-        }
+        matches!(self, Planet::MecatolRex | Planet::MecatolRexOmega)
     }
 }
 

@@ -98,14 +98,14 @@ fn PlayerSecretView(player_id: PlayerId) -> Element {
                     rsx! {
                         div { key: "{secret}", class: "secret-objective-row",
                             "{secret.clone().info().name}"
-                            InfoButton { info: Info::Objective(Objective::Secret(secret.clone())) }
+                            InfoButton { info: Info::Objective(Objective::Secret(secret)) }
                             Button {
                                 class: "delete-secret-objective-button",
                                 onclick: move |_| {
                                     event
                                         .send_event(Event::UnscoreSecretObjective {
                                             player: p3.clone(),
-                                            objective: secret.clone(),
+                                            objective: secret,
                                         })
                                 },
                                 Icon {

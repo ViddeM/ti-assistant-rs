@@ -2,8 +2,8 @@ use dioxus::prelude::*;
 
 const MAIN_MENU_SCSS: Asset = asset!("/assets/styling/views/main_menu.scss");
 
-const VIDDE_LINK: &'static str = "https://www.github.com/viddem";
-const TUX_LINK: &'static str = "https://www.github.com/hulthe";
+const VIDDE_LINK: &str = "https://www.github.com/viddem";
+const TUX_LINK: &str = "https://www.github.com/hulthe";
 
 #[derive(Debug, Clone, PartialEq, Props)]
 pub struct MainMenuProps<R>

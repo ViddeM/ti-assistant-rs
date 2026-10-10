@@ -32,8 +32,8 @@ pub fn CreationPhaseView() -> Element {
             h2 { "Add Players" }
             {
                 players
-                    .iter()
-                    .map(|(_, p)| {
+                    .values()
+                    .map(|p| {
                         rsx! {
                             DisplayPlayer { player: p.clone() }
                         }
@@ -78,19 +78,19 @@ fn AddPlayer() -> Element {
         get_available_factions(&gc.game_options().factions, &gc.game_state().players)
     });
     let colors = use_memo(move || {
-        let mut colors = gc.game_options().colors.iter().cloned().collect::<Vec<_>>();
+        let mut colors = gc.game_options().colors.to_vec();
         colors.sort();
         colors
     });
     let taken_colors = use_memo(move || {
         gc.game_state()
             .players
-            .iter()
-            .map(|(_, p)| p.color)
+            .values()
+            .map(|p| p.color)
             .collect::<HashSet<_>>()
     });
 
-    let mut new_player_name = use_signal(|| String::new());
+    let mut new_player_name = use_signal(String::new);
     let mut new_player_faction: Signal<Option<Faction>> = use_signal(|| None);
     let mut selected_color: Signal<Color> =
         use_signal(|| colors().first().cloned().expect("there should be colors"));
@@ -109,11 +109,10 @@ fn AddPlayer() -> Element {
         new_player_name.set(String::new());
         new_player_faction.set(None);
         selected_color.set(
-            colors()
+            *colors()
                 .iter()
                 .find(|c| !taken_colors.contains(c))
-                .expect("There to be an available color")
-                .clone(),
+                .expect("There to be an available color"),
         )
     };
 
@@ -166,8 +165,8 @@ fn AddPlayer() -> Element {
                             checked: color == &selected_color(),
                             disabled: taken_colors.contains(color),
                             onchange: {
-                                let c = color.clone();
-                                move |_| selected_color.set(c.clone())
+                                let c = *color;
+                                move |_| selected_color.set(c)
                             },
                         }
                     }
@@ -185,7 +184,7 @@ fn AddPlayer() -> Element {
 }
 
 fn get_available_factions(
-    all_factions: &Vec<FactionResponse>,
+    all_factions: &[FactionResponse],
     players: &HashMap<PlayerId, Player>,
 ) -> Vec<Faction> {
     let taken_factions = players.values().map(|p| p.faction).collect::<HashSet<_>>();
@@ -193,10 +192,10 @@ fn get_available_factions(
     let mut factions = all_factions
         .iter()
         .map(|f| f.faction)
-        .filter(|f| taken_factions.contains(f) == false)
+        .filter(|f| !taken_factions.contains(f))
         .collect::<Vec<_>>();
 
-    factions.sort_by(|a, b| a.name().to_lowercase().cmp(&b.name().to_lowercase()));
+    factions.sort_by_key(|faction| faction.name().to_lowercase());
 
     factions
 }

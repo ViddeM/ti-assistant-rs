@@ -56,6 +56,6 @@ impl From<&Color> for TechSection {
 
 impl TechSection {
     pub fn to_tag(&self) -> String {
-        format!("#{}", self.to_string())
+        format!("#{}", self)
     }
 }

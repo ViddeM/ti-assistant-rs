@@ -129,7 +129,7 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
     let attachments = use_memo(move || progress().planet_attachments);
 
     rsx! {
-        if taken_planets().len() > 0 {
+        if !taken_planets().is_empty() {
             for (planet , previous_owner) in taken_planets().iter() {
                 fieldset { key: "{planet}",
                     legend { "{planet.info().name}" }

@@ -87,7 +87,7 @@ fn try_update_game_state(
             };
 
             let mut players: Vec<&MiltyPlayer> = milty_data.players.values().collect();
-            players.sort_by(|a, b| a.order.cmp(&b.order));
+            players.sort_by_key(|p| p.order);
             game_state.table_order = players.into_iter().map(|p| p.name.clone().into()).collect();
 
             let colors_map =
@@ -100,12 +100,9 @@ fn try_update_game_state(
                     Ok(NewPlayer {
                         name: p.name.clone(),
                         faction: p.faction,
-                        color: colors_map
-                            .get(&p.faction)
-                            .ok_or_else(|| {
-                                anyhow::anyhow!("Faction {:?} did not get a color?", p.faction)
-                            })?
-                            .clone(),
+                        color: *colors_map.get(&p.faction).ok_or_else(|| {
+                            anyhow::anyhow!("Faction {:?} did not get a color?", p.faction)
+                        })?,
                     })
                 })
                 .collect::<anyhow::Result<Vec<NewPlayer>>>()?;
@@ -495,10 +492,8 @@ fn try_update_game_state(
             current_player.planets.insert(planet.clone(), attachments);
 
             // Give the current player Custodians if he is the first to take Mecatol Rex
-            if planet.is_mecatol_rex() {
-                if game_state.score.custodians.is_none() {
-                    game_state.score.custodians = Some(current_player_id.clone());
-                }
+            if planet.is_mecatol_rex() && game_state.score.custodians.is_none() {
+                game_state.score.custodians = Some(current_player_id.clone());
             }
 
             tactical.activated_system = planet_system;
@@ -666,7 +661,7 @@ fn try_update_game_state(
                     game_state.speaker = Some(new_speaker);
                 }
                 (StrategyCard::Imperial, StrategicPrimaryAction::Imperial { score_objective }) => {
-                    if let Some(objective) = score_objective.clone() {
+                    if let Some(objective) = score_objective {
                         let Some(players) =
                             game_state.score.revealed_objectives.get_mut(&objective)
                         else {
@@ -1214,7 +1209,7 @@ fn try_update_game_state(
 
             status_state
                 .scored_public_objectives
-                .insert(player.clone(), objective.clone());
+                .insert(player.clone(), objective);
 
             if let Some(obj) = objective {
                 let Some(scorers) = game_state.score.revealed_objectives.get_mut(&obj) else {
@@ -1300,7 +1295,7 @@ fn try_update_game_state(
                 );
             }
 
-            status_phase_state.revealed_objective = Some(pub_obj.clone());
+            status_phase_state.revealed_objective = Some(pub_obj);
 
             game_state
                 .score

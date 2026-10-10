@@ -51,7 +51,7 @@ fn PlayerSupportForTheThroneView(player_id: PlayerId) -> Element {
             .unwrap_or_default()
     });
 
-    let mut selected_player = use_signal(|| currently_selected_player());
+    let mut selected_player = use_signal(&*currently_selected_player);
     // Ensure this is initialized correctly
     use_effect(move || selected_player.set(currently_selected_player()));
 

@@ -132,12 +132,12 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
         };
     }
 
-    if let Some(gs) = game_state.read().as_ref() {
-        if let Some(go) = game_options.read().as_ref() {
-            return rsx! {
-                MainGameView { game_options: Arc::clone(go), game_state: Arc::clone(gs) }
-            };
-        }
+    if let Some(gs) = game_state.read().as_ref()
+        && let Some(go) = game_options.read().as_ref()
+    {
+        return rsx! {
+            MainGameView { game_options: Arc::clone(go), game_state: Arc::clone(gs) }
+        };
     }
 
     rsx! {
@@ -171,10 +171,8 @@ fn MainGameView(
 fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
     let mode = *view_mode.read();
     let gc = use_context::<GameContext>();
-    let show_sidebar = use_memo(move || match gc.game_state().phase {
-        Phase::Creation | Phase::Setup => false,
-        _ => true,
-    });
+    let show_sidebar =
+        use_memo(move || !matches!(gc.game_state().phase, Phase::Creation | Phase::Setup));
 
     let sidebar = if show_sidebar() {
         rsx! {

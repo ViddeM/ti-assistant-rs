@@ -94,7 +94,7 @@ pub fn TechTable() -> Element {
         Arc::new(
             players()
                 .iter()
-                .map(|(id, p)| (id.clone(), p.faction.clone()))
+                .map(|(id, p)| (id.clone(), p.faction))
                 .collect::<HashMap<_, _>>(),
         )
     });
@@ -120,12 +120,7 @@ pub fn TechTable() -> Element {
     };
 
     let techs = use_memo(move || {
-        let mut techs = gc
-            .game_options()
-            .technologies
-            .iter()
-            .cloned()
-            .collect::<Vec<_>>();
+        let mut techs = gc.game_options().technologies.to_vec();
         techs.sort();
         techs
     });
@@ -291,12 +286,12 @@ pub fn TechTable() -> Element {
                         TableSectionHeading {
                             title: players()
                                 .iter()
-                                .find(|(id, _)| id.eq(&player_id))
+                                .find(|(id, _)| id.eq(player_id))
                                 .map(|(id, p)| format!("{id} - {}", p.faction.name()))
                                 .expect("Player to exist"),
                             section: players()
                                 .iter()
-                                .find(|(id, _)| id.eq(&player_id))
+                                .find(|(id, _)| id.eq(player_id))
                                 .map(|(_, p)| (&p.color).into())
                                 .expect("Player to exist"),
                             player_count: players().len(),
@@ -333,8 +328,8 @@ fn TableSectionHeading(
     player_count: usize,
     icon: Option<TiIconType>,
 ) -> Element {
-    let background = format!("{}-background-color", section.to_string());
-    let color = format!("{}-color", section.to_string());
+    let background = format!("{}-background-color", section);
+    let color = format!("{}-color", section);
 
     let icon_render = use_memo(move || {
         icon.clone().map(|i| {
@@ -351,7 +346,7 @@ fn TableSectionHeading(
                     div { class: format!("{background} horizontal-line") }
                     h2 { class: format!("{color} tech-group-text"),
                         {icon_render()}
-                        "{title}"
+                        {title}
                         {icon_render()}
                     }
                     div { class: format!("{background} horizontal-line") }
@@ -394,7 +389,7 @@ fn TechRows(
                     td { key: "{player_id}", class: "align-center",
                         FactionButton {
                             faction: player_factions.get(player_id).cloned().expect("Player to have a faction"),
-                            selected: pt.contains(&tech),
+                            selected: pt.contains(tech),
                             onclick: {
                                 let tech = tech.clone();
                                 let player_id = player_id.clone();

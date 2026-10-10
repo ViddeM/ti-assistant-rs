@@ -69,7 +69,7 @@ impl MiltyImport for MiltyData {
             .await?
             .json()
             .await
-            .map_err(|err| MiltyError::ParseResponseError(err))?;
+            .map_err(MiltyError::ParseResponseError)?;
 
         log::debug!("Get milty data response {get_milty_data_response:?}");
 

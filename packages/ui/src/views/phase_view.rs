@@ -10,7 +10,7 @@ use crate::{
             agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
             end_action_phase::EndActionPhaseView, relic_card::RelicCardView,
             relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
-            status_phase_view::status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
+            status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
             strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
         },
     },

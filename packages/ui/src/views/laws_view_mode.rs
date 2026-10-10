@@ -67,15 +67,15 @@ fn ActiveLawsTable() -> Element {
                                             Button {
                                                 class: "delete-law-button",
                                                 onclick: {
-                                                    let l = law.clone();
-                                                    move |_| { event.send_event(Event::RepealLaw { law: l.clone() }) }
+                                                    let law = *law;
+                                                    move |_| { event.send_event(Event::RepealLaw { law }) }
                                                 },
                                                 Icon { class: "inline-icon", icon: FaTrash }
                                             }
                                         }
                                         td { "{law.info().name}" }
                                         td {
-                                            InfoButton { info: Info::Agenda(law.clone()) }
+                                            InfoButton { info: Info::Agenda(*law) }
                                         }
                                     }
                                 }
@@ -107,12 +107,7 @@ fn AddLawForm() -> Element {
     });
 
     let all_agendas = use_memo(move || {
-        let mut laws = gc
-            .game_options()
-            .agendas
-            .iter()
-            .cloned()
-            .collect::<Vec<_>>();
+        let mut laws = gc.game_options().agendas.to_vec();
         laws.sort();
         laws
     });
@@ -120,7 +115,7 @@ fn AddLawForm() -> Element {
         gc.game_state()
             .agenda_vote_history
             .iter()
-            .map(|a| a.vote.agenda.clone())
+            .map(|a| a.vote.agenda)
             .collect::<Vec<_>>()
     });
     let available_agendas = use_memo(move || {
@@ -180,7 +175,7 @@ fn AddLawForm() -> Element {
                         div { class: "form-container",
                             h3 {
                                 "{state.agenda.info().name}"
-                                InfoButton { info: Info::Agenda(state.agenda.clone()) }
+                                InfoButton { info: Info::Agenda(state.agenda) }
                             }
 
                             Button { onclick: move |_| event.send_event(Event::AddAgendaCancel), "Cancel Adding Agenda" }
@@ -284,11 +279,11 @@ fn AddLawForm() -> Element {
                                 class: "margin-top",
                                 disabled: agenda().is_none(),
                                 onclick: {
-                                    let a = agenda().clone();
+                                    let a = agenda();
                                     move |_| {
                                         event
                                             .send_event(Event::AddAgendaBegin {
-                                                agenda: a.clone().expect("Agenda to be set"),
+                                                agenda: a.expect("Agenda to be set"),
                                             })
                                     }
                                 },
@@ -306,13 +301,7 @@ fn AddLawForm() -> Element {
 fn AgendaHistoryView() -> Element {
     let gc = use_context::<GameContext>();
 
-    let previous_agendas = use_memo(move || {
-        gc.game_state()
-            .agenda_vote_history
-            .iter()
-            .cloned()
-            .collect::<Vec<_>>()
-    });
+    let previous_agendas = use_memo(move || gc.game_state().agenda_vote_history.to_vec());
 
     rsx! {
         div { class: "card",

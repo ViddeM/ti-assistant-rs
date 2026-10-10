@@ -53,18 +53,12 @@ fn RevealAgendaView() -> Element {
 
     let mut current_agenda = use_signal(|| None);
 
-    let all_agendas = use_memo(move || {
-        gc.game_options()
-            .agendas
-            .iter()
-            .cloned()
-            .collect::<Vec<_>>()
-    });
+    let all_agendas = use_memo(move || gc.game_options().agendas.to_vec());
     let used_agendas = use_memo(move || {
         gc.game_state()
             .agenda_vote_history
             .iter()
-            .map(|a| a.vote.agenda.clone())
+            .map(|a| a.vote.agenda)
             .collect::<Vec<_>>()
     });
     let available_agendas = use_memo(move || {
@@ -194,7 +188,7 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
         };
     }
 
-    if state().player_votes.contains_key(&player_id()) == false {
+    if !state().player_votes.contains_key(&player_id()) {
         // Player has not yet voted.
 
         if !view.is_active() {
@@ -255,7 +249,7 @@ fn PlayerVoteActionsView(player_id: ReadSignal<PlayerId>, state: ReadSignal<Vote
 
                     let new_votes = match s.parse() {
                         Ok(v) => v,
-                        _ if s.len() == 0 => 0,
+                        _ if s.is_empty() => 0,
                         _ => votes(),
                     };
 

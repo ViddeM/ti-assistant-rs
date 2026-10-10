@@ -16,10 +16,7 @@ pub async fn create_game(db_pool: &DbPool, id: GameId, name: String) -> DbResult
 
     use crate::schema::game::dsl;
     insert_into(dsl::game)
-        .values(&db::Game {
-            id: id.into(),
-            name,
-        })
+        .values(&db::Game { id, name })
         .execute(&mut db)
         .await?;
 

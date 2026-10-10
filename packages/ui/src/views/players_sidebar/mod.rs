@@ -27,14 +27,13 @@ pub fn PlayersSidebar() -> Element {
 
     let current_player = use_memo(move || gc.game_state().current_player.clone());
     let next_player = use_memo(move || {
-        if let Some(current) = current_player() {
-            if let Some(next) = gc
+        if let Some(current) = current_player()
+            && let Some(next) = gc
                 .game_state()
                 .next_player_after(&current)
                 .expect("Failed to retrieve next player")
-            {
-                return next.to_string();
-            }
+        {
+            return next.to_string();
         }
         "None".to_string()
     });
@@ -138,7 +137,7 @@ fn PlayerBox(player_id: PlayerId) -> Element {
             .map(|(card, _)| card)
             .cloned()
             .collect::<Vec<_>>();
-        strategy_cards.sort_by(|a, b| a.card_number().cmp(&b.card_number()));
+        strategy_cards.sort_by_key(|card| card.card_number());
         strategy_cards
     });
 

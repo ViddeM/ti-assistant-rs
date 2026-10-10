@@ -87,7 +87,7 @@ pub fn TechSecondary(progress: ReadSignal<StrategicProgress>) -> Element {
                     return (id, player, Choice::OtherPlayer);
                 }
 
-                return (id, player, Choice::YetToChoose);
+                (id, player, Choice::YetToChoose)
             })
             .map(|(id, player, choice)| (id.clone(), player.clone(), choice))
             .collect::<Vec<_>>();
@@ -102,7 +102,7 @@ pub fn TechSecondary(progress: ReadSignal<StrategicProgress>) -> Element {
                 fieldset {
                     legend { class: "aligned-legend",
                         h6 { class: "horizontal-padding", "{id}" }
-                        FactionIcon { faction: player.faction.clone() }
+                        FactionIcon { faction: player.faction }
                     }
                     RenderChoice { player_id: id, player, choice }
                 }

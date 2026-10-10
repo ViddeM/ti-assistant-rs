@@ -23,9 +23,7 @@ impl PlayerViewContext {
     }
 
     pub fn set_player(&mut self, player_id: PlayerId) {
-        self.current.set(PlayerView::Player {
-            player_id: player_id,
-        })
+        self.current.set(PlayerView::Player { player_id })
     }
 
     pub fn get(&self) -> ReadSignal<PlayerView> {

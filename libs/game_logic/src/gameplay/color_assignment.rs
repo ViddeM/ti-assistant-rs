@@ -160,7 +160,7 @@ fn select_color_for_faction<'a>(
                 "2: Taking the color {:?} (faction {faction:?})",
                 my_prio.color
             );
-            map.insert(my_prio.color.clone(), (my_prio, faction));
+            map.insert(my_prio.color, (my_prio, faction));
 
             log::debug!(
                 "Trying to find a new color for other faction {other_faction:?} who previously had {:?}, remaining prios for them {remaining_prios:?}",
@@ -170,7 +170,7 @@ fn select_color_for_faction<'a>(
                 // They ran out of colors, pick an unused one.
                 let color = get_random_unused_color(map)?;
                 log::debug!("They ran out of prio options, choosing random {color:?}");
-                map.insert(color.clone(), (ColorPrio::base(color), other_faction));
+                map.insert(color, (ColorPrio::base(color), other_faction));
             } else {
                 log::debug!("Selecting new color for faction {other_faction:?}");
                 select_color_for_faction(&mut remaining_prios, map, other_faction)?;
@@ -179,14 +179,14 @@ fn select_color_for_faction<'a>(
         }
 
         log::debug!("Taking the color {:?} (faction {faction:?})", my_prio.color);
-        map.insert(my_prio.color.clone(), (my_prio, faction));
+        map.insert(my_prio.color, (my_prio, faction));
         return Ok(());
     }
 
     // We have no more prioritised colors, pick any free one.
     let color = get_random_unused_color(map)?;
     log::debug!("Unable to find prio color, taking default {color:?}");
-    map.insert(color.clone(), (ColorPrio::base(color), faction));
+    map.insert(color, (ColorPrio::base(color), faction));
     Ok(())
 }
 

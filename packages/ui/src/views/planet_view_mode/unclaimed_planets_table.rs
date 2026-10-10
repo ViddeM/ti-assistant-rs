@@ -30,7 +30,7 @@ pub fn UnclaimedPlanetsTable() -> Element {
             .collect::<Vec<_>>()
     });
 
-    let mut planets_filter = use_signal(|| String::new());
+    let mut planets_filter = use_signal(String::new);
     let planets_filter_lc = use_memo(move || planets_filter().to_lowercase());
 
     let unclaimed_planets = use_memo(move || {
@@ -42,7 +42,7 @@ pub fn UnclaimedPlanetsTable() -> Element {
             .filter(|(_, i)| i.name.to_lowercase().contains(&planets_filter_lc()))
             .map(|(p, i)| (p.clone(), i.clone()))
             .collect::<Vec<_>>();
-        planets.sort_by(|(_, a), (_, b)| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+        planets.sort_by_key(|(_, planet_info)| planet_info.name.to_lowercase());
         planets
     });
 

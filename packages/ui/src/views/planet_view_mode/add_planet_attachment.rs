@@ -29,7 +29,7 @@ pub fn AddPlanetAttachment() -> Element {
             .iter()
             .map(|(id, p)| (id.clone(), p.clone()))
             .collect::<Vec<_>>();
-        players.sort_by(|(a, _), (b, _)| a.cmp(&b));
+        players.sort_by(|(a, _), (b, _)| a.cmp(b));
         players
     });
 
@@ -98,18 +98,18 @@ pub fn AddPlanetAttachment() -> Element {
     });
 
     use_effect(move || {
-        if let Some(p) = planet() {
-            if !available_planets().contains(&p) {
-                planet.set(None);
-            }
+        if let Some(p) = planet()
+            && !available_planets().contains(&p)
+        {
+            planet.set(None);
         }
     });
 
     use_effect(move || {
-        if let Some(a) = attachment() {
-            if !available_attachments().contains(&a) {
-                attachment.set(None);
-            }
+        if let Some(a) = attachment()
+            && !available_attachments().contains(&a)
+        {
+            attachment.set(None);
         }
     });
 

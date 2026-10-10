@@ -154,7 +154,7 @@ pub fn ObjectiveDropdown(
 
     rsx! {
         Dropdown { value: current_value, disabled, oninput,
-            option { value: "", "{default_text}" }
+            option { value: "", {default_text} }
             {
                 options
                     .iter()
@@ -273,7 +273,7 @@ pub fn PlanetDropdown(
                     .iter()
                     .map(|p| {
                         rsx! {
-                            option { key: "{p}", value: "{p}", "{p.info().name}" }
+                            option { key: "{p}", value: "{p}", {p.info().name} }
                         }
                     })
             }
@@ -314,7 +314,7 @@ pub fn AgendaDropdown(
                     .iter()
                     .map(|a| {
                         rsx! {
-                            option { key: "{a}", value: "{a}", "{a.info().name}" }
+                            option { key: "{a}", value: "{a}", {a.info().name} }
                         }
                     })
             }
@@ -397,7 +397,7 @@ pub fn PlanetAttachmentDropdown(
                                 .iter()
                                 .map(|p| {
                                     rsx! {
-                                        option { key: "{p}", value: "{p}", "{p.info().name}" }
+                                        option { key: "{p}", value: "{p}", {p.info().name} }
                                     }
                                 })
                         }
@@ -449,7 +449,7 @@ pub fn VoteOptionDropdown(
                                     let v = o.name();
                                     let display = o.to_display_value();
                                     rsx! {
-                                        option { key: "{v}", value: "{v}", "{display}" }
+                                        option { key: "{v}", value: {v}, {display} }
                                     }
                                 })
                         }
@@ -502,7 +502,7 @@ pub fn FrontierCardDropdown(
                                     let v = o.to_string();
                                     let display = o.info().name;
                                     rsx! {
-                                        option { key: "{v}", value: "{v}", "{display}" }
+                                        option { key: "{v}", value: {v}, {display} }
                                     }
                                 })
                         }

@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 
-use dioxus_free_icons::icons::fa_brands_icons::FaGitAlt;
 use dioxus_free_icons::Icon;
+use dioxus_free_icons::icons::fa_brands_icons::FaGitAlt;
 
 use crate::Route;
 
-const GIT_SOURCE_URL: &'static str = "https://github.com/viddem/ti-assistant-rs";
+const GIT_SOURCE_URL: &str = "https://github.com/viddem/ti-assistant-rs";
 const SOURCE_CODE_SCSS: Asset = asset!("/assets/source_code.scss");
 
 #[component]

@@ -181,8 +181,8 @@ fn ImportMiltyGame(
     new_game_result: WriteSignal<Option<Result<GameId, ServerFnError>>>,
     winning_score: ReadSignal<u32>,
 ) -> Element {
-    let mut milty_game_id = use_signal(|| String::new());
-    let mut milty_tts_string = use_signal(|| String::new());
+    let mut milty_game_id = use_signal(String::new);
+    let mut milty_tts_string = use_signal(String::new);
 
     rsx! {
         div { class: "right-aligned-row",

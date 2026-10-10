@@ -100,7 +100,7 @@ impl HexMap {
         tiles.push(Tile {
             system: systems
                 .get(Self::WORMHOLE_NEXUS_TILE_ID)
-                .ok_or_else(|| HexMapError::SystemDoesntExist("Wormhole nexus"))?
+                .ok_or(HexMapError::SystemDoesntExist("Wormhole nexus"))?
                 .id
                 .clone(),
             position: HexPosition::OutsideGalaxy,
@@ -112,7 +112,7 @@ impl HexMap {
         }) {
             let creuss_home_system = systems
                 .get(Self::CREUSS_HOME_SYSTEM)
-                .ok_or_else(|| HexMapError::SystemDoesntExist("Creuss homesystem"))?;
+                .ok_or(HexMapError::SystemDoesntExist("Creuss homesystem"))?;
 
             tiles.push(Tile {
                 system: creuss_home_system.id.clone(),

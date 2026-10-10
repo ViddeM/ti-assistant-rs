@@ -20,11 +20,10 @@ pub fn StrategyCardInfo(cards: ReadSignal<Vec<StrategyCard>>) -> Element {
         gc.game_state()
             .action_progress
             .clone()
-            .map(|prog| match prog {
+            .and_then(|prog| match prog {
                 ActionPhaseProgress::Strategic(strategic_progress) => Some(strategic_progress.card),
                 _ => None,
             })
-            .flatten()
     });
 
     rsx! {
@@ -37,7 +36,7 @@ pub fn StrategyCardInfo(cards: ReadSignal<Vec<StrategyCard>>) -> Element {
                     class: if active_card().as_ref().eq(&Some(card)) { "card-active" } else if spent_cards().contains(card) { "card-played" },
                     class: "card-container style-{card.name()}",
                     p { "{card}" }
-                    InfoButton { info: Info::Strategy(card.clone()) }
+                    InfoButton { info: Info::Strategy(*card) }
                 }
             }
         }

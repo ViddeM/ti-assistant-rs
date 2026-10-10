@@ -102,8 +102,7 @@ fn StellarConvertersView() -> Element {
         gc.game_state()
             .players
             .values()
-            .map(|p| p.planets.iter())
-            .flatten()
+            .flat_map(|p| p.planets.iter())
             .filter(|(_, attachments)| {
                 attachments
                     .iter()

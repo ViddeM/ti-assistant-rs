@@ -39,7 +39,6 @@ pub fn StrategyPhaseView() -> Element {
         gc.game_state()
             .strategy_card_holders
             .iter()
-            .map(|(strategy_card, holder)| (strategy_card, holder))
             .map(|(card, player)| {
                 let faction = gc
                     .game_state()
@@ -48,7 +47,7 @@ pub fn StrategyPhaseView() -> Element {
                     .expect("Player to exist")
                     .faction;
 
-                (card.clone(), faction)
+                (*card, faction)
             })
             .collect::<HashMap<_, _>>()
     });
@@ -120,7 +119,7 @@ fn StrategyCardButton(
     let faction = use_memo(move || {
         if let Some(f) = selected_by_faction.as_ref() {
             rsx! {
-                FactionIcon { faction: f.clone() }
+                FactionIcon { faction: *f }
             }
         } else {
             rsx! {}

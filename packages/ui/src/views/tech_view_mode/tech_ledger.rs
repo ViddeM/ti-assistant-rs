@@ -20,7 +20,7 @@ pub fn TechLedger() -> Element {
             .game_state()
             .players
             .iter()
-            .map(|(id, p)| (id.clone(), p.faction.clone()))
+            .map(|(id, p)| (id.clone(), p.faction))
             .collect::<Vec<_>>();
         players.sort_by(|(a, _), (b, _)| a.cmp(b));
         players
@@ -29,7 +29,7 @@ pub fn TechLedger() -> Element {
         gc.game_state()
             .players
             .iter()
-            .map(|(id, p)| (id.clone(), p.color.clone()))
+            .map(|(id, p)| (id.clone(), p.color))
             .collect::<HashMap<_, _>>()
     });
 
@@ -70,7 +70,7 @@ pub fn TechLedger() -> Element {
                             rsx! {
                                 li { key: "{p}",
                                     FactionIcon { faction: f, width: 16, height: 16 }
-                                    a { href: TechSection::from(&color).to_tag(), "{name}" }
+                                    a { href: TechSection::from(&color).to_tag(), {name} }
                                 }
                             }
                         })

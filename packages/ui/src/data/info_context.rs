@@ -116,7 +116,7 @@ impl InfoDescription {
     pub fn to_element(self) -> Element {
         match self {
             InfoDescription::Description(d) => rsx! {
-                p { "{d}" }
+                p { {d} }
             },
             InfoDescription::Custom(vnode) => vnode,
         }

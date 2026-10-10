@@ -38,15 +38,14 @@ pub fn StrategyCardView() -> Element {
         gc.game_state()
             .action_progress
             .clone()
-            .map(|p| match p {
+            .and_then(|p| match p {
                 ActionPhaseProgress::Strategic(strategic_progress) => Some(strategic_progress),
                 _ => None,
             })
-            .flatten()
             .expect("There to be strategic progress")
     });
 
-    let card = use_memo(move || progress().card.clone());
+    let card = use_memo(move || progress().card);
 
     let expected_secondaries = use_memo(move || {
         gc.game_state()

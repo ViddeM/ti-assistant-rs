@@ -193,7 +193,7 @@ fn WinnuSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
             {
                 if let Some(tech) = tech {
                     rsx! {
-                        p { "{tech}" }
+                        p { {tech} }
                     }
                 } else {
                     rsx! {
@@ -247,7 +247,7 @@ fn ArgentFlightSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     rsx! {
         div { class: "setup-column",
             {
-                if taken_techs.len() > 0 {
+                if !taken_techs.is_empty() {
                     rsx! {
                         {
                             taken_techs
@@ -304,8 +304,7 @@ fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
             .game_state()
             .players
             .values()
-            .map(|p| p.technologies.iter())
-            .flatten()
+            .flat_map(|p| p.technologies.iter())
             .filter(|t| t.info().origin == TechOrigin::Base)
             .cloned()
             .collect::<Vec<_>>();
@@ -357,7 +356,7 @@ fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     rsx! {
         div { class: "setup-column",
             {
-                if taken_techs.len() > 0 {
+                if !taken_techs.is_empty() {
                     rsx! {
                         {
                             taken_techs
@@ -423,8 +422,8 @@ fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                         {
                             player
                                 .planets
-                                .iter()
-                                .map(|(p, _)| {
+                                .keys()
+                                .map(|p| {
                                     rsx! {
                                         p { key: "{p}", "{p.info().name}" }
                                     }

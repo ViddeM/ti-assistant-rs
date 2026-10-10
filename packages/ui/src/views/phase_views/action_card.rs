@@ -250,8 +250,8 @@ fn PlagiarizeView(send_commit_message: Callback<Option<ActionCardAction>>) -> El
                     PlagiarizePlayerRow {
                         key: "{player}",
                         player_id: player.clone(),
-                        selected_player: selected_player.clone(),
-                        selected_tech: selected_tech.clone(),
+                        selected_player,
+                        selected_tech,
                     }
                 }
             }

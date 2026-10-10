@@ -2,11 +2,11 @@ use std::collections::{HashMap, HashSet};
 
 use dioxus::prelude::*;
 use dioxus_free_icons::{
+    Icon,
     icons::{
         fa_regular_icons::FaTrashCan,
         fa_solid_icons::{FaArrowTurnUp, FaTrash},
     },
-    Icon,
 };
 use ti_helper_game_data::{
     actions::event::Event,
@@ -45,12 +45,12 @@ pub fn PlayerPlanetsGrid() -> Element {
     }
 }
 
-const NAME_COL_ALIGN: &'static str = "align-left";
-const TRAIT_COL_ALIGN: &'static str = "align-center";
-const RESOURCE_COL_ALIGN: &'static str = "align-center";
-const INFLUENCE_COL_ALIGN: &'static str = "align-center";
-const TECH_COL_ALIGN: &'static str = "align-center";
-const DELETE_COL_ALIGN: &'static str = "align-right";
+const NAME_COL_ALIGN: &str = "align-left";
+const TRAIT_COL_ALIGN: &str = "align-center";
+const RESOURCE_COL_ALIGN: &str = "align-center";
+const INFLUENCE_COL_ALIGN: &str = "align-center";
+const TECH_COL_ALIGN: &str = "align-center";
+const DELETE_COL_ALIGN: &str = "align-right";
 
 #[component]
 fn PlayerPlanetsCard(player_id: PlayerId) -> Element {

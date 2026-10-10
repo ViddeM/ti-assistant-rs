@@ -28,7 +28,7 @@ pub fn ScoreTableView() -> Element {
             .iter()
             .map(|(id, p)| (id.clone(), p.clone()))
             .collect::<Vec<_>>();
-        players.sort_by(|(a, _), (b, _)| a.to_lowercase().cmp(&b.to_lowercase()));
+        players.sort_by_key(|(p, _)| p.to_lowercase());
         players
     });
     let player_count = use_memo(move || players.len());
@@ -60,7 +60,7 @@ pub fn ScoreTableView() -> Element {
     });
     let agenda_scores = use_memo(move || {
         let mut agendas = gc.game_state().score.agenda_scores.clone();
-        agendas.sort_by(|a, b| a.get_agenda().cmp(&b.get_agenda()));
+        agendas.sort_by_key(|agenda| agenda.get_agenda());
         agendas
     });
     let sftt_scores = use_memo(move || {
@@ -103,8 +103,8 @@ pub fn ScoreTableView() -> Element {
                         CustodianItem {
                             key: "{id}",
                             player_id: id.clone(),
-                            faction: player.faction.clone(),
-                            is_custodian: custodians().as_ref().eq(&Some(&id)),
+                            faction: player.faction,
+                            is_custodian: custodians().as_ref().eq(&Some(id)),
                         }
                     }
                 }
@@ -121,7 +121,7 @@ pub fn ScoreTableView() -> Element {
                         players: players(),
                         index: i,
                         name: o.info().name,
-                        info: Info::Objective(o.clone()),
+                        info: Info::Objective(o),
                         selected: move |p| {
                             gc.game_state()
                                 .score
@@ -134,14 +134,14 @@ pub fn ScoreTableView() -> Element {
                             event
                                 .send_event(Event::ScoreExtraPublicObjective {
                                     player: p,
-                                    objective: o.clone(),
+                                    objective: o,
                                 })
                         },
                         disable: move |p| {
                             event
                                 .send_event(Event::UnscoreObjective {
                                     player: p,
-                                    objective: o.clone(),
+                                    objective: o,
                                 });
                         },
                     }
@@ -177,14 +177,14 @@ pub fn ScoreTableView() -> Element {
                                         event
                                             .send_event(Event::ScoreExtraPublicObjective {
                                                 player: p,
-                                                objective: o.clone(),
+                                                objective: o,
                                             });
                                     },
                                     disable: move |p| {
                                         event
                                             .send_event(Event::UnscoreObjective {
                                                 player: p,
-                                                objective: o.clone(),
+                                                objective: o,
                                             });
                                     },
                                 }
@@ -361,11 +361,11 @@ enum StylingPrefix {
 
 impl StylingPrefix {
     fn get_color_style(&self) -> String {
-        format!("{}-color", self.to_string())
+        format!("{}-color", self)
     }
 
     fn get_background_style(&self) -> String {
-        format!("{}-background-color", self.to_string())
+        format!("{}-background-color", self)
     }
 }
 
@@ -392,7 +392,7 @@ fn TableSectionHeader(
             th { colspan: player_count,
                 div { class: "stage-container",
                     div { class: format!("{background} horizontal-line") }
-                    h2 { class: format!("{color} stage-text"), "{title}" }
+                    h2 { class: format!("{color} stage-text"), {title} }
                     div { class: format!("{background} horizontal-line") }
                 }
             }
@@ -421,7 +421,7 @@ fn SubSectionHeading(
         tr {
             th { colspan: player_count, class: if top_border { "border-top" } else { "" },
                 InfoButton { info: info.clone(), visibility: "hidden" }
-                "{name}"
+                {name}
                 InfoButton { info }
             }
         }
@@ -542,7 +542,7 @@ fn AgendaScoreRow(
                     players
                         .iter()
                         .map(|p| {
-                            let score = if players_that_voted_for.contains(&p) {
+                            let score = if players_that_voted_for.contains(p) {
                                 if for_won { 1 } else { -1 }
                             } else {
                                 0

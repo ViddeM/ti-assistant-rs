@@ -152,7 +152,7 @@ fn TechCategoryButton(
                 {
                     if let TechType::Category(cat) = &tech_type {
                         rsx! {
-                            TiIcon { icon: get_icon_type(&cat) }
+                            TiIcon { icon: get_icon_type(cat) }
                         }
                     } else {
                         rsx! {}
@@ -162,7 +162,7 @@ fn TechCategoryButton(
             TechDropdown {
                 value: selected_tech,
                 options: tech_options,
-                on_select: move |tech| set_selected_tech(tech),
+                on_select: set_selected_tech,
             }
         }
     }

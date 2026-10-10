@@ -15,12 +15,11 @@ pub fn PlayerScoreInfo(player_id: PlayerId) -> Element {
 
     let p1 = player_id.clone();
     let current_score = use_memo(move || {
-        gc.game_state()
+        *gc.game_state()
             .score
             .player_points
             .get(&p1)
             .expect("Player to exist")
-            .clone()
     });
 
     let is_custodian = use_memo(move || {

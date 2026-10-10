@@ -78,10 +78,11 @@ pub fn StatusPhaseActionsView() -> Element {
     let selectable_objectives = use_memo(move || {
         unrevealed_objectives()
             .iter()
-            .filter(|&o| match (o.info().kind, reveal_stage_two()) {
-                (ObjectiveKind::StageI, false) => true,
-                (ObjectiveKind::StageII, true) => true,
-                _ => false,
+            .filter(|&o| {
+                matches!(
+                    (o.info().kind, reveal_stage_two()),
+                    (ObjectiveKind::StageI, false) | (ObjectiveKind::StageII, true)
+                )
             })
             .cloned()
             .collect::<Vec<_>>()
@@ -171,7 +172,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
             .revealed_objectives
             .iter()
             .filter(|(_, ps)| !ps.contains(&player()))
-            .map(|(o, _)| o.clone())
+            .map(|(o, _)| *o)
             .collect::<Vec<_>>();
         objs.sort();
         objs
@@ -193,7 +194,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
             .iter()
             .filter_map(|o| match o {
                 Objective::Public(_) => None,
-                Objective::Secret(secret) => Some((o.clone(), secret.clone())),
+                Objective::Secret(secret) => Some((*o, *secret)),
             })
             .filter(|(_, s)| !player_scored_secrets().contains(s))
             .map(|(obj, _)| obj)

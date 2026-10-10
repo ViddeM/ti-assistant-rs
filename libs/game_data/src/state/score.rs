@@ -106,7 +106,7 @@ impl Score {
             player_points += self
                 .agenda_scores
                 .iter()
-                .map(|score| score.get_score_for_player(player_id, &player))
+                .map(|score| score.get_score_for_player(player_id, player))
                 .sum::<i8>();
 
             // TODO: player_points could in theory be negative here, is that allowed or should we reset it to 0 in that case?
@@ -167,13 +167,8 @@ impl Score {
                     .player_votes
                     .iter()
                     .filter(|(_, vote)| {
-                        if let Some(AgendaElect::ForOrAgainst(ForOrAgainst::For)) =
-                            vote.as_ref().map(|v| v.get_outcome())
-                        {
-                            true
-                        } else {
-                            false
-                        }
+                        let outcome = vote.as_ref().map(|v| v.get_outcome());
+                        matches!(outcome, Some(AgendaElect::ForOrAgainst(ForOrAgainst::For)))
                     })
                     .map(|(p, _)| p.clone())
                     .collect(),
@@ -186,7 +181,7 @@ impl Score {
                             (vec![], i8::MIN),
                             |(mut players_with_most_point, most_points), (player, score)| {
                                 if score > &most_points {
-                                    (vec![player], score.clone())
+                                    (vec![player], *score)
                                 } else if score == &most_points {
                                     players_with_most_point.push(player);
                                     (players_with_most_point, most_points)
@@ -201,7 +196,7 @@ impl Score {
                             (vec![], i8::MAX),
                             |(mut players_with_least_points, least_points), (player, score)| {
                                 if score < &least_points {
-                                    (vec![player], score.clone())
+                                    (vec![player], *score)
                                 } else if score == &least_points {
                                     players_with_least_points.push(player);
                                     (players_with_least_points, least_points)

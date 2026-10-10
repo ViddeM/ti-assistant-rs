@@ -348,8 +348,7 @@ fn GainRelicView() -> Element {
         gc.game_state()
             .players
             .values()
-            .map(|p| p.relics.iter())
-            .flatten()
+            .flat_map(|p| p.relics.iter())
             .cloned()
             .collect::<Vec<_>>()
     });
@@ -420,7 +419,7 @@ fn FrontierCardView() -> Element {
             .frontier_cards
             .iter()
             .filter(|fc| fc.info().frontier_type == FrontierCardType::Action)
-            .map(|fc| fc.clone())
+            .cloned()
             .collect::<Vec<_>>();
         cards.sort();
         cards
@@ -466,7 +465,7 @@ fn PlayLeaderView() -> Element {
         gc.game_state()
             .available_leaders
             .get(&current_player())
-            .map(|leaders| leaders.iter().cloned().collect::<Vec<_>>())
+            .map(|leaders| leaders.to_vec())
             .unwrap_or_default()
     });
     let action_leaders = use_memo(move || {
@@ -486,18 +485,18 @@ fn PlayLeaderView() -> Element {
                         tr { key: "{leader}",
                             Button {
                                 onclick: {
-                                    let leader = leader.clone();
+                                    let leader = *leader;
                                     move |_| {
                                         event
                                             .send_event(Event::LeaderActionBegin {
                                                 player: current_player(),
-                                                leader: leader.clone(),
+                                                leader,
                                             });
                                     }
                                 },
                                 "{leader}"
                             }
-                            InfoButton { info: Info::Leader(leader.clone()) }
+                            InfoButton { info: Info::Leader(*leader) }
                         }
                     }
                 }

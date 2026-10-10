@@ -31,7 +31,7 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
             .revealed_objectives
             .iter()
             .filter(|(_, ps)| ps.contains(&current_player()))
-            .map(|(o, _)| o.clone())
+            .map(|(o, _)| *o)
             .collect::<Vec<_>>()
     });
 

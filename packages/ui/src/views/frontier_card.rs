@@ -61,7 +61,7 @@ fn FrontierCardProgressView(card: ReadSignal<FrontierCard>) -> Element {
         gc.game_state()
             .players
             .get(&current_player())
-            .map(|p| p.faction.clone())
+            .map(|p| p.faction)
             .expect("Current player to exist")
     });
 
