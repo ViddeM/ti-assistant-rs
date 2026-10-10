@@ -1,0 +1,21 @@
+@import "../../../vars.scss";
+
+.score-text {
+  color: white;
+  margin-right: 1em;
+}
+
+.score-container {
+  display: flex;
+  flex-direction: row;
+
+  > * {
+    flex: 1;
+  }
+
+  & > :last-child {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}

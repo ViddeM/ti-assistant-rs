@@ -1,0 +1,149 @@
+@import "../vars.scss";
+
+.tech-view-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > :first-child {
+    margin-bottom: $margin-large;
+  }
+}
+
+.tech-ledger-list {
+  & > li > a {
+    margin-left: $padding;
+  }
+}
+
+.tech-view-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: $margin-large;
+}
+
+.tech-view-table-header {
+  padding: 4px;
+}
+
+.border-top {
+  border-top: 1px solid black;
+  padding: $padding 0;
+}
+
+.stage-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.horizontal-line {
+  height: 4px;
+  flex: 1;
+}
+
+.tech-group-text {
+  min-width: 300px;
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
+}
+
+.center-text {
+  text-align: center;
+  margin-bottom: $margin-large;
+}
+
+$unit-upgrade-color: lightgray;
+$warfare-color: red;
+$propulsion-color: lightblue;
+$cybernetic-color: yellow;
+$biotic-color: limegreen;
+
+.unit-upgrade-color {
+  color: $unit-upgrade-color;
+}
+.warfare-color {
+  color: $warfare-color;
+}
+.propulsion-color {
+  color: $propulsion-color;
+}
+.cybernetic-color {
+  color: $cybernetic-color;
+}
+.biotic-color {
+  color: $biotic-color;
+}
+
+.player-black-color {
+  background-color: white;
+  color: $player-color-black;
+}
+.player-blue-color {
+  background-color: white;
+  color: $player-color-blue;
+}
+.player-green-color {
+  color: $player-color-green;
+}
+.player-red-color {
+  color: $player-color-red;
+}
+.player-yellow-color {
+  color: $player-color-yellow;
+}
+.player-purple-color {
+  background-color: white;
+  color: $player-color-purple;
+}
+.player-orange-color {
+  color: $player-color-orange;
+}
+.player-pink-color {
+  color: $player-color-pink;
+}
+
+.unit-upgrade-background-color {
+  background-color: $unit-upgrade-color;
+}
+.warfare-background-color {
+  background-color: $warfare-color;
+}
+.propulsion-background-color {
+  background-color: $propulsion-color;
+}
+.cybernetic-background-color {
+  background-color: $cybernetic-color;
+}
+.biotic-background-color {
+  background-color: $biotic-color;
+}
+
+.player-black-background-color {
+  background-color: $player-color-black;
+}
+.player-blue-background-color {
+  background-color: $player-color-blue;
+}
+.player-green-background-color {
+  background-color: $player-color-green;
+}
+.player-red-background-color {
+  background-color: $player-color-red;
+}
+.player-yellow-background-color {
+  background-color: $player-color-yellow;
+}
+.player-purple-background-color {
+  background-color: $player-color-purple;
+}
+.player-orange-background-color {
+  background-color: $player-color-orange;
+}
+.player-pink-background-color {
+  background-color: $player-color-pink;
+}

@@ -1,0 +1,113 @@
+@import "../vars.scss";
+
+.map-message {
+  text-align: center;
+}
+
+.map-view-container {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  min-height: 400px;
+  background-color: black;
+  overflow: hidden;
+}
+
+.map-reset-button {
+  position: absolute;
+  top: $margin-large;
+  right: $margin-large;
+  z-index: 1;
+}
+
+.map-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  touch-action: none;
+  overscroll-behavior: contain;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.map-tile-id {
+  font-family: "slider-font", "slider-font-fallback", sans-serif;
+  font-size: 32px;
+  fill: white;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.map-owner {
+  pointer-events: none;
+}
+
+.map-owner-bg {
+  fill: rgba(0, 0, 0, 0.8);
+}
+
+.map-owner-text {
+  font-family: "slider-font", "slider-font-fallback", sans-serif;
+  font-size: 24px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.map-owner-blue .map-owner-bg,
+.map-owner-black .map-owner-bg {
+  fill: rgba(255, 255, 255, 0.6);
+}
+
+.map-owner-black .map-owner-text {
+  fill: $player-color-black;
+}
+
+.map-owner-blue .map-owner-text {
+  fill: $player-color-blue;
+}
+
+.map-owner-green .map-owner-text {
+  fill: $player-color-green;
+}
+
+.map-owner-red .map-owner-text {
+  fill: $player-color-red;
+}
+
+.map-owner-yellow .map-owner-text {
+  fill: $player-color-yellow;
+}
+
+.map-owner-purple .map-owner-text {
+  fill: $player-color-purple;
+}
+
+.map-owner-orange .map-owner-text {
+  fill: $player-color-orange;
+}
+
+.map-owner-pink .map-owner-text {
+  fill: $player-color-pink;
+}
+
+.map-empty-slot {
+  fill: rgba(255, 255, 255, 0.04);
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 3px;
+  stroke-dasharray: 14 10;
+  pointer-events: none;
+}
+
+// Shown for systems that we don't have an image for (yet).
+.map-missing-tile {
+  fill: #3b2f5c;
+  stroke: #ffb347;
+  stroke-width: 6px;
+  stroke-dasharray: 24 12;
+  stroke-linejoin: round;
+}

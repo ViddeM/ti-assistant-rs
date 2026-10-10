@@ -1,0 +1,42 @@
+@import "../vars.scss";
+
+.game-page-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column-reverse;
+
+  > :last-child {
+    margin-bottom: $margin-large;
+  }
+
+  @media (min-width: $width-large) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    > :last-child {
+      flex: 1;
+    }
+
+    > :first-child {
+      width: 320px;
+      flex-shrink: 0;
+    }
+  }
+
+  @media (min-width: $width-extra-large) {
+    > :first-child {
+      width: 620px;
+    }
+  }
+}
+
+.phase-container {
+  width: 100%;
+  @media (min-width: $width-medium) {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+}

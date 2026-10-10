@@ -223,7 +223,8 @@
  - ❌ Go over all planets and see if we have missed any interactions
  - ❌ Go over all factions and see if we have missed anything
  - ❌ Test play with both this and OG ti-assistant
- - x  Go over PoK to see if anything has been missed.
+ - ❌ Go over PoK to see if anything has been missed.
+ - ❌ Go over TE to see if anything has been missed.
 
 ## Thunder's Edge
  - x  Breakthroughs for each faction
@@ -234,10 +235,17 @@
  - x  fracture? (option for picking relic after taking those planets?)
    - x styx planet score
  - x  new anomaly?
- - x  galactic events (could be difficult!)
  - x  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
  - x  updated strategy cards
  - x  thunder's edge
    - x  planet
    - x  exploration
  - x  update milty import
+
+## Codex IV
+  - x  galactic events (could be difficult!)
+  - x  relics?
+  - TODO
+
+TODO: Look overall strategy cards to see that we always display the correct variant.
+TODO: Display "Undo event {NAME}" popup or smth when undoing so that it is more clear for other players (and oneself).
