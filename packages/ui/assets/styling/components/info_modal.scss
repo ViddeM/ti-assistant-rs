@@ -1,18 +1,16 @@
 @import "../vars.scss";
 
 .info-modal-bg {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  position: fixed;
+  inset: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding-top: 4rem;
+  justify-content: center;
+  padding: 1rem;
   background: #603040a0;
   z-index: 99;
   outline: none;
+  overscroll-behavior: contain;
 
   animation-duration: 0.3s;
   animation-name: info-modal-bg-appear;
@@ -20,12 +18,14 @@
 
 .info-modal {
   position: relative;
+  width: min(100%, 35rem);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
   padding: 2rem;
-  width: 100%;
-  margin-bottom: auto;
   background: black;
   border: solid 0.2rem white;
   border-radius: 2rem;
+  box-sizing: border-box;
 
   animation-duration: 0.5s;
   animation-name: info-modal-appear;
