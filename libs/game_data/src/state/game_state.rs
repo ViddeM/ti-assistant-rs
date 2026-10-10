@@ -298,6 +298,7 @@ impl GameState {
         for player in self.players.keys() {
             if self.naalu_telepathy.as_ref() == Some(player) {
                 player_nums.insert(player, 0);
+                continue;
             }
 
             let strat_cards = self

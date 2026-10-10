@@ -142,11 +142,56 @@
   [
     {
       "StrategicActionBegin": {
+        "player": "Kalle",
+        "card": "Warfare"
+      }
+    },
+    "2023-12-27T09:43:41.066166Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Palle",
+        "action": "Warfare"
+      }
+    },
+    "2023-12-27T09:43:41.771045Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Pelle",
+        "action": "Warfare"
+      }
+    },
+    "2023-12-27T09:43:42.196741Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Dalle",
+        "action": "Skip"
+      }
+    },
+    "2023-12-27T09:43:43.053260Z"
+  ],
+  ["StrategicActionCommit", "2023-12-27T09:43:43.458466Z"],
+  [
+    {
+      "EndTurn": {
+        "player": "Kalle"
+      }
+    },
+    "2023-12-27T09:43:43.843662Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
         "player": "Palle",
         "card": "Trade"
       }
     },
-    "2023-12-27T09:43:42.883643Z"
+    "2023-12-27T09:43:43.883643Z"
   ],
   [
     {
@@ -183,51 +228,6 @@
       }
     },
     "2023-12-27T09:43:47.843662Z"
-  ],
-  [
-    {
-      "StrategicActionBegin": {
-        "player": "Kalle",
-        "card": "Warfare"
-      }
-    },
-    "2023-12-27T09:43:48.066166Z"
-  ],
-  [
-    {
-      "StrategicActionSecondary": {
-        "player": "Palle",
-        "action": "Warfare"
-      }
-    },
-    "2023-12-27T09:43:48.771045Z"
-  ],
-  [
-    {
-      "StrategicActionSecondary": {
-        "player": "Pelle",
-        "action": "Warfare"
-      }
-    },
-    "2023-12-27T09:43:49.196741Z"
-  ],
-  [
-    {
-      "StrategicActionSecondary": {
-        "player": "Dalle",
-        "action": "Skip"
-      }
-    },
-    "2023-12-27T09:43:50.053260Z"
-  ],
-  ["StrategicActionCommit", "2023-12-27T09:43:50.458466Z"],
-  [
-    {
-      "EndTurn": {
-        "player": "Kalle"
-      }
-    },
-    "2023-12-27T09:43:51.843662Z"
   ],
   [
     {
@@ -348,56 +348,11 @@
   [
     {
       "StrategicActionBegin": {
-        "player": "Palle",
-        "card": "Leadership"
-      }
-    },
-    "2023-12-27T09:44:03.621256Z"
-  ],
-  [
-    {
-      "StrategicActionSecondary": {
-        "player": "Pelle",
-        "action": "Skip"
-      }
-    },
-    "2023-12-27T09:44:04.611303Z"
-  ],
-  [
-    {
-      "StrategicActionSecondary": {
-        "player": "Dalle",
-        "action": "Leadership"
-      }
-    },
-    "2023-12-27T09:44:05.511581Z"
-  ],
-  [
-    {
-      "StrategicActionSecondary": {
-        "player": "Kalle",
-        "action": "Skip"
-      }
-    },
-    "2023-12-27T09:44:06.441199Z"
-  ],
-  ["StrategicActionCommit", "2023-12-27T09:44:06.890716Z"],
-  [
-    {
-      "EndTurn": {
-        "player": "Palle"
-      }
-    },
-    "2023-12-27T09:44:07.190716Z"
-  ],
-  [
-    {
-      "StrategicActionBegin": {
         "player": "Kalle",
         "card": "Diplomacy"
       }
     },
-    "2023-12-27T09:44:07.768376Z"
+    "2023-12-27T09:44:03.768376Z"
   ],
   [
     {
@@ -406,7 +361,7 @@
         "action": "Diplomacy"
       }
     },
-    "2023-12-27T09:44:08.573741Z"
+    "2023-12-27T09:44:04.573741Z"
   ],
   [
     {
@@ -415,7 +370,7 @@
         "action": "Skip"
       }
     },
-    "2023-12-27T09:44:09.313838Z"
+    "2023-12-27T09:44:05.313838Z"
   ],
   [
     {
@@ -424,16 +379,61 @@
         "action": "Skip"
       }
     },
-    "2023-12-27T09:44:10.078717Z"
+    "2023-12-27T09:44:06.078717Z"
   ],
-  ["StrategicActionCommit", "2023-12-27T09:44:10.573144Z"],
+  ["StrategicActionCommit", "2023-12-27T09:44:06.573144Z"],
   [
     {
       "EndTurn": {
         "player": "Kalle"
       }
     },
-    "2023-12-27T09:44:10.773144Z"
+    "2023-12-27T09:44:06.773144Z"
+  ],
+  [
+    {
+      "StrategicActionBegin": {
+        "player": "Palle",
+        "card": "Leadership"
+      }
+    },
+    "2023-12-27T09:44:07.621256Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Pelle",
+        "action": "Skip"
+      }
+    },
+    "2023-12-27T09:44:08.611303Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Dalle",
+        "action": "Leadership"
+      }
+    },
+    "2023-12-27T09:44:09.511581Z"
+  ],
+  [
+    {
+      "StrategicActionSecondary": {
+        "player": "Kalle",
+        "action": "Skip"
+      }
+    },
+    "2023-12-27T09:44:10.441199Z"
+  ],
+  ["StrategicActionCommit", "2023-12-27T09:44:10.890716Z"],
+  [
+    {
+      "EndTurn": {
+        "player": "Palle"
+      }
+    },
+    "2023-12-27T09:44:11.190716Z"
   ],
   [
     {
@@ -533,10 +533,43 @@
   [
     {
       "TacticalActionBegin": {
+        "player": "Kalle"
+      }
+    },
+    "2023-12-27T09:44:39.619183Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Kalle",
+        "planet": "Arnor"
+      }
+    },
+    "2023-12-27T09:44:40.339469Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Kalle"
+      }
+    },
+    "2023-12-27T09:44:40.738688Z"
+  ],
+  [
+    {
+      "EndTurn": {
+        "player": "Kalle"
+      }
+    },
+    "2023-12-27T09:44:40.938688Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
         "player": "Palle"
       }
     },
-    "2023-12-27T09:44:39.568279Z"
+    "2023-12-27T09:44:41.568279Z"
   ],
   [
     {
@@ -571,39 +604,6 @@
       }
     },
     "2023-12-27T09:44:43.758462Z"
-  ],
-  [
-    {
-      "TacticalActionBegin": {
-        "player": "Kalle"
-      }
-    },
-    "2023-12-27T09:44:44.619183Z"
-  ],
-  [
-    {
-      "TacticalActionTakePlanet": {
-        "player": "Kalle",
-        "planet": "Arnor"
-      }
-    },
-    "2023-12-27T09:44:46.339469Z"
-  ],
-  [
-    {
-      "TacticalActionCommit": {
-        "player": "Kalle"
-      }
-    },
-    "2023-12-27T09:44:46.738688Z"
-  ],
-  [
-    {
-      "EndTurn": {
-        "player": "Kalle"
-      }
-    },
-    "2023-12-27T09:44:46.938688Z"
   ],
   [
     {
@@ -683,10 +683,52 @@
   [
     {
       "TacticalActionBegin": {
+        "player": "Kalle"
+      }
+    },
+    "2023-12-27T09:44:56.813392Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Kalle",
+        "planet": "Zohbat"
+      }
+    },
+    "2023-12-27T09:44:57.761283Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Kalle",
+        "planet": "Mellon"
+      }
+    },
+    "2023-12-27T09:44:58.555808Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Kalle"
+      }
+    },
+    "2023-12-27T09:44:59.313546Z"
+  ],
+  [
+    {
+      "EndTurn": {
+        "player": "Kalle"
+      }
+    },
+    "2023-12-27T09:44:59.313546Z"
+  ],
+  [
+    {
+      "TacticalActionBegin": {
         "player": "Palle"
       }
     },
-    "2023-12-27T09:44:57.244184Z"
+    "2023-12-27T09:45:00.244184Z"
   ],
   [
     {
@@ -715,48 +757,6 @@
   ],
   [
     {
-      "TacticalActionBegin": {
-        "player": "Kalle"
-      }
-    },
-    "2023-12-27T09:45:01.813392Z"
-  ],
-  [
-    {
-      "TacticalActionTakePlanet": {
-        "player": "Kalle",
-        "planet": "Zohbat"
-      }
-    },
-    "2023-12-27T09:45:04.761283Z"
-  ],
-  [
-    {
-      "TacticalActionTakePlanet": {
-        "player": "Kalle",
-        "planet": "Mellon"
-      }
-    },
-    "2023-12-27T09:45:05.555808Z"
-  ],
-  [
-    {
-      "TacticalActionCommit": {
-        "player": "Kalle"
-      }
-    },
-    "2023-12-27T09:45:06.313546Z"
-  ],
-  [
-    {
-      "EndTurn": {
-        "player": "Kalle"
-      }
-    },
-    "2023-12-27T09:45:07.313546Z"
-  ],
-  [
-    {
       "PassAction": {
         "player": "Pelle"
       }
@@ -774,17 +774,17 @@
   [
     {
       "PassAction": {
-        "player": "Palle"
+        "player": "Kalle"
       }
     },
-    "2023-12-27T09:45:08.976369Z"
+    "2023-12-27T09:45:08.606308Z"
   ],
   [
     {
       "PassAction": {
-        "player": "Kalle"
+        "player": "Palle"
       }
     },
-    "2023-12-27T09:45:09.606308Z"
+    "2023-12-27T09:45:08.976369Z"
   ]
 ]

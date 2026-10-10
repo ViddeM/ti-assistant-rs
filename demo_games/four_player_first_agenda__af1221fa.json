@@ -700,43 +700,10 @@
   [
     {
       "TacticalActionBegin": {
-        "player": "Palle"
-      }
-    },
-    "2023-12-27T09:44:57.244184Z"
-  ],
-  [
-    {
-      "TacticalActionTakePlanet": {
-        "player": "Palle",
-        "planet": "MecatolRex"
-      }
-    },
-    "2023-12-27T09:45:00.313683Z"
-  ],
-  [
-    {
-      "TacticalActionCommit": {
-        "player": "Palle"
-      }
-    },
-    "2023-12-27T09:45:00.756255Z"
-  ],
-  [
-    {
-      "EndTurn": {
-        "player": "Palle"
-      }
-    },
-    "2023-12-27T09:45:00.856255Z"
-  ],
-  [
-    {
-      "TacticalActionBegin": {
         "player": "Kalle"
       }
     },
-    "2023-12-27T09:45:01.813392Z"
+    "2023-12-27T09:44:56.813392Z"
   ],
   [
     {
@@ -745,7 +712,7 @@
         "planet": "Zohbat"
       }
     },
-    "2023-12-27T09:45:04.761283Z"
+    "2023-12-27T09:44:57.761283Z"
   ],
   [
     {
@@ -754,7 +721,7 @@
         "planet": "Mellon"
       }
     },
-    "2023-12-27T09:45:05.555808Z"
+    "2023-12-27T09:44:58.555808Z"
   ],
   [
     {
@@ -762,7 +729,7 @@
         "player": "Kalle"
       }
     },
-    "2023-12-27T09:45:06.313546Z"
+    "2023-12-27T09:44:59.313546Z"
   ],
   [
     {
@@ -770,8 +737,41 @@
         "player": "Kalle"
       }
     },
-    "2023-12-27T09:45:07.313546Z"
+    "2023-12-27T09:45:00.313546Z"
   ],
+  [
+    {
+      "TacticalActionBegin": {
+        "player": "Palle"
+      }
+    },
+    "2023-12-27T09:45:01.244184Z"
+  ],
+  [
+    {
+      "TacticalActionTakePlanet": {
+        "player": "Palle",
+        "planet": "MecatolRex"
+      }
+    },
+    "2023-12-27T09:45:01.313683Z"
+  ],
+  [
+    {
+      "TacticalActionCommit": {
+        "player": "Palle"
+      }
+    },
+    "2023-12-27T09:45:01.756255Z"
+  ],
+  [
+    {
+      "EndTurn": {
+        "player": "Palle"
+      }
+    },
+    "2023-12-27T09:45:01.856255Z"
+  ], 
   [
     {
       "PassAction": {
@@ -791,18 +791,18 @@
   [
     {
       "PassAction": {
-        "player": "Palle"
+        "player": "Kalle"
       }
     },
-    "2023-12-27T09:45:08.976369Z"
+    "2023-12-27T09:45:08.606308Z"
   ],
   [
     {
       "PassAction": {
-        "player": "Kalle"
+        "player": "Palle"
       }
     },
-    "2023-12-27T09:45:09.606308Z"
+    "2023-12-27T09:45:09.976369Z"
   ],
   [
     {
