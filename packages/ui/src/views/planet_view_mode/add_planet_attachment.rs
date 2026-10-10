@@ -81,7 +81,7 @@ pub fn AddPlanetAttachment() -> Element {
                 }
             })
             .filter(|&(a, _)| {
-                !(a.eq(&PlanetAttachment::UITheProgenitor) && !planet.eq(&Planet::Elysium))
+                !a.eq(&PlanetAttachment::UITheProgenitor) || planet.eq(&Planet::Elysium)
             })
             .filter(|&(a, _)| {
                 !(a.eq(&PlanetAttachment::Terraform)
