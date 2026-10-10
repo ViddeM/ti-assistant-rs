@@ -6,6 +6,7 @@
           "maxPoints": 10,
           "expansions": {
             "prophecyOfKings": true,
+            "thundersEdge": false,
             "codex1": true,
             "codex2": false,
             "codex3": false
