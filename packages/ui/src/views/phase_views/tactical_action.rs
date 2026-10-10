@@ -103,7 +103,7 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
             .flat_map(|s| s.planets.iter())
             .filter(|&p| {
                 !current_player_planets().contains(p)
-                    && !taken_planets().iter().find(|(ps, _)| ps.eq(p)).is_some()
+                    && taken_planets().iter().find(|(ps, _)| ps.eq(p)).is_none()
             })
             .cloned()
             .collect::<Vec<_>>();
@@ -180,8 +180,7 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
         } else {
             fieldset {
                 legend { "Take planet" }
-                div {
-                    class: "column",
+                div { class: "column",
                     PlanetDropdown {
                         options: all_planets_not_owned(),
                         value: selected_planet(),
