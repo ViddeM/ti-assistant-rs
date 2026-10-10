@@ -21,6 +21,9 @@ pub fn InfoModal() -> Element {
         div {
             class: "info-modal-bg",
             tabindex: "0",
+            onmounted: move |e| async move {
+                let _ = e.set_focus(true).await;
+            },
             onkeydown: move |e| {
                 if e.key() == Key::Escape {
                     info.close();
