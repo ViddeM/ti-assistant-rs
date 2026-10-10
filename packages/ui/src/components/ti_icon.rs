@@ -1,7 +1,5 @@
 use dioxus::prelude::*;
-use ti_helper_game_data::components::{
-    planet::PlanetTrait, planet_attachment::PlanetAttachment, tech::TechCategory,
-};
+use ti_helper_game_data::components::{planet::PlanetTrait, tech::TechCategory};
 
 const BIOTIC_FILLED_PNG: Asset = asset!("/assets/icons/resources/biotic_filled.png");
 const BIOTIC_PNG: Asset = asset!("/assets/icons/resources/biotic.png");

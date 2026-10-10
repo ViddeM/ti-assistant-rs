@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     components::agenda::AgendaElect,
-    state::agenda::{AgendaRecord, AgendaState, Vote, VoteState},
+    state::agenda::{AgendaRecord, AgendaState, VoteState},
 };
 
 use crate::{

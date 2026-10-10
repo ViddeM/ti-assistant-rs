@@ -69,8 +69,6 @@ fn DisplayPlayer(player: Player) -> Element {
     }
 }
 
-const NO_FACTION_SELECTED: &'static str = "not_selected";
-
 #[component]
 fn AddPlayer() -> Element {
     let gc = use_context::<GameContext>();
@@ -96,16 +94,6 @@ fn AddPlayer() -> Element {
     let mut new_player_faction: Signal<Option<Faction>> = use_signal(|| None);
     let mut selected_color: Signal<Color> =
         use_signal(|| colors().first().cloned().expect("there should be colors"));
-
-    let set_faction = move |e: FormEvent| match e.value().as_str() {
-        NO_FACTION_SELECTED => {
-            new_player_faction.set(None);
-        }
-        f => {
-            let f = f.parse().expect("Failed to parse faction in dropdown?");
-            new_player_faction.set(Some(f));
-        }
-    };
 
     let add_player = move || {
         event.send_event(Event::AddPlayer {

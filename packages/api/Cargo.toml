@@ -33,25 +33,16 @@ ti_helper_db = { workspace = true, optional = true }
 ti_helper_game_logic = { workspace = true, optional = true }
 ti_helper_milty = { workspace = true, optional = true }
 
-[build-dependencies]
-serde = { version = "1", features = ["derive", "rc"] }
-
-# Server only
-dotenvy = { version = "0.15.7", optional = true }
-serde_json = { version = "1", optional = true }
-chrono = { version = "0.4.31", features = ["serde"], optional = true }
-ti_helper_game_logic = { workspace = true, optional = true }
-
 [features]
 server = [
     "dioxus/server",
     "ti_helper_game_data/server",
     "dep:serde_json",
-    "dep:chrono",
     "dep:clap",
     "dep:diesel",
     "dep:diesel-async",
     "dep:dotenvy",
+    "dep:chrono",
     "dep:thiserror",
     "dep:tokio",
     "dep:log",
@@ -62,6 +53,4 @@ server = [
     "dep:ti_helper_milty",
 ]
 
-default = [
-    #"server"
-]
+default = []

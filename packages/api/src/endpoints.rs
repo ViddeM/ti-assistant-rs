@@ -6,8 +6,7 @@ use dioxus::{
     fullstack::{JsonEncoding, WebSocketOptions, Websocket},
     prelude::*,
 };
-use std::sync::Arc;
-use ti_helper_game_data::{actions::event::Event, game_id::GameId};
+use ti_helper_game_data::game_id::GameId;
 
 #[cfg(feature = "server")]
 use {
@@ -18,7 +17,9 @@ use {
     anyhow::Context,
     chrono::{DateTime, Utc},
     dioxus::{fullstack::TypedWebsocket, server::axum::Extension},
+    std::sync::Arc,
     ti_helper_db::queries,
+    ti_helper_game_data::actions::event::Event,
     ti_helper_game_logic::gameplay::{error::GameError, game::Game},
     tokio::{select, sync::RwLock},
 };
@@ -124,7 +125,7 @@ async fn join_game_inner(
         log::info!("Loading game {game_id:?} from DB");
 
         match queries::try_get_game_by_id(db_pool, &game_id).await {
-            Ok(Some(s)) => {}
+            Ok(Some(_)) => {}
             Ok(None) => {
                 log::warn!("Request game not found {game_id}");
                 socket
