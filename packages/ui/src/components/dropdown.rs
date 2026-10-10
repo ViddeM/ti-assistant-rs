@@ -329,19 +329,16 @@ pub fn PlayerDropdown(
     on_select: EventHandler<PlayerId>,
     disabled: Option<bool>,
 ) -> Element {
-    let mut current_value = use_memo(move || value());
+    let current_value = use_memo(move || value().to_string());
 
     let oninput = move |event: FormEvent| {
         let new_value = event.value();
-        current_value.set(new_value.into());
-        on_select(current_value());
+        on_select(new_value.into());
     };
-
-    let display_value = use_memo(move || current_value().to_string());
 
     rsx! {
         Dropdown {
-            value: display_value,
+            value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
             option { value: "", "--Select Player--" }
