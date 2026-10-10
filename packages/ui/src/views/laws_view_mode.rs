@@ -145,7 +145,7 @@ fn AddLawForm() -> Element {
         players
     });
 
-    let vote_options = use_signal(move || {
+    let vote_options = use_memo(move || {
         let mut options = vote_state()
             .map(|state| state.candidates)
             .unwrap_or_default();
