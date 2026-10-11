@@ -26,9 +26,11 @@
   border: solid 0.2rem white;
   border-radius: 2rem;
   box-sizing: border-box;
+  will-change: opacity, transform;
 
   animation-duration: 0.5s;
   animation-name: info-modal-appear;
+  animation-fill-mode: both;
 
   @media (min-width: $width-medium) {
     max-width: 35rem;
@@ -45,9 +47,11 @@
 }
 @keyframes info-modal-appear {
   0% {
-    scale: 0.8;
+    opacity: 0;
+    transform: translateY(0.5rem);
   }
   100% {
-    scale: 1;
+    opacity: 1;
+    transform: translateY(0);
   }
 }

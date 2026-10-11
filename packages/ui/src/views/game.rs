@@ -156,14 +156,17 @@ fn MainGameView(
 
     let info = use_signal(|| None);
     use_context_provider(|| InfoContext::new(info));
+    let mut info = use_context::<InfoContext>();
 
     let view_mode = use_signal(|| ViewMode::Game);
 
     rsx! {
         document::Stylesheet { href: GAME_SCSS }
-        InfoModal {}
-        InfoBox { view_mode }
-        DisplayViewMode { view_mode }
+        div {
+            InfoModal {}
+            InfoBox { view_mode }
+            DisplayViewMode { view_mode }
+        }
     }
 }
 

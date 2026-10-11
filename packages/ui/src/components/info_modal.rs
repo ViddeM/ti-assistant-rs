@@ -20,16 +20,12 @@ pub fn InfoModal() -> Element {
 
         div {
             class: "info-modal-bg",
-            tabindex: "0",
-            onmounted: move |e| async move {
-                let _ = e.set_focus(true).await;
-            },
+            onclick: move |_| info.close(),
             onkeydown: move |e| {
-                if e.key() == Key::Escape {
+                if e.key() == Key::Escape && info.get()().is_some() {
                     info.close();
                 }
             },
-            onclick: move |_| info.close(),
             div { class: "info-modal", onclick: |e| e.stop_propagation(),
                 h1 { "{i.title()}" }
                 hr {}
