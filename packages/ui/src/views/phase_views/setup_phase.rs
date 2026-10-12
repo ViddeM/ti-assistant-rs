@@ -157,7 +157,7 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         }
         Faction::DeepwroughtScholarate => {
             rsx! {
-                DeepwroughtScholarateSetup { player_id, player }
+                DeepwroughtScholarateSetup { player_id }
             }
         }
         f if f.expansion() == Expansion::ThundersEdge => {
@@ -443,19 +443,35 @@ fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 }
 
 #[component]
-fn DeepwroughtScholarateSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
+fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
     let mut first_tech: Signal<Option<Technology>> = use_signal(|| None);
     let mut second_tech: Signal<Option<Technology>> = use_signal(|| None);
 
+    let pi = player_id.clone();
+    let player = use_memo(move || gc.game_state().players[&pi].clone());
+
+    use_effect(move || {
+        if !player().technologies.is_empty() && (first_tech().is_some() || second_tech().is_some())
+        {
+            first_tech.set(None);
+            second_tech.set(None);
+        }
+    });
+
     let selected_technologies = use_memo(move || {
-        if player.technologies.is_empty() {
+        if player().technologies.is_empty() {
             return None;
         }
 
-        let techs = player.technologies.iter().collect::<Vec<_>>();
+        let mut techs = player().technologies.iter().cloned().collect::<Vec<_>>();
+        techs.sort();
+        if techs.len() < 2 {
+            return None;
+        }
+
         Some((techs[0].clone(), techs[1].clone()))
     });
 
