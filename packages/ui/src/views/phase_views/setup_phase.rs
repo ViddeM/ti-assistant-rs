@@ -8,14 +8,15 @@ use ti_helper_game_data::{
     state::player::Player,
 };
 
+use crate::views::phase_views::faction_setup_views::{
+    argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
+    crimson_rebellion_setup::CrimsonRebellionSetup,
+    deepwrought_scholarate_setup::DeepwroughtScholarateSetup, firmament_setup::FirmamentSetup,
+    winnu_setup::WinnuSetup,
+};
 use crate::{
     components::{button::Button, dropdown::ObjectiveDropdown, faction_icon::FactionIcon},
     data::{event_context::EventContext, game_context::GameContext},
-    views::phase_views::faction_setup_views::{
-        argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
-        crimson_rebellion_setup::CrimsonRebellionSetup, firmament_setup::FirmamentSetup,
-        winnu_setup::WinnuSetup,
-    },
 };
 
 const SETUP_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/setup_phase.scss");
@@ -160,6 +161,11 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         Faction::FirmamentObsidian => {
             rsx! {
                 FirmamentSetup { player_id, player }
+            }
+        }
+        Faction::DeepwroughtScholarate => {
+            rsx! {
+                DeepwroughtScholarateSetup { player_id }
             }
         }
         f if f.expansion() == Expansion::ThundersEdge => {

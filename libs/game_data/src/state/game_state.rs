@@ -598,6 +598,7 @@ impl GameState {
             Faction::CouncilKeleres => player.technologies.len() == 2 && !player.planets.is_empty(),
             Faction::CrimsonRebellion => player.technologies.len() == 1,
             Faction::FirmamentObsidian => player.technologies.len() == 1,
+            Faction::DeepwroughtScholarate => player.technologies.len() == 2,
             _ => true,
         })
     }
