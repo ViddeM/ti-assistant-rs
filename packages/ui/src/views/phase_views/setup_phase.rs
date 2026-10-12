@@ -454,8 +454,7 @@ fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
     let player = use_memo(move || gc.game_state().players[&pi].clone());
 
     use_effect(move || {
-        if !player().technologies.is_empty() && (first_tech().is_some() || second_tech().is_some())
-        {
+        if player().technologies.is_empty() && (first_tech().is_some() || second_tech().is_some()) {
             first_tech.set(None);
             second_tech.set(None);
         }
