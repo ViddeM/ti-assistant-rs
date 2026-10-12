@@ -257,30 +257,35 @@ fn try_update_game_state(
             {
                 Faction::Winnu => (
                     1,
-                    Technology::iter()
-                        .filter(|t| t.info().requirements.is_empty())
-                        .filter(|t| t.info().origin == TechOrigin::Base)
-                        .collect(),
+                    Some(
+                        Technology::iter()
+                            .filter(|t| t.info().requirements.is_empty())
+                            .filter(|t| t.info().origin == TechOrigin::Base)
+                            .collect(),
+                    ),
                 ),
                 Faction::ArgentFlight => (
                     2,
-                    vec![
+                    Some(vec![
                         Technology::NeuralMotivator,
                         Technology::SarweenTools,
                         Technology::PlasmaScoring,
-                    ],
+                    ]),
                 ),
                 Faction::CouncilKeleres => (
                     2,
-                    game_state
-                        .players
-                        .values()
-                        .filter(|p| p.faction != Faction::CouncilKeleres)
-                        .flat_map(|p| p.technologies.iter())
-                        .filter(|t| t.info().origin == TechOrigin::Base)
-                        .cloned()
-                        .collect::<Vec<Technology>>(),
+                    Some(
+                        game_state
+                            .players
+                            .values()
+                            .filter(|p| p.faction != Faction::CouncilKeleres)
+                            .flat_map(|p| p.technologies.iter())
+                            .filter(|t| t.info().origin == TechOrigin::Base)
+                            .cloned()
+                            .collect::<Vec<Technology>>(),
+                    ),
                 ),
+                Faction::DeepwroughtScholarate => (2, None),
                 _ => bail!("Players faction has no technology setup to perform"),
             };
 
@@ -289,10 +294,12 @@ fn try_update_game_state(
                 "Invalid amount of technologies selected for faction"
             );
 
-            ensure!(
-                technologies.iter().all(|t| possible_techs.contains(t)),
-                "Invalid technology selection for players faction"
-            );
+            if let Some(possible_techs) = possible_techs {
+                ensure!(
+                    technologies.iter().all(|t| possible_techs.contains(t)),
+                    "Invalid technology selection for players faction"
+                );
+            }
 
             let Some(player) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist!")

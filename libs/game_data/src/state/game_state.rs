@@ -596,6 +596,7 @@ impl GameState {
             Faction::Winnu => player.technologies.len() == 1,
             Faction::ArgentFlight => player.technologies.len() == 2,
             Faction::CouncilKeleres => player.technologies.len() == 2 && !player.planets.is_empty(),
+            Faction::DeepwroughtScholarate => player.technologies.len() == 2,
             _ => true,
         })
     }
