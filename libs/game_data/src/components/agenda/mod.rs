@@ -658,7 +658,7 @@ impl Agenda {
             },
             Agenda::RepresentativeGovernmentPOK => pok_law! {
                 ident: RepresentativeGovernmentPOK,
-                name: "Representative Government",
+                name: "Representative Government (PoK)",
                 elect: ForOrAgainst,
             },
             Agenda::SearchWarrant => pok_law! {
