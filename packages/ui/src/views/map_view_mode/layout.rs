@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap, HashSet};
 
 use ti_helper_game_data::{
     common::{
@@ -154,7 +154,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         .values()
         .flat_map(|p| &p.planets)
         .filter(|(_, attachments)| !attachments.is_empty())
-        .collect::<HashMap<&Planet, &HashSet<PlanetAttachment>>>();
+        .collect::<HashMap<&Planet, &BTreeSet<PlanetAttachment>>>();
 
     let mut system_planets: HashMap<SystemId, Vec<Planet>> = systems()
         .into_iter()
