@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::IntoStaticStr;
 
 use crate::{
     actions::strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
@@ -22,7 +23,7 @@ use crate::{
 };
 
 /// An event in the game.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, IntoStaticStr)]
 pub enum Event {
     /* -- CREATION PHASE EVENTS -- */
     /// Set the game settings.

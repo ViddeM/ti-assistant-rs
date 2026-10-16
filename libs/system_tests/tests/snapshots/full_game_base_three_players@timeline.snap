@@ -1,0 +1,242 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+   9 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  10 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  11 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  14 CompleteStrategyPhase                    r1 Action             Alice      order=[Alice Carol Bob]
+  15 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  16 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  17 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  18 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  19 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  20 EndTurn(Alice)                           r1 Action             Carol
+  21 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  22 StrategicActionPrimary(Carol)            r1 StrategicAction    Carol
+  23 StrategicActionSecondary(Alice)          r1 StrategicAction    Carol
+  24 StrategicActionSecondary(Bob)            r1 StrategicAction    Carol
+  25 StrategicActionCommit                    r1 EndActionTurn      Carol
+  26 EndTurn(Carol)                           r1 Action             Bob
+  27 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  28 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob        custodians=Bob Bob=1
+  29 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  30 EndTurn(Bob)                             r1 Action             Alice
+  31 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  32 StrategicActionCommit                    r1 EndActionTurn      Alice
+  33 EndTurn(Alice)                           r1 Action             Carol
+  34 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  35 StrategicActionPrimary(Carol)            r1 StrategicAction    Carol      speaker=Bob
+  36 StrategicActionSecondary(Alice)          r1 StrategicAction    Carol
+  37 StrategicActionSecondary(Bob)            r1 StrategicAction    Carol
+  38 StrategicActionCommit                    r1 EndActionTurn      Carol
+  39 EndTurn(Carol)                           r1 Action             Bob
+  40 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  41 StrategicActionPrimary(Bob)              r1 StrategicAction    Bob        Bob=2
+  42 StrategicActionCommit                    r1 EndActionTurn      Bob
+  43 EndTurn(Bob)                             r1 Action             Alice
+  44 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  45 StrategicActionCommit                    r1 EndActionTurn      Alice
+  46 EndTurn(Alice)                           r1 Action             Carol
+  47 PassAction(Carol)                        r1 Action             Bob
+  48 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  49 StrategicActionCommit                    r1 EndActionTurn      Bob
+  50 EndTurn(Bob)                             r1 Action             Alice
+  51 PassAction(Alice)                        r1 Action             Bob
+  52 PassAction(Bob)                          r1 Status             Bob
+  53 ScorePublicObjective(Alice)              r1 Status             Bob        Alice=1
+  54 ScoreSecretObjective(Bob)                r1 Status             Bob        Bob=3
+  55 ScorePublicObjective(Carol)              r1 Status             Bob
+  56 ScorePublicObjective(Bob)                r1 Status             Bob
+  57 ScoreSecretObjective(Alice)              r1 Status             Bob
+  58 ScoreSecretObjective(Carol)              r1 Status             Bob
+  59 RevealPublicObjective                    r1 Status             Bob
+  60 CompleteStatusPhase                      r1 Agenda             Carol      order=[Carol Alice Bob]
+  61 RevealAgenda                             r1 Agenda             Carol
+  62 CastAgendaVote(Carol)                    r1 Agenda             Carol
+  63 CastAgendaVote(Alice)                    r1 Agenda             Carol
+  64 CastAgendaVote(Bob)                      r1 Agenda             Carol
+  65 ResolveAgenda                            r1 Agenda             Carol
+  66 RevealAgenda                             r1 Agenda             Carol
+  67 CastAgendaVote(Carol)                    r1 Agenda             Carol
+  68 CastAgendaVote(Alice)                    r1 Agenda             Carol
+  69 CastAgendaVote(Bob)                      r1 Agenda             Carol
+  70 ResolveAgenda                            r1 Agenda             Carol      Alice=0 Carol=-1
+  71 CompleteAgendaPhase                      r2 Strategy           Bob        order=[Bob Carol Alice]
+  72 TakeStrategyCard(Bob)                    r2 Strategy           Carol
+  73 TakeStrategyCard(Carol)                  r2 Strategy           Alice
+  74 TakeStrategyCard(Alice)                  r2 Strategy           Bob
+  75 TakeStrategyCard(Bob)                    r2 Strategy           Carol
+  76 TakeStrategyCard(Carol)                  r2 Strategy           Alice
+  77 TakeStrategyCard(Alice)                  r2 Strategy           Bob
+  78 CompleteStrategyPhase                    r2 Action             Bob
+  79 TacticalActionBegin(Bob)                 r2 TacticalAction     Bob
+  80 TacticalActionTakePlanet(Bob)            r2 TacticalAction     Bob
+  81 TacticalActionTakePlanet(Bob)            r2 TacticalAction     Bob
+  82 TacticalActionCommit(Bob)                r2 EndActionTurn      Bob
+  83 EndTurn(Bob)                             r2 Action             Carol
+  84 StrategicActionBegin(Carol)              r2 StrategicAction    Carol
+  85 StrategicActionPrimary(Carol)            r2 StrategicAction    Carol      Carol=0
+  86 StrategicActionCommit                    r2 EndActionTurn      Carol
+  87 EndTurn(Carol)                           r2 Action             Alice
+  88 StrategicActionBegin(Alice)              r2 StrategicAction    Alice
+  89 StrategicActionPrimary(Alice)            r2 StrategicAction    Alice
+  90 StrategicActionSecondary(Bob)            r2 StrategicAction    Alice
+  91 StrategicActionSecondary(Carol)          r2 StrategicAction    Alice
+  92 StrategicActionCommit                    r2 EndActionTurn      Alice
+  93 EndTurn(Alice)                           r2 Action             Bob
+  94 StrategicActionBegin(Bob)                r2 StrategicAction    Bob
+  95 StrategicActionCommit                    r2 EndActionTurn      Bob
+  96 EndTurn(Bob)                             r2 Action             Carol
+  97 StrategicActionBegin(Carol)              r2 StrategicAction    Carol
+  98 StrategicActionCommit                    r2 EndActionTurn      Carol
+  99 EndTurn(Carol)                           r2 Action             Alice
+ 100 StrategicActionBegin(Alice)              r2 StrategicAction    Alice
+ 101 StrategicActionCommit                    r2 EndActionTurn      Alice
+ 102 EndTurn(Alice)                           r2 Action             Bob
+ 103 StrategicActionBegin(Bob)                r2 StrategicAction    Bob
+ 104 StrategicActionCommit                    r2 EndActionTurn      Bob
+ 105 EndTurn(Bob)                             r2 Action             Carol
+ 106 PassAction(Carol)                        r2 Action             Alice
+ 107 PassAction(Alice)                        r2 Action             Bob
+ 108 PassAction(Bob)                          r2 Status             Bob
+ 109 ScorePublicObjective(Alice)              r2 Status             Bob        Alice=1
+ 110 ScorePublicObjective(Bob)                r2 Status             Bob        Bob=4
+ 111 ScoreSecretObjective(Carol)              r2 Status             Bob        Carol=1
+ 112 ScorePublicObjective(Carol)              r2 Status             Bob
+ 113 ScoreSecretObjective(Bob)                r2 Status             Bob
+ 114 ScoreSecretObjective(Alice)              r2 Status             Bob
+ 115 RevealPublicObjective                    r2 Status             Bob
+ 116 CompleteStatusPhase                      r2 Agenda             Carol      order=[Carol Alice Bob]
+ 117 RevealAgenda                             r2 Agenda             Carol
+ 118 CastAgendaVote(Carol)                    r2 Agenda             Carol
+ 119 CastAgendaVote(Alice)                    r2 Agenda             Carol
+ 120 CastAgendaVote(Bob)                      r2 Agenda             Carol
+ 121 ResolveAgenda                            r2 Agenda             Carol      Bob=5
+ 122 RevealAgenda                             r2 Agenda             Carol
+ 123 CastAgendaVote(Carol)                    r2 Agenda             Carol
+ 124 CastAgendaVote(Alice)                    r2 Agenda             Carol
+ 125 CastAgendaVote(Bob)                      r2 Agenda             Carol
+ 126 ResolveAgenda                            r2 Agenda             Carol
+ 127 CompleteAgendaPhase                      r3 Strategy           Bob        order=[Bob Carol Alice]
+ 128 TakeStrategyCard(Bob)                    r3 Strategy           Carol
+ 129 TakeStrategyCard(Carol)                  r3 Strategy           Alice
+ 130 TakeStrategyCard(Alice)                  r3 Strategy           Bob
+ 131 TakeStrategyCard(Bob)                    r3 Strategy           Carol
+ 132 TakeStrategyCard(Carol)                  r3 Strategy           Alice
+ 133 TakeStrategyCard(Alice)                  r3 Strategy           Bob
+ 134 CompleteStrategyPhase                    r3 Action             Carol      order=[Carol Alice Bob]
+ 135 TacticalActionBegin(Carol)               r3 TacticalAction     Carol
+ 136 TacticalActionTakePlanet(Carol)          r3 TacticalAction     Carol
+ 137 TacticalActionCommit(Carol)              r3 EndActionTurn      Carol
+ 138 EndTurn(Carol)                           r3 Action             Alice
+ 139 StrategicActionBegin(Alice)              r3 StrategicAction    Alice
+ 140 StrategicActionPrimary(Alice)            r3 StrategicAction    Alice      speaker=Alice
+ 141 StrategicActionSecondary(Carol)          r3 StrategicAction    Alice
+ 142 StrategicActionSecondary(Bob)            r3 StrategicAction    Alice
+ 143 StrategicActionCommit                    r3 EndActionTurn      Alice
+ 144 EndTurn(Alice)                           r3 Action             Bob
+ 145 StrategicActionBegin(Bob)                r3 StrategicAction    Bob
+ 146 StrategicActionPrimary(Bob)              r3 StrategicAction    Bob        Bob=6
+ 147 StrategicActionCommit                    r3 EndActionTurn      Bob
+ 148 EndTurn(Bob)                             r3 Action             Carol
+ 149 GiveSupportForTheThrone(Carol)           r3 Action             Carol      Alice=2
+ 150 StrategicActionBegin(Carol)              r3 StrategicAction    Carol
+ 151 StrategicActionCommit                    r3 EndActionTurn      Carol
+ 152 EndTurn(Carol)                           r3 Action             Alice
+ 153 StrategicActionBegin(Alice)              r3 StrategicAction    Alice
+ 154 StrategicActionCommit                    r3 EndActionTurn      Alice
+ 155 EndTurn(Alice)                           r3 Action             Bob
+ 156 StrategicActionBegin(Bob)                r3 StrategicAction    Bob
+ 157 StrategicActionCommit                    r3 EndActionTurn      Bob
+ 158 EndTurn(Bob)                             r3 Action             Carol
+ 159 StrategicActionBegin(Carol)              r3 StrategicAction    Carol
+ 160 StrategicActionCommit                    r3 EndActionTurn      Carol
+ 161 EndTurn(Carol)                           r3 Action             Alice
+ 162 PassAction(Alice)                        r3 Action             Bob
+ 163 PassAction(Bob)                          r3 Action             Carol
+ 164 PassAction(Carol)                        r3 Status             Carol
+ 165 ScorePublicObjective(Carol)              r3 Status             Carol      Carol=2
+ 166 ScorePublicObjective(Alice)              r3 Status             Carol      Alice=3
+ 167 ScorePublicObjective(Bob)                r3 Status             Carol
+ 168 ScoreSecretObjective(Carol)              r3 Status             Carol
+ 169 ScoreSecretObjective(Alice)              r3 Status             Carol
+ 170 ScoreSecretObjective(Bob)                r3 Status             Carol
+ 171 RevealPublicObjective                    r3 Status             Carol
+ 172 CompleteStatusPhase                      r3 Agenda             Bob        order=[Bob Carol Alice]
+ 173 RevealAgenda                             r3 Agenda             Bob
+ 174 VetoAgenda                               r3 Agenda             Bob
+ 175 RevealAgenda                             r3 Agenda             Bob
+ 176 CastAgendaVote(Bob)                      r3 Agenda             Bob
+ 177 CastAgendaVote(Carol)                    r3 Agenda             Bob
+ 178 CastAgendaVote(Alice)                    r3 Agenda             Bob
+ 179 ResolveAgenda                            r3 Agenda             Bob
+ 180 RevealAgenda                             r3 Agenda             Bob
+ 181 CastAgendaVote(Bob)                      r3 Agenda             Bob
+ 182 CastAgendaVote(Carol)                    r3 Agenda             Bob
+ 183 CastAgendaVote(Alice)                    r3 Agenda             Bob
+ 184 ResolveAgenda                            r3 Agenda             Bob
+ 185 CompleteAgendaPhase                      r4 Strategy           Alice      order=[Alice Bob Carol]
+ 186 TakeStrategyCard(Alice)                  r4 Strategy           Bob
+ 187 TakeStrategyCard(Bob)                    r4 Strategy           Carol
+ 188 TakeStrategyCard(Carol)                  r4 Strategy           Alice
+ 189 TakeStrategyCard(Alice)                  r4 Strategy           Bob
+ 190 TakeStrategyCard(Bob)                    r4 Strategy           Carol
+ 191 TakeStrategyCard(Carol)                  r4 Strategy           Alice
+ 192 CompleteStrategyPhase                    r4 Action             Bob        order=[Bob Alice Carol]
+ 193 TacticalActionBegin(Bob)                 r4 TacticalAction     Bob
+ 194 TacticalActionTakePlanet(Bob)            r4 TacticalAction     Bob
+ 195 TacticalActionCommit(Bob)                r4 EndActionTurn      Bob
+ 196 EndTurn(Bob)                             r4 Action             Alice
+ 197 StrategicActionBegin(Alice)              r4 StrategicAction    Alice
+ 198 StrategicActionPrimary(Alice)            r4 StrategicAction    Alice      Alice=4
+ 199 StrategicActionCommit                    r4 EndActionTurn      Alice
+ 200 EndTurn(Alice)                           r4 Action             Carol
+ 201 RepealLaw                                r4 Action             Carol
+ 202 StrategicActionBegin(Carol)              r4 StrategicAction    Carol
+ 203 StrategicActionCommit                    r4 EndActionTurn      Carol
+ 204 EndTurn(Carol)                           r4 Action             Bob
+ 205 StrategicActionBegin(Bob)                r4 StrategicAction    Bob
+ 206 StrategicActionCommit                    r4 EndActionTurn      Bob
+ 207 EndTurn(Bob)                             r4 Action             Alice
+ 208 StrategicActionBegin(Alice)              r4 StrategicAction    Alice
+ 209 StrategicActionCommit                    r4 EndActionTurn      Alice
+ 210 EndTurn(Alice)                           r4 Action             Carol
+ 211 StrategicActionBegin(Carol)              r4 StrategicAction    Carol
+ 212 StrategicActionCommit                    r4 EndActionTurn      Carol
+ 213 EndTurn(Carol)                           r4 Action             Bob
+ 214 StrategicActionBegin(Bob)                r4 StrategicAction    Bob
+ 215 StrategicActionCommit                    r4 EndActionTurn      Bob
+ 216 EndTurn(Bob)                             r4 Action             Alice
+ 217 PassAction(Alice)                        r4 Action             Carol
+ 218 PassAction(Carol)                        r4 Action             Bob
+ 219 PassAction(Bob)                          r4 Status             Bob
+ 220 ScorePublicObjective(Bob)                r4 Status             Bob        Bob=7
+ 221 ScorePublicObjective(Alice)              r4 Status             Bob        Alice=5
+ 222 ScoreSecretObjective(Alice)              r4 Status             Bob        Alice=6
+ 223 ScorePublicObjective(Carol)              r4 Status             Bob
+ 224 ScoreSecretObjective(Bob)                r4 Status             Bob
+ 225 ScoreSecretObjective(Carol)              r4 Status             Bob
+ 226 RevealPublicObjective                    r4 Status             Bob
+ 227 CompleteStatusPhase                      r4 Agenda             Bob        order=[Bob Carol Alice]
+ 228 RevealAgenda                             r4 Agenda             Bob
+ 229 CastAgendaVote(Bob)                      r4 Agenda             Bob
+ 230 CastAgendaVote(Carol)                    r4 Agenda             Bob
+ 231 CastAgendaVote(Alice)                    r4 Agenda             Bob
+ 232 ResolveAgenda                            r4 Agenda             Bob
+ 233 RevealAgenda                             r4 Agenda             Bob
+ 234 CastAgendaVote(Bob)                      r4 Agenda             Bob
+ 235 CastAgendaVote(Carol)                    r4 Agenda             Bob
+ 236 CastAgendaVote(Alice)                    r4 Agenda             Bob
+ 237 ResolveAgenda                            r4 Agenda             Bob
+ 238 CompleteAgendaPhase                      r5 Strategy           Alice      order=[Alice Bob Carol]

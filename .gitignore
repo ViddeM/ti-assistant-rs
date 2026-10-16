@@ -10,3 +10,7 @@
 
 .vscode/
 .playwright-mcp/
+
+# Pending insta snapshots
+*.snap.new
+*.pending-snap

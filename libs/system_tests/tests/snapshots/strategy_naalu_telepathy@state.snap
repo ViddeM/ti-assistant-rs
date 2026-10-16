@@ -1,0 +1,120 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Status
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: NaaluCollective
+    color: Pink
+    planets:
+      Druaa: []
+      Maaluuk: []
+    technologies:
+      - NeuralMotivator
+      - SarweenTools
+    relics: []
+  Bob:
+    name: Bob
+    faction: FederationOfSol
+    color: Orange
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+  Carol:
+    name: Carol
+    faction: EmiratesOfHacan
+    color: Green
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Bob
+  Diplomacy: Carol
+  Construction: Carol
+  Trade: Bob
+  Warfare: Alice
+  Imperial: Alice
+currentPlayer: Carol
+spentStrategyCards:
+  - Leadership
+  - Diplomacy
+  - Construction
+  - Trade
+  - Warfare
+  - Imperial
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives: {}
+  scoredSecretObjectives: {}
+  revealedObjective: ~
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice:
+    - ZeuCxIII
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 660
+    nanos: 0
+  Bob:
+    secs: 540
+    nanos: 0
+  Carol:
+    secs: 540
+    nanos: 0
+currentTurnStartTime: ~
+naaluTelepathy: Alice

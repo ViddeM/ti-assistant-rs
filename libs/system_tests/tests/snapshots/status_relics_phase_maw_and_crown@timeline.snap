@@ -1,0 +1,58 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+   9 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  10 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  11 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  14 CompleteStrategyPhase                    r1 Action             Alice
+  15 SetCustodians(Alice)                     r1 Action             Alice      custodians=Alice Alice=1
+  16 SetPlanetOwner(Bob)                      r1 Action             Alice
+  17 AddPlanetAttachment(Bob)                 r1 Action             Alice
+  18 GainRelicAction(Alice)                   r1 EndActionTurn      Alice
+  19 EndTurn(Alice)                           r1 Action             Bob
+  20 GainRelicAction(Bob)                     r1 EndActionTurn      Bob
+  21 EndTurn(Bob)                             r1 Action             Carol
+  22 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  23 StrategicActionPrimary(Carol)            r1 StrategicAction    Carol
+  24 StrategicActionCommit                    r1 EndActionTurn      Carol
+  25 EndTurn(Carol)                           r1 Action             Alice
+  26 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  27 StrategicActionCommit                    r1 EndActionTurn      Alice
+  28 EndTurn(Alice)                           r1 Action             Bob
+  29 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  30 StrategicActionCommit                    r1 EndActionTurn      Bob
+  31 EndTurn(Bob)                             r1 Action             Carol
+  32 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  33 StrategicActionCommit                    r1 EndActionTurn      Carol
+  34 EndTurn(Carol)                           r1 Action             Alice
+  35 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  36 StrategicActionCommit                    r1 EndActionTurn      Alice
+  37 EndTurn(Alice)                           r1 Action             Bob
+  38 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  39 StrategicActionCommit                    r1 EndActionTurn      Bob
+  40 EndTurn(Bob)                             r1 Action             Carol
+  41 PassAction(Carol)                        r1 Action             Alice
+  42 PassAction(Alice)                        r1 Action             Bob
+  43 PassAction(Bob)                          r1 Status             Bob
+  44 ScorePublicObjective(Alice)              r1 Status             Bob
+  45 ScorePublicObjective(Bob)                r1 Status             Bob
+  46 ScorePublicObjective(Carol)              r1 Status             Bob
+  47 ScoreSecretObjective(Alice)              r1 Status             Bob
+  48 ScoreSecretObjective(Bob)                r1 Status             Bob
+  49 ScoreSecretObjective(Carol)              r1 Status             Bob
+  50 RevealPublicObjective                    r1 Status             Bob
+  51 CompleteStatusPhase                      r1 Relics             Alice
+  52 PlayMawOfWorlds(Alice)                   r1 Relics             Alice
+  53 PlayCrownOfEmphidia(Bob)                 r1 Relics             Alice      Bob=1
+  54 CompleteRelicsPhase                      r1 Agenda             Bob        order=[Bob Carol Alice]

@@ -1,0 +1,197 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 2
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Strategy
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders: {}
+currentPlayer: Alice
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 1
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ExpandBorders: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: Alice
+agenda: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: ConventionsOfWar
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Carol:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 6
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+  - round: 1
+    vote:
+      agenda: PoliticalCensure
+      kind: Law
+      elect: Player
+      candidates:
+        - electKind: Player
+          value: Alice
+        - electKind: Player
+          value: Bob
+        - electKind: Player
+          value: Carol
+      playerVotes:
+        Alice:
+          votes: 2
+          outcome:
+            electKind: Player
+            value: Alice
+        Bob:
+          votes: 3
+          outcome:
+            electKind: Player
+            value: Carol
+        Carol:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Carol
+      outcomesByVotes:
+        - votes: 4
+          outcome:
+            electKind: Player
+            value: Carol
+        - votes: 2
+          outcome:
+            electKind: Player
+            value: Alice
+      expectedOutcome:
+        electKind: Player
+        value: Carol
+    outcome:
+      electKind: Player
+      value: Carol
+laws:
+  ConventionsOfWar:
+    electKind: ForOrAgainst
+    value: For
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  scoredSecretObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  revealedObjective: ExpandBorders
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 660
+    nanos: 0
+  Bob:
+    secs: 1200
+    nanos: 0
+  Carol:
+    secs: 600
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:56:00Z"
+naaluTelepathy: ~

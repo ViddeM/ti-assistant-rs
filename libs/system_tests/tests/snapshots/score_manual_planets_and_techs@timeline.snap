@@ -1,0 +1,23 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 SetPlanetOwner(Bob)                      r1 Strategy           Alice      custodians=Bob Bob=1
+   9 SetPlanetOwner(Carol)                    r1 Strategy           Alice
+  10 SetPlanetOwner                           r1 Strategy           Alice
+  11 SetPlanetOwner(Alice)                    r1 Strategy           Alice
+  12 SetPlanetOwner(Alice)                    r1 Strategy           Alice
+  13 SetPlanetOwner(Alice)                    r1 Strategy           Alice
+  14 AddPlanetAttachment(Alice)               r1 Strategy           Alice
+  15 AddPlanetAttachment(Alice)               r1 Strategy           Alice
+  16 AddPlanetAttachment(Alice)               r1 Strategy           Alice
+  17 RemovePlanetAttachment(Alice)            r1 Strategy           Alice
+  18 AddTechToPlayer(Carol)                   r1 Strategy           Alice
+  19 RemoveTechFromPlayer(Carol)              r1 Strategy           Alice

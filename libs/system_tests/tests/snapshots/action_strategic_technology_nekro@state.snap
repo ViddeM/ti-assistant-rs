@@ -1,0 +1,112 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Action
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - GravityDrive
+      - NeuralMotivator
+    relics: []
+  Bob:
+    name: Bob
+    faction: UniversitiesOfJolNar
+    color: Orange
+    planets:
+      Jol: []
+      Nar: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+      - PlasmaScoring
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: NekroVirus
+    color: Green
+    planets:
+      MordaiII: []
+    technologies:
+      - DacxiveAnimators
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+  Technology: Carol
+currentPlayer: Alice
+spentStrategyCards:
+  - Leadership
+  - Diplomacy
+  - Technology
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 360
+    nanos: 0
+  Bob:
+    secs: 300
+    nanos: 0
+  Carol:
+    secs: 360
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:24:00Z"
+naaluTelepathy: ~

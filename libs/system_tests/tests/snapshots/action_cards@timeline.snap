@@ -1,0 +1,31 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+   9 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  10 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  11 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  14 CompleteStrategyPhase                    r1 Action             Alice
+  15 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
+  16 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
+  17 EndTurn(Alice)                           r1 Action             Bob
+  18 AddTechToPlayer(Bob)                     r1 Action             Bob
+  19 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob
+  20 ActionCardActionCommit(Bob)              r1 EndActionTurn      Bob
+  21 EndTurn(Bob)                             r1 Action             Carol
+  22 ActionCardActionBegin(Carol)             r1 ActionCardAction   Carol
+  23 ActionCardActionCommit(Carol)            r1 EndActionTurn      Carol
+  24 EndTurn(Carol)                           r1 Action             Alice
+  25 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
+  26 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
+  27 EndTurn(Alice)                           r1 Action             Bob
