@@ -28,7 +28,7 @@ pub enum TechCategory {
     Warfare,
 }
 
-/// What type of tech this is.TS_RS_EXPORT_DIR
+/// What type of tech this is.
 #[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
 #[allow(missing_docs)]
 pub enum TechType {
@@ -147,6 +147,9 @@ pub enum Technology {
     Neuroglaive,
     PreFabArcologies,
     MageonImplants,
+    RadicalAdvancement,
+    HydrothermalMining,
+    NeuralParasite,
     // Faction techs - Propulsion
     ChaosMapping,
     SpacialConduitCylinder,
@@ -168,6 +171,8 @@ pub enum Technology {
     AgencySupplyNetwork,
     QuantumDatahubNode,
     MirrorComputing,
+    SubatomicSplicer,
+    PlaneSplitter,
     // Faction techs - Warfare
     DimensionalSplicer,
     Supercharge,
@@ -176,6 +181,8 @@ pub enum Technology {
     MagmusReactor,
     MagmusReactorOmega,
     ValkyrieParticleWeave,
+    ProximaTargetingVI,
+    Nanomachines,
 }
 
 impl PartialOrd for Technology {
@@ -1139,6 +1146,81 @@ impl Technology {
                 Expansion::Base,
                 &[
                     "After making combat rolls during a round of ground combat, if your opponent produced 1 or more hits, you produce 1 additional hit."
+                ],
+            ),
+            Technology::RadicalAdvancement => t!(
+                "Radical Advancement",
+                TechType::Category(TechCategory::Biotic),
+                TechOrigin::Faction(Faction::DeepwroughtScholarate),
+                tr!([(TechCategory::Biotic, 1)]),
+                Expansion::ThundersEdge,
+                &[
+                    "At the start of the status phase, you may replace one of your non-unit upgrade technologies with a technology of the same color that has exactly 1 more prerequisite."
+                ],
+            ),
+            Technology::HydrothermalMining => t!(
+                "Hydrothermal Mining",
+                TechType::Category(TechCategory::Biotic),
+                TechOrigin::Faction(Faction::DeepwroughtScholarate),
+                tr!([(TechCategory::Biotic, 1)]),
+                Expansion::ThundersEdge,
+                &[
+                    "At the start of the status phase, gain 1 trade good for each ocean card in play."
+                ],
+            ),
+            Technology::NeuralParasite => t!(
+                "Neural Parasite",
+                TechType::Category(TechCategory::Biotic),
+                TechOrigin::Faction(Faction::FirmamentObsidian),
+                tr!([(TechCategory::Biotic, 2)]),
+                Expansion::ThundersEdge,
+                &[
+                    "At the start of the status phase, you may place 1 infantry from your reinforcements on a planet you control in your home system.",
+                    "Flip this card if the Obsidian faction is in play."
+                ],
+            ),
+            Technology::PlaneSplitter => t!(
+                "Plane Splitter",
+                TechType::Category(TechCategory::Cybernetic),
+                TechOrigin::Faction(Faction::FirmamentObsidian),
+                tr!([(TechCategory::Cybernetic, 1)]),
+                Expansion::ThundersEdge,
+                &[
+                    "When you gain this card, put The Fracture into play.",
+                    "Flip this card if the Obsidian faction is in play."
+                ],
+            ),
+            Technology::SubatomicSplicer => t!(
+                "Subatomic Splicer",
+                TechType::Category(TechCategory::Cybernetic),
+                TechOrigin::Faction(Faction::CrimsonRebellion),
+                tr!([(TechCategory::Cybernetic, 1)]),
+                Expansion::ThundersEdge,
+                &[
+                    "When one of your ships is destroyed, you may produce a ship of the same type at a space dock in your home system.",
+                ],
+            ),
+            Technology::ProximaTargetingVI => t!(
+                "Proxima Targeting VI",
+                TechType::Category(TechCategory::Warfare),
+                TechOrigin::Faction(Faction::LastBastion),
+                tr!([(TechCategory::Warfare, 1)]),
+                Expansion::ThundersEdge,
+                &[
+                    "Cancel 1 hit produced by BOMBARDMENT rolls made against your ground forces for each of your galvanized units present.",
+                    "At the start of a round of ground combat, you may resolve BOMBARDMENT 8 (x3) against your opponents ground forces; if you do, make an identical roll against your own ground forces."
+                ],
+            ),
+            Technology::Nanomachines => t!(
+                "Nanomachines",
+                TechType::Category(TechCategory::Warfare),
+                TechOrigin::Faction(Faction::RalNelConsortium),
+                tr!([(TechCategory::Warfare, 1)]),
+                Expansion::ThundersEdge,
+                &[
+                    "ACTION: Exhaust this card to place 1 PDS on a planet you control.",
+                    "ACTION: Exhaust this card to repair all of your damaged units.",
+                    "ACTION: Exhaust this card and discard 1 action card to draw 1 action card."
                 ],
             ),
         }
