@@ -29,7 +29,7 @@ use ti_helper_game_data::{
         relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
         system::{System, SystemType, systems},
-        tech::{TechOrigin, TechType, Technology},
+        tech::{TechCategory, TechOrigin, TechType, Technology},
     },
     state::{
         agenda::{AgendaRound, Vote, VoteState},
@@ -280,6 +280,25 @@ fn try_update_game_state(
                         .filter(|t| t.info().origin == TechOrigin::Base)
                         .cloned()
                         .collect::<Vec<Technology>>(),
+                ),
+                Faction::CrimsonRebellion => (
+                    1,
+                    Technology::iter()
+                        .filter(|t| t.info().requirements.is_empty())
+                        .filter(|t| {
+                            matches!(
+                                t.info().tech_type,
+                                TechType::Category(TechCategory::Warfare)
+                                    | TechType::Category(TechCategory::Propulsion)
+                            )
+                        })
+                        .filter(|t| {
+                            matches!(
+                                t.info().origin,
+                                TechOrigin::Base | TechOrigin::Faction(Faction::CrimsonRebellion)
+                            )
+                        })
+                        .collect(),
                 ),
                 _ => bail!("Players faction has no technology setup to perform"),
             };

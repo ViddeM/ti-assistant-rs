@@ -151,6 +151,11 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                 CouncilKeleresSetup { player_id, player }
             }
         }
+        Faction::CrimsonRebellion => {
+            rsx! {
+                CrimsonRebellionSetup { player_id, player }
+            }
+        }
         f if f.expansion() == Expansion::ThundersEdge => {
             rsx! {
                 div { "Thunder's edge factions not yet implemented" }
