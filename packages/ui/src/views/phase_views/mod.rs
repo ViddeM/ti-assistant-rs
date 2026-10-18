@@ -3,6 +3,7 @@ pub mod action_phase;
 pub mod agenda_phase_view;
 pub mod creation_phase;
 pub mod end_action_phase;
+pub mod faction_setup_views;
 pub mod relic_card;
 pub mod relics_phase;
 pub mod setup_phase;
