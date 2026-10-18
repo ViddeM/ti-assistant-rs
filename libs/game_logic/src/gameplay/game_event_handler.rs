@@ -300,6 +300,25 @@ fn try_update_game_state(
                         })
                         .collect(),
                 ),
+                Faction::FirmamentObsidian => (
+                    1,
+                    Technology::iter()
+                        .filter(|t| t.info().requirements.is_empty())
+                        .filter(|t| {
+                            matches!(
+                                t.info().tech_type,
+                                TechType::Category(TechCategory::Biotic)
+                                    | TechType::Category(TechCategory::Cybernetic)
+                            )
+                        })
+                        .filter(|t| {
+                            matches!(
+                                t.info().origin,
+                                TechOrigin::Base | TechOrigin::Faction(Faction::FirmamentObsidian)
+                            )
+                        })
+                        .collect(),
+                ),
                 _ => bail!("Players faction has no technology setup to perform"),
             };
 

@@ -13,7 +13,8 @@ use crate::{
     data::{event_context::EventContext, game_context::GameContext},
     views::phase_views::faction_setup_views::{
         argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
-        crimson_rebellion_setup::CrimsonRebellionSetup, winnu_setup::WinnuSetup,
+        crimson_rebellion_setup::CrimsonRebellionSetup, firmament_setup::FirmamentSetup,
+        winnu_setup::WinnuSetup,
     },
 };
 
@@ -154,6 +155,11 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         Faction::CrimsonRebellion => {
             rsx! {
                 CrimsonRebellionSetup { player_id, player }
+            }
+        }
+        Faction::FirmamentObsidian => {
+            rsx! {
+                FirmamentSetup { player_id, player }
             }
         }
         f if f.expansion() == Expansion::ThundersEdge => {
