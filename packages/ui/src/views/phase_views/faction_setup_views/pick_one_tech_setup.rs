@@ -5,23 +5,23 @@ use crate::{
 use dioxus::prelude::*;
 use std::sync::Arc;
 use ti_helper_game_data::{
-    actions::event::Event,
-    common::{faction::Faction, player_id::PlayerId},
-    components::tech::Technology,
+    actions::event::Event, common::player_id::PlayerId, components::tech::Technology,
     state::player::Player,
 };
 
 #[component]
-pub fn FirmamentSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
+pub fn PickOneTechSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let event = use_context::<EventContext>();
     let gc = use_context::<GameContext>();
 
     let mut tech = use_signal(|| None::<Technology>);
 
+    let p = Arc::clone(&player);
     let available_techs = use_memo(move || {
-        let mut techs = Faction::FirmamentObsidian
+        let mut techs = p
+            .faction
             .get_starting_tech_options(&gc.game_state())
-            .expect("Firmament to have starting tech options");
+            .expect("Faction to have starting tech options");
         techs.sort();
         techs
     });

@@ -600,6 +600,7 @@ impl GameState {
             Faction::FirmamentObsidian => player.technologies.len() == 1,
             Faction::LastBastion => player.technologies.len() == 1,
             Faction::DeepwroughtScholarate => player.technologies.len() == 2,
+            Faction::RalNelConsortium => player.technologies.len() == 1,
             _ => true,
         })
     }

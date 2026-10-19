@@ -10,9 +10,8 @@ use ti_helper_game_data::{
 
 use crate::views::phase_views::faction_setup_views::{
     argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
-    crimson_rebellion_setup::CrimsonRebellionSetup,
-    deepwrought_scholarate_setup::DeepwroughtScholarateSetup, firmament_setup::FirmamentSetup,
-    last_bastion::LastBastionSetup, winnu_setup::WinnuSetup,
+    deepwrought_scholarate_setup::DeepwroughtScholarateSetup,
+    pick_one_tech_setup::PickOneTechSetup,
 };
 use crate::{
     components::{button::Button, dropdown::ObjectiveDropdown, faction_icon::FactionIcon},
@@ -140,7 +139,7 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     match player.faction {
         Faction::Winnu => {
             rsx! {
-                WinnuSetup { player_id, player }
+                PickOneTechSetup { player_id, player }
             }
         }
         Faction::ArgentFlight => {
@@ -155,12 +154,12 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         }
         Faction::CrimsonRebellion => {
             rsx! {
-                CrimsonRebellionSetup { player_id, player }
+                PickOneTechSetup { player_id, player }
             }
         }
         Faction::FirmamentObsidian => {
             rsx! {
-                FirmamentSetup { player_id, player }
+                PickOneTechSetup { player_id, player }
             }
         }
         Faction::DeepwroughtScholarate => {
@@ -170,7 +169,12 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         }
         Faction::LastBastion => {
             rsx! {
-                LastBastionSetup { player_id, player }
+                PickOneTechSetup { player_id, player }
+            }
+        }
+        Faction::RalNelConsortium => {
+            rsx! {
+                PickOneTechSetup { player_id, player }
             }
         }
         f if f.expansion() == Expansion::ThundersEdge => {

@@ -300,6 +300,23 @@ impl Faction {
                     )
                 })
                 .collect(),
+            Faction::RalNelConsortium => techs
+                .into_iter()
+                .filter(|t| t.info().requirements.is_empty())
+                .filter(|t| {
+                    matches!(
+                        t.info().tech_type,
+                        TechType::Category(TechCategory::Warfare)
+                            | TechType::Category(TechCategory::Biotic)
+                    )
+                })
+                .filter(|t| {
+                    matches!(
+                        t.info().origin,
+                        TechOrigin::Base | TechOrigin::Faction(Faction::RalNelConsortium)
+                    )
+                })
+                .collect(),
             _ => return None,
         };
 
@@ -316,6 +333,7 @@ impl Faction {
             Faction::LastBastion => 1,
             Faction::FirmamentObsidian => 1,
             Faction::DeepwroughtScholarate => 2,
+            Faction::RalNelConsortium => 1,
             _ => 0,
         }
     }
