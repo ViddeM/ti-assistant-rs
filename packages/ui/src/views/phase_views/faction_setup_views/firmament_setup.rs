@@ -7,7 +7,7 @@ use std::sync::Arc;
 use ti_helper_game_data::{
     actions::event::Event,
     common::{faction::Faction, player_id::PlayerId},
-    components::tech::{TechCategory, TechOrigin, TechType, Technology},
+    components::tech::Technology,
     state::player::Player,
 };
 
@@ -20,28 +20,9 @@ pub fn FirmamentSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 
     // "Choose one green or yellow technology that has no pre-requisites."
     let available_techs = use_memo(move || {
-        let mut techs = gc
-            .game_options()
-            .technologies
-            .iter()
-            .map(|t| (t, t.info()))
-            .filter(|(_, info)| {
-                matches!(
-                    info.origin,
-                    TechOrigin::Base | TechOrigin::Faction(Faction::FirmamentObsidian)
-                )
-            })
-            .filter(|(_, info)| info.requirements.is_empty())
-            .filter(|(_, info)| {
-                matches!(
-                    info.tech_type,
-                    TechType::Category(TechCategory::Biotic)
-                        | TechType::Category(TechCategory::Cybernetic)
-                )
-            })
-            .map(|(t, _)| t)
-            .cloned()
-            .collect::<Vec<_>>();
+        let mut techs = Faction::FirmamentObsidian
+            .get_starting_tech_options(&gc.game_state())
+            .expect("Firmament to have starting tech options");
         techs.sort();
         techs
     });

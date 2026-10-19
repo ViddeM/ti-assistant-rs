@@ -2,31 +2,29 @@ use std::sync::Arc;
 
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    actions::event::Event, common::player_id::PlayerId, components::tech::Technology,
+    actions::event::Event,
+    common::{faction::Faction, player_id::PlayerId},
     state::player::Player,
 };
 
 use crate::{
     components::{button::Button, dropdown::TechDropdown},
-    data::event_context::EventContext,
+    data::{event_context::EventContext, game_context::GameContext},
 };
 
 #[component]
 pub fn ArgentFlightSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let event = use_context::<EventContext>();
+    let gc = use_context::<GameContext>();
 
     let mut first_tech = use_signal(|| None);
     let mut second_tech = use_signal(|| None);
 
-    let possible_techs = use_memo(|| {
-        let mut techs = vec![
-            Technology::NeuralMotivator,
-            Technology::SarweenTools,
-            Technology::PlasmaScoring,
-        ];
-
+    let possible_techs = use_memo(move || {
+        let mut techs = Faction::ArgentFlight
+            .get_starting_tech_options(&gc.game_state())
+            .expect("Argent Flight to have starting tech options");
         techs.sort();
-
         techs
     });
 

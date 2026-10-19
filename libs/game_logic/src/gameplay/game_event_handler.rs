@@ -5,7 +5,6 @@ use std::{
 
 use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
-use strum::IntoEnumIterator;
 
 use super::{color_assignment::assign_colors, error::GameError};
 
@@ -32,7 +31,7 @@ use ti_helper_game_data::{
         relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
         system::{System, SystemType, systems},
-        tech::{TechCategory, TechOrigin, TechType, Technology},
+        tech::{TechOrigin, TechType, Technology},
     },
     state::{
         agenda::{AgendaRound, Vote, VoteState},
@@ -245,101 +244,25 @@ fn try_update_game_state(
             player,
             technologies,
         } => {
+            let player_id = player;
+
             game_state.assert_phase(Phase::Setup)?;
             ensure!(
-                !game_state.player_initialization_finished(&player)?,
+                !game_state.player_initialization_finished(&player_id)?,
                 "Player has already performed all necessary initialization"
             );
 
-            let (allowed_techs, possible_techs) = match game_state
-                .players
-                .get(&player)
-                .expect("Player doesn't exist?")
-                .faction
-            {
-                Faction::Winnu => (
-                    1,
-                    Some(
-                        Technology::iter()
-                            .filter(|t| t.info().requirements.is_empty())
-                            .filter(|t| t.info().origin == TechOrigin::Base)
-                            .collect(),
-                    ),
-                ),
-                Faction::ArgentFlight => (
-                    2,
-                    Some(vec![
-                        Technology::NeuralMotivator,
-                        Technology::SarweenTools,
-                        Technology::PlasmaScoring,
-                    ]),
-                ),
-                Faction::CouncilKeleres => (
-                    2,
-                    Some(
-                        game_state
-                            .players
-                            .values()
-                            .filter(|p| p.faction != Faction::CouncilKeleres)
-                            .flat_map(|p| p.technologies.iter())
-                            .filter(|t| t.info().origin == TechOrigin::Base)
-                            .cloned()
-                            .collect::<Vec<Technology>>(),
-                    ),
-                ),
-                Faction::CrimsonRebellion => (
-                    1,
-                    Some(
-                        Technology::iter()
-                            .filter(|t| t.info().requirements.is_empty())
-                            .filter(|t| {
-                                matches!(
-                                    t.info().tech_type,
-                                    TechType::Category(TechCategory::Warfare)
-                                        | TechType::Category(TechCategory::Propulsion)
-                                )
-                            })
-                            .filter(|t| {
-                                matches!(
-                                    t.info().origin,
-                                    TechOrigin::Base
-                                        | TechOrigin::Faction(Faction::CrimsonRebellion)
-                                )
-                            })
-                            .collect(),
-                    ),
-                ),
-                Faction::FirmamentObsidian => (
-                    1,
-                    Some(
-                        Technology::iter()
-                            .filter(|t| t.info().requirements.is_empty())
-                            .filter(|t| {
-                                matches!(
-                                    t.info().tech_type,
-                                    TechType::Category(TechCategory::Biotic)
-                                        | TechType::Category(TechCategory::Cybernetic)
-                                )
-                            })
-                            .filter(|t| {
-                                matches!(
-                                    t.info().origin,
-                                    TechOrigin::Base
-                                        | TechOrigin::Faction(Faction::FirmamentObsidian)
-                                )
-                            })
-                            .collect(),
-                    ),
-                ),
-                Faction::DeepwroughtScholarate => (2, None),
-                _ => bail!("Players faction has no technology setup to perform"),
+            let Some(player) = game_state.players.get(&player_id) else {
+                bail!("Player does not exist!");
             };
 
+            let allowed_techs = player.faction.get_starting_tech_choice_count();
             ensure!(
                 technologies.len() == allowed_techs,
                 "Invalid amount of technologies selected for faction"
             );
 
+            let possible_techs = player.faction.get_starting_tech_options(&game_state);
             if let Some(possible_techs) = possible_techs {
                 ensure!(
                     technologies.iter().all(|t| possible_techs.contains(t)),
@@ -347,17 +270,17 @@ fn try_update_game_state(
                 );
             }
 
-            let Some(player) = game_state.players.get_mut(&player) else {
-                bail!("Player doesn't exist!")
-            };
-
             ensure!(
                 player.technologies.is_empty(),
                 "Player already has technologies?"
             );
 
+            let Some(player) = game_state.players.get_mut(&player_id) else {
+                bail!("Player doesn't exist!")
+            };
+
             for tech in technologies.into_iter() {
-                player.technologies.insert(tech);
+                player.take_tech(tech)?;
             }
         }
         Event::SetupSpeaker { player } => {

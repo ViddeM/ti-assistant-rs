@@ -3,8 +3,8 @@ use std::sync::Arc;
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
-    common::player_id::PlayerId,
-    components::tech::{TechOrigin, Technology},
+    common::{faction::Faction, player_id::PlayerId},
+    components::tech::Technology,
     state::player::Player,
 };
 
@@ -21,15 +21,9 @@ pub fn WinnuSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let mut selected_tech = use_signal::<Option<Technology>>(|| None);
 
     let available_techs = use_memo(move || {
-        let game_options = gc.game_options();
-        let mut techs = game_options
-            .technologies
-            .iter()
-            .filter(|tech| {
-                tech.info().origin == TechOrigin::Base && tech.info().requirements.is_empty()
-            })
-            .cloned()
-            .collect::<Vec<_>>();
+        let mut techs = Faction::Winnu
+            .get_starting_tech_options(&gc.game_state())
+            .expect("Winnu to have starting tech options");
         techs.sort();
         techs
     });

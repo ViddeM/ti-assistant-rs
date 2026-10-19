@@ -7,7 +7,7 @@ use std::sync::Arc;
 use ti_helper_game_data::{
     actions::event::Event,
     common::{faction::Faction, player_id::PlayerId},
-    components::tech::{TechCategory, TechOrigin, TechType, Technology},
+    components::tech::Technology,
     state::player::Player,
 };
 
@@ -20,28 +20,9 @@ pub fn CrimsonRebellionSetup(player_id: PlayerId, player: Arc<Player>) -> Elemen
 
     // "Choose one red or blue with no prerequisites."
     let available_techs = use_memo(move || {
-        let mut techs = gc
-            .game_options()
-            .technologies
-            .iter()
-            .map(|t| (t, t.info()))
-            .filter(|(_, info)| {
-                matches!(
-                    info.origin,
-                    TechOrigin::Base | TechOrigin::Faction(Faction::CrimsonRebellion)
-                )
-            })
-            .filter(|(_, info)| info.requirements.is_empty())
-            .filter(|(_, info)| {
-                matches!(
-                    info.tech_type,
-                    TechType::Category(TechCategory::Warfare)
-                        | TechType::Category(TechCategory::Propulsion)
-                )
-            })
-            .map(|(t, _)| t)
-            .cloned()
-            .collect::<Vec<_>>();
+        let mut techs = Faction::CrimsonRebellion
+            .get_starting_tech_options(&gc.game_state())
+            .expect("Crimson Rebellion to have starting tech options");
         techs.sort();
         techs
     });

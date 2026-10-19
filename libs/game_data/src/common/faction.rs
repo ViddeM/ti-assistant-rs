@@ -1,12 +1,16 @@
 use std::collections::{BTreeSet, HashSet};
 
 use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
 use strum_macros::{Display, EnumIter, EnumString};
 
-use crate::components::{
-    planet::Planet,
-    system::{SystemType, systems},
-    tech::Technology,
+use crate::{
+    components::{
+        planet::Planet,
+        system::{SystemType, systems},
+        tech::{TechCategory, TechOrigin, TechType, Technology},
+    },
+    state::game_state::GameState,
 };
 
 use super::{expansions::Expansion, game_settings::Expansions};
@@ -204,6 +208,98 @@ impl Faction {
         .into_iter()
         .filter(|tech| tech.is_enabled_in(expansions))
         .collect()
+    }
+
+    // TODO: Uggly circular dependency here, consider solutions.
+    pub fn get_starting_tech_options(&self, game_state: &GameState) -> Option<Vec<Technology>> {
+        let techs = Technology::iter()
+            .filter(|t| t.is_enabled_in(&game_state.game_settings.expansions))
+            .collect::<Vec<_>>();
+
+        let techs: Vec<_> = match self {
+            Faction::Winnu => techs
+                .into_iter()
+                .filter(|t| {
+                    matches!(
+                        t.info().origin,
+                        TechOrigin::Base | TechOrigin::Faction(Faction::Winnu)
+                    )
+                })
+                .filter(|t| t.info().requirements.is_empty())
+                .collect(),
+            Faction::ArgentFlight => vec![
+                Technology::NeuralMotivator,
+                Technology::SarweenTools,
+                Technology::PlasmaScoring,
+            ],
+            Faction::CouncilKeleres => game_state
+                .players
+                .values()
+                .filter(|p| p.faction != Faction::CouncilKeleres)
+                .flat_map(|p| p.technologies.iter())
+                .filter(|t| t.info().origin == TechOrigin::Base)
+                .cloned()
+                .collect(),
+            Faction::CrimsonRebellion => techs
+                .into_iter()
+                .filter(|t| t.info().requirements.is_empty())
+                .filter(|t| {
+                    matches!(
+                        t.info().tech_type,
+                        TechType::Category(TechCategory::Warfare)
+                            | TechType::Category(TechCategory::Propulsion)
+                    )
+                })
+                .filter(|t| {
+                    matches!(
+                        t.info().origin,
+                        TechOrigin::Base | TechOrigin::Faction(Faction::CrimsonRebellion)
+                    )
+                })
+                .collect(),
+            Faction::FirmamentObsidian => techs
+                .into_iter()
+                .filter(|t| t.info().requirements.is_empty())
+                .filter(|t| {
+                    matches!(
+                        t.info().tech_type,
+                        TechType::Category(TechCategory::Biotic)
+                            | TechType::Category(TechCategory::Cybernetic)
+                    )
+                })
+                .filter(|t| {
+                    matches!(
+                        t.info().origin,
+                        TechOrigin::Base | TechOrigin::Faction(Faction::FirmamentObsidian)
+                    )
+                })
+                .collect(),
+            Faction::DeepwroughtScholarate => techs
+                .into_iter()
+                .filter(|t| {
+                    matches!(
+                        t.info().origin,
+                        TechOrigin::Base | TechOrigin::Faction(Faction::DeepwroughtScholarate)
+                    )
+                })
+                .collect(),
+            _ => return None,
+        };
+
+        // Filter out techs that aren't enabled.
+        Some(techs)
+    }
+
+    pub fn get_starting_tech_choice_count(&self) -> usize {
+        match self {
+            Faction::Winnu => 1,
+            Faction::ArgentFlight => 2,
+            Faction::CouncilKeleres => 2,
+            Faction::CrimsonRebellion => 1,
+            Faction::FirmamentObsidian => 1,
+            Faction::DeepwroughtScholarate => 2,
+            _ => 0,
+        }
     }
 }
 
