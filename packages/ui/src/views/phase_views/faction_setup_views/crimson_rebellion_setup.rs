@@ -18,7 +18,6 @@ pub fn CrimsonRebellionSetup(player_id: PlayerId, player: Arc<Player>) -> Elemen
 
     let mut tech = use_signal(|| None::<Technology>);
 
-    // "Choose one red or blue with no prerequisites."
     let available_techs = use_memo(move || {
         let mut techs = Faction::CrimsonRebellion
             .get_starting_tech_options(&gc.game_state())

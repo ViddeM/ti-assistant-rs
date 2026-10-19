@@ -18,7 +18,6 @@ pub fn LastBastionSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 
     let mut tech = use_signal(|| None::<Technology>);
 
-    // "Choose 1 blue or yellow technology with no prerequisites."
     let available_techs = use_memo(move || {
         let mut techs = Faction::LastBastion
             .get_starting_tech_options(&gc.game_state())

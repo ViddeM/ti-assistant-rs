@@ -18,7 +18,6 @@ pub fn FirmamentSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 
     let mut tech = use_signal(|| None::<Technology>);
 
-    // "Choose one green or yellow technology that has no pre-requisites."
     let available_techs = use_memo(move || {
         let mut techs = Faction::FirmamentObsidian
             .get_starting_tech_options(&gc.game_state())
