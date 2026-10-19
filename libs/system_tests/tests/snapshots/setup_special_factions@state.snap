@@ -1,0 +1,93 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: true
+    codex2: true
+    codex3: true
+    thundersEdge: false
+phase: Strategy
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Argus:
+    name: Argus
+    faction: ArgentFlight
+    color: Orange
+    planets:
+      Valk: []
+      Avar: []
+      Ylir: []
+    technologies:
+      - PlasmaScoring
+      - SarweenTools
+    relics: []
+  Kel:
+    name: Kel
+    faction: CouncilKeleres
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - NeuralMotivator
+      - PlasmaScoring
+    relics: []
+  Wendy:
+    name: Wendy
+    faction: Winnu
+    color: Pink
+    planets:
+      Winnu: []
+    technologies:
+      - NeuralMotivator
+    relics: []
+speaker: Kel
+tableOrder:
+  - Wendy
+  - Argus
+  - Kel
+turnOrder:
+  - Kel
+  - Wendy
+  - Argus
+strategyCardHolders: {}
+currentPlayer: Kel
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Argus: 0
+    Kel: 0
+    Wendy: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    BuildDefenses: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Argus: []
+  Kel: []
+  Wendy: []
+timeTrackingPaused: false
+playersPlayTime: {}
+currentTurnStartTime: "2025-01-01T12:11:00Z"
+naaluTelepathy: ~

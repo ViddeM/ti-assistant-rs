@@ -1,0 +1,220 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 AddPlayer(Dave)                          r0 Creation           -
+   5 AddPlayer(Erin)                          r0 Creation           -
+   6 AddPlayer(Finn)                          r0 Creation           -
+   7 CreationDone                             r0 Setup              -
+   8 SetupPlayerTechs(Dave)                   r0 Setup              -
+   9 SetupPlayerTechs(Erin)                   r0 Setup              -
+  10 SetupTheTribunii(Finn)                   r0 Setup              -
+  11 SetupPlayerTechs(Finn)                   r0 Setup              -
+  12 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+  13 RevealInitialObjectives                  r0 Setup              -
+  14 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol Dave Erin Finn]
+  15 PlayGiftOfPrescience(Dave)               r1 Strategy           Alice
+  16 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  17 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  18 TakeStrategyCard(Carol)                  r1 Strategy           Dave
+  19 TakeStrategyCard(Dave)                   r1 Strategy           Erin
+  20 TakeStrategyCard(Erin)                   r1 Strategy           Finn
+  21 TakeStrategyCard(Finn)                   r1 Strategy           Alice
+  22 CompleteStrategyPhase                    r1 Action             Dave       order=[Dave Erin Finn Carol Bob Alice]
+  23 FrontierCardActionBegin(Dave)            r1 FrontierCardAction Dave
+  24 FrontierCardActionCommit(Dave)           r1 EndActionTurn      Dave
+  25 EndTurn(Dave)                            r1 Action             Erin
+  26 GainRelicAction(Erin)                    r1 EndActionTurn      Erin       Erin=1
+  27 EndTurn(Erin)                            r1 Action             Finn
+  28 TacticalActionBegin(Finn)                r1 TacticalAction     Finn
+  29 TacticalActionTakePlanet(Finn)           r1 TacticalAction     Finn       custodians=Finn Finn=1
+  30 TacticalActionTakePlanet(Finn)           r1 TacticalAction     Finn
+  31 TacticalActionCommit(Finn)               r1 EndActionTurn      Finn
+  32 EndTurn(Finn)                            r1 Action             Carol
+  33 ActionCardActionBegin(Carol)             r1 ActionCardAction   Carol
+  34 ActionCardActionCommit(Carol)            r1 EndActionTurn      Carol
+  35 EndTurn(Carol)                           r1 Action             Bob
+  36 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  37 StrategicActionPrimary(Bob)              r1 StrategicAction    Bob
+  38 StrategicActionSecondary(Dave)           r1 StrategicAction    Bob
+  39 StrategicActionSecondary(Erin)           r1 StrategicAction    Bob
+  40 StrategicActionSecondary(Finn)           r1 StrategicAction    Bob
+  41 StrategicActionSecondary(Carol)          r1 StrategicAction    Bob
+  42 StrategicActionSecondary(Alice)          r1 StrategicAction    Bob
+  43 StrategicActionCommit                    r1 EndActionTurn      Bob
+  44 EndTurn(Bob)                             r1 Action             Alice
+  45 TrackTime                                r1 Action             Alice
+  46 TrackTime                                r1 Action             Alice
+  47 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  48 StrategicActionPrimary(Alice)            r1 StrategicAction    Alice      Alice=1
+  49 StrategicActionCommit                    r1 EndActionTurn      Alice
+  50 EndTurn(Alice)                           r1 Action             Dave
+  51 GiveSupportForTheThrone(Bob)             r1 Action             Dave       Finn=2
+  52 StrategicActionBegin(Dave)               r1 StrategicAction    Dave
+  53 StrategicActionCommit                    r1 EndActionTurn      Dave
+  54 EndTurn(Dave)                            r1 Action             Erin
+  55 StrategicActionBegin(Erin)               r1 StrategicAction    Erin
+  56 StrategicActionCommit                    r1 EndActionTurn      Erin
+  57 EndTurn(Erin)                            r1 Action             Finn
+  58 StrategicActionBegin(Finn)               r1 StrategicAction    Finn
+  59 StrategicActionCommit                    r1 EndActionTurn      Finn
+  60 EndTurn(Finn)                            r1 Action             Carol
+  61 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  62 StrategicActionCommit                    r1 EndActionTurn      Carol
+  63 EndTurn(Carol)                           r1 Action             Bob
+  64 PassAction(Bob)                          r1 Action             Alice
+  65 PassAction(Alice)                        r1 Action             Dave
+  66 PassAction(Dave)                         r1 Action             Erin
+  67 PassAction(Erin)                         r1 Action             Finn
+  68 PassAction(Finn)                         r1 Action             Carol
+  69 PassAction(Carol)                        r1 Status             Carol
+  70 ScorePublicObjective(Finn)               r1 Status             Carol      Finn=3
+  71 ScoreSecretObjective(Erin)               r1 Status             Carol      Erin=2
+  72 ScorePublicObjective(Dave)               r1 Status             Carol
+  73 ScorePublicObjective(Erin)               r1 Status             Carol
+  74 ScorePublicObjective(Carol)              r1 Status             Carol
+  75 ScorePublicObjective(Bob)                r1 Status             Carol
+  76 ScorePublicObjective(Alice)              r1 Status             Carol
+  77 ScoreSecretObjective(Dave)               r1 Status             Carol
+  78 ScoreSecretObjective(Finn)               r1 Status             Carol
+  79 ScoreSecretObjective(Carol)              r1 Status             Carol
+  80 ScoreSecretObjective(Bob)                r1 Status             Carol
+  81 ScoreSecretObjective(Alice)              r1 Status             Carol
+  82 RevealPublicObjective                    r1 Status             Carol
+  83 CompleteStatusPhase                      r1 Agenda             Erin       order=[Erin Bob Carol Dave Finn Alice]
+  84 RevealAgenda                             r1 Agenda             Erin
+  85 CastAgendaVote(Erin)                     r1 Agenda             Erin
+  86 CastAgendaVote(Bob)                      r1 Agenda             Erin
+  87 CastAgendaVote(Dave)                     r1 Agenda             Erin
+  88 CastAgendaVote(Finn)                     r1 Agenda             Erin
+  89 CastAgendaVote(Alice)                    r1 Agenda             Erin
+  90 ResolveAgenda                            r1 Agenda             Erin       Dave=1 Erin=3
+  91 RevealAgenda                             r1 Agenda             Erin
+  92 CastAgendaVote(Erin)                     r1 Agenda             Erin
+  93 CastAgendaVote(Bob)                      r1 Agenda             Erin
+  94 CastAgendaVote(Dave)                     r1 Agenda             Erin
+  95 CastAgendaVote(Finn)                     r1 Agenda             Erin
+  96 CastAgendaVote(Alice)                    r1 Agenda             Erin
+  97 ResolveAgenda                            r1 Agenda             Erin       Bob=1
+  98 CompleteAgendaPhase                      r2 Strategy           Alice      order=[Alice Bob Carol Dave Erin Finn]
+  99 TakeStrategyCard(Alice)                  r2 Strategy           Bob
+ 100 TakeStrategyCard(Bob)                    r2 Strategy           Carol
+ 101 TakeStrategyCard(Carol)                  r2 Strategy           Dave
+ 102 TakeStrategyCard(Dave)                   r2 Strategy           Erin
+ 103 TakeStrategyCard(Erin)                   r2 Strategy           Finn
+ 104 TakeStrategyCard(Finn)                   r2 Strategy           Alice
+ 105 CompleteStrategyPhase                    r2 Action             Alice      order=[Alice Bob Erin Finn Carol Dave]
+ 106 LeaderActionBegin(Alice)                 r2 EndActionTurn      Alice
+ 107 EndTurn(Alice)                           r2 Action             Bob
+ 108 StrategicActionBegin(Bob)                r2 StrategicAction    Bob
+ 109 StrategicActionPrimary(Bob)              r2 StrategicAction    Bob        speaker=Erin
+ 110 StrategicActionSecondary(Alice)          r2 StrategicAction    Bob
+ 111 StrategicActionSecondary(Erin)           r2 StrategicAction    Bob
+ 112 StrategicActionSecondary(Finn)           r2 StrategicAction    Bob
+ 113 StrategicActionSecondary(Carol)          r2 StrategicAction    Bob
+ 114 StrategicActionSecondary(Dave)           r2 StrategicAction    Bob
+ 115 StrategicActionCommit                    r2 EndActionTurn      Bob
+ 116 EndTurn(Bob)                             r2 Action             Erin
+ 117 FrontierCardActionBegin(Erin)            r2 FrontierCardAction Erin
+ 118 FrontierCardActionCommit(Erin)           r2 EndActionTurn      Erin
+ 119 EndTurn(Erin)                            r2 Action             Finn
+ 120 TacticalActionBegin(Finn)                r2 TacticalAction     Finn
+ 121 TacticalActionTakePlanet(Finn)           r2 TacticalAction     Finn       Erin=2 Finn=4
+ 122 TacticalActionCommit(Finn)               r2 EndActionTurn      Finn
+ 123 EndTurn(Finn)                            r2 Action             Carol
+ 124 StrategicActionBegin(Carol)              r2 StrategicAction    Carol
+ 125 StrategicActionSecondary(Bob)            r2 StrategicAction    Carol
+ 126 StrategicActionSecondary(Alice)          r2 StrategicAction    Carol
+ 127 StrategicActionSecondary(Erin)           r2 StrategicAction    Carol
+ 128 StrategicActionSecondary(Finn)           r2 StrategicAction    Carol
+ 129 StrategicActionSecondary(Dave)           r2 StrategicAction    Carol
+ 130 StrategicActionCommit                    r2 EndActionTurn      Carol
+ 131 EndTurn(Carol)                           r2 Action             Dave
+ 132 StrategicActionBegin(Dave)               r2 StrategicAction    Dave
+ 133 StrategicActionPrimary(Dave)             r2 StrategicAction    Dave       Dave=2
+ 134 StrategicActionCommit                    r2 EndActionTurn      Dave
+ 135 EndTurn(Dave)                            r2 Action             Alice
+ 136 StrategicActionBegin(Alice)              r2 StrategicAction    Alice
+ 137 StrategicActionCommit                    r2 EndActionTurn      Alice
+ 138 EndTurn(Alice)                           r2 Action             Bob
+ 139 PassAction(Bob)                          r2 Action             Erin
+ 140 StrategicActionBegin(Erin)               r2 StrategicAction    Erin
+ 141 StrategicActionCommit                    r2 EndActionTurn      Erin
+ 142 EndTurn(Erin)                            r2 Action             Finn
+ 143 StrategicActionBegin(Finn)               r2 StrategicAction    Finn
+ 144 StrategicActionCommit                    r2 EndActionTurn      Finn
+ 145 EndTurn(Finn)                            r2 Action             Carol
+ 146 PassAction(Carol)                        r2 Action             Dave
+ 147 PassAction(Dave)                         r2 Action             Alice
+ 148 PassAction(Alice)                        r2 Action             Erin
+ 149 PassAction(Erin)                         r2 Action             Finn
+ 150 PassAction(Finn)                         r2 Status             Finn
+ 151 ScorePublicObjective(Dave)               r2 Status             Finn       Dave=3
+ 152 ScoreSecretObjective(Alice)              r2 Status             Finn       Alice=2
+ 153 ScorePublicObjective(Alice)              r2 Status             Finn
+ 154 ScorePublicObjective(Bob)                r2 Status             Finn
+ 155 ScorePublicObjective(Erin)               r2 Status             Finn
+ 156 ScorePublicObjective(Finn)               r2 Status             Finn
+ 157 ScorePublicObjective(Carol)              r2 Status             Finn
+ 158 ScoreSecretObjective(Bob)                r2 Status             Finn
+ 159 ScoreSecretObjective(Erin)               r2 Status             Finn
+ 160 ScoreSecretObjective(Finn)               r2 Status             Finn
+ 161 ScoreSecretObjective(Carol)              r2 Status             Finn
+ 162 ScoreSecretObjective(Dave)               r2 Status             Finn
+ 163 RevealPublicObjective                    r2 Status             Finn
+ 164 CompleteStatusPhase                      r2 Agenda             Erin       order=[Erin Finn Alice Bob Carol Dave]
+ 165 RevealAgenda                             r2 Agenda             Erin
+ 166 CastAgendaVote(Erin)                     r2 Agenda             Erin
+ 167 CastAgendaVote(Finn)                     r2 Agenda             Erin
+ 168 CastAgendaVote(Alice)                    r2 Agenda             Erin
+ 169 CastAgendaVote(Bob)                      r2 Agenda             Erin
+ 170 CastAgendaVote(Dave)                     r2 Agenda             Erin
+ 171 ResolveAgenda                            r2 Agenda             Erin       Carol=1
+ 172 RevealAgenda                             r2 Agenda             Erin
+ 173 CastAgendaVote(Erin)                     r2 Agenda             Erin
+ 174 CastAgendaVote(Finn)                     r2 Agenda             Erin
+ 175 CastAgendaVote(Alice)                    r2 Agenda             Erin
+ 176 CastAgendaVote(Bob)                      r2 Agenda             Erin
+ 177 CastAgendaVote(Dave)                     r2 Agenda             Erin
+ 178 ResolveAgenda                            r2 Agenda             Erin
+ 179 CompleteAgendaPhase                      r3 Strategy           Erin
+ 180 TakeStrategyCard(Erin)                   r3 Strategy           Finn
+ 181 TakeStrategyCard(Finn)                   r3 Strategy           Alice
+ 182 TakeStrategyCard(Alice)                  r3 Strategy           Bob
+ 183 TakeStrategyCard(Bob)                    r3 Strategy           Carol
+ 184 TakeStrategyCard(Carol)                  r3 Strategy           Dave
+ 185 TakeStrategyCard(Dave)                   r3 Strategy           Erin
+ 186 CompleteStrategyPhase                    r3 Action             Alice      order=[Alice Erin Dave Carol Bob Finn]
+ 187 TacticalActionBegin(Alice)               r3 TacticalAction     Alice
+ 188 TacticalActionTakePlanet(Alice)          r3 TacticalAction     Alice
+ 189 TacticalActionCommit(Alice)              r3 EndActionTurn      Alice
+ 190 EndTurn(Alice)                           r3 Action             Erin
+ 191 StrategicActionBegin(Erin)               r3 StrategicAction    Erin
+ 192 StrategicActionCommit                    r3 EndActionTurn      Erin
+ 193 EndTurn(Erin)                            r3 Action             Dave
+ 194 StrategicActionBegin(Dave)               r3 StrategicAction    Dave
+ 195 StrategicActionCommit                    r3 EndActionTurn      Dave
+ 196 EndTurn(Dave)                            r3 Action             Carol
+ 197 StrategicActionBegin(Carol)              r3 StrategicAction    Carol
+ 198 StrategicActionCommit                    r3 EndActionTurn      Carol
+ 199 EndTurn(Carol)                           r3 Action             Bob
+ 200 StrategicActionBegin(Bob)                r3 StrategicAction    Bob
+ 201 StrategicActionPrimary(Bob)              r3 StrategicAction    Bob
+ 202 StrategicActionCommit                    r3 EndActionTurn      Bob
+ 203 EndTurn(Bob)                             r3 Action             Finn
+ 204 StrategicActionBegin(Finn)               r3 StrategicAction    Finn
+ 205 StrategicActionPrimary(Finn)             r3 StrategicAction    Finn       Finn=6
+ 206 StrategicActionCommit                    r3 EndActionTurn      Finn
+ 207 EndTurn(Finn)                            r3 Action             Alice
+ 208 StrategicActionBegin(Alice)              r3 StrategicAction    Alice
+ 209 StrategicActionCommit                    r3 EndActionTurn      Alice
+ 210 EndTurn(Alice)                           r3 Action             Erin
+ 211 PassAction(Erin)                         r3 Action             Dave
+ 212 PassAction(Dave)                         r3 Action             Carol
+ 213 PassAction(Carol)                        r3 Action             Bob
+ 214 PassAction(Bob)                          r3 Action             Finn
+ 215 PassAction(Finn)                         r3 Action             Alice
+ 216 PassAction(Alice)                        r3 Status             Alice

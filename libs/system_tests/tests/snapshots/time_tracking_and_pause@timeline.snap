@@ -1,0 +1,53 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+   9 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  10 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  11 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  14 CompleteStrategyPhase                    r1 Action             Alice
+  15 TrackTime                                r1 Action             Alice
+  16 TrackTime                                r1 Action             Alice
+  17 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  18 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  19 EndTurn(Alice)                           r1 Action             Bob
+  20 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  21 StrategicActionCommit                    r1 EndActionTurn      Bob
+  22 EndTurn(Bob)                             r1 Action             Carol
+  23 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  24 StrategicActionPrimary(Carol)            r1 StrategicAction    Carol
+  25 StrategicActionCommit                    r1 EndActionTurn      Carol
+  26 EndTurn(Carol)                           r1 Action             Alice
+  27 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  28 StrategicActionCommit                    r1 EndActionTurn      Alice
+  29 EndTurn(Alice)                           r1 Action             Bob
+  30 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  31 StrategicActionCommit                    r1 EndActionTurn      Bob
+  32 EndTurn(Bob)                             r1 Action             Carol
+  33 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  34 StrategicActionCommit                    r1 EndActionTurn      Carol
+  35 EndTurn(Carol)                           r1 Action             Alice
+  36 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  37 StrategicActionCommit                    r1 EndActionTurn      Alice
+  38 EndTurn(Alice)                           r1 Action             Bob
+  39 PassAction(Bob)                          r1 Action             Carol
+  40 PassAction(Carol)                        r1 Action             Alice
+  41 PassAction(Alice)                        r1 Status             Alice
+  42 ScorePublicObjective(Alice)              r1 Status             Alice
+  43 ScorePublicObjective(Bob)                r1 Status             Alice
+  44 ScorePublicObjective(Carol)              r1 Status             Alice
+  45 ScoreSecretObjective(Alice)              r1 Status             Alice
+  46 ScoreSecretObjective(Bob)                r1 Status             Alice
+  47 ScoreSecretObjective(Carol)              r1 Status             Alice
+  48 RevealPublicObjective                    r1 Status             Alice
+  49 CompleteStatusPhase                      r2 Strategy           Alice

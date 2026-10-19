@@ -1,0 +1,475 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 5
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Strategy
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+      Lodor: []
+      Quann: []
+    technologies:
+      - AntimassDeflectors
+      - DacxiveAnimators
+      - HyperMetabolism
+      - NeuralMotivator
+      - SarweenTools
+    relics: []
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+      MecatolRex: []
+      Centauri: []
+      Gral: []
+    technologies:
+      - AntimassDeflectors
+      - GravityDrive
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+      - GravityDrive
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders: {}
+currentPlayer: Alice
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 6
+    Bob: 7
+    Carol: 2
+  revealedObjectives:
+    CornerTheMarket:
+      - Alice
+      - Bob
+      - Carol
+    DevelopWeaponry:
+      - Alice
+    ErectAMonument:
+      - Alice
+      - Carol
+    ExpandBorders:
+      - Alice
+      - Bob
+    SwayTheCouncil:
+      - Alice
+      - Bob
+    CentralizeGalacticTrade: []
+  secretObjectives:
+    Alice:
+      - ThreatenEnemies
+    Bob:
+      - BecomeTheGatekeeper
+    Carol:
+      - MonopolizeProduction
+  supportForTheThrone:
+    Carol: Alice
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial:
+    Bob: 1
+  agendaScores:
+    - electableAgendaKind: Mutiny
+      value:
+        playersThatVotedFor:
+          - Alice
+          - Carol
+        forWon: false
+    - electableAgendaKind: SeedOfAnEmpire
+      value:
+        playersElected:
+          - Bob
+  custodians: Bob
+agenda: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: ConventionsOfWar
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Carol:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 4
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+  - round: 1
+    vote:
+      agenda: Mutiny
+      kind: Directive
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        - votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+  - round: 2
+    vote:
+      agenda: SeedOfAnEmpire
+      kind: Directive
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Carol:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 6
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+  - round: 2
+    vote:
+      agenda: MinisterOfWar
+      kind: Law
+      elect: Player
+      candidates:
+        - electKind: Player
+          value: Alice
+        - electKind: Player
+          value: Bob
+        - electKind: Player
+          value: Carol
+      playerVotes:
+        Alice:
+          votes: 2
+          outcome:
+            electKind: Player
+            value: Alice
+        Bob:
+          votes: 3
+          outcome:
+            electKind: Player
+            value: Bob
+        Carol:
+          votes: 2
+          outcome:
+            electKind: Player
+            value: Alice
+      outcomesByVotes:
+        - votes: 4
+          outcome:
+            electKind: Player
+            value: Alice
+        - votes: 3
+          outcome:
+            electKind: Player
+            value: Bob
+      expectedOutcome:
+        electKind: Player
+        value: Alice
+    outcome:
+      electKind: Player
+      value: Alice
+  - round: 3
+    vote:
+      agenda: SharedResearch
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+  - round: 3
+    vote:
+      agenda: IncentiveProgram
+      kind: Directive
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+  - round: 4
+    vote:
+      agenda: HomelandDefenseAct
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Carol:
+          votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 9
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+  - round: 4
+    vote:
+      agenda: PublicExecution
+      kind: Directive
+      elect: Player
+      candidates:
+        - electKind: Player
+          value: Alice
+        - electKind: Player
+          value: Bob
+        - electKind: Player
+          value: Carol
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Carol
+        Bob:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Carol
+        Carol:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Carol
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: Player
+            value: Carol
+      expectedOutcome:
+        electKind: Player
+        value: Carol
+    outcome:
+      electKind: Player
+      value: Carol
+laws:
+  ConventionsOfWar:
+    electKind: ForOrAgainst
+    value: For
+  HomelandDefenseAct:
+    electKind: ForOrAgainst
+    value: For
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: DevelopWeaponry
+    Bob: ExpandBorders
+    Carol: ~
+  scoredSecretObjectives:
+    Alice: ThreatenEnemies
+    Bob: ~
+    Carol: ~
+  revealedObjective: CentralizeGalacticTrade
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice:
+    - JaceX4thAirLegion
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+    - XxekirGrom
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 3060
+    nanos: 0
+  Bob:
+    secs: 4620
+    nanos: 0
+  Carol:
+    secs: 4260
+    nanos: 0
+currentTurnStartTime: "2025-01-01T15:58:00Z"
+naaluTelepathy: ~

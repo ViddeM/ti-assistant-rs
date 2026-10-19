@@ -1,0 +1,24 @@
+[package]
+name = "ti_helper_system_tests"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+ti_helper_game_data = { workspace = true }
+ti_helper_game_logic = { workspace = true }
+anyhow = "1"
+chrono = { version = "0.4.31", features = ["serde"] }
+insta = { version = "1", features = ["yaml"] }
+serde = "1"
+serde_json = "1"
+strum = { workspace = true }
+
+# Only used by the `seed-db` feature.
+ti_helper_db = { workspace = true, optional = true }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"], optional = true }
+dotenvy = { version = "0.15.7", optional = true }
+
+[features]
+# Enables the (ignored) `seed_database` test, which writes all scenarios into `DATABASE_URL`.
+seed-db = ["dep:ti_helper_db", "dep:tokio", "dep:dotenvy"]
