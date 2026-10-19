@@ -50,7 +50,7 @@ Set through env vars or `.env`:
 cargo test --workspace
 ```
 
-The game logic is covered by scenarios in `libs/system_tests/tests/scenarios/`. A scenario is a function that plays a game through a small DSL and asserts on the parts it cares about:
+The game logic is covered by scenarios in `libs/system_tests/tests/scenarios/` (see [its README](libs/system_tests/README.md) for how it works and how to write scenarios). A scenario is a function that plays a game through a small DSL and asserts on the parts it cares about:
 
 ```rust
 pub fn action_strategic_politics_and_imperial() -> TestGame {
