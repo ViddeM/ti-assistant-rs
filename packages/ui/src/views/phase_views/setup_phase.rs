@@ -12,7 +12,7 @@ use crate::views::phase_views::faction_setup_views::{
     argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
     crimson_rebellion_setup::CrimsonRebellionSetup,
     deepwrought_scholarate_setup::DeepwroughtScholarateSetup, firmament_setup::FirmamentSetup,
-    winnu_setup::WinnuSetup,
+    last_bastion::LastBastionSetup, winnu_setup::WinnuSetup,
 };
 use crate::{
     components::{button::Button, dropdown::ObjectiveDropdown, faction_icon::FactionIcon},
@@ -166,6 +166,11 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         Faction::DeepwroughtScholarate => {
             rsx! {
                 DeepwroughtScholarateSetup { player_id }
+            }
+        }
+        Faction::LastBastion => {
+            rsx! {
+                LastBastionSetup { player_id, player }
             }
         }
         f if f.expansion() == Expansion::ThundersEdge => {

@@ -257,6 +257,23 @@ impl Faction {
                     )
                 })
                 .collect(),
+            Faction::LastBastion => techs
+                .into_iter()
+                .filter(|t| t.info().requirements.is_empty())
+                .filter(|t| {
+                    matches!(
+                        t.info().tech_type,
+                        TechType::Category(TechCategory::Cybernetic)
+                            | TechType::Category(TechCategory::Propulsion)
+                    )
+                })
+                .filter(|t| {
+                    matches!(
+                        t.info().origin,
+                        TechOrigin::Base | TechOrigin::Faction(Faction::LastBastion)
+                    )
+                })
+                .collect(),
             Faction::FirmamentObsidian => techs
                 .into_iter()
                 .filter(|t| t.info().requirements.is_empty())
@@ -296,6 +313,7 @@ impl Faction {
             Faction::ArgentFlight => 2,
             Faction::CouncilKeleres => 2,
             Faction::CrimsonRebellion => 1,
+            Faction::LastBastion => 1,
             Faction::FirmamentObsidian => 1,
             Faction::DeepwroughtScholarate => 2,
             _ => 0,
