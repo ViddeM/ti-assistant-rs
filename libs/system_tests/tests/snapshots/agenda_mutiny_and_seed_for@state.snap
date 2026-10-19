@@ -1,0 +1,193 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Agenda
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: NekroVirus
+    color: Green
+    planets:
+      MordaiII: []
+    technologies:
+      - DacxiveAnimators
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Bob
+  - Carol
+  - Alice
+strategyCardHolders: {}
+currentPlayer: Bob
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 3
+    Bob: 3
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ExpandBorders: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints:
+    Bob: 2
+  imperial: {}
+  agendaScores:
+    - electableAgendaKind: Mutiny
+      value:
+        playersThatVotedFor:
+          - Alice
+        forWon: true
+    - electableAgendaKind: SeedOfAnEmpire
+      value:
+        playersElected:
+          - Alice
+          - Bob
+  custodians: Alice
+agenda:
+  round: Completed
+  vote: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: Mutiny
+      kind: Directive
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        - votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+  - round: 1
+    vote:
+      agenda: SeedOfAnEmpire
+      kind: Directive
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+laws: {}
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  scoredSecretObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  revealedObjective: ExpandBorders
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 660
+    nanos: 0
+  Bob:
+    secs: 540
+    nanos: 0
+  Carol:
+    secs: 600
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:45:00Z"
+naaluTelepathy: ~

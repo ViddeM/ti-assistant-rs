@@ -1,0 +1,141 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Action
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Politics: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+currentPlayer: Alice
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: MinisterOfWar
+      kind: Law
+      elect: Player
+      candidates:
+        - electKind: Player
+          value: Alice
+        - electKind: Player
+          value: Bob
+        - electKind: Player
+          value: Carol
+      playerVotes:
+        Bob:
+          votes: 2
+          outcome:
+            electKind: Player
+            value: Bob
+      outcomesByVotes:
+        - votes: 2
+          outcome:
+            electKind: Player
+            value: Bob
+      expectedOutcome:
+        electKind: Player
+        value: Bob
+    outcome:
+      electKind: Player
+      value: Bob
+laws:
+  MinisterOfWar:
+    electKind: Player
+    value: Bob
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 180
+    nanos: 0
+  Bob:
+    secs: 120
+    nanos: 0
+  Carol:
+    secs: 120
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:14:00Z"
+naaluTelepathy: ~

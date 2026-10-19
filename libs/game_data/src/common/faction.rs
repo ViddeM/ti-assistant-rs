@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{BTreeSet, HashSet};
 
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
@@ -144,7 +144,7 @@ impl Faction {
     }
 
     /// Returns a set of the technologies the faction starts with.
-    pub fn get_starting_techs(&self, expansions: &Expansions) -> HashSet<Technology> {
+    pub fn get_starting_techs(&self, expansions: &Expansions) -> BTreeSet<Technology> {
         match self {
             Faction::Arborec => vec![
                 Technology::MagenDefenceGrid,

@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap};
 
 use anyhow::ensure;
 use serde::{Deserialize, Serialize};
@@ -33,11 +33,11 @@ pub struct Player {
     /// Which color the player has.
     pub color: Color,
     /// Which planets the player controls and their attachments.
-    pub planets: HashMap<Planet, HashSet<PlanetAttachment>>,
+    pub planets: HashMap<Planet, BTreeSet<PlanetAttachment>>,
     /// Which technologies the player has.
-    pub technologies: HashSet<Technology>,
+    pub technologies: BTreeSet<Technology>,
     /// Which relics the player currently owns.
-    pub relics: HashSet<Relic>,
+    pub relics: BTreeSet<Relic>,
 }
 
 impl NewPlayer {
@@ -47,7 +47,7 @@ impl NewPlayer {
             .faction
             .get_starting_planets()
             .into_iter()
-            .map(|p| (p, HashSet::new()))
+            .map(|p| (p, BTreeSet::new()))
             .collect();
 
         let techs = self.faction.get_starting_techs(expansions);
@@ -57,7 +57,7 @@ impl NewPlayer {
             color: self.color,
             planets,
             technologies: techs,
-            relics: HashSet::new(),
+            relics: BTreeSet::new(),
         }
     }
 }

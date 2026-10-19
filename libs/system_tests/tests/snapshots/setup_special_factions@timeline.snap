@@ -1,0 +1,15 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Wendy)                         r0 Creation           -
+   2 AddPlayer(Argus)                         r0 Creation           -
+   3 AddPlayer(Kel)                           r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupPlayerTechs(Wendy)                  r0 Setup              -
+   6 SetupPlayerTechs(Argus)                  r0 Setup              -
+   7 SetupSpeaker(Kel)                        r0 Setup              -          speaker=Kel
+   8 RevealInitialObjectives                  r0 Setup              -
+   9 SetupTheTribunii(Kel)                    r0 Setup              -
+  10 SetupPlayerTechs(Kel)                    r0 Setup              -
+  11 StartGame                                r1 Strategy           Kel        order=[Kel Wendy Argus]

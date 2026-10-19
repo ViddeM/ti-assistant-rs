@@ -1,0 +1,115 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: true
+    codex2: true
+    codex3: true
+    thundersEdge: false
+phase: Action
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets:
+    - Lodor
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+      Centauri:
+        - NanoForge
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+      Primor: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics:
+      - ShardOfTheThrone
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Politics: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+currentPlayer: Bob
+spentStrategyCards:
+  - Diplomacy
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 1
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: Bob
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 780
+    nanos: 0
+  Bob:
+    secs: 540
+    nanos: 0
+  Carol:
+    secs: 420
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:36:00Z"
+naaluTelepathy: ~

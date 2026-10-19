@@ -1,0 +1,119 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Agenda
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - GravityDrive
+      - NeuralMotivator
+    relics: []
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+      Centauri:
+        - TombOfEmphidia
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Bob
+  - Carol
+  - Alice
+strategyCardHolders: {}
+currentPlayer: Bob
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 1
+    Bob: 1
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ExpandBorders: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: Bob
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: Alice
+agenda:
+  round: Round1
+  vote: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  scoredSecretObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  revealedObjective: ExpandBorders
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 1080
+    nanos: 0
+  Bob:
+    secs: 660
+    nanos: 0
+  Carol:
+    secs: 600
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:54:00Z"
+naaluTelepathy: ~

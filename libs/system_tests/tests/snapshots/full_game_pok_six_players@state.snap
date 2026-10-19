@@ -1,0 +1,407 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 3
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: true
+    codex2: true
+    codex3: true
+    thundersEdge: false
+phase: Status
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: NaaluCollective
+    color: Pink
+    planets:
+      Druaa: []
+      Maaluuk: []
+      Lodor: []
+    technologies:
+      - NeuralMotivator
+      - SarweenTools
+    relics: []
+  Bob:
+    name: Bob
+    faction: UniversitiesOfJolNar
+    color: Orange
+    planets:
+      Jol: []
+      Nar: []
+    technologies:
+      - AntimassDeflectors
+      - GravityDrive
+      - HyperMetabolism
+      - LightWaveDeflector
+      - NeuralMotivator
+      - PlasmaScoring
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: NekroVirus
+    color: Green
+    planets:
+      MordaiII: []
+    technologies:
+      - DacxiveAnimators
+      - GravityDrive
+    relics: []
+  Dave:
+    name: Dave
+    faction: Winnu
+    color: Red
+    planets:
+      Winnu: []
+    technologies:
+      - GravityDrive
+      - NeuralMotivator
+      - SarweenTools
+    relics: []
+  Erin:
+    name: Erin
+    faction: ArgentFlight
+    color: Yellow
+    planets:
+      Valk: []
+      Avar: []
+      Ylir: []
+    technologies:
+      - NeuralMotivator
+      - PlasmaScoring
+    relics: []
+  Finn:
+    name: Finn
+    faction: CouncilKeleres
+    color: Black
+    planets:
+      MollPrimus: []
+      MecatolRex: []
+      Primor: []
+      Mirage:
+        - ParadiseWorld
+    technologies:
+      - AntimassDeflectors
+      - DacxiveAnimators
+    relics:
+      - ShardOfTheThrone
+speaker: Erin
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+  - Dave
+  - Erin
+  - Finn
+turnOrder:
+  - Alice
+  - Erin
+  - Dave
+  - Carol
+  - Bob
+  - Finn
+strategyCardHolders:
+  Leadership: Erin
+  Diplomacy: Alice
+  Construction: Dave
+  Warfare: Carol
+  Technology: Bob
+  Imperial: Finn
+currentPlayer: Alice
+spentStrategyCards:
+  - Leadership
+  - Diplomacy
+  - Construction
+  - Warfare
+  - Technology
+  - Imperial
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 2
+    Bob: 1
+    Carol: 1
+    Dave: 3
+    Erin: 2
+    Finn: 6
+  revealedObjectives:
+    CornerTheMarket:
+      - Dave
+      - Finn
+    DevelopWeaponry:
+      - Alice
+    ErectAMonument:
+      - Dave
+      - Finn
+    SwayTheCouncil: []
+  secretObjectives:
+    Alice:
+      - ThreatenEnemies
+    Erin:
+      - BecomeTheGatekeeper
+  supportForTheThrone:
+    Bob: Finn
+  shardOfTheThrone: Finn
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial:
+    Finn: 1
+  agendaScores:
+    - electableAgendaKind: Mutiny
+      value:
+        playersThatVotedFor:
+          - Dave
+          - Erin
+        forWon: true
+    - electableAgendaKind: PoliticalCensure
+      value:
+        player: Bob
+    - electableAgendaKind: SeedOfAnEmpire
+      value:
+        playersElected:
+          - Carol
+  custodians: Finn
+agenda: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: Mutiny
+      kind: Directive
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice: ~
+        Bob:
+          votes: 2
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Dave:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Erin:
+          votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Finn:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 4
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+  - round: 1
+    vote:
+      agenda: PoliticalCensure
+      kind: Law
+      elect: Player
+      candidates:
+        - electKind: Player
+          value: Alice
+        - electKind: Player
+          value: Bob
+        - electKind: Player
+          value: Carol
+        - electKind: Player
+          value: Dave
+        - electKind: Player
+          value: Erin
+        - electKind: Player
+          value: Finn
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+        Bob:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+        Dave:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+        Erin:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+        Finn:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+      outcomesByVotes:
+        - votes: 5
+          outcome:
+            electKind: Player
+            value: Bob
+      expectedOutcome:
+        electKind: Player
+        value: Bob
+    outcome:
+      electKind: Player
+      value: Bob
+  - round: 2
+    vote:
+      agenda: SeedOfAnEmpire
+      kind: Directive
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Dave:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Erin:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Finn:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 5
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+  - round: 2
+    vote:
+      agenda: JudicialAbolishment
+      kind: Directive
+      elect: Law
+      candidates:
+        - electKind: Law
+          value: PoliticalCensure
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: Law
+            value: PoliticalCensure
+        Bob:
+          votes: 1
+          outcome:
+            electKind: Law
+            value: PoliticalCensure
+        Dave:
+          votes: 1
+          outcome:
+            electKind: Law
+            value: PoliticalCensure
+        Erin:
+          votes: 1
+          outcome:
+            electKind: Law
+            value: PoliticalCensure
+        Finn:
+          votes: 1
+          outcome:
+            electKind: Law
+            value: PoliticalCensure
+      outcomesByVotes:
+        - votes: 5
+          outcome:
+            electKind: Law
+            value: PoliticalCensure
+      expectedOutcome:
+        electKind: Law
+        value: PoliticalCensure
+    outcome:
+      electKind: Law
+      value: PoliticalCensure
+laws:
+  PoliticalCensure:
+    electKind: Player
+    value: Bob
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives: {}
+  scoredSecretObjectives: {}
+  revealedObjective: ~
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice:
+    - ZeuCxIII
+  Bob: []
+  Carol: []
+  Dave: []
+  Erin: []
+  Finn: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 1560
+    nanos: 0
+  Bob:
+    secs: 1680
+    nanos: 0
+  Carol:
+    secs: 1380
+    nanos: 0
+  Dave:
+    secs: 1200
+    nanos: 0
+  Erin:
+    secs: 3060
+    nanos: 0
+  Finn:
+    secs: 1500
+    nanos: 0
+currentTurnStartTime: ~
+naaluTelepathy: Alice

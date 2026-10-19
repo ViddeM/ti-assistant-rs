@@ -1,0 +1,115 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Action
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - GravityDrive
+      - NeuralMotivator
+      - PlasmaScoring
+    relics: []
+  Bob:
+    name: Bob
+    faction: UniversitiesOfJolNar
+    color: Orange
+    planets:
+      Jol: []
+      Nar: []
+    technologies:
+      - AntimassDeflectors
+      - DacxiveAnimators
+      - GravityDrive
+      - NeuralMotivator
+      - PlasmaScoring
+      - SarweenTools
+    relics: []
+  Carol:
+    name: Carol
+    faction: NekroVirus
+    color: Green
+    planets:
+      MordaiII: []
+    technologies:
+      - DacxiveAnimators
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Bob
+  - Carol
+  - Alice
+strategyCardHolders:
+  Leadership: Bob
+  Diplomacy: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+  Technology: Alice
+currentPlayer: Bob
+spentStrategyCards:
+  - Leadership
+  - Diplomacy
+  - Technology
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 540
+    nanos: 0
+  Bob:
+    secs: 300
+    nanos: 0
+  Carol:
+    secs: 300
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:26:00Z"
+naaluTelepathy: ~

@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{BTreeSet, HashMap},
     sync::Arc,
 };
 
@@ -27,10 +27,10 @@ pub struct Score {
     pub player_points: HashMap<PlayerId, i8>,
 
     /// Map from revealed objectives to the players that have scored them.
-    pub revealed_objectives: HashMap<Objective, HashSet<PlayerId>>,
+    pub revealed_objectives: HashMap<Objective, BTreeSet<PlayerId>>,
 
     /// Completed secret objectives, by player.
-    pub secret_objectives: HashMap<PlayerId, HashSet<SecretObjective>>,
+    pub secret_objectives: HashMap<PlayerId, BTreeSet<SecretObjective>>,
 
     /// Map from giver to receiver of Support for the Throne.
     pub support_for_the_throne: HashMap<PlayerId, PlayerId>,
@@ -161,8 +161,8 @@ impl Score {
                     player: player.clone(),
                 }
             }
-            (Agenda::Mutiny, AgendaElect::ForOrAgainst(for_or_against)) => ScorableAgenda::Mutiny {
-                players_that_voted_for: agenda_record
+            (Agenda::Mutiny, AgendaElect::ForOrAgainst(for_or_against)) => {
+                let mut players_that_voted_for: Vec<PlayerId> = agenda_record
                     .vote
                     .player_votes
                     .iter()
@@ -171,11 +171,15 @@ impl Score {
                         matches!(outcome, Some(AgendaElect::ForOrAgainst(ForOrAgainst::For)))
                     })
                     .map(|(p, _)| p.clone())
-                    .collect(),
-                for_won: for_or_against == &ForOrAgainst::For,
-            },
+                    .collect();
+                players_that_voted_for.sort();
+                ScorableAgenda::Mutiny {
+                    players_that_voted_for,
+                    for_won: for_or_against == &ForOrAgainst::For,
+                }
+            }
             (Agenda::SeedOfAnEmpire, AgendaElect::ForOrAgainst(for_or_against)) => {
-                let (players, _) = match for_or_against {
+                let (mut players, _) = match for_or_against {
                     ForOrAgainst::For => {
                         self.player_points.iter().map(|(p, s)| (p.clone(), s)).fold(
                             (vec![], i8::MIN),
@@ -207,8 +211,9 @@ impl Score {
                         )
                     }
                 };
+                players.sort();
                 ScorableAgenda::SeedOfAnEmpire {
-                    players_elected: players.clone(),
+                    players_elected: players,
                 }
             }
             (Agenda::PoliticalCensure, AgendaElect::Player(player)) => {

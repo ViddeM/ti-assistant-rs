@@ -1,0 +1,29 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 SetCustodians(Alice)                     r1 Strategy           Alice      custodians=Alice Alice=1
+   9 GiveSupportForTheThrone(Bob)             r1 Strategy           Alice      Alice=2
+  10 GiveSupportForTheThrone(Carol)           r1 Strategy           Alice      Alice=3
+  11 GiveSupportForTheThrone(Bob)             r1 Strategy           Alice      Alice=2 Carol=1
+  12 AddExtraPoints(Carol)                    r1 Strategy           Alice      Carol=3
+  13 AddExtraPoints(Carol)                    r1 Strategy           Alice      Carol=2
+  14 AddImperial(Bob)                         r1 Strategy           Alice      Bob=1
+  15 ScoreExtraPublicObjective(Alice)         r1 Strategy           Alice      Alice=3
+  16 RevealExtraPublicObjective               r1 Strategy           Alice
+  17 ScoreExtraPublicObjective(Bob)           r1 Strategy           Alice      Bob=2
+  18 UnscoreObjective(Alice)                  r1 Strategy           Alice      Alice=2
+  19 ScoreExtraSecretObjective(Bob)           r1 Strategy           Alice      Bob=3
+  20 ScoreExtraSecretObjective(Carol)         r1 Strategy           Alice      Carol=3
+  21 UnscoreSecretObjective(Carol)            r1 Strategy           Alice      Carol=2
+  22 SetShardForTheThroneOwner(Carol)         r1 Strategy           Alice      Carol=3
+  23 SetShardForTheThroneOwner(Bob)           r1 Strategy           Alice      Bob=4 Carol=2
+  24 SetCrownOfEmphidiaOwner(Bob)             r1 Strategy           Alice      Bob=5
+  25 SetCrownOfEmphidiaOwner                  r1 Strategy           Alice      Bob=4

@@ -141,6 +141,7 @@ mod tests {
     use crate::MiltyImport;
 
     #[tokio::test]
+    #[ignore = "hits the live milty.shenanigans.be site"]
     async fn test_import_game() {
         let resp = MiltyData::import_from_milty(
             "693b2c674a032",

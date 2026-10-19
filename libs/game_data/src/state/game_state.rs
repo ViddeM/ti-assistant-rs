@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{BTreeSet, HashMap},
     time::Duration,
 };
 
@@ -73,10 +73,10 @@ pub struct GameState {
     pub current_player: Option<PlayerId>,
 
     /// Which strategy cards have been spent this action phase.
-    pub spent_strategy_cards: HashSet<StrategyCard>,
+    pub spent_strategy_cards: BTreeSet<StrategyCard>,
 
     /// Which players have passed this phase.
-    pub passed_players: HashSet<PlayerId>,
+    pub passed_players: BTreeSet<PlayerId>,
 
     /// Tracks progress of the current action (if any) that is being taken.
     pub action_progress: Option<ActionPhaseProgress>,

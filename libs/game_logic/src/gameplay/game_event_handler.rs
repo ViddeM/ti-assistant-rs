@@ -1,4 +1,7 @@
-use std::{borrow::BorrowMut, collections::HashSet};
+use std::{
+    borrow::BorrowMut,
+    collections::{BTreeSet, HashSet},
+};
 
 use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
@@ -86,16 +89,15 @@ fn try_update_game_state(
                 stellar_converter_destroyed_planets: vec![],
             };
 
+            // Sorted so that the outcome (e.g. color ties) doesn't depend on HashMap order.
             let mut players: Vec<&MiltyPlayer> = milty_data.players.values().collect();
-            players.sort_by_key(|p| p.order);
-            game_state.table_order = players.into_iter().map(|p| p.name.clone().into()).collect();
+            players.sort_by(|a, b| a.order.cmp(&b.order).then_with(|| a.name.cmp(&b.name)));
+            game_state.table_order = players.iter().map(|p| p.name.clone().into()).collect();
 
-            let colors_map =
-                assign_colors(milty_data.players.values().map(|p| p.faction).collect())
-                    .context("Failed to assign colors to factions")?;
-            let new_players = milty_data
-                .players
-                .values()
+            let colors_map = assign_colors(players.iter().map(|p| p.faction).collect())
+                .context("Failed to assign colors to factions")?;
+            let new_players = players
+                .iter()
                 .map(|p| {
                     Ok(NewPlayer {
                         name: p.name.clone(),
@@ -236,7 +238,7 @@ fn try_update_game_state(
 
             // TODO: Also give the player the correct agent
             for planet in faction.get_starting_planets().into_iter() {
-                player.planets.insert(planet, HashSet::new());
+                player.planets.insert(planet, BTreeSet::new());
             }
         }
         Event::SetupPlayerTechs {
@@ -377,10 +379,10 @@ fn try_update_game_state(
             let score = game_state.score.borrow_mut();
             score
                 .revealed_objectives
-                .insert(first_objective, HashSet::new());
+                .insert(first_objective, BTreeSet::new());
             score
                 .revealed_objectives
-                .insert(second_objective, HashSet::new());
+                .insert(second_objective, BTreeSet::new());
         }
         Event::StartGame => {
             game_state.assert_phase(Phase::Setup)?;
@@ -488,7 +490,7 @@ fn try_update_game_state(
                     }
                     None
                 })
-                .unwrap_or((None, HashSet::new()));
+                .unwrap_or((None, BTreeSet::new()));
 
             ensure!(
                 planet != Planet::Mirage || current_owner.is_some(),
@@ -1013,7 +1015,7 @@ fn try_update_game_state(
                         let player = game_state.get_current_player()?;
 
                         if let Some(attachment) = attachment {
-                            let mut attachments = HashSet::new();
+                            let mut attachments = BTreeSet::new();
                             attachments.insert(attachment);
                             player.planets.insert(Planet::Mirage, attachments);
                         }
@@ -1338,7 +1340,7 @@ fn try_update_game_state(
             game_state
                 .score
                 .revealed_objectives
-                .insert(pub_obj, HashSet::new());
+                .insert(pub_obj, BTreeSet::new());
         }
         Event::CompleteStatusPhase => {
             game_state.assert_phase(Phase::Status)?;
@@ -1599,7 +1601,7 @@ fn try_update_game_state(
             game_state
                 .score
                 .revealed_objectives
-                .insert(pub_obj, HashSet::new());
+                .insert(pub_obj, BTreeSet::new());
         }
         Event::SetShardForTheThroneOwner { player } => {
             if let Some(p) = player.as_ref() {
@@ -1699,7 +1701,7 @@ fn try_update_game_state(
                     }
                     None
                 })
-                .unwrap_or((false, HashSet::new()));
+                .unwrap_or((false, BTreeSet::new()));
 
             if let Some(p) = &player {
                 // Give the planet to its new owner.

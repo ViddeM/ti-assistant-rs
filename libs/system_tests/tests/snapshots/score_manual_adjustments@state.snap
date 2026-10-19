@@ -1,0 +1,104 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: false
+phase: Strategy
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics:
+      - ShardOfTheThrone
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders: {}
+currentPlayer: Alice
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 2
+    Bob: 4
+    Carol: 2
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ErectAMonument:
+      - Bob
+  secretObjectives:
+    Bob:
+      - BecomeTheGatekeeper
+    Carol: []
+  supportForTheThrone:
+    Bob: Carol
+    Carol: Alice
+  shardOfTheThrone: Bob
+  crownOfEmphidia: ~
+  extraPoints:
+    Carol: 1
+  imperial:
+    Bob: 1
+  agendaScores: []
+  custodians: Alice
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime: {}
+currentTurnStartTime: "2025-01-01T12:07:00Z"
+naaluTelepathy: ~

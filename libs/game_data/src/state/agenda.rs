@@ -1,6 +1,6 @@
 use std::{
     cmp::Reverse,
-    collections::{BTreeMap, HashMap, HashSet},
+    collections::{BTreeMap, BTreeSet, HashMap},
 };
 
 use anyhow::{bail, ensure};
@@ -137,17 +137,21 @@ impl VoteState {
                 AgendaElect::ForOrAgainst(ForOrAgainst::For),
                 AgendaElect::ForOrAgainst(ForOrAgainst::Against),
             ],
-            AgendaElectKind::Player => game
-                .players
-                .keys()
-                .cloned()
-                .map(AgendaElect::Player)
-                .collect(),
+            AgendaElectKind::Player => {
+                let mut players: Vec<_> = game
+                    .players
+                    .keys()
+                    .cloned()
+                    .map(AgendaElect::Player)
+                    .collect();
+                players.sort();
+                players
+            }
             AgendaElectKind::StrategyCard => StrategyCard::iter()
                 .map(AgendaElect::StrategyCard)
                 .collect(),
             AgendaElectKind::SecretObjective => {
-                let eligible_objectives: Vec<_> = game
+                let mut eligible_objectives: Vec<_> = game
                     .score
                     .secret_objectives
                     .values()
@@ -155,6 +159,7 @@ impl VoteState {
                     .copied()
                     .map(AgendaElect::SecretObjective)
                     .collect();
+                eligible_objectives.sort();
 
                 if eligible_objectives.is_empty() {
                     bail!("no scored secret objectives");
@@ -168,7 +173,11 @@ impl VoteState {
             AgendaElectKind::HazardousPlanet => planets(|t| t.contains(&PlanetTrait::Hazardous))?,
             AgendaElectKind::IndustrialPlanet => planets(|t| t.contains(&PlanetTrait::Industrial))?,
 
-            AgendaElectKind::Law => game.laws.keys().map(|l| AgendaElect::Law(*l)).collect(),
+            AgendaElectKind::Law => {
+                let mut laws: Vec<_> = game.laws.keys().map(|l| AgendaElect::Law(*l)).collect();
+                laws.sort();
+                laws
+            }
         };
 
         ensure!(
@@ -241,7 +250,10 @@ impl Vote {
     }
 }
 
-fn get_planet_traits(planet: &Planet, attachments: &HashSet<PlanetAttachment>) -> Vec<PlanetTrait> {
+fn get_planet_traits(
+    planet: &Planet,
+    attachments: &BTreeSet<PlanetAttachment>,
+) -> Vec<PlanetTrait> {
     let mut ts = vec![];
 
     for t in planet.info().planet_traits.into_iter() {

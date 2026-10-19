@@ -1015,14 +1015,7 @@ impl Planet {
                 0,
                 Expansion::ThundersEdge
             ),
-            Planet::Tallin => planet!(
-                "Tallin Hollow",
-                vec![],
-                vec![],
-                1,
-                2,
-                Expansion::ThundersEdge
-            ),
+            Planet::Tallin => planet!("Tallin", vec![], vec![], 1, 2, Expansion::ThundersEdge),
             Planet::TallinHollow => planet!(
                 "Tallin Hollow",
                 vec![],

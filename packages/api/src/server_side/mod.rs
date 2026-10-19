@@ -1,5 +1,4 @@
 pub mod gc;
-pub mod insert_demo_games;
 pub mod lobby;
 pub mod opts;
 pub mod state;
@@ -34,14 +33,6 @@ pub async fn setup() -> anyhow::Result<Arc<State>> {
                 .await
                 .context("failed to set up database pool")?,
         )
-    }
-
-    if !opt.demo_games_skip_db {
-        let Some(db_pool) = &db_pool else {
-            anyhow::bail!("DEMO_GAMES_SKIP_DB is not set but no DB has been configured")
-        };
-
-        insert_demo_games::insert_demo_games(&opt, db_pool).await?;
     }
 
     if cfg!(debug_assertions) {
