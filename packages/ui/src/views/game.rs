@@ -87,23 +87,25 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
     let mut game_options = use_signal(|| None);
 
     use_future(move || async move {
-        while let Ok(message) = socket.recv().await {
-            match message {
-                WsMessageOut::GameOptions(go) => {
-                    // tracing::info!("Game options message: {go:?}");
-                    game_options.set(Some(go));
-                }
-                WsMessageOut::GameState(gs) => {
-                    // tracing::info!("Game state message: {gs:?}");
-                    game_state.set(Some(gs));
-                }
-                WsMessageOut::HandleEventError(err) => {
-                    ws_error.set(Some(err));
-                }
-                WsMessageOut::JoinedGame(game_id) => tracing::info!("Joined game {game_id}"),
-                WsMessageOut::NotFound(game_id) => {
-                    ws_error.set(Some(format!("Game {game_id} not found")));
-                    not_found.set(true);
+        loop {
+            while let Ok(message) = socket.recv().await {
+                match message {
+                    WsMessageOut::GameOptions(go) => {
+                        // tracing::info!("Game options message: {go:?}");
+                        game_options.set(Some(go));
+                    }
+                    WsMessageOut::GameState(gs) => {
+                        // tracing::info!("Game state message: {gs:?}");
+                        game_state.set(Some(gs));
+                    }
+                    WsMessageOut::HandleEventError(err) => {
+                        ws_error.set(Some(err));
+                    }
+                    WsMessageOut::JoinedGame(game_id) => tracing::info!("Joined game {game_id}"),
+                    WsMessageOut::NotFound(game_id) => {
+                        ws_error.set(Some(format!("Game {game_id} not found")));
+                        not_found.set(true);
+                    }
                 }
             }
         }
@@ -117,6 +119,7 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
                 if !not_found() {
                     Button {
                         onclick: move |_| async move {
+                            ws_error.set(None);
                             let new_socket = join_game(
                                     game_id,
                                     WebSocketOptions::new().with_automatic_reconnect(),
