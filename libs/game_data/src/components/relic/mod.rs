@@ -25,6 +25,18 @@ pub enum Relic {
     DynamisCore,
     JrXs4550,
     NanoForge,
+    /* Thunders Edge */
+    MetaliVoidArmaments,
+    TheQuantumcore,
+    TheSilverFlame,
+    LightrailOrdnance,
+    MetaliVoidShielding,
+    TheTriad,
+    HeartOfIxth,
+    /* Codex IV */
+    CircletOfTheVoid,
+    BookOfLatvinia,
+    Neuraloop,
 }
 
 impl PartialOrd for Relic {
@@ -127,6 +139,25 @@ impl Relic {
             Relic::DynamisCore => ri!(DynamisCore, "Dynamis Core", CodexII, Action),
             Relic::JrXs4550 => ri!(JrXs4550, "JR-XS455-0", CodexII, Action),
             Relic::NanoForge => ri!(NanoForge, "Nano-Forge", CodexII, Action),
+            Relic::MetaliVoidArmaments => {
+                ri!(MetaliVoidArmaments, "Metali Void Armaments", ThundersEdge)
+            }
+            Relic::TheQuantumcore => ri!(TheQuantumcore, "The Quantumcore", ThundersEdge),
+            Relic::TheSilverFlame => ri!(TheSilverFlame, "The Silver Flame", ThundersEdge, Action),
+            Relic::LightrailOrdnance => ri!(LightrailOrdnance, "Lightrail Ordnance", ThundersEdge),
+            Relic::MetaliVoidShielding => {
+                ri!(MetaliVoidShielding, "Metali Void Shielding", ThundersEdge)
+            }
+            Relic::TheTriad => ri!(TheTriad, "The Triad", ThundersEdge),
+            Relic::HeartOfIxth => ri!(HeartOfIxth, "Heart of Ixth", ThundersEdge),
+            Relic::CircletOfTheVoid => ri!(
+                CircletOfTheVoid,
+                "Circlet of the Void",
+                ThundersEdge,
+                Action
+            ),
+            Relic::BookOfLatvinia => ri!(BookOfLatvinia, "Book of Latvinia", ThundersEdge, Action),
+            Relic::Neuraloop => ri!(Neuraloop, "Neuraloop", ThundersEdge),
         }
     }
 }
