@@ -20,7 +20,7 @@
    - ✅ Choose speaker at start of game
    - ✅ Reveal initial objectives
    - ❌ UI for setting table order
-   - ❌ Faction specific setups for planets & techs
+   - ❌ Faction specific setups for planets & techs etc.
      - ✅ planets
      - ❌ agents
      - ✅ techs
@@ -227,24 +227,30 @@
  - ❌ Go over TE to see if anything has been missed.
 
 ## Thunder's Edge
- - x  Breakthroughs for each faction
- - x  new relic cards
- - x  new factions
- - x  new planets
- - x  new legendary planet abilities
- - x  fracture? (option for picking relic after taking those planets?)
-   - x styx planet score
- - x  new anomaly?
- - x  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
- - x  updated strategy cards
- - x  thunder's edge
-   - x  planet
-   - x  exploration
- - x  update milty import
+ - ❌  Breakthroughs for each faction
+ - ❌  new relic cards, added but some need more handling.
+  - ❌ The quantumcore, depends on if we will handle breakthroughs and/or synergies.
+  - ❌ The Silver Flame
+  - ❌ The Triad (maybe we'll want to show it on the planet page somehow? But we don't track relic fragments...)
+ - ❌  new factions
+ - ✅  new planets
+ - ❌  new legendary planet abilities
+ - ❌  fracture? (option for picking relic after taking those planets?)
+   ❌  styx planet score
+ - ❌  new anomaly?
+ - ❌  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
+ - ❌  updated strategy cards
+ - ❌  thunder's edge
+   - ❌  planet
+   - ❌  exploration
+ - ✅ update milty import
 
 ## Codex IV
-  - x  galactic events (could be difficult!)
-  - x  relics?
+  - ❌  galactic events (could be difficult!)
+  - ❌  relics, added but need handling.
+    - ❌ Circlet of the Void
+    - ❌ Neuraloop
+    - ❌ Book of Latvinia
   - TODO
 
 TODO: Look overall strategy cards to see that we always display the correct variant.
