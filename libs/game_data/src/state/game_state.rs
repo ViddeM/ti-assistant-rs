@@ -580,7 +580,12 @@ impl GameState {
         let extras = self
             .laws
             .keys()
-            .filter(|l| l == &&Agenda::IncentiveProgram || l == &&Agenda::ClassifiedDocumentLeaks)
+            .filter(|&&agenda| {
+                matches!(
+                    agenda,
+                    Agenda::IncentiveProgram | Agenda::ClassifiedDocumentLeaks
+                )
+            })
             .count();
 
         5 + extras
