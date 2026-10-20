@@ -11,7 +11,7 @@ use crate::{
     common::player_id::PlayerId,
     components::{
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
-        planet::{Planet, PlanetTrait},
+        planet::{OrbitalBodyType, Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
         strategy_card::StrategyCard,
     },
@@ -118,6 +118,8 @@ impl VoteState {
                         None
                     })
                 })
+                // Filter away space stations as they cannot be elected.
+                .filter(|(p, _)| p.info().body_type != OrbitalBodyType::SpaceStation)
                 // Filter to only include planets with the relevant traits.
                 .filter(|(planet, attachments)| {
                     trait_filter(get_planet_traits(planet, attachments))

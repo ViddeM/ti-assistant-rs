@@ -236,7 +236,8 @@
  - ✅  new planets
  - ❌  new legendary planet abilities
  - ❌  fracture? (option for picking relic after taking those planets?)
-   ❌  styx planet score
+ - ❌  styx planet score
+ - ✅  space stations.
  - ❌  new anomaly?
  - ❌  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
  - ❌  updated strategy cards
