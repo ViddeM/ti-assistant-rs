@@ -34,6 +34,8 @@ pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
         Some((techs[0].clone(), techs[1].clone()))
     });
 
+    let filtered_techs = use_memo(move || first_tech().map(|t: Technology| vec![t]));
+
     if let Some((first, second)) = selected_technologies() {
         return rsx! {
             div { class: "setup-column",
@@ -71,6 +73,7 @@ pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
             } else if first_tech().is_some() {
                 SelectTechView {
                     player_id: player_id.clone(),
+                    filtered_techs: filtered_techs(),
                     on_select: move |t| second_tech.set(Some(t)),
                 }
             } else {
@@ -80,13 +83,15 @@ pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
             Button {
                 disabled: first_tech().is_none() || second_tech().is_none(),
                 onclick: move |_| {
-                    let first_tech = first_tech().expect("First technology must be selected");
-                    let second_tech = second_tech().expect("Second technology must be selected");
+                    let first = first_tech().expect("First technology must be selected");
+                    let second = second_tech().expect("Second technology must be selected");
                     event
                         .send_event(Event::SetupPlayerTechs {
                             player: player_id.clone(),
-                            technologies: vec![first_tech, second_tech],
+                            technologies: vec![first, second],
                         });
+                    first_tech.set(None);
+                    second_tech.set(None);
                 },
                 {"Confirm"}
             }
