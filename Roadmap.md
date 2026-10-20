@@ -229,14 +229,17 @@
 ## Thunder's Edge
  - ❌  Breakthroughs for each faction
  - ❌  new relic cards, added but some need more handling.
-  - ❌ The quantumcore, depends on if we will handle breakthroughs and/or synergies.
-  - ❌ The Silver Flame
-  - ❌ The Triad (maybe we'll want to show it on the planet page somehow? But we don't track relic fragments...)
+  - ❌  The quantumcore, depends on if we will handle breakthroughs and/or synergies.
+  - ❌  The Silver Flame
+  - ❌  The Triad (maybe we'll want to show it on the planet page somehow? But we don't track relic fragments...)
  - ❌  new factions
  - ✅  new planets
  - ❌  new legendary planet abilities
+  - ❌  Thunder's Edge (PERFORM 1 ACTION AT THE END OF YOUR TURN??? Can be worked around atm by taking another turn but not very pretty, also if we should handle breakthroughs)
+  - ❌  Styx (Have an extra point as long as you hold the planet)
+  - ❌  Avernus (Action, just allow it as an option, nothing to do).
+  - ❌  Faunus (Gain control of planet when you pass)
  - ❌  fracture? (option for picking relic after taking those planets?)
- - ❌  styx planet score
  - ✅  space stations.
  - ❌  new anomaly?
  - ❌  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
