@@ -1,6 +1,7 @@
 use std::{
     borrow::BorrowMut,
     collections::{BTreeSet, HashSet},
+    sync::Arc,
 };
 
 use anyhow::{Context, Result, bail, ensure};
@@ -35,6 +36,7 @@ use ti_helper_game_data::{
     },
     state::{
         agenda::{AgendaRound, Vote, VoteState},
+        expedition::{TEExpedition, TEExpeditionProgress},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
             GameState, LeaderProgress, MapData, MiltyInformation, RelicProgress,
@@ -69,6 +71,10 @@ fn try_update_game_state(
         Event::SetSettings { settings } => {
             game_state.assert_phase(Phase::Creation)?;
             game_state.game_settings = settings;
+
+            if game_state.game_settings.expansions.thunders_edge {
+                game_state.te_expedition = Some(Arc::new(TEExpedition::default()));
+            }
         }
         Event::ImportFromMilty {
             max_points,
@@ -120,6 +126,10 @@ fn try_update_game_state(
                     .cloned()
                     .context("Expected there to be players from milty?")?,
             );
+
+            if game_state.game_settings.expansions.thunders_edge {
+                game_state.te_expedition = Some(Arc::new(TEExpedition::default()));
+            }
         }
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;

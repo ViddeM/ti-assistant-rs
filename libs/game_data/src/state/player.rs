@@ -61,6 +61,7 @@ impl NewPlayer {
             planets,
             technologies: techs,
             relics: BTreeSet::new(),
+            breakthrough: None,
         }
     }
 }

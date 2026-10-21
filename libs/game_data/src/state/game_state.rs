@@ -1,5 +1,6 @@
 use std::{
     collections::{BTreeSet, HashMap},
+    sync::Arc,
     time::Duration,
 };
 
@@ -29,6 +30,7 @@ use crate::{
         system::SystemId,
         tech::Technology,
     },
+    state::expedition::TEExpedition,
 };
 
 use super::{
@@ -119,6 +121,9 @@ pub struct GameState {
     ///
     /// This player has initiative 0 in the action and status phase.
     pub naalu_telepathy: Option<PlayerId>,
+
+    /// The current expedition for Thunder's edge or None if thunder's edge is not in play.
+    pub te_expedition: Option<Arc<TEExpedition>>,
 }
 
 /// Information relevant to things that has happened on the gameboard.
