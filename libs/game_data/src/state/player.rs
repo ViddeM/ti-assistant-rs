@@ -6,7 +6,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
     components::{
-        planet::Planet, planet_attachment::PlanetAttachment, relic::Relic, tech::Technology,
+        breakthrough::Breakthrough, planet::Planet, planet_attachment::PlanetAttachment,
+        relic::Relic, tech::Technology,
     },
 };
 
@@ -38,6 +39,8 @@ pub struct Player {
     pub technologies: BTreeSet<Technology>,
     /// Which relics the player currently owns.
     pub relics: BTreeSet<Relic>,
+    /// Which breakthrough the player currently has, or none if it is not yet unlocked.
+    pub breakthrough: Option<Breakthrough>,
 }
 
 impl NewPlayer {
