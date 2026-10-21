@@ -228,6 +228,15 @@
 
 ## Thunder's Edge
  - ❌  Breakthroughs for each faction
+  - ❌  Generic actions that we don't track (just a button in the UI)
+  - ❌  I.I.H.Q. Modernization (gain planet)
+  - ❌  Resonance Generator (maybe for map purposes? LOW PRIO)
+  - ❌  Visionaria Select (Coordinate players & research + gain techs)
+  - ❌  Stellar Genesis (gain planet)
+  - ❌  Void Tether (I have no idea, maybe for map purposes? Double check)
+  - ❌  Vaults of the heir (Action, purge tech to gain relic)
+  - ❌  N'orr Supremacy (Can research after winning a combat so litteraly whenever, just do it on the tech page instead).
+  - ❌  Al'Raith Ix Ianovar - Fracture enter play (if tracked) also ingress tokens if we want them on the map.
  - ❌  new relic cards, added but some need more handling.
   - ❌  The quantumcore, depends on if we will handle breakthroughs and/or synergies.
   - ❌  The Silver Flame
@@ -248,6 +257,7 @@
    - ❌  planet
    - ❌  exploration
  - ✅ update milty import
+ - ❌  Coexistance (map visualization)
 
 ## Codex IV
   - ❌  galactic events (could be difficult!)

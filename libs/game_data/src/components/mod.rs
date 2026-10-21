@@ -2,6 +2,8 @@
 pub mod action_card;
 /// Agendas.
 pub mod agenda;
+/// Breakthroughs.
+pub mod breakthrough;
 /// Frontier cards.
 pub mod frontier_card;
 /// Leader cards, i.e. agents, commanders, and heroes.
