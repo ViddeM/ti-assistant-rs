@@ -95,7 +95,7 @@ fn AddLawForm() -> Element {
 
     let mut agenda = use_signal(|| None);
 
-    let mut player: Signal<PlayerId> = use_signal(|| "".into());
+    let mut player: Signal<Option<PlayerId>> = use_signal(|| None);
     let mut votes = use_signal(|| 0);
     let mut vote_option = use_signal(|| None);
 
@@ -198,7 +198,7 @@ fn AddLawForm() -> Element {
                                         e.prevent_default();
                                         event
                                             .send_event(Event::AddAgendaPlayerVote {
-                                                player: player(),
+                                                player: player().expect("Player to be selected"),
                                                 outcome: vote_option().expect("Outcome to be selected"),
                                                 votes: votes(),
                                             })
@@ -231,7 +231,7 @@ fn AddLawForm() -> Element {
                                     }
                                     Button {
                                         r#type: "submit",
-                                        disabled: vote_option().is_none() || player().is_empty(),
+                                        disabled: vote_option().is_none() || player().is_none(),
                                         "Cast Votes"
                                     }
                                 }

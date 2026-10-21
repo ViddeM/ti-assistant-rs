@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{
-    icons::fa_solid_icons::{FaPause, FaPlay},
     Icon,
+    icons::fa_solid_icons::{FaPause, FaPlay},
 };
 use ti_helper_game_data::game_id::GameId;
 
@@ -54,6 +54,8 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
         }
     });
 
+    let te_enabled = use_memo(move || gc.game_state().game_settings.expansions.thunders_edge);
+
     rsx! {
         document::Stylesheet { href: INFO_BOX_SCSS }
 
@@ -66,6 +68,13 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
                 ViewModeButton { view_mode: ViewMode::Planets, current: view_mode }
                 ViewModeButton { view_mode: ViewMode::Laws, current: view_mode }
                 ViewModeButton { view_mode: ViewMode::Map, current: view_mode }
+            }
+            if te_enabled() {
+                ViewModeButton {
+                    class: "margin-top",
+                    view_mode: ViewMode::ThundersEdge,
+                    current: view_mode,
+                }
             }
             p { class: "margin-top", "Round: {round()}" }
             p { "Current player: {current_player}" }
@@ -86,10 +95,19 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
 }
 
 #[component]
-fn ViewModeButton(current: Signal<ViewMode>, view_mode: ViewMode) -> Element {
+fn ViewModeButton(
+    class: Option<String>,
+    current: Signal<ViewMode>,
+    view_mode: ViewMode,
+) -> Element {
     let disabled = current.read().eq(&view_mode);
 
     rsx! {
-        Button { disabled, onclick: move |_| current.set(view_mode), "{view_mode.to_string()}" }
+        Button {
+            disabled,
+            class: class.unwrap_or_default(),
+            onclick: move |_| current.set(view_mode),
+            "{view_mode.to_string()}"
+        }
     }
 }

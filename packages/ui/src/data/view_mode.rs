@@ -8,6 +8,7 @@ pub enum ViewMode {
     Planets,
     Laws,
     Map,
+    ThundersEdge,
 }
 
 impl Display for ViewMode {
@@ -22,6 +23,7 @@ impl Display for ViewMode {
                 ViewMode::Planets => "Planets",
                 ViewMode::Laws => "Laws",
                 ViewMode::Map => "Map",
+                ViewMode::ThundersEdge => "Thunder's Edge",
             }
         )
     }
