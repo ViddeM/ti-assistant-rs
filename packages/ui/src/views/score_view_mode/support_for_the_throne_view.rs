@@ -48,10 +48,10 @@ fn PlayerSupportForTheThroneView(player_id: PlayerId) -> Element {
             .support_for_the_throne
             .get(&p1)
             .cloned()
-            .unwrap_or_default()
     });
 
-    let mut selected_player = use_signal(&*currently_selected_player);
+    let mut selected_player = use_signal(move || currently_selected_player());
+
     // Ensure this is initialized correctly
     use_effect(move || selected_player.set(currently_selected_player()));
 
@@ -93,12 +93,12 @@ fn PlayerSupportForTheThroneView(player_id: PlayerId) -> Element {
             }
             td {
                 Button {
-                    disabled: currently_selected_player().eq(&selected_player()),
+                    disabled: currently_selected_player().eq(&selected_player()) && selected_player().is_some(),
                     onclick: move |_| {
                         event
                             .send_event(Event::GiveSupportForTheThrone {
                                 giver: player_id.clone(),
-                                receiver: selected_player(),
+                                receiver: selected_player().expect("Selected player to exist"),
                             })
                     },
                     "Give"

@@ -324,16 +324,22 @@ pub fn AgendaDropdown(
 
 #[component]
 pub fn PlayerDropdown(
-    value: ReadSignal<PlayerId>,
+    value: ReadSignal<Option<PlayerId>>,
     options: Vec<PlayerId>,
-    on_select: EventHandler<PlayerId>,
+    on_select: EventHandler<Option<PlayerId>>,
     disabled: Option<bool>,
 ) -> Element {
-    let current_value = use_memo(move || value().to_string());
+    let current_value =
+        use_memo(move || value().as_ref().map(|p| p.to_string()).unwrap_or_default());
 
     let oninput = move |event: FormEvent| {
         let new_value = event.value();
-        on_select(new_value.into());
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let player: PlayerId = new_value.into();
+            on_select(Some(player));
+        }
     };
 
     rsx! {

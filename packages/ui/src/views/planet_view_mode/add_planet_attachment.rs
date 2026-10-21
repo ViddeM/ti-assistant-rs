@@ -20,7 +20,7 @@ pub fn AddPlanetAttachment() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
-    let mut player: Signal<PlayerId> = use_signal(|| "".into());
+    let mut player: Signal<Option<PlayerId>> = use_signal(|| None);
     let mut planet: Signal<Option<Planet>> = use_signal(|| None);
     let mut attachment: Signal<Option<PlanetAttachment>> = use_signal(|| None);
 
@@ -43,10 +43,12 @@ pub fn AddPlanetAttachment() -> Element {
             .collect::<Vec<_>>()
     });
 
+    let current_player = use_memo(move || player().unwrap_or_default());
+
     let available_planets = use_memo(move || {
         let mut planets = available_players()
             .iter()
-            .find(|(id, _)| id.eq(&player()))
+            .find(|(id, _)| id.eq(&current_player()))
             .map(|(_, p)| p.planets.keys().cloned().collect::<Vec<_>>())
             .unwrap_or(vec![]);
         planets.sort();
@@ -56,13 +58,16 @@ pub fn AddPlanetAttachment() -> Element {
     let planet_existing_attachments = use_memo(move || {
         planet()
             .and_then(|planet| {
-                gc.game_state().players.get(&player()).map(|player| {
-                    player.planets.get(&planet).map(|a_s| {
-                        a_s.iter()
-                            .map(|a| a.clone().to_real())
-                            .collect::<HashSet<_>>()
+                gc.game_state()
+                    .players
+                    .get(&current_player())
+                    .map(|player| {
+                        player.planets.get(&planet).map(|a_s| {
+                            a_s.iter()
+                                .map(|a| a.clone().to_real())
+                                .collect::<HashSet<_>>()
+                        })
                     })
-                })
             })
             .flatten()
             .unwrap_or_default()
@@ -142,28 +147,28 @@ pub fn AddPlanetAttachment() -> Element {
             }
             PlanetDropdown {
                 value: planet,
-                disabled: player().is_empty(),
+                disabled: player().is_none(),
                 options: available_planets(),
                 on_select: move |p| planet.set(p),
             }
             PlanetAttachmentDropdown {
                 value: attachment,
-                disabled: player().is_empty() || planet().is_none(),
+                disabled: player().is_none() || planet().is_none(),
                 options: available_attachments(),
                 on_select: move |a| attachment.set(a),
             }
             Button {
-                disabled: player().is_empty() || planet().is_none() || attachment().is_none(),
+                disabled: player().is_none() || planet().is_none() || attachment().is_none(),
                 onclick: move |_| {
                     event
                         .send_event(Event::AddPlanetAttachment {
-                            player: player(),
+                            player: player().expect("Player to be selected"),
                             planet: planet().expect("Planet to be set"),
                             attachment: attachment().expect("Attachment to be set"),
                         });
                     attachment.set(None);
                     planet.set(None);
-                    player.set("".into());
+                    player.set(None);
                 },
                 "Add attachment"
             }

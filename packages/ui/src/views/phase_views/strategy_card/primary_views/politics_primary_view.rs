@@ -24,7 +24,7 @@ pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
             .expect("Current player to exist in action phase")
     });
 
-    let mut new_speaker = use_signal(|| "".into());
+    let mut new_speaker = use_signal(|| Some("".into()));
 
     let non_speaker_players = use_memo(move || {
         let speaker = gc.game_state().speaker.clone();
@@ -56,14 +56,14 @@ pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                         }
                         Button {
                             class: "margin-top",
-                            disabled: new_speaker().is_empty(),
+                            disabled: new_speaker().is_none(),
                             onclick: {
                                 move |_| {
                                     event
                                         .send_event(Event::StrategicActionPrimary {
                                             player: current_player(),
                                             action: StrategicPrimaryAction::Politics {
-                                                new_speaker: new_speaker(),
+                                                new_speaker: new_speaker().expect("New speaker to be selected"),
                                             },
                                         })
                                 }
@@ -73,7 +73,7 @@ pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                     }
                 }
             } else {
-                p { "Waitine for {current_player()} to pick" }
+                p { "Waiting for {current_player()} to pick" }
             }
         }
     }
