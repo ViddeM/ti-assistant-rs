@@ -6,6 +6,7 @@ use strum_macros::{Display, EnumIter, EnumString};
 
 use crate::{
     components::{
+        breakthrough::Breakthrough,
         planet::Planet,
         system::{SystemType, systems},
         tech::{TechCategory, TechOrigin, TechType, Technology},
@@ -131,6 +132,43 @@ impl Faction {
             Faction::CrimsonRebellion => "The Crimson Rebellion",
             Faction::FirmamentObsidian => "The Firmament / The Obsidian",
         })
+    }
+
+    /// Get the breakthrough associated with the faction.
+    // TODO: How do we handle factions with flipped breakthroughs / obsdian firmament?
+    pub fn breakthrough(&self) -> Breakthrough {
+        match self {
+            Faction::Arborec => Breakthrough::Psychospore,
+            Faction::BaronyOfLetnev => Breakthrough::GravleashManeuvers,
+            Faction::ClanOfSaar => Breakthrough::DeorbitBarrage,
+            Faction::EmbersOfMuaat => Breakthrough::VisionariaSelect,
+            Faction::EmiratesOfHacan => Breakthrough::AutoFactories,
+            Faction::FederationOfSol => Breakthrough::BellumGloriosum,
+            Faction::GhostsOfCreuss => Breakthrough::ParticleSynthesis,
+            Faction::L1Z1XMindnet => Breakthrough::FealtyUplink,
+            Faction::MentakCoalition => Breakthrough::TheTablesGrace,
+            Faction::NaaluCollective => Breakthrough::Mindsieve,
+            Faction::NekroVirus => Breakthrough::ValefarAssimilatorZ,
+            Faction::SardakkNorr => Breakthrough::NorrSupremacy,
+            Faction::UniversitiesOfJolNar => Breakthrough::SpecializedCompounds,
+            Faction::Winnu => Breakthrough::Imperator,
+            Faction::XxchaKingdom => Breakthrough::ArchonsGift,
+            Faction::YinBrotherhood => Breakthrough::YinAscendant,
+            Faction::YssarilTribes => Breakthrough::DeepgloomExecutable,
+            Faction::ArgentFlight => Breakthrough::WingTransfer,
+            Faction::Empyrean => Breakthrough::VoidTether,
+            Faction::MahactGeneSorcerers => Breakthrough::VaultsOfTheHeir,
+            Faction::NaazRokhaAlliance => Breakthrough::AbsoluteSynergy,
+            Faction::Nomad => Breakthrough::ThundersParadox,
+            Faction::TitansOfUl => Breakthrough::SlumberstateComputing,
+            Faction::VuilRaithCabal => Breakthrough::AlRaithIxIanovar,
+            Faction::CouncilKeleres => Breakthrough::IIHQModernization,
+            Faction::LastBastion => Breakthrough::TheIcon,
+            Faction::RalNelConsortium => Breakthrough::DataSkimmer,
+            Faction::DeepwroughtScholarate => Breakthrough::VisionariaSelect,
+            Faction::CrimsonRebellion => Breakthrough::ResonanceGenerator,
+            Faction::FirmamentObsidian => Breakthrough::TheSowing,
+        }
     }
 
     /// Returns a set of the planets the faction starts with.
@@ -348,5 +386,19 @@ impl PartialOrd for Faction {
 impl Ord for Faction {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         self.name().to_lowercase().cmp(&other.name().to_lowercase())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use strum::IntoEnumIterator;
+
+    use crate::common::faction::Faction;
+
+    #[test]
+    fn faction_breakthrough_matches() {
+        for f in Faction::iter() {
+            assert_eq!(f.breakthrough().info().faction, f);
+        }
     }
 }

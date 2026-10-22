@@ -18,7 +18,8 @@ use ti_helper_game_data::{
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::{
-        faction::Faction, game_settings::GameSettings, milty_data::MiltyPlayer, player_id::PlayerId,
+        expansions::Expansion, faction::Faction, game_settings::GameSettings,
+        milty_data::MiltyPlayer, player_id::PlayerId,
     },
     components::{
         action_card::{ActionCard, ActionCardPlay},
@@ -36,7 +37,7 @@ use ti_helper_game_data::{
     },
     state::{
         agenda::{AgendaRound, Vote, VoteState},
-        expedition::{TEExpedition, TEExpeditionProgress},
+        expedition::TEExpedition,
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
             GameState, LeaderProgress, MapData, MiltyInformation, RelicProgress,
@@ -73,7 +74,7 @@ fn try_update_game_state(
             game_state.game_settings = settings;
 
             if game_state.game_settings.expansions.thunders_edge {
-                game_state.te_expedition = Some(Arc::new(TEExpedition::default()));
+                game_state.te_expedition = Some(TEExpedition::default());
             }
         }
         Event::ImportFromMilty {
@@ -128,7 +129,7 @@ fn try_update_game_state(
             );
 
             if game_state.game_settings.expansions.thunders_edge {
-                game_state.te_expedition = Some(Arc::new(TEExpedition::default()));
+                game_state.te_expedition = Some(TEExpedition::default());
             }
         }
         Event::AddPlayer { player } => {
@@ -1822,6 +1823,32 @@ fn try_update_game_state(
                 .resolve_agenda(vote_state, Some(elected_outcome))
                 .context("Failed to resolve agenda")?;
             game_state.agenda_override_state = None;
+        }
+        Event::ClaimThundersEdgeExpeditionSlot { player, slot } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+
+            let te = game_state
+                .te_expedition
+                .as_mut()
+                .expect("Thunders Edge enabled but not initialized");
+
+            ensure!(
+                te.progress.get(&slot) != player.as_ref(),
+                "No change provided in event"
+            );
+
+            if let Some(p) = player {
+                let player = game_state.players.get_mut(&p).context("Player not found")?;
+
+                te.progress.insert(slot, p);
+
+                // If the player hasn't unlocked their breakthrough, unlock it.
+                if player.breakthrough.is_none() {
+                    player.breakthrough = Some(player.faction.breakthrough());
+                }
+            } else {
+                te.progress.remove(&slot);
+            }
         }
     }
 

@@ -1,7 +1,9 @@
+use std::collections::BTreeMap;
+
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::player_id::PlayerId,
-    state::expedition::{TECompletion, TEExpeditionProgress},
+    state::expedition::{TECompletion, TEExpeditionSlot},
 };
 
 use crate::{
@@ -36,7 +38,7 @@ pub fn ThundersEdgeViewMode() -> Element {
 }
 
 #[component]
-fn Expedition(progress: TEExpeditionProgress) -> Element {
+fn Expedition(progress: BTreeMap<TEExpeditionSlot, PlayerId>) -> Element {
     let gc = use_context::<GameContext>();
 
     let mut selected_player: Signal<Option<PlayerId>> = use_signal(|| None);

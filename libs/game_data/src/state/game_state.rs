@@ -123,7 +123,7 @@ pub struct GameState {
     pub naalu_telepathy: Option<PlayerId>,
 
     /// The current expedition for Thunder's edge or None if thunder's edge is not in play.
-    pub te_expedition: Option<Arc<TEExpedition>>,
+    pub te_expedition: Option<TEExpedition>,
 }
 
 /// Information relevant to things that has happened on the gameboard.

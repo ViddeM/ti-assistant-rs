@@ -3,7 +3,7 @@ use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::{
-    common::faction::Faction::{self, XxchaKingdom},
+    common::faction::Faction::{self},
     components::tech::TechCategory,
 };
 
@@ -144,7 +144,7 @@ impl Breakthrough {
             Breakthrough::VisionariaSelect => info! {
                 tag: VisionariaSelect,
                 name: "Visionaria Select",
-                faction: EmbersOfMuaat,
+                faction: DeepwroughtScholarate,
                 syn_a: Cybernetic,
                 syn_b: Biotic,
                 kind: Action

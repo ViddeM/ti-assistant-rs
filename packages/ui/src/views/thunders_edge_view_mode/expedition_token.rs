@@ -1,5 +1,7 @@
+use std::collections::BTreeMap;
+
 use dioxus::prelude::*;
-use ti_helper_game_data::{common::player_id::PlayerId, state::expedition::TEExpeditionProgress};
+use ti_helper_game_data::{common::player_id::PlayerId, state::expedition::TEExpeditionSlot};
 
 use crate::{
     components::{faction_icon::get_faction_icon, ti_icon::TiIconType},
@@ -33,58 +35,24 @@ const SLOT_CORNERS: [(f64, f64); 6] = [
 /// Radius of the circular arrows shown in an unclaimed slot.
 const ARROW_R: f64 = 7.0;
 
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum ExpeditionCost {
-    Resources,
-    ActionCards,
-    Influence,
-    SecretObjective,
-    TechSpecialityPlanet,
-    TradeGoods,
-}
+/// The order of the wedges on the token, clockwise starting from the top.
+const SLOTS_CLOCKWISE: [TEExpeditionSlot; 6] = [
+    TEExpeditionSlot::Resources,
+    TEExpeditionSlot::ActionCards,
+    TEExpeditionSlot::Influence,
+    TEExpeditionSlot::SecretObjective,
+    TEExpeditionSlot::TechSpecialityPlanet,
+    TEExpeditionSlot::TradeGoods,
+];
 
-impl ExpeditionCost {
-    /// The order of the wedges on the token, clockwise starting from the top.
-    const CLOCKWISE: [Self; 6] = [
-        Self::Resources,
-        Self::ActionCards,
-        Self::Influence,
-        Self::SecretObjective,
-        Self::TechSpecialityPlanet,
-        Self::TradeGoods,
-    ];
-
-    fn description(self) -> &'static str {
-        match self {
-            Self::Resources => "Spend 5 resources",
-            Self::ActionCards => "Discard 2 Action Cards",
-            Self::Influence => "Spend 5 influence",
-            Self::SecretObjective => "Discard 1 unscored Secret Objective",
-            Self::TechSpecialityPlanet => "Exhaust 1 Technology Speciality Planet",
-            Self::TradeGoods => "Spend 3 Trade Goods",
-        }
-    }
-
-    fn css_name(self) -> &'static str {
-        match self {
-            Self::Resources => "resources",
-            Self::ActionCards => "action-cards",
-            Self::Influence => "influence",
-            Self::SecretObjective => "secret-objective",
-            Self::TechSpecialityPlanet => "tech-speciality-planet",
-            Self::TradeGoods => "trade-goods",
-        }
-    }
-
-    fn picked_by(self, progress: &TEExpeditionProgress) -> Option<PlayerId> {
-        match self {
-            Self::Resources => progress.resources.clone(),
-            Self::ActionCards => progress.action_cards.clone(),
-            Self::Influence => progress.influence.clone(),
-            Self::SecretObjective => progress.secret_objective.clone(),
-            Self::TechSpecialityPlanet => progress.tech_speciality_planet.clone(),
-            Self::TradeGoods => progress.trade_goods.clone(),
-        }
+fn css_name(slot: &TEExpeditionSlot) -> &'static str {
+    match slot {
+        TEExpeditionSlot::Resources => "resources",
+        TEExpeditionSlot::ActionCards => "action-cards",
+        TEExpeditionSlot::Influence => "influence",
+        TEExpeditionSlot::SecretObjective => "secret-objective",
+        TEExpeditionSlot::TechSpecialityPlanet => "tech-speciality-planet",
+        TEExpeditionSlot::TradeGoods => "trade-goods",
     }
 }
 
@@ -162,12 +130,12 @@ fn stars() -> Vec<(f64, f64, f64)> {
 /// The expedition, drawn like the expedition side of the Thunder's Edge token.
 #[component]
 pub fn ExpeditionToken(
-    progress: TEExpeditionProgress,
+    progress: BTreeMap<TEExpeditionSlot, PlayerId>,
     selected_player: ReadSignal<Option<PlayerId>>,
 ) -> Element {
-    let claimed = ExpeditionCost::CLOCKWISE
+    let claimed = SLOTS_CLOCKWISE
         .iter()
-        .filter(|cost| cost.picked_by(&progress).is_some())
+        .filter(|slot| progress.contains_key(slot))
         .count();
 
     rsx! {
@@ -219,12 +187,12 @@ pub fn ExpeditionToken(
                     }
                 }
 
-                for (k , cost) in ExpeditionCost::CLOCKWISE.into_iter().enumerate() {
+                for (i , slot) in SLOTS_CLOCKWISE.iter().cloned().enumerate() {
                     ExpeditionWedge {
-                        key: "{k}",
-                        index: k,
-                        cost,
-                        picked_by: cost.picked_by(&progress),
+                        key: "{i}",
+                        index: i,
+                        slot: slot.clone(),
+                        picked_by: progress.get(&slot).cloned(),
                         selected_player,
                     }
                 }
@@ -258,7 +226,7 @@ pub fn ExpeditionToken(
 #[component]
 fn ExpeditionWedge(
     index: usize,
-    cost: ExpeditionCost,
+    slot: TEExpeditionSlot,
     picked_by: Option<PlayerId>,
     selected_player: ReadSignal<Option<PlayerId>>,
 ) -> Element {
@@ -273,7 +241,7 @@ fn ExpeditionWedge(
             .map(|player| (player.faction, player.color))
     });
 
-    let mut class = format!("te-wedge te-wedge-{}", cost.css_name());
+    let mut class = format!("te-wedge te-wedge-{}", css_name(&slot));
     if claimable {
         class.push_str(" te-wedge-claimable");
     }
@@ -283,9 +251,9 @@ fn ExpeditionWedge(
 
     let (icon_x, icon_y) = polar(center, ICON_R);
     let (slot_x, slot_y) = polar(center, SLOT_R);
-    let slot = slot_points(center);
+    let physical_slot = slot_points(center);
     let arrows = [slot_arrow(-70.0, 70.0), slot_arrow(110.0, 250.0)];
-    let tooltip = format!("<title>{}</title>", cost.description());
+    let tooltip = format!("<title>{}</title>", slot.description());
 
     rsx! {
         g { class,
@@ -293,7 +261,7 @@ fn ExpeditionWedge(
                 class: "te-wedge-shape",
                 d: wedge_path(center),
                 clip_path: "url(#te-wedge-clip-{index})",
-                "aria-label": cost.description(),
+                "aria-label": slot.description(),
                 // Dioxus doesn't have the svg `title` element, but setting it as inner html still gives a native tooltip.
                 dangerous_inner_html: tooltip,
                 onclick: move |_| {
@@ -303,10 +271,10 @@ fn ExpeditionWedge(
                 },
             }
 
-            polygon { class: "te-slot-glow", points: slot.clone() }
-            polygon { class: "te-slot", points: slot }
+            polygon { class: "te-slot-glow", points: physical_slot.clone() }
+            polygon { class: "te-slot", points: physical_slot }
 
-            CostIcon { cost, x: icon_x, y: icon_y }
+            SlotIcon { slot: slot.clone(), x: icon_x, y: icon_y }
 
             if let Some((faction, color)) = owner {
                 circle {
@@ -344,12 +312,12 @@ fn ExpeditionWedge(
     }
 }
 
-/// The cost of a wedge. We don't have an asset for the action card icon (yet), so that one is an approximation.
+/// The slot icon for a wedge.
 #[component]
-fn CostIcon(cost: ExpeditionCost, x: f64, y: f64) -> Element {
-    match cost {
-        ExpeditionCost::Resources | ExpeditionCost::Influence => {
-            let icon = if cost == ExpeditionCost::Resources {
+fn SlotIcon(slot: TEExpeditionSlot, x: f64, y: f64) -> Element {
+    match slot {
+        TEExpeditionSlot::Resources | TEExpeditionSlot::Influence => {
+            let icon = if slot == TEExpeditionSlot::Resources {
                 TiIconType::ResourceFilled
             } else {
                 TiIconType::InfluenceFilled
@@ -366,7 +334,7 @@ fn CostIcon(cost: ExpeditionCost, x: f64, y: f64) -> Element {
                 text { class: "te-number", x, y, "5" }
             }
         }
-        ExpeditionCost::ActionCards => rsx! {
+        TEExpeditionSlot::ActionCards => rsx! {
             text { class: "te-number te-number-large", x: x - 7.0, y, "2" }
             rect {
                 class: "te-glyph-card",
@@ -387,7 +355,7 @@ fn CostIcon(cost: ExpeditionCost, x: f64, y: f64) -> Element {
                 transform: "rotate(10 {x + 7.0} {y + 0.5})",
             }
         },
-        ExpeditionCost::SecretObjective => rsx! {
+        TEExpeditionSlot::SecretObjective => rsx! {
             text { class: "te-number te-number-large", x: x - 7.0, y, "1" }
             image {
                 href: TiIconType::SecretObjective.get_asset(),
@@ -397,7 +365,7 @@ fn CostIcon(cost: ExpeditionCost, x: f64, y: f64) -> Element {
                 height: 13,
             }
         },
-        ExpeditionCost::TechSpecialityPlanet => {
+        TEExpeditionSlot::TechSpecialityPlanet => {
             let icons = [
                 (TiIconType::BioticFilled, -1.0, -1.0),
                 (TiIconType::PropulsionFilled, 1.0, -1.0),
@@ -418,7 +386,7 @@ fn CostIcon(cost: ExpeditionCost, x: f64, y: f64) -> Element {
                 }
             }
         }
-        ExpeditionCost::TradeGoods => rsx! {
+        TEExpeditionSlot::TradeGoods => rsx! {
             text { class: "te-number te-number-large", x: x - 7.0, y, "3" }
             image {
                 href: TiIconType::TradeGoods.get_asset(),

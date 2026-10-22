@@ -19,7 +19,7 @@ use crate::{
         system::SystemId,
         tech::Technology,
     },
-    state::player::NewPlayer,
+    state::{expedition::TEExpeditionSlot, player::NewPlayer},
 };
 
 /// An event in the game.
@@ -425,6 +425,14 @@ pub enum Event {
         player: PlayerId,
         /// The player to be lost.
         tech: Technology,
+    },
+
+    /// Claim a Thunders Edge expedition slot.
+    ClaimThundersEdgeExpeditionSlot {
+        /// The player claiming the expedition slot, or None if its being unclaimed (admin reasons).
+        player: Option<PlayerId>,
+        /// The expedition slot being claimed.
+        slot: TEExpeditionSlot,
     },
 
     /// Remove a law from play.
