@@ -5,14 +5,14 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    components::{
-        button::Button,
-        dropdown::PlayerDropdown,
-        faction_icon::FactionIcon,
-        ti_icon::{TiIcon, TiIconType},
-    },
-    data::game_context::GameContext,
+    components::dropdown::PlayerDropdown, data::game_context::GameContext,
+    views::thunders_edge_view_mode::expedition_token::ExpeditionToken,
 };
+
+mod expedition_token;
+
+const THUNDERS_EDGE_VIEW_MODE_SCSS: Asset =
+    asset!("/assets/styling/views/thunders_edge_view_mode.scss");
 
 #[component]
 pub fn ThundersEdgeViewMode() -> Element {
@@ -21,6 +21,8 @@ pub fn ThundersEdgeViewMode() -> Element {
     let thunders_edge = use_memo(move || gc.game_state().te_expedition.clone());
 
     rsx! {
+        document::Stylesheet { href: THUNDERS_EDGE_VIEW_MODE_SCSS }
+
         if let Some(thunders_edge) = thunders_edge() {
             Expedition { progress: thunders_edge.progress.clone() }
             Completed { completed: thunders_edge.completed.clone() }
@@ -56,80 +58,7 @@ fn Expedition(progress: TEExpeditionProgress) -> Element {
                 on_select: move |p| selected_player.set(p),
             }
 
-            ExpeditionOption {
-                text: "Spend 5 resources",
-                picked_by: progress.resources.clone(),
-                selected_player,
-            }
-
-            ExpeditionOption {
-                text: "Discard 2 Action Cards",
-                picked_by: progress.action_cards.clone(),
-                selected_player,
-            }
-
-            ExpeditionOption {
-                text: "Spend 5 influence",
-                picked_by: progress.influence.clone(),
-                selected_player,
-            }
-
-            ExpeditionOption {
-                text: "Discard 1 unscored Secret Objective",
-                picked_by: progress.secret_objective.clone(),
-                selected_player,
-            }
-
-            ExpeditionOption {
-                text: "Exhaust 1 Technology Speciality Planet",
-                picked_by: progress.tech_speciality_planet.clone(),
-                selected_player,
-            }
-
-            ExpeditionOption {
-                text: "Spend 3 Trade Goods",
-                picked_by: progress.trade_goods.clone(),
-                selected_player,
-            }
-        }
-    }
-}
-
-#[component]
-fn ExpeditionOption(
-    text: &'static str,
-    picked_by: Option<PlayerId>,
-    selected_player: ReadSignal<Option<PlayerId>>,
-) -> Element {
-    let gc = use_context::<GameContext>();
-
-    let p1 = picked_by.clone();
-    let can_change = use_memo(move || selected_player().is_some() && !p1.eq(&selected_player()));
-
-    let p2 = picked_by.clone();
-    let player_faction = use_memo(move || {
-        if let Some(p) = &p2 {
-            let f = gc.game_state().players[p].faction;
-            rsx! {
-                FactionIcon { faction: f }
-            }
-        } else {
-            rsx! {}
-        }
-    });
-
-    rsx! {
-        p { class: "margn-top", "{text}" }
-        if let Some(p) = picked_by.as_ref() {
-            p { "{p}" }
-            {player_faction()}
-        }
-        Button {
-            disabled: !can_change(),
-            onclick: move |_| {
-                println!("TODO: NOT IMPLEMENTED");
-            },
-            "Claim"
+            ExpeditionToken { progress, selected_player }
         }
     }
 }

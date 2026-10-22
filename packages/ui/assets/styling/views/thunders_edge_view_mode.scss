@@ -1,0 +1,179 @@
+@import "../vars.scss";
+
+// Accent colors of the expedition wedges, matched to the physical token.
+$te-wedge-colors: (
+  "resources": #2fa4e7,
+  "action-cards": #f07c1e,
+  "influence": #2d84e0,
+  "secret-objective": #e0342c,
+  "tech-speciality-planet": #4cb6ee,
+  "trade-goods": #c9c24e,
+);
+
+$te-player-colors: (
+  "black": $player-color-black,
+  "blue": $player-color-blue,
+  "green": $player-color-green,
+  "red": $player-color-red,
+  "yellow": $player-color-yellow,
+  "purple": $player-color-purple,
+  "orange": $player-color-orange,
+  "pink": $player-color-pink,
+);
+
+$te-silver: rgba(214, 220, 232, 0.85);
+
+.te-token {
+  // A fixed width, since the card shrinks to fit its content.
+  width: 420px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  display: block;
+  margin-top: $margin-large;
+  user-select: none;
+}
+
+.te-star {
+  fill: white;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+// No css filters (e.g. drop-shadow) inside the token, Firefox sometimes draws parts of a wedge wrong with them.
+
+// Only the wedge shape takes the pointer, so that the whole wedge is one click and tooltip area.
+.te-wedge > :not(.te-wedge-shape) {
+  pointer-events: none;
+}
+
+.te-wedge-shape {
+  // Half of the stroke is clipped away, so the border sits inside the wedge.
+  stroke-width: 3px;
+  transition: fill 0.15s;
+}
+
+.te-slot {
+  fill: rgba(2, 3, 8, 0.85);
+  stroke-width: 1.2px;
+}
+
+// A wide, faint stroke under the slot that the slot covers on the inside, so it glows towards the wedge.
+.te-slot-glow {
+  fill: none;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+@each $name, $color in $te-wedge-colors {
+  .te-wedge-#{$name} {
+    .te-wedge-shape {
+      fill: rgba($color, 0.24);
+      stroke: $color;
+    }
+
+    .te-slot {
+      stroke: $color;
+    }
+
+    .te-slot-glow {
+      stroke: rgba($color, 0.35);
+    }
+
+    &.te-wedge-claimed .te-wedge-shape {
+      fill: rgba($color, 0.42);
+    }
+
+    &.te-wedge-claimable:hover {
+      .te-wedge-shape {
+        fill: rgba($color, 0.48);
+        stroke: mix(white, $color, 30%);
+      }
+
+      .te-slot {
+        stroke: mix(white, $color, 30%);
+      }
+
+      .te-slot-glow {
+        stroke: rgba($color, 0.6);
+      }
+    }
+  }
+}
+
+.te-wedge-claimable {
+  cursor: pointer;
+}
+
+.te-slot-mark {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 1.6px;
+  stroke-linecap: round;
+
+  polygon {
+    fill: rgba(255, 255, 255, 0.7);
+    stroke: none;
+  }
+}
+
+.te-slot-ring {
+  fill: rgba(0, 0, 0, 0.6);
+  stroke-width: 2.5px;
+}
+
+@each $name, $color in $te-player-colors {
+  .te-slot-ring-#{$name} {
+    stroke: $color;
+  }
+}
+
+// Keeps dark player colors (e.g. black) visible on the dark token.
+.te-slot-ring-outline {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-width: 0.8px;
+}
+
+.te-number {
+  font-family: "slider-font", "slider-font-fallback", sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  fill: white;
+  stroke: rgba(0, 0, 0, 0.85);
+  stroke-width: 2px;
+  paint-order: stroke;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.te-number-large {
+  font-size: 15px;
+}
+
+.te-glyph-card {
+  fill: #3a1a06;
+  stroke: #ffb066;
+  stroke-width: 0.9px;
+}
+
+.te-separators {
+  fill: none;
+  stroke: $te-silver;
+  stroke-width: 1px;
+  pointer-events: none;
+}
+
+.te-center {
+  fill: #05060c;
+  stroke: $te-silver;
+  stroke-width: 1px;
+}
+
+.te-center-count {
+  font-family: "slider-font", "slider-font-fallback", sans-serif;
+  font-size: 7px;
+  fill: #c8d0e0;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
