@@ -24,7 +24,9 @@ const PROPULSION_FILLED: Asset = asset!("/assets/icons/resources/webp/propulsion
 const PROPULSION: Asset = asset!("/assets/icons/resources/webp/propulsion.webp");
 const RESOURCE_FILLED: Asset = asset!("/assets/icons/resources/webp/resource_filled.webp");
 const RESOURCE: Asset = asset!("/assets/icons/resources/webp/resource.webp");
+const SECRET_OBJECTIVE: Asset = asset!("/assets/icons/resources/webp/secret_objective.webp");
 const TOMB_OF_EMPHIDA: Asset = asset!("/assets/icons/resources/webp/tomb_of_emphida.webp");
+const TRADE_GOODS: Asset = asset!("/assets/icons/resources/webp/trade_goods.webp");
 const WARFARE_FILLED: Asset = asset!("/assets/icons/resources/webp/warfare_filled.webp");
 const WARFARE: Asset = asset!("/assets/icons/resources/webp/warfare.webp");
 
@@ -51,13 +53,15 @@ pub enum TiIconType {
     Propulsion,
     ResourceFilled,
     Resource,
+    SecretObjective,
     TombOfEmphidia,
+    TradeGoods,
     WarfareFilled,
     Warfare,
 }
 
 impl TiIconType {
-    fn get_asset(&self) -> Asset {
+    pub(crate) fn get_asset(&self) -> Asset {
         match self {
             TiIconType::BioticFilled => BIOTIC_FILLED,
             TiIconType::Biotic => BIOTIC,
@@ -80,7 +84,9 @@ impl TiIconType {
             TiIconType::Propulsion => PROPULSION,
             TiIconType::ResourceFilled => RESOURCE_FILLED,
             TiIconType::Resource => RESOURCE,
+            TiIconType::SecretObjective => SECRET_OBJECTIVE,
             TiIconType::TombOfEmphidia => TOMB_OF_EMPHIDA,
+            TiIconType::TradeGoods => TRADE_GOODS,
             TiIconType::WarfareFilled => WARFARE_FILLED,
             TiIconType::Warfare => WARFARE,
         }
