@@ -1,7 +1,6 @@
 use std::{
     borrow::BorrowMut,
     collections::{BTreeSet, HashSet},
-    sync::Arc,
 };
 
 use anyhow::{Context, Result, bail, ensure};
@@ -1849,6 +1848,23 @@ fn try_update_game_state(
             } else {
                 te.progress.remove(&slot);
             }
+        }
+        Event::SetBreakthrough {
+            player,
+            breakthrough,
+        } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            let player = game_state
+                .players
+                .get_mut(&player)
+                .context("Player not found")?;
+
+            ensure!(
+                breakthrough != player.breakthrough,
+                "Cannot set breakthrough to None"
+            );
+
+            player.breakthrough = breakthrough;
         }
     }
 

@@ -1,6 +1,5 @@
 use std::{
-    collections::{BTreeSet, HashMap},
-    sync::Arc,
+    collections::{BTreeMap, BTreeSet, HashMap},
     time::Duration,
 };
 
@@ -57,7 +56,7 @@ pub struct GameState {
     pub map_data: MapData,
 
     /// Which players are in the game.
-    pub players: HashMap<PlayerId, Player>,
+    pub players: BTreeMap<PlayerId, Player>,
 
     /// The current speaker, if any.
     pub speaker: Option<PlayerId>,

@@ -1,11 +1,13 @@
 use std::collections::BTreeMap;
 
 use dioxus::prelude::*;
-use ti_helper_game_data::{common::player_id::PlayerId, state::expedition::TEExpeditionSlot};
+use ti_helper_game_data::{
+    actions::event::Event, common::player_id::PlayerId, state::expedition::TEExpeditionSlot,
+};
 
 use crate::{
     components::{faction_icon::get_faction_icon, ti_icon::TiIconType},
-    data::game_context::GameContext,
+    data::{event_context::EventContext, game_context::GameContext},
 };
 
 /// Radius of the token, the view box is centered on the middle of the token.
@@ -231,9 +233,10 @@ fn ExpeditionWedge(
     selected_player: ReadSignal<Option<PlayerId>>,
 ) -> Element {
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
 
     let center = index as f64 * 60.0;
-    let claimable = selected_player.read().is_some() && *selected_player.read() != picked_by;
+    let claimable = *selected_player.read() != picked_by;
     let owner = picked_by.as_ref().and_then(|p| {
         gc.game_state()
             .players
@@ -265,8 +268,9 @@ fn ExpeditionWedge(
                 // Dioxus doesn't have the svg `title` element, but setting it as inner html still gives a native tooltip.
                 dangerous_inner_html: tooltip,
                 onclick: move |_| {
+                    let s = slot.clone();
                     if claimable {
-                        println!("TODO: NOT IMPLEMENTED");
+                        event.send_event(Event::ClaimThundersEdgeExpeditionSlot { player: selected_player(), slot: s });
                     }
                 },
             }

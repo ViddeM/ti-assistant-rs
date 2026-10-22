@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeSet, HashMap},
+    collections::{BTreeMap, BTreeSet, HashMap},
     sync::Arc,
 };
 
@@ -56,7 +56,7 @@ pub struct Score {
 
 impl Score {
     /// Update [Score::player_points] to the correct values.
-    pub fn update_player_points(&mut self, all_players: &HashMap<PlayerId, Player>) {
+    pub fn update_player_points(&mut self, all_players: &BTreeMap<PlayerId, Player>) {
         self.max_points = 10; // TODO set up score
 
         for (player_id, player) in all_players {

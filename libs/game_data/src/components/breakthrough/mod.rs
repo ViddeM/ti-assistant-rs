@@ -9,7 +9,18 @@ use crate::{
 
 /// Breakthroughs.
 #[derive(
-    Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
+    Debug,
+    Clone,
+    Serialize,
+    Deserialize,
+    Hash,
+    PartialEq,
+    Eq,
+    EnumIter,
+    EnumString,
+    Display,
+    PartialOrd,
+    Ord,
 )]
 #[strum(serialize_all = "snake_case")]
 #[allow(missing_docs)]

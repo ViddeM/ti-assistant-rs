@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, HashMap, HashSet};
 
 use dioxus::prelude::*;
 use ti_helper_game_data::{
@@ -185,7 +185,7 @@ fn AddPlayer() -> Element {
 
 fn get_available_factions(
     all_factions: &[FactionResponse],
-    players: &HashMap<PlayerId, Player>,
+    players: &BTreeMap<PlayerId, Player>,
 ) -> Vec<Faction> {
     let taken_factions = players.values().map(|p| p.faction).collect::<HashSet<_>>();
 

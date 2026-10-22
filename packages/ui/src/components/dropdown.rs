@@ -3,11 +3,13 @@ use std::str::FromStr;
 use dioxus::prelude::*;
 
 const DROPDOWN_SCSS: Asset = asset!("/assets/styling/components/dropdown.scss");
+use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     common::{faction::Faction, player_id::PlayerId},
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
+        breakthrough::Breakthrough,
         frontier_card::FrontierCard,
         objectives::Objective,
         planet::Planet,
@@ -562,6 +564,62 @@ pub fn SystemDropdown(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+#[component]
+pub fn BreakthroughDropdown(
+    class: Option<String>,
+    value: ReadSignal<Option<Breakthrough>>,
+    faction: Faction,
+    on_select: EventHandler<Option<Breakthrough>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|b| b.to_string()).unwrap_or_default());
+
+    let mut breakthroughs = Breakthrough::iter()
+        .filter(|b| b.info().faction == faction)
+        .collect::<Vec<_>>();
+    breakthroughs.sort();
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let breakthrough = Breakthrough::from_str(&new_value).expect("Unexpected breakthrough");
+            on_select(Some(breakthrough));
+        }
+    };
+
+    dioxus::logger::tracing::info!(
+        "Selected breakthrough \n VALUE: {:?} :: \n CURRENT_VALUE: {:?} :: \n BREAKTHROUGHS: {:?}",
+        value(),
+        current_value(),
+        breakthroughs
+            .iter()
+            .map(|b| b.to_string())
+            .collect::<Vec<_>>(),
+    );
+
+    rsx! {
+        Dropdown {
+            class: class.unwrap_or_default(),
+            value: current_value,
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            option { value: "", "No breakthrough" }
+            {
+                breakthroughs
+                    .iter()
+                    .map(|b| {
+                        rsx! {
+                            option { key: "{b}", value: "{b}", {b.info().name} }
+                        }
+                    })
             }
         }
     }

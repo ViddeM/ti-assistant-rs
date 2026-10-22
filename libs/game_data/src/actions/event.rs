@@ -9,6 +9,7 @@ use crate::{
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
+        breakthrough::Breakthrough,
         frontier_card::FrontierCard,
         leaders::Leader,
         objectives::{Objective, public::PublicObjective, secret::SecretObjective},
@@ -433,6 +434,14 @@ pub enum Event {
         player: Option<PlayerId>,
         /// The expedition slot being claimed.
         slot: TEExpeditionSlot,
+    },
+
+    /// Set a breakthrough for a player.
+    SetBreakthrough {
+        /// The player for whom the breakthrough is being set.
+        player: PlayerId,
+        /// The breakthrough to set for the player.
+        breakthrough: Option<Breakthrough>,
     },
 
     /// Remove a law from play.

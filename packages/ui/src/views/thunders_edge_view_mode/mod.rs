@@ -11,6 +11,7 @@ use crate::{
     views::thunders_edge_view_mode::expedition_token::ExpeditionToken,
 };
 
+mod breakthrough;
 mod expedition_token;
 
 const THUNDERS_EDGE_VIEW_MODE_SCSS: Asset =
@@ -28,6 +29,7 @@ pub fn ThundersEdgeViewMode() -> Element {
         if let Some(thunders_edge) = thunders_edge() {
             Expedition { progress: thunders_edge.progress.clone() }
             Completed { completed: thunders_edge.completed.clone() }
+            Breakthroughs { }
         } else {
             div { class: "card te-error-card",
                 p { "Thunder's edge not enabled but you are in Thunder's Edge view mode?" }
@@ -72,6 +74,22 @@ fn Completed(completed: Option<TECompletion>) -> Element {
     rsx! {
         div { class: "card margin-top",
             h3 { "Completed" }
+        }
+    }
+}
+
+#[component]
+fn Breakthroughs() -> Element {
+    let gc = use_context::<GameContext>();
+
+    let players = use_memo(move || gc.game_state().players.clone());
+
+    rsx! {
+        div { class: "card margin-top",
+            h3 { "Breakthroughs" }
+            for (id, player) in players().into_iter() {
+                breakthrough::PlayerBreakthrough { key: "{id}", player_id: id, player }
+            }
         }
     }
 }
