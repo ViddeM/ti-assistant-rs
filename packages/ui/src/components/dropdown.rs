@@ -46,11 +46,14 @@ pub fn Dropdown(
         children,
     }: DropdownProps,
 ) -> Element {
+    let mut mounted = use_signal(|| false);
+    use_effect(move || mounted.set(true));
+
     let class = format!("dropdown {class}");
 
     rsx! {
         document::Stylesheet { href: DROPDOWN_SCSS }
-        select { value: "{value()}", class, oninput, ..attributes, {children} }
+        select { value: if mounted() { "{value()}" } else { "" }, class, oninput, ..attributes, {children} }
     }
 }
 
