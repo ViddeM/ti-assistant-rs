@@ -1,6 +1,6 @@
 use std::{
     borrow::BorrowMut,
-    collections::{BTreeSet, HashSet},
+    collections::{BTreeSet, HashMap, HashSet},
 };
 
 use anyhow::{Context, Result, bail, ensure};
@@ -31,7 +31,7 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
-        system::{System, SystemType, systems},
+        system::{AnomalyType, System, SystemType, systems},
         tech::{TechOrigin, TechType, Technology},
     },
     state::{
@@ -1865,6 +1865,70 @@ fn try_update_game_state(
             );
 
             player.breakthrough = breakthrough;
+        }
+        Event::SetThundersEdgeCompletion { new_completion } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            let te = game_state
+                .te_expedition
+                .as_mut()
+                .expect("Thunders Edge enabled but not initialized");
+
+            ensure!(
+                te.completed != new_completion,
+                "No change provided in event"
+            );
+
+            if let Some(comp) = new_completion.as_ref() {
+                let all_systems = systems();
+
+                // Validate player & system.
+                let valid_systems = all_systems
+                    .iter()
+                    .filter(|(_, s)| s.planets.is_empty())
+                    .filter(|(_, s)| match &s.system_type {
+                        SystemType::Anomaly(anomaly_types) => {
+                            !anomaly_types.contains(&AnomalyType::TheFracture)
+                                && !anomaly_types.contains(&AnomalyType::Supernova)
+                        }
+                        SystemType::Hyperlane => false,
+                        _ => true,
+                    })
+                    .filter(|(_, s)| s.wormholes.is_empty())
+                    .map(|(id, _)| id)
+                    .collect::<HashSet<_>>();
+                ensure!(
+                    valid_systems.contains(&comp.placed_in),
+                    "System is not a valid candidate for Thunder's Edge"
+                );
+
+                // Validate that the player is among the ones with the most expedition slots.
+                let slots_of = |p: &PlayerId| te.progress.values().filter(|&o| o == p).count();
+                let player_slots = slots_of(&comp.completed_by);
+                ensure!(
+                    te.progress
+                        .values()
+                        .all(|other| slots_of(other) <= player_slots),
+                    "Only a player with the most expedition slots can complete Thunder's Edge"
+                );
+
+                // Ensure the player exists.
+                let mut player = game_state
+                    .players
+                    .get_mut(&comp.completed_by)
+                    .context("Player not found")?;
+
+                if te.completed.is_none() {
+                    // Give the planet to new player
+                    player.take_planet(Planet::ThundersEdge);
+                }
+            } else {
+                ensure!(
+                    te.progress.len() < 6,
+                    "Cannot uncomplete Thunders Edge expedition with all slots claimed"
+                );
+            }
+
+            te.completed = new_completion;
         }
     }
 

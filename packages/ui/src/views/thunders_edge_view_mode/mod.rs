@@ -74,6 +74,14 @@ fn Completed(completed: Option<TECompletion>) -> Element {
     rsx! {
         div { class: "card margin-top",
             h3 { "Completed" }
+            if let Some(complete) = completed {
+                PlayerDropdown {
+                    value: complete.completed_by,
+                    on_select: move |p| complete,
+                }
+            } else {
+                p { "Expedition is not yet completed." }
+            }
         }
     }
 }

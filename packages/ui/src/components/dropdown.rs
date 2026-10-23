@@ -46,6 +46,7 @@ pub fn Dropdown(
         children,
     }: DropdownProps,
 ) -> Element {
+    // Used to ensure correct initailization, see https://github.com/DioxusLabs/dioxus/issues/5238
     let mut mounted = use_signal(|| false);
     use_effect(move || mounted.set(true));
 

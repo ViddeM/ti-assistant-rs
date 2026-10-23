@@ -20,7 +20,10 @@ use crate::{
         system::SystemId,
         tech::Technology,
     },
-    state::{expedition::TEExpeditionSlot, player::NewPlayer},
+    state::{
+        expedition::{TECompletion, TEExpeditionSlot},
+        player::NewPlayer,
+    },
 };
 
 /// An event in the game.
@@ -434,6 +437,12 @@ pub enum Event {
         player: Option<PlayerId>,
         /// The expedition slot being claimed.
         slot: TEExpeditionSlot,
+    },
+
+    /// Change who completed the Thunders Edge expedition.
+    SetThundersEdgeCompletion {
+        /// The new completion, or None if it should be "uncompleted".
+        new_completion: Option<TECompletion>,
     },
 
     /// Set a breakthrough for a player.

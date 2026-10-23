@@ -40,6 +40,7 @@ pub enum AnomalyType {
     MuaatSupernova,
     GravityRift,
     EntropicScar,
+    TheFracture,
 }
 
 /// The ID for a system.
@@ -777,6 +778,24 @@ pub fn systems() -> HashMap<SystemId, System> {
             SystemType::HomeSystem(Faction::CrimsonRebellion),
             vec![Planet::AhkCreuxx],
             vec![WormHoleType::Epsilon],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "125",
+            SystemType::Anomaly(vec![AnomalyType::TheFracture]),
+            vec![Planet::Industrex],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "126",
+            SystemType::Anomaly(vec![AnomalyType::TheFracture]),
+            vec![Planet::Industrex],
+            Expansion::ThundersEdge
+        ),
+        s!(
+            "127",
+            SystemType::Anomaly(vec![AnomalyType::TheFracture]),
+            vec![Planet::Industrex],
             Expansion::ThundersEdge
         ),
     ])
