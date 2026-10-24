@@ -141,7 +141,7 @@ impl Faction {
             Faction::Arborec => Breakthrough::Psychospore,
             Faction::BaronyOfLetnev => Breakthrough::GravleashManeuvers,
             Faction::ClanOfSaar => Breakthrough::DeorbitBarrage,
-            Faction::EmbersOfMuaat => Breakthrough::VisionariaSelect,
+            Faction::EmbersOfMuaat => Breakthrough::StellarGenesis,
             Faction::EmiratesOfHacan => Breakthrough::AutoFactories,
             Faction::FederationOfSol => Breakthrough::BellumGloriosum,
             Faction::GhostsOfCreuss => Breakthrough::ParticleSynthesis,
