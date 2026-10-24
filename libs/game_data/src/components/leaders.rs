@@ -172,3 +172,59 @@ impl_enum!(From<Hero> for Leader::Hero);
 impl_enum!(From<AgentInfo> for LeaderInfo::Agent);
 impl_enum!(From<CommanderInfo> for LeaderInfo::Commander);
 impl_enum!(From<HeroInfo> for LeaderInfo::Hero);
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use super::*;
+
+    /// [Leader] is serialized untagged, so a name shared by two leader kinds would deserialize
+    /// as the wrong leader (e.g. a hero replayed from the history as a commander).
+    #[test]
+    fn leaders_survive_a_serde_round_trip() {
+        for leader in Leader::iter() {
+            let json = serde_json::to_string(&leader).unwrap();
+            let parsed: Leader = serde_json::from_str(&json)
+                .unwrap_or_else(|e| panic!("{leader:?} serialized as {json} failed to parse: {e}"));
+            assert_eq!(
+                parsed, leader,
+                "{leader:?} serialized as {json} but parsed as {parsed:?}, \
+                 leader names must be unique across agents, commanders and heroes"
+            );
+        }
+    }
+
+    #[test]
+    fn leader_info_matches_leader() {
+        for leader in Leader::iter() {
+            let tag: Leader = match leader.info() {
+                LeaderInfo::Agent(i) => i.tag.into(),
+                LeaderInfo::Commander(i) => i.tag.into(),
+                LeaderInfo::Hero(i) => i.tag.into(),
+            };
+            assert_eq!(tag, leader, "{leader:?} has info for {tag:?}");
+        }
+    }
+
+    /// Descriptions are read from a file named after the variant, so leaders with the same name
+    /// would silently share a description.
+    #[test]
+    fn leaders_have_their_own_description() {
+        let mut seen: HashMap<String, Leader> = HashMap::new();
+        for leader in Leader::iter() {
+            let description = match leader.info() {
+                LeaderInfo::Agent(i) => i.description,
+                LeaderInfo::Commander(i) => i.description,
+                LeaderInfo::Hero(i) => i.description,
+            };
+            assert!(
+                !description.trim().is_empty(),
+                "{leader:?} has no description"
+            );
+            if let Some(other) = seen.insert(description, leader) {
+                panic!("{leader:?} and {other:?} have the same description");
+            }
+        }
+    }
+}

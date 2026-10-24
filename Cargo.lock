@@ -3830,6 +3830,7 @@ dependencies = [
  "chrono",
  "rand 0.9.5",
  "serde",
+ "serde_json",
  "strum",
  "strum_macros",
  "thiserror 1.0.69",
