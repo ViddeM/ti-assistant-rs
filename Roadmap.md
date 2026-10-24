@@ -79,7 +79,7 @@
      - ❌ updated diplo strat card
      - ❌ updated construction strat card
    - ❌ Codex I
-     - ❌ updated techs: (magmus reactor, wormhole generator, yin spinner, magan defence grid, x-89)
+     - ✅ updated techs: (magmus reactor, wormhole generator, yin spinner, magan defence grid, x-89)
      - ❌ promissary notes (stymie, war funding, cybernetic enhancements, acquiessence, greyfire)
      - ✅ new action cards (blitz, counterstroke, fighter conscription, forward supply base, ghost squad, hack election, harness energy, impersonation, insider info, master plan, plagiarize, rally, reflective shielding, scramble frequency, solar flare, war machine)
      - ❌ updated components: (diplo strat card, hypermetabolism, gravity rifts, rerolls during combat, retreating infantry)
@@ -227,7 +227,7 @@
  - ❌ Go over TE to see if anything has been missed.
 
 ## Thunder's Edge
- - ❌  Breakthroughs for each faction
+ - 🚱  Breakthroughs for each faction (assigning them works, the effects below are not handled)
   - ❌  Generic actions that we don't track (just a button in the UI)
   - ❌  I.I.H.Q. Modernization (gain planet)
   - ❌  Resonance Generator (maybe for map purposes? LOW PRIO)
@@ -241,7 +241,7 @@
   - ❌  The quantumcore, depends on if we will handle breakthroughs and/or synergies.
   - ❌  The Silver Flame
   - ❌  The Triad (maybe we'll want to show it on the planet page somehow? But we don't track relic fragments...)
- - ❌  new factions
+ - 🚱  new factions
  - ✅  new planets
  - ❌  new legendary planet abilities
   - ❌  Thunder's Edge (PERFORM 1 ACTION AT THE END OF YOUR TURN??? Can be worked around atm by taking another turn but not very pretty, also if we should handle breakthroughs)
@@ -260,22 +260,24 @@
  - ❌  Coexistance (map visualization)
  - ❌  New Leaders
   - ❌  Agents
-    - ❌  Kan Kip Rel (Action)
-    - ❌  Ahk Ravin (Action)
+    - ✅  Kan Kip Rel (Action)
+    - ✅  Ahk Ravin (Action)
   - ✅  Commanders
   - ❌  Heros
     - ❌  Director Nel (Can unpass...)
     - ❌  Ta Zern (Action: Delete a tech from everyone, the ones that got a tech deleted researches again)
-    - ❌  Sharsiss (Action)
-    - ❌  Sharsiss Hollow (Action)
+    - ✅  Sharsiss (Action)
+    - ✅  Sharsiss Hollow (Action)
 
 ## Codex IV
+  - ✅  separate expansion toggle
+  - ✅  updated techs: (magen defense grid ΩΩ, x-89 bacterial weapon ΩΩ)
+  - ✅  relics
+    - ✅ Circlet of the Void (the effects are not tracked)
+    - ✅ Neuraloop (status phase only, not objectives revealed outside of it)
+    - ✅ Book of Latvinia (the techs gained with it are added manually)
   - ❌  galactic events (could be difficult!)
-  - ❌  relics, added but need handling.
-    - ❌ Circlet of the Void
-    - ❌ Neuraloop
-    - ❌ Book of Latvinia
-  - TODO
+  - ❌  Liberation of Ordinian scenario
 
 TODO: Look overall strategy cards to see that we always display the correct variant.
 TODO: Display "Undo event {NAME}" popup or smth when undoing so that it is more clear for other players (and oneself).
