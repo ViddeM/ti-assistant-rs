@@ -398,7 +398,14 @@ mod tests {
     #[test]
     fn faction_breakthrough_matches() {
         for f in Faction::iter() {
-            assert_eq!(f.breakthrough().info().faction, f);
+            assert_eq!(
+                f.breakthrough().info().faction,
+                f,
+                "Faction {:?} has a mismatched breakthrough {:?} which claims to belong to faction: {:?}",
+                f,
+                f.breakthrough(),
+                f.breakthrough().info().faction,
+            );
         }
     }
 }
