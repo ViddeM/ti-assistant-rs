@@ -1,0 +1,128 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: true
+phase: Status
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: BellumGloriosum
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+    breakthrough: ~
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Politics: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+currentPlayer: Carol
+spentStrategyCards:
+  - Leadership
+  - Diplomacy
+  - Politics
+  - Construction
+  - Trade
+  - Warfare
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives: {}
+  scoredSecretObjectives: {}
+  revealedObjective: ~
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 720
+    nanos: 0
+  Bob:
+    secs: 600
+    nanos: 0
+  Carol:
+    secs: 660
+    nanos: 0
+currentTurnStartTime: ~
+naaluTelepathy: ~
+teExpedition:
+  completed: ~
+  progress:
+    Resources: Alice
+  committed_by: ~
+  finder_of_te: ~

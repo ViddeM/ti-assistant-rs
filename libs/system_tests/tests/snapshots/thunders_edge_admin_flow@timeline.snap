@@ -1,0 +1,29 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+   9 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  10 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  11 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  14 CompleteStrategyPhase                    r1 Action             Alice
+  15 ClaimThundersEdgeExpeditionSlot(Alice)   r1 Action             Alice
+  16 ClaimThundersEdgeExpeditionSlot(Alice)   r1 Action             Alice
+  17 ClaimThundersEdgeExpeditionSlot(Alice)   r1 Action             Alice
+  18 ClaimThundersEdgeExpeditionSlot(Alice)   r1 Action             Alice
+  19 ClaimThundersEdgeExpeditionSlot(Alice)   r1 Action             Alice
+  20 ClaimThundersEdgeExpeditionSlot(Alice)   r1 Action             Alice
+  21 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  22 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  23 EndTurn(Alice)                           r1 Action             Bob
+  24 SetThundersEdgeCompletion                r1 Action             Bob
+  25 SetThundersEdgeCompletion                r1 Action             Bob

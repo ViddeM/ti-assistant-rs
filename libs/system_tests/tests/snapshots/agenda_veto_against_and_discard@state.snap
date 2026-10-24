@@ -25,6 +25,7 @@ players:
       - AntimassDeflectors
       - NeuralMotivator
     relics: []
+    breakthrough: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -37,6 +38,7 @@ players:
       - AntimassDeflectors
       - SarweenTools
     relics: []
+    breakthrough: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -47,6 +49,7 @@ players:
     technologies:
       - GravitonLaserSystem
     relics: []
+    breakthrough: ~
 speaker: Alice
 tableOrder:
   - Alice
@@ -165,3 +168,4 @@ playersPlayTime:
     nanos: 0
 currentTurnStartTime: "2025-01-01T12:55:00Z"
 naaluTelepathy: ~
+teExpedition: ~

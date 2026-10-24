@@ -27,6 +27,7 @@ players:
       - NeuralMotivator
       - SarweenTools
     relics: []
+    breakthrough: ~
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -43,6 +44,7 @@ players:
       - PlasmaScoring
       - SarweenTools
     relics: []
+    breakthrough: ~
   Carol:
     name: Carol
     faction: NekroVirus
@@ -53,6 +55,7 @@ players:
       - DacxiveAnimators
       - GravityDrive
     relics: []
+    breakthrough: ~
   Dave:
     name: Dave
     faction: Winnu
@@ -64,6 +67,7 @@ players:
       - NeuralMotivator
       - SarweenTools
     relics: []
+    breakthrough: ~
   Erin:
     name: Erin
     faction: ArgentFlight
@@ -76,6 +80,7 @@ players:
       - NeuralMotivator
       - PlasmaScoring
     relics: []
+    breakthrough: ~
   Finn:
     name: Finn
     faction: CouncilKeleres
@@ -91,6 +96,7 @@ players:
       - DacxiveAnimators
     relics:
       - ShardOfTheThrone
+    breakthrough: ~
 speaker: Erin
 tableOrder:
   - Alice
@@ -405,3 +411,4 @@ playersPlayTime:
     nanos: 0
 currentTurnStartTime: ~
 naaluTelepathy: Alice
+teExpedition: ~

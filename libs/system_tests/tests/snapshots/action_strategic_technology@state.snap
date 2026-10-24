@@ -27,6 +27,7 @@ players:
       - NeuralMotivator
       - PlasmaScoring
     relics: []
+    breakthrough: ~
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -42,6 +43,7 @@ players:
       - PlasmaScoring
       - SarweenTools
     relics: []
+    breakthrough: ~
   Carol:
     name: Carol
     faction: NekroVirus
@@ -51,6 +53,7 @@ players:
     technologies:
       - DacxiveAnimators
     relics: []
+    breakthrough: ~
 speaker: Alice
 tableOrder:
   - Alice
@@ -113,3 +116,4 @@ playersPlayTime:
     nanos: 0
 currentTurnStartTime: "2025-01-01T12:26:00Z"
 naaluTelepathy: ~
+teExpedition: ~

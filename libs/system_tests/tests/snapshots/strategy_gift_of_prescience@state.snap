@@ -26,6 +26,7 @@ players:
       - NeuralMotivator
       - SarweenTools
     relics: []
+    breakthrough: ~
   Bob:
     name: Bob
     faction: FederationOfSol
@@ -36,6 +37,7 @@ players:
       - AntimassDeflectors
       - NeuralMotivator
     relics: []
+    breakthrough: ~
   Carol:
     name: Carol
     faction: EmiratesOfHacan
@@ -48,6 +50,7 @@ players:
       - AntimassDeflectors
       - SarweenTools
     relics: []
+    breakthrough: ~
 speaker: Alice
 tableOrder:
   - Alice
@@ -113,3 +116,4 @@ playersPlayTime:
     nanos: 0
 currentTurnStartTime: "2025-01-01T12:45:00Z"
 naaluTelepathy: Alice
+teExpedition: ~

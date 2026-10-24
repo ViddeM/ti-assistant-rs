@@ -27,6 +27,7 @@ players:
       - PlasmaScoring
       - SarweenTools
     relics: []
+    breakthrough: ~
   Kel:
     name: Kel
     faction: CouncilKeleres
@@ -38,6 +39,7 @@ players:
       - NeuralMotivator
       - PlasmaScoring
     relics: []
+    breakthrough: ~
   Wendy:
     name: Wendy
     faction: Winnu
@@ -47,6 +49,7 @@ players:
     technologies:
       - NeuralMotivator
     relics: []
+    breakthrough: ~
 speaker: Kel
 tableOrder:
   - Wendy
@@ -91,3 +94,4 @@ timeTrackingPaused: false
 playersPlayTime: {}
 currentTurnStartTime: "2025-01-01T12:11:00Z"
 naaluTelepathy: ~
+teExpedition: ~

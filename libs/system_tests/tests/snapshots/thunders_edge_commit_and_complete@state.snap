@@ -1,0 +1,126 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    thundersEdge: true
+phase: Action
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+      ThundersEdge: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: BellumGloriosum
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+    breakthrough: AutoFactories
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ArchonsGift
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Politics: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+currentPlayer: Alice
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 900
+    nanos: 0
+  Bob:
+    secs: 600
+    nanos: 0
+  Carol:
+    secs: 600
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:42:00Z"
+naaluTelepathy: ~
+teExpedition:
+  completed:
+    won_by: Alice
+    placed_in: "114"
+  progress:
+    Resources: Alice
+    ActionCards: Bob
+    Influence: Alice
+    SecretObjective: Bob
+    TechSpecialityPlanet: Carol
+    TradeGoods: Alice
+  committed_by: ~
+  finder_of_te: Carol

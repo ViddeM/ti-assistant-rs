@@ -26,6 +26,7 @@ players:
       - GravityDrive
       - NeuralMotivator
     relics: []
+    breakthrough: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -39,6 +40,7 @@ players:
       - GravityDrive
       - ProductionBiomes
     relics: []
+    breakthrough: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -50,6 +52,7 @@ players:
       - GravitonLaserSystem
       - NeuralMotivator
     relics: []
+    breakthrough: ~
 speaker: Alice
 tableOrder:
   - Alice
@@ -110,3 +113,4 @@ playersPlayTime:
     nanos: 0
 currentTurnStartTime: "2025-01-01T12:27:00Z"
 naaluTelepathy: ~
+teExpedition: ~

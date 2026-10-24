@@ -30,6 +30,7 @@ players:
       - AntimassDeflectors
       - NeuralMotivator
     relics: []
+    breakthrough: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -42,6 +43,7 @@ players:
       - AntimassDeflectors
       - SarweenTools
     relics: []
+    breakthrough: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -52,6 +54,7 @@ players:
     technologies:
       - GravityDrive
     relics: []
+    breakthrough: ~
 speaker: Alice
 tableOrder:
   - Alice
@@ -97,3 +100,4 @@ timeTrackingPaused: false
 playersPlayTime: {}
 currentTurnStartTime: "2025-01-01T12:07:00Z"
 naaluTelepathy: ~
+teExpedition: ~
