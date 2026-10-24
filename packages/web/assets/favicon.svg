@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TI4 utility">
+  <path
+    d="M32 7 52.8 19v24L32 55 11.2 43V19L32 7Z"
+    fill="none"
+    stroke="#B9C1C9"
+    stroke-width="3"
+    stroke-linejoin="miter"
+  />
+  <path
+    d="M32 7v15M52.8 19l-13 7.5M52.8 43l-13-7.5M32 55V40M11.2 43l13-7.5M11.2 19l13 7.5"
+    stroke="#59636E"
+    stroke-width="2"
+  />
+  <path d="M32 19 36 28l9 4-9 4-4 9-4-9-9-4 9-4 4-9Z" fill="#D6B875"/>
+  <path d="M32 25.5 34.3 32 32 38.5 29.7 32 32 25.5Z" fill="#F1E7CE"/>
+</svg>

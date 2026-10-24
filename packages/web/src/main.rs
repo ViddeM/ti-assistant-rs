@@ -23,7 +23,7 @@ enum Route {
         Game { id: String }
 }
 
-const FAVICON: Asset = asset!("/assets/favicon.ico");
+const FAVICON: Asset = asset!("/assets/favicon.svg");
 const MAIN_SCSS: Asset = asset!("/assets/main.scss");
 
 // TODO: Cargo clippy....
@@ -50,6 +50,7 @@ fn App() -> Element {
         // Global app resources
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: MAIN_SCSS }
+        document::Title { "TI Helper" }
 
         Setup {}
 
