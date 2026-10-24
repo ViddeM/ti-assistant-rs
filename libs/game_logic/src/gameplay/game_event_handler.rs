@@ -1279,6 +1279,14 @@ fn try_update_game_state(
                     }
                 }
 
+                ensure!(
+                    !game_state
+                        .score
+                        .revealed_objectives
+                        .contains_key(&Objective::Secret(obj)),
+                    "secret objective has been revealed as a public objective"
+                );
+
                 game_state
                     .score
                     .secret_objectives
@@ -1380,6 +1388,70 @@ fn try_update_game_state(
                 Phase::Strategy
             };
             game_state.change_phase(phase, timestamp)?;
+        }
+        Event::PlayNeuraloop {
+            player,
+            purged_relic,
+            replacement,
+        } => {
+            game_state.assert_phase(Phase::Status)?;
+            game_state.assert_expansion(&Relic::Neuraloop.info().expansion)?;
+            game_state.assert_expansion(&replacement.info().expansion)?;
+
+            let Some(p) = game_state.players.get(&player) else {
+                bail!("Player doesn't exist");
+            };
+
+            ensure!(
+                p.relics.contains(&Relic::Neuraloop),
+                "Player doesn't have the Neuraloop relic!"
+            );
+            ensure!(
+                p.relics.contains(&purged_relic),
+                "Player doesn't have the {purged_relic:?} relic to purge!"
+            );
+
+            let Some(status_phase_state) = game_state.status_phase_state.as_mut() else {
+                bail!("Status phase state not set!")
+            };
+
+            let Some(revealed) = status_phase_state.revealed_objective else {
+                bail!("Neuraloop can only be played after a public objective has been revealed");
+            };
+
+            ensure!(
+                !game_state
+                    .score
+                    .revealed_objectives
+                    .contains_key(&replacement),
+                "Objective has already been revealed!"
+            );
+
+            if let Objective::Secret(secret) = &replacement {
+                ensure!(
+                    !game_state
+                        .score
+                        .secret_objectives
+                        .values()
+                        .any(|scored| scored.contains(secret)),
+                    "Secret objective has already been scored"
+                );
+            }
+
+            game_state.score.revealed_objectives.remove(&revealed);
+            game_state
+                .score
+                .revealed_objectives
+                .insert(replacement, BTreeSet::new());
+            status_phase_state.revealed_objective = Some(replacement);
+
+            let Some(p) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist");
+            };
+            p.relics.remove(&purged_relic);
+            if purged_relic == Relic::ShardOfTheThrone {
+                game_state.score.shard_of_the_throne = None;
+            }
         }
         Event::PlayCrownOfEmphidia { player } => {
             game_state.assert_phase(Phase::Relics)?;

@@ -288,6 +288,16 @@ pub enum Event {
     /// Complete the status phase.
     CompleteStatusPhase,
 
+    /// A player plays the Neuraloop relic to replace the public objective revealed this status phase.
+    PlayNeuraloop {
+        /// The player who plays Neuraloop.
+        player: PlayerId,
+        /// The relic the player purges, which may be Neuraloop itself.
+        purged_relic: Relic,
+        /// The objective that replaces the revealed one, it is a public objective even if it is a secret objective.
+        replacement: Objective,
+    },
+
     /// A player plays the Crown of Emphidia card.
     PlayCrownOfEmphidia {
         /// The player who plays the Crown of Emphidia card.

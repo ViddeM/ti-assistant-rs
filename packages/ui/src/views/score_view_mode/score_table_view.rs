@@ -40,7 +40,13 @@ pub fn ScoreTableView() -> Element {
             .score
             .revealed_objectives
             .keys()
-            .filter(|o| o.info().kind == ObjectiveKind::StageI)
+            // Secret objectives revealed as public (Neuraloop) are listed with the 1 point objectives.
+            .filter(|o| {
+                matches!(
+                    o.info().kind,
+                    ObjectiveKind::StageI | ObjectiveKind::Secret { .. }
+                )
+            })
             .cloned()
             .collect::<Vec<_>>();
         objectives.sort();

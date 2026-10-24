@@ -5,12 +5,16 @@ use std::{
 
 use anyhow::{bail, ensure};
 use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
 
 use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
     components::{
-        breakthrough::Breakthrough, planet::Planet, planet_attachment::PlanetAttachment,
-        relic::Relic, tech::Technology,
+        breakthrough::Breakthrough,
+        planet::Planet,
+        planet_attachment::PlanetAttachment,
+        relic::Relic,
+        tech::{TechCategory, Technology},
     },
     state::faction_state::{FactionState, FirmamentSide, FirmamentState},
 };
@@ -164,5 +168,25 @@ impl Player {
     /// Returns true if the player currently has the technology.
     pub fn has_tech(&self, tech: &Technology) -> bool {
         self.technologies.contains(tech)
+    }
+
+    /// The technology specialties of the planets the player controls, including those gained from attachments.
+    pub fn controlled_tech_specialties(&self) -> BTreeSet<TechCategory> {
+        self.planets
+            .iter()
+            .flat_map(|(planet, attachments)| {
+                planet
+                    .info()
+                    .tech_specialities
+                    .into_iter()
+                    .chain(attachments.iter().filter_map(|a| a.info().tech_specialty))
+            })
+            .collect()
+    }
+
+    /// Returns true if the player controls planets with all 4 types of technology specialties.
+    pub fn controls_all_tech_specialties(&self) -> bool {
+        let specialties = self.controlled_tech_specialties();
+        TechCategory::iter().all(|c| specialties.contains(&c))
     }
 }

@@ -2,11 +2,18 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::objectives::{Objective, ObjectiveKind, secret::SecretObjective},
+    components::{
+        objectives::{Objective, ObjectiveKind, secret::SecretObjective},
+        relic::Relic,
+    },
 };
 
 use crate::{
-    components::{button::Button, dropdown::ObjectiveDropdown, info_button::InfoButton},
+    components::{
+        button::Button,
+        dropdown::{ObjectiveDropdown, RelicDropdown},
+        info_button::InfoButton,
+    },
     data::{
         event_context::EventContext, game_context::GameContext, info_context::Info,
         player_view::PlayerViewContext,
@@ -70,6 +77,14 @@ pub fn StatusPhaseActionsView() -> Element {
 
     let revealed_objective = use_memo(move || state().revealed_objective);
 
+    let neuraloop_holder = use_memo(move || {
+        gc.game_state()
+            .players
+            .iter()
+            .find(|(_, p)| p.relics.contains(&Relic::Neuraloop))
+            .map(|(id, _)| id.clone())
+    });
+
     let reveal_stage_two = use_memo(move || {
         revealed_objectives().len() >= state().expected_objectives_before_stage_two
     });
@@ -102,6 +117,11 @@ pub fn StatusPhaseActionsView() -> Element {
                     div { class: "row",
                         p { "{revealed.info().name}" }
                         InfoButton { info: Info::Objective(revealed) }
+                    }
+                    if let Some(holder) = neuraloop_holder() {
+                        if view.display_for(&holder) {
+                            NeuraloopView { player: holder }
+                        }
                     }
                 } else if view.is_global_or_speaker() {
                     ObjectiveDropdown {
@@ -197,6 +217,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                 Objective::Secret(secret) => Some((*o, *secret)),
             })
             .filter(|(_, s)| !player_scored_secrets().contains(s))
+            .filter(|(obj, _)| !gc.game_state().score.revealed_objectives.contains_key(obj))
             .map(|(obj, _)| obj)
             .collect::<Vec<_>>();
         objs.sort();
@@ -268,6 +289,85 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                             "Score"
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn NeuraloopView(player: ReadSignal<PlayerId>) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected_relic = use_signal(|| None);
+    let mut selected_replacement = use_signal(|| None);
+
+    let player_relics = use_memo(move || {
+        let mut relics = gc
+            .game_state()
+            .players
+            .get(&player())
+            .map(|p| p.relics.iter().cloned().collect::<Vec<_>>())
+            .unwrap_or_default();
+        relics.sort();
+        relics
+    });
+
+    let replacements = use_memo(move || {
+        let state = gc.game_state();
+        let mut objs = gc
+            .game_options()
+            .objectives
+            .iter()
+            .filter(|&o| !state.score.revealed_objectives.contains_key(o))
+            .filter(|o| match o {
+                Objective::Public(_) => true,
+                Objective::Secret(secret) => !state
+                    .score
+                    .secret_objectives
+                    .values()
+                    .any(|scored| scored.contains(secret)),
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        objs.sort();
+        objs
+    });
+
+    rsx! {
+        fieldset {
+            legend {
+                h4 { "Neuraloop ({player()})" }
+            }
+            div { class: "column",
+                p { "Purge a relic to replace the revealed objective." }
+                RelicDropdown {
+                    value: selected_relic,
+                    options: player_relics(),
+                    on_select: move |r| selected_relic.set(r),
+                }
+                ObjectiveDropdown {
+                    value: selected_replacement,
+                    options: replacements(),
+                    on_select: move |o| selected_replacement.set(o),
+                    default_text: "--Select Replacement--",
+                }
+                Button {
+                    class: "margin-top",
+                    disabled: selected_relic().is_none() || selected_replacement().is_none(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::PlayNeuraloop {
+                                player: player(),
+                                purged_relic: selected_relic().expect("Relic to be selected"),
+                                replacement: selected_replacement()
+                                    .expect("Replacement objective to be selected"),
+                            });
+                        selected_relic.set(None);
+                        selected_replacement.set(None);
+                    },
+                    "Replace Objective"
                 }
             }
         }
