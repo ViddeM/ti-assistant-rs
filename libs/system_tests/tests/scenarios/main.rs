@@ -6,6 +6,7 @@
 
 mod action_phase;
 mod agenda;
+mod codex;
 mod fixtures;
 mod full_games;
 mod score;
@@ -29,6 +30,7 @@ pub const ALL_SCENARIOS: &[&[Scenario]] = &[
     agenda::SCENARIOS,
     score::SCENARIOS,
     thunders_edge::SCENARIOS,
+    codex::SCENARIOS,
     time::SCENARIOS,
     full_games::SCENARIOS,
 ];

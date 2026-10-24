@@ -9,6 +9,7 @@ gameSettings:
     codex1: true
     codex2: true
     codex3: true
+    codex4: true
     thundersEdge: false
 phase: Status
 mapData:
@@ -163,6 +164,7 @@ score:
     Bob: Finn
   shardOfTheThrone: Finn
   crownOfEmphidia: ~
+  bookOfLatvinia: ~
   extraPoints: {}
   imperial:
     Finn: 1

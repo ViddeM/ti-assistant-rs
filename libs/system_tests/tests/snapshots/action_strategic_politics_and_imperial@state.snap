@@ -9,6 +9,7 @@ gameSettings:
     codex1: false
     codex2: false
     codex3: false
+    codex4: false
     thundersEdge: false
 phase: Action
 mapData:
@@ -93,6 +94,7 @@ score:
   supportForTheThrone: {}
   shardOfTheThrone: ~
   crownOfEmphidia: ~
+  bookOfLatvinia: ~
   extraPoints: {}
   imperial:
     Bob: 1
