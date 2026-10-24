@@ -27,7 +27,7 @@ use ti_helper_game_data::{
         relic::Relic,
         strategy_card::StrategyCard,
     },
-    state::game_state::ActionPhaseProgress,
+    state::{expedition::TEExpeditionSlot, game_state::ActionPhaseProgress},
 };
 
 use crate::game::{TestGame, p};
@@ -318,10 +318,34 @@ impl<'g> Turn<'g> {
         self.game.apply(Event::EndTurn { player: self.id() })
     }
 
-    /// Pass for the rest of the action phase.
+    /// Pass for the rest of the action phase, declining to commit to the Thunder's Edge expedition.
     #[track_caller]
     pub fn pass(self) -> &'g mut TestGame {
-        self.game.apply(Event::PassAction { player: self.id() })
+        let player = self.id();
+        self.game.apply(Event::PassAction {
+            player: player.clone(),
+        });
+        if self.game.phase() == Phase::EndActionTurn {
+            self.game.apply(Event::EndTurn { player });
+        }
+        self.game
+    }
+
+    /// Pass for the rest of the action phase, staying in the end of turn step.
+    #[track_caller]
+    pub fn pass_and_stay(self) -> Self {
+        self.game.apply(Event::PassAction { player: self.id() });
+        self
+    }
+
+    /// Commit to the Thunder's Edge expedition at the end of the turn.
+    #[track_caller]
+    pub fn commit_to_expedition(self, slot: TEExpeditionSlot) -> Self {
+        self.game.apply(Event::CommitToThundersEdgeExpedition {
+            player: self.id(),
+            slot,
+        });
+        self
     }
 }
 

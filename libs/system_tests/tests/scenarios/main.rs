@@ -14,6 +14,7 @@ mod seed_db;
 mod setup;
 mod status;
 mod strategy;
+mod thunders_edge;
 mod time;
 mod undo;
 
@@ -27,6 +28,7 @@ pub const ALL_SCENARIOS: &[&[Scenario]] = &[
     status::SCENARIOS,
     agenda::SCENARIOS,
     score::SCENARIOS,
+    thunders_edge::SCENARIOS,
     time::SCENARIOS,
     full_games::SCENARIOS,
 ];

@@ -36,8 +36,10 @@ pub mod prelude {
             planet_attachment::PlanetAttachment,
             relic::Relic,
             strategy_card::StrategyCard,
+            system::{System, SystemId},
             tech::Technology,
         },
+        state::expedition::{TECompletion, TEExpeditionSlot},
     };
 
     pub use crate::{
