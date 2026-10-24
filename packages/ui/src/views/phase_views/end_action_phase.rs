@@ -168,6 +168,12 @@ fn CommitToExpedition(
     // The slot might have been claimed (by an admin) after it was selected.
     let selected = selected_slot().filter(|slot| selectable.contains(slot));
 
+    // Preview the player's pending claim on the wheel before it's committed.
+    let mut preview_progress = expedition.progress.clone();
+    if let Some(slot) = &selected {
+        preview_progress.insert(slot.clone(), player.clone());
+    }
+
     rsx! {
         div { class: "expedition-commit",
             h3 { "Thunder's Edge expedition" }
@@ -181,14 +187,14 @@ fn CommitToExpedition(
             }
 
             ExpeditionToken {
-                progress: expedition.progress.clone(),
+                progress: preview_progress,
                 selectable,
                 selected: selected.clone(),
                 on_select: move |slot| selected_slot.set(Some(slot)),
             }
 
             if let Some(slot) = selected {
-                div { class: "expedition-selected-slot",
+                div { class: "warning-text",
                     InfoButton { info: slot_info(&slot) }
                     span { "{slot.description()}" }
                 }
