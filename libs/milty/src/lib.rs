@@ -96,6 +96,7 @@ impl MiltyImport for MiltyData {
             codex_1: true, // TODO: not entirely sure about these.
             codex_2: true,
             codex_3: true,
+            codex_4: true,
             thunders_edge: milty_conf.include_te_factions || milty_conf.include_te_tiles,
         };
 
@@ -158,6 +159,7 @@ mod tests {
         assert_eq!(data.expansions.codex_1, true);
         assert_eq!(data.expansions.codex_2, true);
         assert_eq!(data.expansions.codex_3, true);
+        assert!(data.expansions.codex_4);
         assert_eq!(data.expansions.thunders_edge, true);
         assert_eq!(data.expansions.prophecy_of_kings, true);
     }

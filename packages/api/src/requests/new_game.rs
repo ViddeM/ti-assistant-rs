@@ -31,6 +31,9 @@ pub enum GameConfig {
         cod2: bool,
         /// If Codex III should be used.
         cod3: bool,
+        /// If Codex IV should be used.
+        #[serde(default)]
+        cod4: bool,
         /// If Thunder's Edge is to be used.
         te: bool,
     },
@@ -55,6 +58,7 @@ impl NewGame {
                 cod1,
                 cod2,
                 cod3,
+                cod4,
                 te,
             } => {
                 log::info!("Creating new game event from settings");
@@ -66,6 +70,7 @@ impl NewGame {
                             codex_1: *cod1,
                             codex_2: *cod2,
                             codex_3: *cod3,
+                            codex_4: *cod4,
                             thunders_edge: *te,
                         },
                     },

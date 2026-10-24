@@ -13,6 +13,8 @@ pub enum Expansion {
     CodexII,
     /// The third Codex addon.
     CodexIII,
+    /// The fourth Codex addon.
+    CodexIV,
     // Thunder's Edge expansion.
     ThundersEdge,
 }
@@ -26,6 +28,7 @@ impl Expansion {
             Expansion::Codex => "Codex",
             Expansion::CodexII => "Codex II",
             Expansion::CodexIII => "Codex III",
+            Expansion::CodexIV => "Codex IV",
             Expansion::ThundersEdge => "Thunder's Edge",
         })
     }

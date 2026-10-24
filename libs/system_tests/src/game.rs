@@ -394,11 +394,12 @@ impl TestGameBuilder {
         self
     }
 
-    /// Enable all three codices.
+    /// Enable all codices.
     pub fn codex(mut self) -> Self {
         self.settings.expansions.codex_1 = true;
         self.settings.expansions.codex_2 = true;
         self.settings.expansions.codex_3 = true;
+        self.settings.expansions.codex_4 = true;
         self
     }
 

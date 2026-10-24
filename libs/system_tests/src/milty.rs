@@ -33,6 +33,7 @@ pub fn milty_data(players: &[(&str, Faction, u32)]) -> MiltyData {
             codex_1: true,
             codex_2: true,
             codex_3: true,
+            codex_4: true,
             thunders_edge: true,
         },
         game_name: "Scenario".to_string(),

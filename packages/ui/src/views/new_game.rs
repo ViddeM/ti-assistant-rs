@@ -108,6 +108,7 @@ fn CleanNewGameView(
     let mut codexI = use_signal(|| false);
     let mut codexII = use_signal(|| false);
     let mut codexIII = use_signal(|| false);
+    let mut codexIV = use_signal(|| false);
 
     rsx! {
         div { class: "create-game-row",
@@ -149,6 +150,15 @@ fn CleanNewGameView(
         div { class: "create-game-row",
             input {
                 r#type: "checkbox",
+                name: "pok_codIV_cb",
+                onchange: move |_| codexIV.toggle(),
+            }
+            label { r#for: "pok_codIV_cb", "Codex IV" }
+        }
+
+        div { class: "create-game-row",
+            input {
+                r#type: "checkbox",
                 name: "te_cb",
                 onchange: move |_| te.toggle(),
             }
@@ -164,6 +174,7 @@ fn CleanNewGameView(
                             cod1: codexI(),
                             cod2: codexII(),
                             cod3: codexIII(),
+                            cod4: codexIV(),
                             te: te(),
                         },
                     })
