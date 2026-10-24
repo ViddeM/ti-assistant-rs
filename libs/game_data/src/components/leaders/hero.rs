@@ -62,6 +62,13 @@ pub enum Hero {
     UnitDsgnFlayesh,
     XxekirGrom,
     XxekirGromCxIII, // patch of Xxekir Grom from Codex III
+    // Thunder's Edge
+    DirectorNel,
+    TaZernTE, // Name collision with PoK commander for Universities of Jol-Nar.
+    HomesickPhantom,
+    Sharsiss,
+    SharsissHollow,
+    LyraKeen,
 }
 
 macro_rules! info {
@@ -284,6 +291,48 @@ impl Hero {
                 ability: "Erwan's Covenant",
                 faction: CouncilKeleres,
                 kind: Action,
+            },
+            Hero::DirectorNel => info! {
+                tag: DirectorNel,
+                name: "Director Nel",
+                ability: "Signal Intrusion",
+                faction: RalNelConsortium,
+                kind: Other,
+            },
+            Hero::TaZernTE => info! {
+                tag: TaZernTE,
+                name: "Ta Zern",
+                ability: "Wave Function Collapse",
+                faction: DeepwroughtScholarate,
+                kind: Action,
+            },
+            Hero::HomesickPhantom => info! {
+                tag: HomesickPhantom,
+                name: "Homesick Phantom",
+                ability: "Fragment Reality",
+                faction: CrimsonRebellion,
+                kind: Other,
+            },
+            Hero::Sharsiss => info! {
+                tag: Sharsiss,
+                name: "Sharsiss",
+                ability: "The Blade Beckons",
+                faction: FirmamentObsidian,
+                kind: Action,
+            },
+            Hero::SharsissHollow => info! {
+                tag: SharsissHollow,
+                name: "Sharsiss Hollow",
+                ability: "Teh Blade Revealed",
+                faction: FirmamentObsidian,
+                kind: Action,
+            },
+            Hero::LyraKeen => info! {
+                tag: LyraKeen,
+                name: "Lyra Keen",
+                ability: "Entity 4X41A Apollo",
+                faction: LastBastion,
+                kind: Other,
             },
         }
     }

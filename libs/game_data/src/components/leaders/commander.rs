@@ -60,6 +60,13 @@ pub enum Commander {
     Tungstantus,
     Xuange,
     _2RAM,
+    // Thunder's Edge
+    WatchfulOjz,
+    Aello,
+    AhkSiever,
+    CaptainAroz,
+    ArozHollow,
+    NipAndTuck,
 }
 macro_rules! info {
     (tag: $commander:ident, name: $name:expr, unlock: $unlock:expr, faction:  $faction:ident,) => {
@@ -239,6 +246,42 @@ impl Commander {
                 name: "Suffi An",
                 unlock: "Spend 1 trade good after you play an action card that has a component action",
                 faction: CouncilKeleres,
+            },
+            Commander::WatchfulOjz => info! {
+                tag: WatchfulOjz,
+                name: "Watchful Ojz",
+                unlock: "Be the last person to pass during the Action Phase.",
+                faction: RalNelConsortium,
+            },
+            Commander::Aello => info! {
+                tag: Aello,
+                name: "Aello",
+                unlock: "Have an ocean card in play.",
+                faction: DeepwroughtScholarate,
+            },
+            Commander::AhkSiever => info! {
+                tag: AhkSiever,
+                name: "Ahk Siever",
+                unlock: "Place a breach token in a system that contains another player's unit.",
+                faction: CrimsonRebellion,
+            },
+            Commander::CaptainAroz => info! {
+                tag: CaptainAroz,
+                name: "Captain Aroz",
+                unlock: "Have one plot card in play.",
+                faction: FirmamentObsidian,
+            },
+            Commander::ArozHollow => info! {
+                tag: ArozHollow,
+                name: "Aroz Hollow",
+                unlock: "Have units in The Fracture .",
+                faction: FirmamentObsidian,
+            },
+            Commander::NipAndTuck => info! {
+                tag: NipAndTuck,
+                name: "Nip and Tuck",
+                unlock: "There are 3 galvanized units on the game board.",
+                faction: LastBastion,
             },
         }
     }

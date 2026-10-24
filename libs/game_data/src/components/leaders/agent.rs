@@ -59,6 +59,13 @@ pub enum Agent {
     Zeu,
     ZeuCxIII, // patch of Zeu from Codex III
     XanderAlexinVictoriIII,
+    /// Thunder's Edge
+    DameBriar,
+    KanKipRel,
+    DoctorCarrina,
+    AhkRavin,
+    MyruVos,
+    VosHollow,
 }
 
 macro_rules! info {
@@ -249,6 +256,42 @@ impl Agent {
                 tag: XanderAlexinVictoriIII,
                 name: "Xander Alexin Victori III",
                 faction: CouncilKeleres,
+                kind: Other,
+            },
+            Agent::DameBriar => info! {
+                tag: DameBriar,
+                name: "Dame Briar",
+                faction: LastBastion,
+                kind: Other,
+            },
+            Agent::KanKipRel => info! {
+                tag: KanKipRel,
+                name: "Kan Kip Rel",
+                faction: RalNelConsortium,
+                kind: Action,
+            },
+            Agent::DoctorCarrina => info! {
+                tag: DoctorCarrina,
+                name: "Doctor Carrina",
+                faction: DeepwroughtScholarate,
+                kind: Other,
+            },
+            Agent::AhkRavin => info! {
+                tag: AhkRavin,
+                name: "Ahk Ravin",
+                faction: CrimsonRebellion,
+                kind: Action,
+            },
+            Agent::MyruVos => info! {
+                tag: MyruVos,
+                name: "Myru Vos",
+                faction: FirmamentObsidian,
+                kind: Other,
+            },
+            Agent::VosHollow => info! {
+                tag: VosHollow,
+                name: "Vos Hollow",
+                faction: FirmamentObsidian,
                 kind: Other,
             },
         }

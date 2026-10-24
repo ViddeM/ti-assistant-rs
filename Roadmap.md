@@ -256,8 +256,18 @@
  - ❌  thunder's edge
    - ❌  planet
    - ❌  exploration
- - ✅ update milty import
+ - ✅  update milty import
  - ❌  Coexistance (map visualization)
+ - ❌  New Leaders
+  - ❌  Agents
+    - ❌  Kan Kip Rel (Action)
+    - ❌  Ahk Ravin (Action)
+  - ✅  Commanders
+  - ❌  Heros
+    - ❌  Director Nel (Can unpass...)
+    - ❌  Ta Zern (Action: Delete a tech from everyone, the ones that got a tech deleted researches again)
+    - ❌  Sharsiss (Action)
+    - ❌  Sharsiss Hollow (Action)
 
 ## Codex IV
   - ❌  galactic events (could be difficult!)
