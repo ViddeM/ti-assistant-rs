@@ -1953,7 +1953,7 @@ fn try_update_game_state(
             );
 
             let top_contributors = te
-                .get_top_expedition_contributors()?
+                .get_top_expedition_contributors()
                 .context("Not all expedition slots are claimed")?;
             ensure!(
                 top_contributors.contains(&won_by),

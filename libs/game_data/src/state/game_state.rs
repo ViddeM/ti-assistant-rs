@@ -190,7 +190,9 @@ impl ActionPhaseProgress {
 ///
 /// Only exists during [Phase::EndActionTurn]. Without it the player hasn't committed this turn.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-#[serde(tag = "t")]
+#[serde(rename_all = "camelCase")]
+// Not "t", that is the tag of the [ActionPhaseProgress] this is nested in.
+#[serde(tag = "state")]
 pub enum ThundersEdgeProgress {
     /// The player committed to the expedition by claiming `slot`.
     Committed { slot: TEExpeditionSlot },

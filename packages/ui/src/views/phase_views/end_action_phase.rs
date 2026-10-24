@@ -63,6 +63,7 @@ pub fn EndActionPhaseView() -> Element {
 
     rsx! {
         document::Stylesheet { href: END_ACTION_PHASE_SCSS }
+        document::Stylesheet { href: THUNDERS_EDGE_VIEW_MODE_SCSS }
 
         div { class: "card end-action-phase-view-container",
             h2 { "End player turn?" }
@@ -72,45 +73,38 @@ pub fn EndActionPhaseView() -> Element {
 
             if let Some(expedition) = expedition() {
                 if !expedition.is_full() || completion_required() {
-                    document::Stylesheet { href: THUNDERS_EDGE_VIEW_MODE_SCSS }
                     Expedition {
                         expedition,
                         progress: thunders_edge_progress(),
-                        player: current_player_id(),
+                        player_id: current_player_id(),
                         interactive: view.is_active(),
                     }
                 }
             }
 
-            {
-                if view.is_active() {
-                    rsx! {
-                        Button {
-                            disabled: has_passed() || completion_required(),
-                            onclick: move |_| {
-                                event
-                                    .send_event(Event::TakeAnotherTurn {
-                                        player: current_player_id(),
-                                    })
-                            },
-                            "Take another turn"
-                        }
-                        Button {
-                            disabled: completion_required(),
-                            onclick: move |_| {
-                                event
-                                    .send_event(Event::EndTurn {
-                                        player: current_player_id(),
-                                    })
-                            },
-                            "End Turn"
-                        }
-                    }
-                } else {
-                    rsx! {
-                        p { "Not your turn, currently {current_player_id()} is playing" }
-                    }
+            if view.is_active() {
+                Button {
+                    disabled: has_passed() || completion_required(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::TakeAnotherTurn {
+                                player: current_player_id(),
+                            })
+                    },
+                    "Take another turn"
                 }
+                Button {
+                    disabled: completion_required(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::EndTurn {
+                                player: current_player_id(),
+                            })
+                    },
+                    "End Turn"
+                }
+            } else {
+                p { "Not your turn, currently {current_player_id()} is playing" }
             }
         }
     }
@@ -122,7 +116,7 @@ pub fn EndActionPhaseView() -> Element {
 fn Expedition(
     expedition: TEExpedition,
     progress: Option<ThundersEdgeProgress>,
-    player: PlayerId,
+    player_id: PlayerId,
     interactive: bool,
 ) -> Element {
     if matches!(
@@ -130,7 +124,7 @@ fn Expedition(
         Some(ThundersEdgeProgress::AwaitingPlacement { .. })
     ) {
         return rsx! {
-            CompleteExpedition { expedition, player, interactive }
+            CompleteExpedition { expedition, player_id, interactive }
         };
     }
 
@@ -138,7 +132,7 @@ fn Expedition(
         CommitToExpedition {
             expedition,
             committed: progress.is_some(),
-            player,
+            player_id,
             interactive,
         }
     }
@@ -148,7 +142,7 @@ fn Expedition(
 fn CommitToExpedition(
     expedition: TEExpedition,
     committed: bool,
-    player: PlayerId,
+    player_id: PlayerId,
     interactive: bool,
 ) -> Element {
     let event = use_context::<EventContext>();
@@ -171,11 +165,11 @@ fn CommitToExpedition(
     // Preview the player's pending claim on the wheel before it's committed.
     let mut preview_progress = expedition.progress.clone();
     if let Some(slot) = &selected {
-        preview_progress.insert(slot.clone(), player.clone());
+        preview_progress.insert(slot.clone(), player_id.clone());
     }
 
     rsx! {
-        div { class: "expedition-commit",
+        div { class: "expedition-commit column",
             h3 { "Thunder's Edge expedition" }
 
             if interactive {
@@ -201,11 +195,11 @@ fn CommitToExpedition(
                 Button {
                     onclick: {
                         let slot = slot.clone();
-                        let player = player.clone();
+                        let player_id = player_id.clone();
                         move |_| {
                             event
                                 .send_event(Event::CommitToThundersEdgeExpedition {
-                                    player: player.clone(),
+                                    player: player_id.clone(),
                                     slot: slot.clone(),
                                 });
                             selected_slot.set(None);
@@ -231,23 +225,28 @@ fn slot_info(slot: &TEExpeditionSlot) -> Info {
 }
 
 #[component]
-fn CompleteExpedition(expedition: TEExpedition, player: PlayerId, interactive: bool) -> Element {
+fn CompleteExpedition(
+    expedition: ReadSignal<TEExpedition>,
+    player_id: PlayerId,
+    interactive: bool,
+) -> Element {
+    let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
-    let contributors = expedition
-        .get_top_expedition_contributors()
-        .ok()
-        .flatten()
-        .unwrap_or_default()
-        .into_iter()
-        .collect::<BTreeSet<_>>()
-        .into_iter()
-        .collect::<Vec<_>>();
+    let contributors = use_memo(move || {
+        expedition()
+            .get_top_expedition_contributors()
+            .unwrap_or_default()
+            .into_iter()
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .collect::<Vec<_>>()
+    });
 
     let mut selected_system: Signal<Option<SystemId>> = use_signal(|| None);
     let mut selected_winner: Signal<Option<PlayerId>> = use_signal({
         let contributors = contributors.clone();
-        move || (contributors.len() == 1).then(|| contributors[0].clone())
+        move || (contributors().len() == 1).then(|| contributors()[0].clone())
     });
     let valid_systems = use_memo(move || {
         let mut systems = System::valid_thunders_edge_systems()
@@ -257,66 +256,71 @@ fn CompleteExpedition(expedition: TEExpedition, player: PlayerId, interactive: b
         systems
     });
 
-    let winner_slots = selected_winner().map(|winner| {
-        expedition
-            .progress
-            .values()
-            .filter(|p| **p == winner)
-            .count()
+    let winner_slots = use_memo(move || {
+        selected_winner().map(|winner| {
+            expedition()
+                .progress
+                .values()
+                .filter(|p| **p == winner)
+                .count()
+        })
     });
-    let contested = contributors.len() > 1;
+    let contested = use_memo(move || contributors().len() > 1);
+    let p1 = player_id.clone();
+    let player_color = use_memo(move || gc.game_state().players[&p1].color.clone());
 
     rsx! {
         div { class: "expedition-complete",
             h3 { "Thunder's Edge" }
 
-            ExpeditionToken { progress: expedition.progress.clone() }
+            ExpeditionToken { progress: expedition().progress.clone() }
 
-            p { "All expedition slots are claimed, {player} claimed the final slot and places Thunder's Edge." }
+            p { "Expedition complete, place Thunder's Edge." }
 
-            if interactive {
-                p { "Choose a system without planets, supernova or wormholes (not The Fracture)." }
-                SystemDropdown {
-                    class: "margin-top",
-                    value: selected_system,
-                    options: valid_systems,
-                    on_select: move |s| selected_system.set(s),
-                }
+            fieldset { class: "player-color-border-{player_color()} action-player-container column",
+                legend { "{player_id}" }
 
-                if contested {
-                    p { "Several players claimed the most slots, choose who takes control." }
-                } else {
-                    p { "The player with the most slots takes control." }
-                }
-                PlayerDropdown {
-                    class: "margin-top",
-                    value: selected_winner,
-                    options: contributors.clone(),
-                    on_select: move |p| selected_winner.set(p),
-                    disabled: !contested,
-                }
-                if let Some(slots) = winner_slots {
-                    p { "{selected_winner().unwrap()} places {slots} infantry on Thunder's Edge." }
-                }
+                if interactive {
+                    SystemDropdown {
+                        class: "margin-top",
+                        value: selected_system,
+                        options: valid_systems,
+                        on_select: move |s| selected_system.set(s),
+                    }
 
-                Button {
-                    class: "margin-top",
-                    disabled: selected_system().is_none() || selected_winner().is_none(),
-                    onclick: {
-                        let player = player.clone();
-                        move |_| {
-                            event
-                                .send_event(Event::CompleteThundersEdgeExpedition {
-                                    player: player.clone(),
-                                    placed_in: selected_system().expect("System to be set"),
-                                    won_by: selected_winner().expect("Winner to be set"),
-                                });
+                    PlayerDropdown {
+                        class: "margin-top",
+                        value: selected_winner,
+                        options: contributors(),
+                        on_select: move |p| selected_winner.set(p),
+                        disabled: !contested(),
+                    }
+
+                    if let Some(slots) = winner_slots() {
+                        p { class: "margin-top",
+                            "{selected_winner().unwrap()} places {slots} infantry on Thunder's Edge."
                         }
-                    },
-                    "Place Thunder's Edge"
+                    }
+
+                    Button {
+                        class: "margin-top",
+                        disabled: selected_system().is_none() || selected_winner().is_none(),
+                        onclick: {
+                            let player = player_id.clone();
+                            move |_| {
+                                event
+                                    .send_event(Event::CompleteThundersEdgeExpedition {
+                                        player: player.clone(),
+                                        placed_in: selected_system().expect("System to be set"),
+                                        won_by: selected_winner().expect("Winner to be set"),
+                                    });
+                            }
+                        },
+                        "Place Thunder's Edge"
+                    }
+                } else {
+                    p { "Waiting for {player_id} to place Thunder's Edge." }
                 }
-            } else {
-                p { "Waiting for {player} to place Thunder's Edge." }
             }
         }
     }

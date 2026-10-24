@@ -222,3 +222,44 @@ pub fn thunders_edge_admin_flow() -> TestGame {
     assert!(g.state().players[&p("Bob")].breakthrough.is_some());
     g
 }
+
+/// The state is sent to clients as JSON, also while the expedition progress is set.
+#[test]
+fn thunders_edge_progress_survives_json() {
+    use ti_helper_game_data::state::game_state::GameState;
+
+    fn assert_round_trips(g: &TestGame) {
+        let state = g.state().clone();
+        let json = serde_json::to_value(&state).expect("failed to serialize the state");
+        let back: GameState = serde_json::from_value(json.clone())
+            .unwrap_or_else(|e| panic!("failed to deserialize the state: {e}\n{json}"));
+        assert!(back == state, "the state changed in the JSON round trip");
+    }
+
+    let mut g = action_phase(three_players().thunders_edge());
+    g.turn("Alice")
+        .tactical()
+        .commit()
+        .commit_to_expedition(TEExpeditionSlot::Resources);
+    assert!(g.state().action_progress.is_some());
+    assert_round_trips(&g);
+    g.current().end_turn();
+
+    for slot in [
+        TEExpeditionSlot::ActionCards,
+        TEExpeditionSlot::Influence,
+        TEExpeditionSlot::SecretObjective,
+        TEExpeditionSlot::TechSpecialityPlanet,
+    ] {
+        g.apply(Event::ClaimThundersEdgeExpeditionSlot {
+            player: Some(p("Bob")),
+            slot,
+        });
+    }
+    g.turn("Bob")
+        .tactical()
+        .commit()
+        .commit_to_expedition(TEExpeditionSlot::TradeGoods);
+    assert!(g.state().action_progress.is_some());
+    assert_round_trips(&g);
+}

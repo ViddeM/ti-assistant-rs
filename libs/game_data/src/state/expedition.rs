@@ -21,9 +21,9 @@ impl TEExpedition {
         self.progress.len() >= TEExpeditionSlot::iter().count()
     }
 
-    pub fn get_top_expedition_contributors(&self) -> anyhow::Result<Option<Vec<PlayerId>>> {
+    pub fn get_top_expedition_contributors(&self) -> Option<Vec<PlayerId>> {
         if !self.is_full() {
-            return Ok(None);
+            return None;
         }
 
         let mut slots = HashMap::new();
@@ -38,7 +38,7 @@ impl TEExpedition {
             .map(|(player, _)| player.clone())
             .collect::<Vec<_>>();
 
-        Ok(Some(top_contributors))
+        Some(top_contributors)
     }
 }
 
