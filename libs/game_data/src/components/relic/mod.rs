@@ -150,14 +150,11 @@ impl Relic {
             }
             Relic::TheTriad => ri!(TheTriad, "The Triad", ThundersEdge),
             Relic::HeartOfIxth => ri!(HeartOfIxth, "Heart of Ixth", ThundersEdge),
-            Relic::CircletOfTheVoid => ri!(
-                CircletOfTheVoid,
-                "Circlet of the Void",
-                ThundersEdge,
-                Action
-            ),
-            Relic::BookOfLatvinia => ri!(BookOfLatvinia, "Book of Latvinia", ThundersEdge, Action),
-            Relic::Neuraloop => ri!(Neuraloop, "Neuraloop", ThundersEdge),
+            Relic::CircletOfTheVoid => {
+                ri!(CircletOfTheVoid, "Circlet of the Void", CodexIV, Action)
+            }
+            Relic::BookOfLatvinia => ri!(BookOfLatvinia, "Book of Latvinia", CodexIV, Action),
+            Relic::Neuraloop => ri!(Neuraloop, "Neuraloop", CodexIV),
         }
     }
 }
