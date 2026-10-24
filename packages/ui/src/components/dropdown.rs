@@ -54,7 +54,13 @@ pub fn Dropdown(
 
     rsx! {
         document::Stylesheet { href: DROPDOWN_SCSS }
-        select { value: if mounted() { "{value()}" } else { "" }, class, oninput, ..attributes, {children} }
+        select {
+            value: if mounted() { "{value()}" } else { "" },
+            class,
+            oninput,
+            ..attributes,
+            {children}
+        }
     }
 }
 
@@ -330,6 +336,7 @@ pub fn AgendaDropdown(
 
 #[component]
 pub fn PlayerDropdown(
+    class: Option<String>,
     value: ReadSignal<Option<PlayerId>>,
     options: Vec<PlayerId>,
     on_select: EventHandler<Option<PlayerId>>,
@@ -350,6 +357,7 @@ pub fn PlayerDropdown(
 
     rsx! {
         Dropdown {
+            class: class.unwrap_or_default(),
             value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
@@ -525,6 +533,7 @@ pub fn FrontierCardDropdown(
 #[component]
 pub fn SystemDropdown(
     id: Option<String>,
+    class: Option<String>,
     value: ReadSignal<Option<SystemId>>,
     options: ReadSignal<Vec<SystemId>>,
     on_select: EventHandler<Option<SystemId>>,
@@ -546,6 +555,7 @@ pub fn SystemDropdown(
     rsx! {
         Dropdown {
             id,
+            class: class.unwrap_or_default(),
             value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
@@ -598,16 +608,6 @@ pub fn BreakthroughDropdown(
             on_select(Some(breakthrough));
         }
     };
-
-    dioxus::logger::tracing::info!(
-        "Selected breakthrough \n VALUE: {:?} :: \n CURRENT_VALUE: {:?} :: \n BREAKTHROUGHS: {:?}",
-        value(),
-        current_value(),
-        breakthroughs
-            .iter()
-            .map(|b| b.to_string())
-            .collect::<Vec<_>>(),
-    );
 
     rsx! {
         Dropdown {

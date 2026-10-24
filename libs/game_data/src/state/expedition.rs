@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use serde::{Deserialize, Serialize};
 
@@ -9,6 +9,28 @@ use crate::{common::player_id::PlayerId, components::system::SystemId};
 pub struct TEExpedition {
     pub completed: Option<TECompletion>,
     pub progress: BTreeMap<TEExpeditionSlot, PlayerId>,
+}
+
+impl TEExpedition {
+    pub fn get_top_expedition_contributors(&self) -> anyhow::Result<Option<Vec<PlayerId>>> {
+        if self.progress.len() < 6 {
+            return Ok(None);
+        }
+
+        let mut slots = HashMap::new();
+        for (_, player) in &self.progress {
+            *slots.entry(player).or_insert(0) += 1;
+        }
+
+        let max_slots = slots.values().cloned().max().unwrap_or(0);
+        let top_contributors = slots
+            .into_iter()
+            .filter(|(_, count)| *count == max_slots)
+            .map(|(player, _)| player.clone())
+            .collect::<Vec<_>>();
+
+        Ok(Some(top_contributors))
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use serde::{Deserialize, Serialize};
 
@@ -79,6 +79,24 @@ impl System {
         }
 
         Ok(systems[0].clone())
+    }
+
+    /// Get the set of systems where Thunders Edge can be placed.
+    pub fn valid_thunders_edge_systems() -> HashSet<SystemId> {
+        systems()
+            .into_iter()
+            .filter(|(_, s)| s.planets.is_empty())
+            .filter(|(_, s)| match &s.system_type {
+                SystemType::Anomaly(anomaly_types) => {
+                    !anomaly_types.contains(&AnomalyType::TheFracture)
+                        && !anomaly_types.contains(&AnomalyType::Supernova)
+                }
+                SystemType::Hyperlane => false,
+                _ => true,
+            })
+            .filter(|(_, s)| s.wormholes.is_empty())
+            .map(|(id, _)| id)
+            .collect::<HashSet<_>>()
     }
 }
 

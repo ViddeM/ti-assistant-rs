@@ -1879,47 +1879,22 @@ fn try_update_game_state(
             );
 
             if let Some(comp) = new_completion.as_ref() {
-                let all_systems = systems();
-
                 // Validate player & system.
-                let valid_systems = all_systems
-                    .iter()
-                    .filter(|(_, s)| s.planets.is_empty())
-                    .filter(|(_, s)| match &s.system_type {
-                        SystemType::Anomaly(anomaly_types) => {
-                            !anomaly_types.contains(&AnomalyType::TheFracture)
-                                && !anomaly_types.contains(&AnomalyType::Supernova)
-                        }
-                        SystemType::Hyperlane => false,
-                        _ => true,
-                    })
-                    .filter(|(_, s)| s.wormholes.is_empty())
-                    .map(|(id, _)| id)
-                    .collect::<HashSet<_>>();
+                let valid_systems = System::valid_thunders_edge_systems();
                 ensure!(
                     valid_systems.contains(&comp.placed_in),
                     "System is not a valid candidate for Thunder's Edge"
                 );
 
-                // Validate that the player is among the ones with the most expedition slots.
-                let slots_of = |p: &PlayerId| te.progress.values().filter(|&o| o == p).count();
-                let player_slots = slots_of(&comp.completed_by);
-                ensure!(
-                    te.progress
-                        .values()
-                        .all(|other| slots_of(other) <= player_slots),
-                    "Only a player with the most expedition slots can complete Thunder's Edge"
-                );
-
                 // Ensure the player exists.
-                let mut player = game_state
+                let player = game_state
                     .players
                     .get_mut(&comp.completed_by)
                     .context("Player not found")?;
 
                 if te.completed.is_none() {
                     // Give the planet to new player
-                    player.take_planet(Planet::ThundersEdge);
+                    player.planets.insert(Planet::ThundersEdge, BTreeSet::new());
                 }
             } else {
                 ensure!(
