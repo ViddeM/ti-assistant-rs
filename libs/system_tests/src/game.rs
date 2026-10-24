@@ -149,6 +149,10 @@ impl TestGame {
     /// - Winnu: Neural Motivator.
     /// - Argent Flight: Neural Motivator and Plasma Scoring.
     /// - Firmament / The Obsidian: Neural Motivator.
+    /// - Ral Nel Consortium: Neural Motivator.
+    /// - Deepwrought Scholarate: Neural Motivator and Plasma Scoring.
+    /// - Last Bastion: Sarween Tools.
+    /// - Crimson Rebellion: Plasma Scoring.
     /// - Council Keleres: the first of Mentak/Xxcha/Argent not in the game, and the first two
     ///   (by name) base techs owned by the other players.
     /// - Speaker: the first player in table order, unless imported from milty.
@@ -172,11 +176,24 @@ impl TestGame {
                     vec![Technology::NeuralMotivator, Technology::PlasmaScoring]
                 }
                 Faction::FirmamentObsidian => vec![Technology::NeuralMotivator],
+                Faction::RalNelConsortium => vec![Technology::NeuralMotivator],
+                Faction::DeepwroughtScholarate => {
+                    vec![Technology::NeuralMotivator, Technology::PlasmaScoring]
+                }
+                Faction::LastBastion => vec![Technology::SarweenTools],
+                Faction::CrimsonRebellion => vec![Technology::PlasmaScoring],
                 Faction::CouncilKeleres => {
                     keleres = Some(player.clone());
                     continue;
                 }
-                _ => continue,
+                f => {
+                    assert_eq!(
+                        f.get_starting_tech_choice_count(),
+                        0,
+                        "auto_setup has no default starting techs for {f:?}, add one or use the builder override"
+                    );
+                    continue;
+                }
             };
             self.apply(Event::SetupPlayerTechs {
                 player: player.clone(),

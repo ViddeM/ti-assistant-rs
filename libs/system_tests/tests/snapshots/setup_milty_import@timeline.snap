@@ -3,14 +3,17 @@ source: libs/system_tests/src/check.rs
 ---
    0 ImportFromMilty                          r0 Creation           -          speaker=Ben
    1 CreationDone                             r0 Setup              -
-   2 RevealInitialObjectives                  r0 Setup              -
-   3 StartGame                                r1 Strategy           Ben        order=[Ben Cid Ann Dee Eve]
-   4 TakeStrategyCard(Ben)                    r1 Strategy           Cid
-   5 TakeStrategyCard(Cid)                    r1 Strategy           Ann
-   6 TakeStrategyCard(Ann)                    r1 Strategy           Dee
-   7 TakeStrategyCard(Dee)                    r1 Strategy           Eve
-   8 TakeStrategyCard(Eve)                    r1 Strategy           Ben
-   9 CompleteStrategyPhase                    r1 Action             Ben
-  10 FrontierCardActionBegin(Ben)             r1 FrontierCardAction Ben
-  11 FrontierCardActionCommit(Ben)            r1 EndActionTurn      Ben
-  12 EndTurn(Ben)                             r1 Action             Cid
+   2 SetupPlayerTechs(Cid)                    r0 Setup              -
+   3 SetupPlayerTechs(Dee)                    r0 Setup              -
+   4 SetupPlayerTechs(Eve)                    r0 Setup              -
+   5 RevealInitialObjectives                  r0 Setup              -
+   6 StartGame                                r1 Strategy           Ben        order=[Ben Cid Ann Dee Eve]
+   7 TakeStrategyCard(Ben)                    r1 Strategy           Cid
+   8 TakeStrategyCard(Cid)                    r1 Strategy           Ann
+   9 TakeStrategyCard(Ann)                    r1 Strategy           Dee
+  10 TakeStrategyCard(Dee)                    r1 Strategy           Eve
+  11 TakeStrategyCard(Eve)                    r1 Strategy           Ben
+  12 CompleteStrategyPhase                    r1 Action             Ben
+  13 FrontierCardActionBegin(Ben)             r1 FrontierCardAction Ben
+  14 FrontierCardActionCommit(Ben)            r1 EndActionTurn      Ben
+  15 EndTurn(Ben)                             r1 Action             Cid

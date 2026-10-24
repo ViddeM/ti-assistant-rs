@@ -246,6 +246,8 @@ players:
     technologies:
       - MagenDefenceGridOmega
     relics: []
+    breakthrough: ~
+    factionState: None
   Ben:
     name: Ben
     faction: NaazRokhaAlliance
@@ -259,6 +261,8 @@ players:
       - AiDevelopmentAlgorithm
       - Psychoarchaeology
     relics: []
+    breakthrough: ~
+    factionState: None
   Cid:
     name: Cid
     faction: RalNelConsortium
@@ -266,16 +270,23 @@ players:
     planets:
       MezLoOrzFeiZsha: []
       RepoLoOrzQet: []
-    technologies: []
+    technologies:
+      - NeuralMotivator
     relics: []
+    breakthrough: ~
+    factionState: None
   Dee:
     name: Dee
     faction: DeepwroughtScholarate
     color: Blue
     planets:
       Ikatena: []
-    technologies: []
+    technologies:
+      - NeuralMotivator
+      - PlasmaScoring
     relics: []
+    breakthrough: ~
+    factionState: None
   Eve:
     name: Eve
     faction: FirmamentObsidian
@@ -285,8 +296,13 @@ players:
       CronosHollow: []
       Tallin: []
       TallinHollow: []
-    technologies: []
+    technologies:
+      - NeuralMotivator
     relics: []
+    breakthrough: ~
+    factionState:
+      Firmament:
+        side: Firmament
 speaker: Ben
 tableOrder:
   - Ben
@@ -338,7 +354,8 @@ availableLeaders:
   Ann:
     - LetaniOspha
   Ben: []
-  Cid: []
+  Cid:
+    - KanKipRel
   Dee: []
   Eve: []
 timeTrackingPaused: false
@@ -358,5 +375,8 @@ playersPlayTime:
   Eve:
     secs: 60
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:12:00Z"
+currentTurnStartTime: "2025-01-01T12:15:00Z"
 naaluTelepathy: ~
+teExpedition:
+  completed: ~
+  progress: {}
