@@ -3,7 +3,7 @@ use std::{
     sync::Arc,
 };
 
-use anyhow::{Context, bail, ensure};
+use anyhow::{bail, ensure};
 use serde::{Deserialize, Serialize};
 
 use crate::{
