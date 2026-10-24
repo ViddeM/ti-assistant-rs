@@ -191,6 +191,7 @@ impl Faction {
             Faction::Arborec => vec![
                 Technology::MagenDefenceGrid,
                 Technology::MagenDefenceGridOmega,
+                Technology::MagenDefenceGridOmegaOmega,
             ],
             Faction::BaronyOfLetnev => {
                 vec![Technology::AntimassDeflectors, Technology::PlasmaScoring]

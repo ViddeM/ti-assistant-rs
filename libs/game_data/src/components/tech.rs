@@ -88,6 +88,7 @@ pub enum Technology {
     HyperMetabolism,
     X89BacterialWeapon,
     X89BacterialWeaponOmega,
+    X89BacterialWeaponOmegaOmega,
     // Propulsion
     AntimassDeflectors,
     DarkEnergyTap,
@@ -107,6 +108,7 @@ pub enum Technology {
     AiDevelopmentAlgorithm,
     MagenDefenceGrid,
     MagenDefenceGridOmega,
+    MagenDefenceGridOmegaOmega,
     SelfAssemblyRoutines,
     DuraniumArmor,
     AssaultCannon,
@@ -290,6 +292,28 @@ impl Technology {
             return false;
         }
 
+        // check if tech is patched in codex 4
+
+        let removed_in_codex_4 = &[
+            MagenDefenceGrid,
+            MagenDefenceGridOmega,
+            X89BacterialWeapon,
+            X89BacterialWeaponOmega,
+        ];
+
+        let added_in_codex_4 = &[MagenDefenceGridOmegaOmega, X89BacterialWeaponOmegaOmega];
+
+        let is_removed_in_codex_4 = removed_in_codex_4.contains(self);
+        let is_added_in_codex_4 = added_in_codex_4.contains(self);
+
+        if expansions.codex_4 && is_removed_in_codex_4 {
+            return false;
+        }
+
+        if !expansions.codex_4 && is_added_in_codex_4 {
+            return false;
+        }
+
         true
     }
 
@@ -361,6 +385,16 @@ impl Technology {
                 Expansion::Codex,
                 &[
                     "After 1 or more of your units use BOMBARDMENT against a planet, if at least 1 of your opponent's infantry was destroyed, you may destroy all of your opponent's infantry on that planet."
+                ],
+            ),
+            Technology::X89BacterialWeaponOmegaOmega => t!(
+                "X-89 Bacterial Weapon ΩΩ",
+                TechType::Category(TechCategory::Biotic),
+                TechOrigin::Base,
+                tr!([(TechCategory::Biotic, 3)]),
+                Expansion::CodexIV,
+                &[
+                    "Double the hits produced by your units' BOMBARDMENT and ground combat rolls. Exhaust each planet you use BOMBARDMENT against."
                 ],
             ),
             Technology::AntimassDeflectors => t!(
@@ -518,9 +552,20 @@ impl Technology {
                 TechType::Category(TechCategory::Warfare),
                 TechOrigin::Base,
                 tr!([(TechCategory::Warfare, 1)]),
-                Expansion::Base,
+                Expansion::Codex,
                 &[
                     "At the start of ground combat on a planet that contains 1 or more of your structures, you may produce 1 hit and assign it to 1 of your opponent's ground forces."
+                ],
+            ),
+            Technology::MagenDefenceGridOmegaOmega => t!(
+                "Magen Defense Grid ΩΩ",
+                TechType::Category(TechCategory::Warfare),
+                TechOrigin::Base,
+                tr!([(TechCategory::Warfare, 1)]),
+                Expansion::CodexIV,
+                &[
+                    "When any player activates a system that contains 1 or more of your structures, place 1 infantry from your reinforcements with each of those structures.",
+                    "At the start of ground combat on a planet that contains 1 or more of your structures, produce 1 hit and assign it to 1 of your opponent's ground forces.",
                 ],
             ),
             Technology::SelfAssemblyRoutines => t!(
@@ -1132,7 +1177,7 @@ impl Technology {
                 TechType::Category(TechCategory::Warfare),
                 TechOrigin::Faction(Faction::EmbersOfMuaat),
                 tr!([(TechCategory::Warfare, 2)]),
-                Expansion::Base,
+                Expansion::Codex,
                 &[
                     "Your ships can move into supernovas.",
                     "Each supernova that contains 1 or more of your units gains the PRODUCTION 5 ability as if it were 1 of your units.",
@@ -1223,6 +1268,65 @@ impl Technology {
                     "ACTION: Exhaust this card and discard 1 action card to draw 1 action card."
                 ],
             ),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn exactly_one_revision_of_codex_iv_techs_is_enabled() {
+        use Technology::*;
+
+        let cases = [
+            (false, false, X89BacterialWeapon, MagenDefenceGrid),
+            (true, false, X89BacterialWeaponOmega, MagenDefenceGridOmega),
+            (
+                false,
+                true,
+                X89BacterialWeaponOmegaOmega,
+                MagenDefenceGridOmegaOmega,
+            ),
+            (
+                true,
+                true,
+                X89BacterialWeaponOmegaOmega,
+                MagenDefenceGridOmegaOmega,
+            ),
+        ];
+
+        let x89s = [
+            X89BacterialWeapon,
+            X89BacterialWeaponOmega,
+            X89BacterialWeaponOmegaOmega,
+        ];
+        let magens = [
+            MagenDefenceGrid,
+            MagenDefenceGridOmega,
+            MagenDefenceGridOmegaOmega,
+        ];
+
+        for (codex_1, codex_4, expected_x89, expected_magen) in cases {
+            let expansions = Expansions {
+                codex_1,
+                codex_4,
+                ..Default::default()
+            };
+
+            for (variants, expected) in [(&x89s, expected_x89), (&magens, expected_magen)] {
+                let enabled = variants
+                    .iter()
+                    .filter(|t| t.is_enabled_in(&expansions))
+                    .cloned()
+                    .collect::<Vec<_>>();
+                assert_eq!(
+                    enabled,
+                    vec![expected],
+                    "codex_1: {codex_1}, codex_4: {codex_4}"
+                );
+            }
         }
     }
 }
