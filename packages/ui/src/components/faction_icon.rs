@@ -1,9 +1,15 @@
+use std::sync::Arc;
+
 use dioxus::prelude::*;
-use ti_helper_game_data::common::faction::Faction;
+use ti_helper_game_data::{
+    common::faction::Faction,
+    state::faction_state::{FactionState, FirmamentSide, FirmamentState},
+};
 
 #[derive(PartialEq, Debug, Clone, Props)]
 pub struct FactionIconProps {
     faction: Faction,
+    faction_state: Arc<FactionState>,
     width: Option<u32>,
     height: Option<u32>,
     #[props(default, into)]
@@ -14,6 +20,7 @@ pub struct FactionIconProps {
 pub fn FactionIcon(
     FactionIconProps {
         faction,
+        faction_state,
         width,
         height,
         class,
@@ -21,7 +28,7 @@ pub fn FactionIcon(
 ) -> Element {
     rsx! {
         img {
-            src: get_faction_icon(&faction),
+            src: get_faction_icon(&faction, &faction_state),
             alt: format!("Faction Icon ${faction}"),
             width: width.unwrap_or(32),
             height: height.unwrap_or(32),
@@ -64,38 +71,45 @@ const CRIMSON_REBELLION_ICON: Asset = asset!("/assets/icons/factions/webp/Crimso
 const DEEPWROUGHT_SCHOLARATE_ICON: Asset =
     asset!("/assets/icons/factions/webp/DeepwroughtScholarate.webp");
 const FIRMAMENT_ICON: Asset = asset!("/assets/icons/factions/webp/Firmament.webp");
+const OBSIDIAN_ICON: Asset = asset!("/assets/icons/factions/webp/Obsidian.webp");
 
-pub fn get_faction_icon(faction: &Faction) -> Asset {
-    match faction {
-        Faction::Arborec => ARBOREC_ICON,
-        Faction::BaronyOfLetnev => BARONY_OF_LETNEV_ICON,
-        Faction::ClanOfSaar => CLAN_OF_SAAR_ICON,
-        Faction::EmbersOfMuaat => EMBERS_OF_MUAAT_ICON,
-        Faction::EmiratesOfHacan => EMIRATES_OF_HACAN_ICON,
-        Faction::FederationOfSol => FEDERATION_OF_SOL_ICON,
-        Faction::GhostsOfCreuss => GHOSTS_OF_CREUSS_ICON,
-        Faction::L1Z1XMindnet => L1Z1X_MINDNET_ICON,
-        Faction::MentakCoalition => MENTAK_COALITION_ICON,
-        Faction::NaaluCollective => NAALU_COLLECTIVE_ICON,
-        Faction::NekroVirus => NEKRO_VIRUS_ICON,
-        Faction::SardakkNorr => SARDAKK_NORR_ICON,
-        Faction::UniversitiesOfJolNar => UNIVERSITIES_OF_JOL_NAR_ICON,
-        Faction::Winnu => WINNU_ICON,
-        Faction::XxchaKingdom => XXCHA_KINGDOM_ICON,
-        Faction::YinBrotherhood => YIN_BROTHERHOOD_ICON,
-        Faction::YssarilTribes => YSSARIL_TRIBES_ICON,
-        Faction::ArgentFlight => ARGENT_FLIGHT_ICON,
-        Faction::Empyrean => EMPYREAN_ICON,
-        Faction::MahactGeneSorcerers => MAHACT_GENE_SORCERERS_ICON,
-        Faction::NaazRokhaAlliance => NAAZ_ROKHA_ALLIANCE_ICON,
-        Faction::Nomad => NOMAD_ICON,
-        Faction::TitansOfUl => TITANS_OF_UL_ICON,
-        Faction::VuilRaithCabal => VUIL_RAITH_CABAL_ICON,
-        Faction::CouncilKeleres => COUNCIL_OF_KELERES_ICON,
-        Faction::LastBastion => LAST_BASTION_ICON,
-        Faction::RalNelConsortium => RAL_NEL_CONSORTIUM_ICON,
-        Faction::DeepwroughtScholarate => DEEPWROUGHT_SCHOLARATE_ICON,
-        Faction::CrimsonRebellion => CRIMSON_REBELLION_ICON,
-        Faction::FirmamentObsidian => FIRMAMENT_ICON,
+pub fn get_faction_icon(faction: &Faction, state: &FactionState) -> Asset {
+    match (faction, state) {
+        (Faction::Arborec, FactionState::None) => ARBOREC_ICON,
+        (Faction::BaronyOfLetnev, FactionState::None) => BARONY_OF_LETNEV_ICON,
+        (Faction::ClanOfSaar, FactionState::None) => CLAN_OF_SAAR_ICON,
+        (Faction::EmbersOfMuaat, FactionState::None) => EMBERS_OF_MUAAT_ICON,
+        (Faction::EmiratesOfHacan, FactionState::None) => EMIRATES_OF_HACAN_ICON,
+        (Faction::FederationOfSol, FactionState::None) => FEDERATION_OF_SOL_ICON,
+        (Faction::GhostsOfCreuss, FactionState::None) => GHOSTS_OF_CREUSS_ICON,
+        (Faction::L1Z1XMindnet, FactionState::None) => L1Z1X_MINDNET_ICON,
+        (Faction::MentakCoalition, FactionState::None) => MENTAK_COALITION_ICON,
+        (Faction::NaaluCollective, FactionState::None) => NAALU_COLLECTIVE_ICON,
+        (Faction::NekroVirus, FactionState::None) => NEKRO_VIRUS_ICON,
+        (Faction::SardakkNorr, FactionState::None) => SARDAKK_NORR_ICON,
+        (Faction::UniversitiesOfJolNar, FactionState::None) => UNIVERSITIES_OF_JOL_NAR_ICON,
+        (Faction::Winnu, FactionState::None) => WINNU_ICON,
+        (Faction::XxchaKingdom, FactionState::None) => XXCHA_KINGDOM_ICON,
+        (Faction::YinBrotherhood, FactionState::None) => YIN_BROTHERHOOD_ICON,
+        (Faction::YssarilTribes, FactionState::None) => YSSARIL_TRIBES_ICON,
+        (Faction::ArgentFlight, FactionState::None) => ARGENT_FLIGHT_ICON,
+        (Faction::Empyrean, FactionState::None) => EMPYREAN_ICON,
+        (Faction::MahactGeneSorcerers, FactionState::None) => MAHACT_GENE_SORCERERS_ICON,
+        (Faction::NaazRokhaAlliance, FactionState::None) => NAAZ_ROKHA_ALLIANCE_ICON,
+        (Faction::Nomad, FactionState::None) => NOMAD_ICON,
+        (Faction::TitansOfUl, FactionState::None) => TITANS_OF_UL_ICON,
+        (Faction::VuilRaithCabal, FactionState::None) => VUIL_RAITH_CABAL_ICON,
+        (Faction::CouncilKeleres, FactionState::None) => COUNCIL_OF_KELERES_ICON,
+        (Faction::LastBastion, FactionState::None) => LAST_BASTION_ICON,
+        (Faction::RalNelConsortium, FactionState::None) => RAL_NEL_CONSORTIUM_ICON,
+        (Faction::DeepwroughtScholarate, FactionState::None) => DEEPWROUGHT_SCHOLARATE_ICON,
+        (Faction::CrimsonRebellion, FactionState::None) => CRIMSON_REBELLION_ICON,
+        (Faction::FirmamentObsidian, FactionState::Firmament(FirmamentState { side })) => {
+            match side {
+                FirmamentSide::Firmament => FIRMAMENT_ICON,
+                FirmamentSide::Obsidian => OBSIDIAN_ICON,
+            }
+        }
+        _ => panic!("Invalid faction/faction state combination {faction:?} {state:?}"),
     }
 }

@@ -102,7 +102,10 @@ pub fn TechSecondary(progress: ReadSignal<StrategicProgress>) -> Element {
                 fieldset {
                     legend { class: "aligned-legend",
                         h6 { class: "horizontal-padding", "{id}" }
-                        FactionIcon { faction: player.faction }
+                        FactionIcon {
+                            faction: player.faction,
+                            faction_state: player.faction_state.clone(),
+                        }
                     }
                     RenderChoice { player_id: id, player, choice }
                 }

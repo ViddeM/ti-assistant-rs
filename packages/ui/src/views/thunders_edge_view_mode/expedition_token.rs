@@ -1,7 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use dioxus::prelude::*;
-use strum::IntoEnumIterator;
 use ti_helper_game_data::{common::player_id::PlayerId, state::expedition::TEExpeditionSlot};
 
 use crate::{
@@ -247,7 +246,7 @@ fn ExpeditionWedge(
         gc.game_state()
             .players
             .get(p)
-            .map(|player| (player.faction, player.color))
+            .map(|player| (player.faction, player.faction_state.clone(), player.color))
     });
 
     let mut class = format!("te-wedge te-wedge-{}", css_name(&slot));
@@ -291,7 +290,7 @@ fn ExpeditionWedge(
 
             SlotIcon { slot: slot.clone(), x: icon_x, y: icon_y }
 
-            if let Some((faction, color)) = owner {
+            if let Some((faction, state, color)) = owner {
                 circle {
                     class: "te-slot-ring-outline",
                     cx: slot_x,
@@ -305,7 +304,7 @@ fn ExpeditionWedge(
                     r: FACTION_ICON_SIZE / 2.0 + 2.5,
                 }
                 image {
-                    href: get_faction_icon(&faction),
+                    href: get_faction_icon(&faction, &state),
                     x: slot_x - FACTION_ICON_SIZE / 2.0,
                     y: slot_y - FACTION_ICON_SIZE / 2.0,
                     width: FACTION_ICON_SIZE,

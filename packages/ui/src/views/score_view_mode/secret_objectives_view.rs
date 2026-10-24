@@ -86,7 +86,10 @@ fn PlayerSecretView(player_id: PlayerId) -> Element {
 
     rsx! {
         div { class: "player-secret-title-row",
-            FactionIcon { faction: player().faction }
+            FactionIcon {
+                faction: player().faction,
+                faction_state: player().faction_state.clone(),
+            }
             h6 { "{player_id.clone()}" }
             div {}
         }

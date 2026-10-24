@@ -11,7 +11,7 @@ use ti_helper_game_data::{
         relic::RelicPlay,
         strategy_card::StrategyCard,
     },
-    state::game_state::GameState,
+    state::{faction_state::FirmamentSide, game_state::GameState},
 };
 
 use crate::{
@@ -177,6 +177,16 @@ fn ComponentSelectRow() -> Element {
             > 0
     });
 
+    let event = use_context::<EventContext>();
+
+    let can_become_obsidian = use_memo(move || {
+        gc.game_state()
+            .players
+            .get(&current_player())
+            .and_then(|p| p.firmament_side())
+            == Some(FirmamentSide::Firmament)
+    });
+
     rsx! {
         div { class: "component-select-container",
             Button {
@@ -206,6 +216,17 @@ fn ComponentSelectRow() -> Element {
                 disabled: component_mode.read().eq(&ComponentMode::PlayLeader) || !can_play_leaders(),
                 onclick: move |_| component_mode.set(ComponentMode::PlayLeader),
                 "Play Leader"
+            }
+            if can_become_obsidian() {
+                Button {
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::PuppetsOfTheBlade {
+                                player: current_player(),
+                            })
+                    },
+                    "Puppets of the Blade"
+                }
             }
         }
         if !component_mode.read().eq(&ComponentMode::None) {

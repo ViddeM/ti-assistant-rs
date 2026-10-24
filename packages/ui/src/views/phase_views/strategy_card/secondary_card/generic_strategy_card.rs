@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use dioxus_free_icons::{
-    icons::fa_regular_icons::{FaCircleCheck, FaCircleXmark},
     Icon,
+    icons::fa_regular_icons::{FaCircleCheck, FaCircleXmark},
 };
 use ti_helper_game_data::{
     actions::{
@@ -46,7 +46,10 @@ pub fn GenericStrategyCard(progress: ReadSignal<StrategicProgress>) -> Element {
                     legend { class: "aligned-legend",
                         h6 { class: "horizontal-padding", "{id}" }
                         " "
-                        FactionIcon { faction: player.faction }
+                        FactionIcon {
+                            faction: player.faction,
+                            faction_state: player.faction_state.clone(),
+                        }
                     }
                     if let Some(state) = other_players().get(&id) {
                         RenderPerformedAction { skipped: state.eq(&StrategicSecondaryProgress::Skipped) }

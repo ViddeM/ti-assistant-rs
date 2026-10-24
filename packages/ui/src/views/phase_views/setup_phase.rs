@@ -120,10 +120,13 @@ fn PlayersSetup() -> Element {
                                                 "Set Speaker"
                                             }
                                         }
-                                        FactionIcon { faction: player.faction }
+                                        FactionIcon {
+                                            faction: player.faction,
+                                            faction_state: player.faction_state.clone(),
+                                        }
                                     }
 
-                                    {player.faction.name()}
+                                    {player.faction_name()}
                                     FactionSpecificSetup { player_id: Arc::clone(&name), player: Arc::clone(&player) }
                                 }
                             }

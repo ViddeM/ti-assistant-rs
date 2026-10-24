@@ -148,6 +148,7 @@ impl TestGame {
     /// Defaults (all overridable through the builder):
     /// - Winnu: Neural Motivator.
     /// - Argent Flight: Neural Motivator and Plasma Scoring.
+    /// - Firmament / The Obsidian: Neural Motivator.
     /// - Council Keleres: the first of Mentak/Xxcha/Argent not in the game, and the first two
     ///   (by name) base techs owned by the other players.
     /// - Speaker: the first player in table order, unless imported from milty.
@@ -170,6 +171,7 @@ impl TestGame {
                 Faction::ArgentFlight => {
                     vec![Technology::NeuralMotivator, Technology::PlasmaScoring]
                 }
+                Faction::FirmamentObsidian => vec![Technology::NeuralMotivator],
                 Faction::CouncilKeleres => {
                     keleres = Some(player.clone());
                     continue;

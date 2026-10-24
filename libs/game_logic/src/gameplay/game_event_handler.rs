@@ -1,6 +1,6 @@
 use std::{
     borrow::BorrowMut,
-    collections::{BTreeSet, HashMap, HashSet},
+    collections::{BTreeSet, HashSet},
 };
 
 use anyhow::{Context, Result, bail, ensure};
@@ -881,6 +881,29 @@ fn try_update_game_state(
             }
 
             game_state.action_progress = None;
+            game_state.phase = Phase::EndActionTurn;
+        }
+        Event::PuppetsOfTheBlade { player } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Invalid game state, action_progress not None during Action Phase"
+            );
+
+            game_state
+                .players
+                .get_mut(&player)
+                .context("Player not found")?
+                .become_obsidian()?;
+
+            // The planets are flipped no matter who controls them.
+            for player in game_state.players.values_mut() {
+                player.flip_home_system_planets();
+            }
+
+            game_state.update_available_leaders();
             game_state.phase = Phase::EndActionTurn;
         }
         Event::FrontierCardActionBegin { player, card } => {
@@ -1866,7 +1889,7 @@ fn try_update_game_state(
 
                 // If the player hasn't unlocked their breakthrough, unlock it.
                 if player.breakthrough.is_none() {
-                    player.breakthrough = Some(player.faction.breakthrough());
+                    player.breakthrough = Some(player.faction_breakthrough());
                 }
             } else {
                 te.progress.remove(&slot);
@@ -1917,7 +1940,7 @@ fn try_update_game_state(
             te.progress.insert(slot.clone(), player);
 
             if committer.breakthrough.is_none() {
-                committer.breakthrough = Some(committer.faction.breakthrough());
+                committer.breakthrough = Some(committer.faction_breakthrough());
             }
 
             game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(if te.is_full() {
@@ -1966,7 +1989,7 @@ fn try_update_game_state(
                 .context("Player not found")?;
             winner.planets.insert(Planet::ThundersEdge, BTreeSet::new());
             if winner.breakthrough.is_none() {
-                winner.breakthrough = Some(winner.faction.breakthrough());
+                winner.breakthrough = Some(winner.faction_breakthrough());
             }
 
             te.completed = Some(TECompletion { won_by, placed_in });
@@ -2023,7 +2046,7 @@ fn try_update_game_state(
                     .entry(Planet::ThundersEdge)
                     .or_insert_with(BTreeSet::new);
                 if winner.breakthrough.is_none() {
-                    winner.breakthrough = Some(winner.faction.breakthrough());
+                    winner.breakthrough = Some(winner.faction_breakthrough());
                 }
             }
 

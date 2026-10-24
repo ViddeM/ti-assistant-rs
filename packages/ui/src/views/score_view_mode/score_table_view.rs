@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use dioxus::prelude::*;
 use strum::{Display, EnumString};
@@ -6,7 +6,7 @@ use ti_helper_game_data::{
     actions::event::Event,
     common::{faction::Faction, player_id::PlayerId},
     components::{agenda::Agenda, objectives::ObjectiveKind, relic::Relic},
-    state::{player::Player, score::ScorableAgenda},
+    state::{faction_state::FactionState, player::Player, score::ScorableAgenda},
 };
 
 use crate::{
@@ -81,7 +81,7 @@ pub fn ScoreTableView() -> Element {
                 tr {
                     {players().into_iter().map(|(id, p)| rsx! {
                         th { key: "{id}", class: "score-view-table-header",
-                            FactionIcon { faction: p.faction }
+                            FactionIcon { faction: p.faction, faction_state: p.faction_state.clone() }
                         }
                     })}
                 }
@@ -104,6 +104,7 @@ pub fn ScoreTableView() -> Element {
                             key: "{id}",
                             player_id: id.clone(),
                             faction: player.faction,
+                            faction_state: player.faction_state.clone(),
                             is_custodian: custodians().as_ref().eq(&Some(id)),
                         }
                     }
@@ -326,13 +327,19 @@ pub fn ScoreTableView() -> Element {
 }
 
 #[component]
-fn CustodianItem(player_id: PlayerId, faction: Faction, is_custodian: bool) -> Element {
+fn CustodianItem(
+    player_id: PlayerId,
+    faction: Faction,
+    faction_state: Arc<FactionState>,
+    is_custodian: bool,
+) -> Element {
     let event = use_context::<EventContext>();
 
     rsx! {
         td { class: "align-center",
             FactionButton {
                 faction,
+                faction_state,
                 selected: is_custodian,
                 onclick: move |_| {
                     event
@@ -468,6 +475,7 @@ fn FactionIconsRow(
                             td { key: "{id}", class: "align-center",
                                 FactionButton {
                                     faction: p.faction,
+                                    faction_state: p.faction_state.clone(),
                                     selected: s,
                                     onclick: move |_| {
                                         if s {
@@ -688,6 +696,7 @@ fn RelicPointRows() -> Element {
                                     td { key: "{id}", class: "align-center",
                                         FactionButton {
                                             faction: p.faction,
+                                            faction_state: p.faction_state.clone(),
                                             selected: is_owner,
                                             onclick: move || {
                                                 event
@@ -730,6 +739,7 @@ fn RelicPointRows() -> Element {
                                     td { key: "{id}", class: "align-center",
                                         FactionButton {
                                             faction: p.faction,
+                                            faction_state: p.faction_state.clone(),
                                             selected: is_holder,
                                             onclick: move || {
                                                 event

@@ -1,9 +1,10 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, sync::Arc};
 
 use dioxus::prelude::*;
 use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::event::Event, common::faction::Faction, components::strategy_card::StrategyCard,
+    state::faction_state::FactionState,
 };
 
 use crate::{
@@ -40,14 +41,13 @@ pub fn StrategyPhaseView() -> Element {
             .strategy_card_holders
             .iter()
             .map(|(card, player)| {
-                let faction = gc
-                    .game_state()
-                    .players
-                    .get(player)
-                    .expect("Player to exist")
-                    .faction;
+                let game_state = gc.game_state();
+                let player = game_state.players.get(player).expect("Player to exist");
 
-                (*card, faction)
+                (
+                    *card,
+                    (player.faction.clone(), player.faction_state.clone()),
+                )
             })
             .collect::<HashMap<_, _>>()
     });
@@ -102,7 +102,7 @@ pub fn StrategyPhaseView() -> Element {
 #[derive(Debug, Clone, PartialEq, Props)]
 struct StrategyCardButtonProps {
     strategy_card: StrategyCard,
-    selected_by_faction: Option<Faction>,
+    selected_by_faction: ReadSignal<Option<(Faction, Arc<FactionState>)>>,
     set_selected: EventHandler<()>,
     finished_selecting_cards: bool,
 }
@@ -117,9 +117,9 @@ fn StrategyCardButton(
     }: StrategyCardButtonProps,
 ) -> Element {
     let faction = use_memo(move || {
-        if let Some(f) = selected_by_faction.as_ref() {
+        if let Some((faction, state)) = selected_by_faction() {
             rsx! {
-                FactionIcon { faction: *f }
+                FactionIcon { faction, faction_state: state.clone() }
             }
         } else {
             rsx! {}
@@ -129,7 +129,7 @@ fn StrategyCardButton(
     rsx! {
         ButtonBase {
             onclick: move |_| set_selected(()),
-            disabled: selected_by_faction.is_some() || finished_selecting_cards,
+            disabled: selected_by_faction().is_some() || finished_selecting_cards,
             class: format!("strategy-card-button style-{}", strategy_card.name()),
             "{strategy_card.card_number()}."
             p { "{strategy_card}" }
@@ -174,9 +174,9 @@ fn NaaluTelepathy() -> Element {
                             br {}
                             div {
                                 "Place this card face-up in your play area and place the
-                                                                                                                                                                                                                                                                                                                                                Naalu 0 token on your strategy card; you are first in the
-                                                                                                                                                                                                                                                                                                                                                initiative order. The Naalu player cannot use their
-                                                                                                                                                                                                                                                                                                                                                TELEPATHIC faction ability during this game round."
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Naalu 0 token on your strategy card; you are first in the
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        initiative order. The Naalu player cannot use their
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        TELEPATHIC faction ability during this game round."
                             }
                             br {}
                             div { "Return this card to the Naalu player at the end of the status phase." }

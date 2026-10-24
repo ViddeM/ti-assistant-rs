@@ -115,10 +115,11 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
     if let Some(err) = ws_error() {
         return rsx! {
             div { class: "card column",
-                h2 { "Something went wrong" }
-                p { "Error: {err}" }
+                h2 { class: "margin-top", "Something went wrong" }
+                p { class: "margin-top", "Error: {err}" }
                 if !not_found() {
                     Button {
+                        class: "margin-top",
                         onclick: move |_| async move {
                             ws_error.set(None);
                             let new_socket = join_game(

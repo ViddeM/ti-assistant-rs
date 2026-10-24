@@ -84,6 +84,7 @@ pub fn UnclaimedPlanetsTable() -> Element {
                                             class: "align-center",
                                             FactionButton {
                                                 faction: player.faction,
+                                                faction_state: player.faction_state.clone(),
                                                 selected: false,
                                                 onclick: {
                                                     let player_id = id.clone();

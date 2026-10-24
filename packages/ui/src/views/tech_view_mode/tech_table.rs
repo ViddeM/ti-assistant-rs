@@ -5,6 +5,7 @@ use ti_helper_game_data::{
     actions::event::Event,
     common::{faction::Faction, player_id::PlayerId},
     components::tech::{TechCategory, TechOrigin, TechType, Technology},
+    state::faction_state::FactionState,
 };
 
 use crate::{
@@ -94,7 +95,7 @@ pub fn TechTable() -> Element {
         Arc::new(
             players()
                 .iter()
-                .map(|(id, p)| (id.clone(), p.faction))
+                .map(|(id, p)| (id.clone(), (p.faction, p.faction_state.clone())))
                 .collect::<HashMap<_, _>>(),
         )
     });
@@ -200,7 +201,7 @@ pub fn TechTable() -> Element {
                 tr {
                     {players().into_iter().map(|(id, p)| rsx! {
                         th { key: "{id}", class: "tech-view-table-header",
-                            FactionIcon { faction: p.faction }
+                            FactionIcon { faction: p.faction, faction_state: p.faction_state.clone() }
                         }
                     })}
                 }
@@ -287,7 +288,7 @@ pub fn TechTable() -> Element {
                             title: players()
                                 .iter()
                                 .find(|(id, _)| id.eq(player_id))
-                                .map(|(id, p)| format!("{id} - {}", p.faction.name()))
+                                .map(|(id, p)| format!("{id} - {}", p.faction_name()))
                                 .expect("Player to exist"),
                             section: players()
                                 .iter()
@@ -360,7 +361,7 @@ fn TableSectionHeading(
 struct TechRowsProps {
     techs: Arc<Vec<Technology>>,
     player_techs: Arc<Vec<(PlayerId, Vec<Technology>)>>,
-    player_factions: Arc<HashMap<PlayerId, Faction>>,
+    player_factions: Arc<HashMap<PlayerId, (Faction, Arc<FactionState>)>>,
     toggle_tech_for_player: EventHandler<(PlayerId, Technology)>,
 }
 
@@ -388,7 +389,8 @@ fn TechRows(
                 for (player_id , pt) in player_techs.iter() {
                     td { key: "{player_id}", class: "align-center",
                         FactionButton {
-                            faction: player_factions.get(player_id).cloned().expect("Player to have a faction"),
+                            faction: player_factions.get(player_id).cloned().expect("Player to have a faction").0,
+                            faction_state: player_factions.get(player_id).cloned().expect("Player to have a faction").1,
                             selected: pt.contains(tech),
                             onclick: {
                                 let tech = tech.clone();

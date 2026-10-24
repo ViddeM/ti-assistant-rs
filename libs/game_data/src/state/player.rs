@@ -1,6 +1,9 @@
-use std::collections::{BTreeSet, HashMap};
+use std::{
+    collections::{BTreeSet, HashMap},
+    sync::Arc,
+};
 
-use anyhow::ensure;
+use anyhow::{Context, bail, ensure};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -9,6 +12,7 @@ use crate::{
         breakthrough::Breakthrough, planet::Planet, planet_attachment::PlanetAttachment,
         relic::Relic, tech::Technology,
     },
+    state::faction_state::{FactionState, FirmamentSide, FirmamentState},
 };
 
 /// A new player that is currently being created.
@@ -41,6 +45,8 @@ pub struct Player {
     pub relics: BTreeSet<Relic>,
     /// Which breakthrough the player currently has, or none if it is not yet unlocked.
     pub breakthrough: Option<Breakthrough>,
+    /// State that is specific to the players faction, if the faction has any.
+    pub faction_state: Arc<FactionState>,
 }
 
 impl NewPlayer {
@@ -54,6 +60,10 @@ impl NewPlayer {
             .collect();
 
         let techs = self.faction.get_starting_techs(expansions);
+        let faction_state = match self.faction {
+            Faction::FirmamentObsidian => FactionState::Firmament(FirmamentState::default()),
+            _ => FactionState::None,
+        };
         Player {
             name: self.name,
             faction: self.faction,
@@ -62,11 +72,71 @@ impl NewPlayer {
             technologies: techs,
             relics: BTreeSet::new(),
             breakthrough: None,
+            faction_state: Arc::new(faction_state),
         }
     }
 }
 
 impl Player {
+    /// Which side of the Firmament / The Obsidian the player is playing, if they play that faction.
+    pub fn firmament_side(&self) -> Option<FirmamentSide> {
+        match &*self.faction_state {
+            FactionState::Firmament(state) => Some(state.side),
+            FactionState::None => None,
+        }
+    }
+
+    /// The pretty name of the players faction, taking the side of two-sided factions into account.
+    pub fn faction_name(&self) -> String {
+        match self.firmament_side() {
+            Some(FirmamentSide::Firmament) => "The Firmament".to_string(),
+            Some(FirmamentSide::Obsidian) => "The Obsidian".to_string(),
+            None => self.faction.name(),
+        }
+    }
+
+    /// The breakthrough the player gets when unlocking their breakthrough.
+    pub fn faction_breakthrough(&self) -> Breakthrough {
+        match self.firmament_side() {
+            Some(FirmamentSide::Obsidian) => Breakthrough::TheReaping,
+            _ => self.faction.breakthrough(),
+        }
+    }
+
+    /// Flip the player from The Firmament to The Obsidian ('Puppets of the Blade').
+    ///
+    /// This flips the faction specific components of the player, i.e. their breakthrough.
+    /// Planets in the Firmament home system are flipped for all players using
+    /// [`Player::flip_home_system_planets()`].
+    pub fn become_obsidian(&mut self) -> anyhow::Result<()> {
+        let FactionState::Firmament(state) = Arc::make_mut(&mut self.faction_state) else {
+            bail!("Only The Firmament can become The Obsidian");
+        };
+
+        ensure!(
+            state.side == FirmamentSide::Firmament,
+            "Already playing as The Obsidian"
+        );
+
+        state.side = FirmamentSide::Obsidian;
+        if self.breakthrough == Some(Breakthrough::TheSowing) {
+            self.breakthrough = Some(Breakthrough::TheReaping);
+        }
+        Ok(())
+    }
+
+    /// Flip any planets the player controls in the Firmament / Obsidian home system.
+    pub fn flip_home_system_planets(&mut self) {
+        for (firmament, obsidian) in [
+            (Planet::Cronos, Planet::CronosHollow),
+            (Planet::Tallin, Planet::TallinHollow),
+        ] {
+            if let Some(attachments) = self.planets.remove(&firmament) {
+                self.planets.insert(obsidian, attachments);
+            }
+        }
+    }
+
     /// Remove a planet from the players planet list.
     pub fn remove_planet(&mut self, planet: &Planet) {
         self.planets.remove(planet);

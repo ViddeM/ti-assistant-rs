@@ -80,7 +80,10 @@ fn PlayerSupportForTheThroneView(player_id: PlayerId) -> Element {
     rsx! {
         tr { key: "{player_id}",
             td {
-                FactionIcon { faction: player().faction }
+                FactionIcon {
+                    faction: player().faction,
+                    faction_state: player().faction_state.clone(),
+                }
             }
             td { "{player_id}" }
             td { "->" }

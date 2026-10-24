@@ -88,9 +88,15 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
                     tr {
                         th { colspan: NUM_COLUMNS,
                             div { class: "player-name-row",
-                                FactionIcon { faction: player().faction }
+                                FactionIcon {
+                                    faction: player().faction,
+                                    faction_state: player().faction_state.clone(),
+                                }
                                 h2 { "{player().name}" }
-                                FactionIcon { faction: player().faction }
+                                FactionIcon {
+                                    faction: player().faction,
+                                    faction_state: player().faction_state.clone(),
+                                }
                             }
                         }
                     }

@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, HashSet};
 
 use dioxus::prelude::*;
 use ti_helper_game_data::{
@@ -53,16 +53,19 @@ pub fn CreationPhaseView() -> Element {
 }
 
 #[component]
-fn DisplayPlayer(player: Player) -> Element {
-    let faction = player.faction;
+fn DisplayPlayer(player: ReadSignal<Player>) -> Element {
+    let faction = use_memo(move || player().faction);
+    let faction_state = use_memo(move || player().faction_state);
     rsx! {
-        div { key: "{player.name}", class: "display-player-container",
-            h3 { {player.name} }
+        div { key: "{player().name}", class: "display-player-container",
+            h3 { {player().name} }
             div { class: "faction-row",
-                FactionIcon { faction }
-                p { class: "faction-name", "{faction.name()}:" }
+                FactionIcon { faction: faction(), faction_state: faction_state() }
+                p { class: "faction-name", "{faction().name()}:" }
                 p { class: "margin-left",
-                    span { class: format!("player-color-{}", player.color.name()), "{player.color}" }
+                    span { class: format!("player-color-{}", player().color.name()),
+                        "{player().color}"
+                    }
                 }
             }
         }

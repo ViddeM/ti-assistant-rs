@@ -20,7 +20,7 @@ pub fn TechLedger() -> Element {
             .game_state()
             .players
             .iter()
-            .map(|(id, p)| (id.clone(), p.faction))
+            .map(|(id, p)| (id.clone(), (p.faction, p.faction_state.clone())))
             .collect::<Vec<_>>();
         players.sort_by(|(a, _), (b, _)| a.cmp(b));
         players
@@ -61,15 +61,20 @@ pub fn TechLedger() -> Element {
                 {
                     players()
                         .into_iter()
-                        .map(|(p, f)| {
+                        .map(|(id, (faction, state))| {
                             let color = player_color()
-                                .get(&p)
+                                .get(&id)
                                 .cloned()
                                 .expect("Player to have color");
-                            let name = format!("{} - {}", p, f.name());
+                            let name = format!("{} - {}", id, faction.name());
                             rsx! {
-                                li { key: "{p}",
-                                    FactionIcon { faction: f, width: 16, height: 16 }
+                                li { key: "{id}",
+                                    FactionIcon {
+                                        faction,
+                                        faction_state: state.clone(),
+                                        width: 16,
+                                        height: 16,
+                                    }
                                     a { href: TechSection::from(&color).to_tag(), {name} }
                                 }
                             }

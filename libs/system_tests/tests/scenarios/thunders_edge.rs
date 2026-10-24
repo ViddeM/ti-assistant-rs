@@ -1,5 +1,8 @@
 //! Thunder's Edge: committing to the expedition at the end of a turn and completing it.
 
+use ti_helper_game_data::{
+    components::breakthrough::Breakthrough, state::faction_state::FirmamentSide,
+};
 use ti_helper_system_tests::prelude::*;
 
 use crate::fixtures::{action_phase, three_players};
@@ -8,6 +11,7 @@ scenarios![
     thunders_edge_commit_and_complete,
     thunders_edge_passing,
     thunders_edge_admin_flow,
+    firmament_becomes_obsidian,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -262,4 +266,61 @@ fn thunders_edge_progress_survives_json() {
         .commit_to_expedition(TEExpeditionSlot::TradeGoods);
     assert!(g.state().action_progress.is_some());
     assert_round_trips(&g);
+}
+
+/// The Firmament flips to The Obsidian using an action, which flips their home system planets
+/// and breakthrough.
+pub fn firmament_becomes_obsidian() -> TestGame {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::FirmamentObsidian)
+            .player("Bob", Faction::EmiratesOfHacan)
+            .player("Carol", Faction::XxchaKingdom)
+            .thunders_edge(),
+    );
+    assert_eq!(
+        g.player("Alice").firmament_side(),
+        Some(FirmamentSide::Firmament)
+    );
+    assert_eq!(g.player("Bob").firmament_side(), None);
+    assert_eq!(g.player("Alice").faction_name(), "The Firmament");
+
+    g.apply(Event::SetBreakthrough {
+        player: p("Alice"),
+        breakthrough: Some(Breakthrough::TheSowing),
+    });
+
+    g.expect_rejected(
+        Event::PuppetsOfTheBlade { player: p("Bob") },
+        "wrong players turn",
+    );
+    g.apply(Event::PuppetsOfTheBlade { player: p("Alice") });
+    assert_eq!(g.phase(), Phase::EndActionTurn);
+    g.expect_rejected(
+        Event::PuppetsOfTheBlade { player: p("Alice") },
+        "expected Action",
+    );
+
+    let alice = g.player("Alice");
+    assert_eq!(alice.firmament_side(), Some(FirmamentSide::Obsidian));
+    assert_eq!(alice.faction_name(), "The Obsidian");
+    assert_eq!(alice.breakthrough, Some(Breakthrough::TheReaping));
+    assert!(!alice.planets.contains_key(&Planet::Cronos));
+    assert!(!alice.planets.contains_key(&Planet::Tallin));
+    assert!(alice.planets.contains_key(&Planet::TallinHollow));
+    assert!(alice.planets.contains_key(&Planet::CronosHollow));
+
+    g.turn("Alice").end_turn();
+    g.play_out_action_phase();
+    assert_eq!(g.phase(), Phase::Status);
+    g
+}
+
+#[test]
+fn only_the_firmament_can_become_the_obsidian() {
+    let mut g = action_phase(three_players().thunders_edge());
+    g.expect_rejected(
+        Event::PuppetsOfTheBlade { player: p("Alice") },
+        "Only The Firmament",
+    );
 }

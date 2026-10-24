@@ -198,6 +198,12 @@ pub enum Event {
         leader: Leader,
     },
 
+    /// The Firmament performs the action 'Puppets of the Blade', becoming The Obsidian.
+    PuppetsOfTheBlade {
+        /// The player who flips from The Firmament to The Obsidian.
+        player: PlayerId,
+    },
+
     /// Begin playing a frontier card.
     FrontierCardActionBegin {
         /// The player who plays the card.

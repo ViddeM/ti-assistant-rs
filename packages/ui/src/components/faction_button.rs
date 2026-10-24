@@ -1,5 +1,7 @@
+use std::sync::Arc;
+
 use dioxus::prelude::*;
-use ti_helper_game_data::common::faction::Faction;
+use ti_helper_game_data::{common::faction::Faction, state::faction_state::FactionState};
 
 use crate::components::faction_icon::FactionIcon;
 
@@ -8,6 +10,7 @@ const FACTION_BUTTON_SCSS: Asset = asset!("/assets/styling/components/faction_bu
 #[derive(Debug, Clone, PartialEq, Props)]
 pub struct FactionButtonProps {
     faction: Faction,
+    faction_state: Arc<FactionState>,
     selected: bool,
     onclick: EventHandler<()>,
 }
@@ -16,6 +19,7 @@ pub struct FactionButtonProps {
 pub fn FactionButton(
     FactionButtonProps {
         faction,
+        faction_state,
         selected,
         onclick,
     }: FactionButtonProps,
@@ -27,7 +31,12 @@ pub fn FactionButton(
             class: "faction-button",
             class: if selected { "faction-button-selected" },
             onclick: move |_| onclick(()),
-            FactionIcon { faction, width: 32, height: 32 }
+            FactionIcon {
+                faction,
+                faction_state,
+                width: 32,
+                height: 32,
+            }
         }
     }
 }
