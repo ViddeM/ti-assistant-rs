@@ -41,6 +41,9 @@ pub struct Score {
     /// Which (if any) player has played the Crown of Emphidia relic.
     pub crown_of_emphidia: Option<PlayerId>,
 
+    /// Which (if any) player gained a point by playing the Book of Latvinia relic.
+    pub book_of_latvinia: Option<PlayerId>,
+
     /// Manually assigned points
     pub extra_points: HashMap<PlayerId, i8>,
 
@@ -100,6 +103,11 @@ impl Score {
 
             // Check if the player has the crown of emphidia relic
             if Some(player_id) == self.crown_of_emphidia.as_ref() {
+                player_points += 1;
+            }
+
+            // Check if the player gained a point from the book of latvinia relic
+            if Some(player_id) == self.book_of_latvinia.as_ref() {
                 player_points += 1;
             }
 

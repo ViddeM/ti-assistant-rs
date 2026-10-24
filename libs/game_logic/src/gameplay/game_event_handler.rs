@@ -1159,6 +1159,20 @@ fn try_update_game_state(
                 }
             }
 
+            if progress.relic == Relic::BookOfLatvinia {
+                let controls_all_specialties = game_state
+                    .players
+                    .get(&player)
+                    .ok_or_else(|| anyhow::anyhow!("Player doesn't exist? (This is a bug)"))?
+                    .controls_all_tech_specialties();
+
+                if controls_all_specialties {
+                    game_state.score.book_of_latvinia = Some(player.clone());
+                } else {
+                    game_state.speaker = Some(player.clone());
+                }
+            }
+
             game_state
                 .players
                 .get_mut(&player)

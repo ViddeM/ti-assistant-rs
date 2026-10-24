@@ -1,10 +1,12 @@
 use dioxus::prelude::*;
+use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::event::{Event, RelicAction},
     components::{
         planet_attachment::PlanetAttachment,
         relic::Relic,
         system::{System, SystemType},
+        tech::TechCategory,
     },
     state::game_state::ActionPhaseProgress,
 };
@@ -69,6 +71,9 @@ fn RelicProgressView(card: Relic) -> Element {
         },
         Relic::NanoForge => rsx! {
             NanoForgeView {}
+        },
+        Relic::BookOfLatvinia => rsx! {
+            BookOfLatviniaView {}
         },
         _ => rsx! {
             Button {
@@ -222,6 +227,61 @@ fn NanoForgeView() -> Element {
                                 data: Some(RelicAction::NanoForge {
                                     planet: selected_planet().expect("Planet to be set"),
                                 }),
+                            })
+                    },
+                    "Commit"
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn BookOfLatviniaView() -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+    let current_player_id = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to be set for action phase")
+    });
+
+    let missing_specialties = use_memo(move || {
+        let controlled = gc
+            .game_state()
+            .players
+            .get(&current_player_id())
+            .map(|p| p.controlled_tech_specialties())
+            .unwrap_or_default();
+
+        TechCategory::iter()
+            .filter(|c| !controlled.contains(c))
+            .map(|c| c.to_string())
+            .collect::<Vec<_>>()
+            .join(", ")
+    });
+
+    rsx! {
+        fieldset {
+            legend { "Book of Latvinia" }
+            div { class: "column",
+                if missing_specialties().is_empty() {
+                    p {
+                        "You control planets with all 4 technology specialties and gain 1 victory point."
+                    }
+                } else {
+                    p {
+                        "You are missing the {missing_specialties} technology specialties and gain the speaker token."
+                    }
+                }
+                Button {
+                    class: "margin-top",
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::RelicActionCommit {
+                                player: current_player_id(),
+                                data: None,
                             })
                     },
                     "Commit"
