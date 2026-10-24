@@ -29,6 +29,7 @@ players:
       - NeuralMotivator
     relics: []
     breakthrough: ~
+    factionState: None
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -45,6 +46,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -56,6 +58,7 @@ players:
       - GravitonLaserSystem
     relics: []
     breakthrough: ~
+    factionState: None
 speaker: Alice
 tableOrder:
   - Alice

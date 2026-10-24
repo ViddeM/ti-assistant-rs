@@ -28,6 +28,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -45,6 +46,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Carol:
     name: Carol
     faction: NekroVirus
@@ -56,6 +58,7 @@ players:
       - GravityDrive
     relics: []
     breakthrough: ~
+    factionState: None
   Dave:
     name: Dave
     faction: Winnu
@@ -68,6 +71,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Erin:
     name: Erin
     faction: ArgentFlight
@@ -81,6 +85,7 @@ players:
       - PlasmaScoring
     relics: []
     breakthrough: ~
+    factionState: None
   Finn:
     name: Finn
     faction: CouncilKeleres
@@ -97,6 +102,7 @@ players:
     relics:
       - ShardOfTheThrone
     breakthrough: ~
+    factionState: None
 speaker: Erin
 tableOrder:
   - Alice

@@ -27,6 +27,7 @@ players:
       - NeuralMotivator
     relics: []
     breakthrough: ~
+    factionState: None
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -41,6 +42,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Carol:
     name: Carol
     faction: NekroVirus
@@ -51,6 +53,7 @@ players:
       - DacxiveAnimators
     relics: []
     breakthrough: ~
+    factionState: None
 speaker: Alice
 tableOrder:
   - Alice

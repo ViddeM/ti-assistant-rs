@@ -27,6 +27,7 @@ players:
       - NeuralMotivator
     relics: []
     breakthrough: ~
+    factionState: None
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -41,6 +42,7 @@ players:
       - ProductionBiomes
     relics: []
     breakthrough: ~
+    factionState: None
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -53,6 +55,7 @@ players:
       - NeuralMotivator
     relics: []
     breakthrough: ~
+    factionState: None
 speaker: Alice
 tableOrder:
   - Alice

@@ -27,6 +27,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Bob:
     name: Bob
     faction: FederationOfSol
@@ -38,6 +39,7 @@ players:
       - NeuralMotivator
     relics: []
     breakthrough: ~
+    factionState: None
   Carol:
     name: Carol
     faction: EmiratesOfHacan
@@ -51,6 +53,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
 speaker: Alice
 tableOrder:
   - Alice

@@ -28,6 +28,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Kel:
     name: Kel
     faction: CouncilKeleres
@@ -40,6 +41,7 @@ players:
       - PlasmaScoring
     relics: []
     breakthrough: ~
+    factionState: None
   Wendy:
     name: Wendy
     faction: Winnu
@@ -50,6 +52,7 @@ players:
       - NeuralMotivator
     relics: []
     breakthrough: ~
+    factionState: None
 speaker: Kel
 tableOrder:
   - Wendy

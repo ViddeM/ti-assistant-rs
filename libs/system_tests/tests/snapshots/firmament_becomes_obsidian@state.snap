@@ -42,6 +42,7 @@ players:
       - SarweenTools
     relics: []
     breakthrough: ~
+    factionState: None
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -53,6 +54,7 @@ players:
       - GravitonLaserSystem
     relics: []
     breakthrough: ~
+    factionState: None
 speaker: Alice
 tableOrder:
   - Alice
