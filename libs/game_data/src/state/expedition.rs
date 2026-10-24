@@ -1,19 +1,28 @@
 use std::collections::{BTreeMap, HashMap};
 
 use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
+use strum_macros::EnumIter;
 
 use crate::{common::player_id::PlayerId, components::system::SystemId};
 
 /// The current state of the Thunder's Edge expedition.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct TEExpedition {
+    /// How the expedition was completed, or None if it hasn't been.
     pub completed: Option<TECompletion>,
+    /// Who has claimed which slot.
     pub progress: BTreeMap<TEExpeditionSlot, PlayerId>,
 }
 
 impl TEExpedition {
+    /// True if all slots are claimed.
+    pub fn is_full(&self) -> bool {
+        self.progress.len() >= TEExpeditionSlot::iter().count()
+    }
+
     pub fn get_top_expedition_contributors(&self) -> anyhow::Result<Option<Vec<PlayerId>>> {
-        if self.progress.len() < 6 {
+        if !self.is_full() {
             return Ok(None);
         }
 
@@ -35,12 +44,15 @@ impl TEExpedition {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TECompletion {
-    pub completed_by: PlayerId,
+    /// The player that won the expedition and received Thunder's Edge.
+    pub won_by: PlayerId,
     pub placed_in: SystemId,
 }
 
 /// The progress of the Thunder's Edge expedition.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+///
+/// The variants are declared in the order the slots are laid out (clockwise) on the token.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, EnumIter)]
 pub enum TEExpeditionSlot {
     /// Spend 5 resources.
     Resources,

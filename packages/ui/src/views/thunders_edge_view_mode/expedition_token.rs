@@ -1,13 +1,12 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use dioxus::prelude::*;
-use ti_helper_game_data::{
-    actions::event::Event, common::player_id::PlayerId, state::expedition::TEExpeditionSlot,
-};
+use strum::IntoEnumIterator;
+use ti_helper_game_data::{common::player_id::PlayerId, state::expedition::TEExpeditionSlot};
 
 use crate::{
     components::{faction_icon::get_faction_icon, ti_icon::TiIconType},
-    data::{event_context::EventContext, game_context::GameContext},
+    data::game_context::GameContext,
 };
 
 /// Radius of the token, the view box is centered on the middle of the token.
@@ -130,10 +129,15 @@ fn stars() -> Vec<(f64, f64, f64)> {
 }
 
 /// The expedition, drawn like the expedition side of the Thunder's Edge token.
+///
+/// Only the slots in `selectable` can be clicked, which calls `on_select` with the slot. The
+/// caller decides what selecting a slot means. With no selectable slots the token is read-only.
 #[component]
 pub fn ExpeditionToken(
     progress: BTreeMap<TEExpeditionSlot, PlayerId>,
-    selected_player: ReadSignal<Option<PlayerId>>,
+    #[props(default)] selectable: BTreeSet<TEExpeditionSlot>,
+    #[props(default)] selected: Option<TEExpeditionSlot>,
+    #[props(default)] on_select: EventHandler<TEExpeditionSlot>,
 ) -> Element {
     let claimed = SLOTS_CLOCKWISE
         .iter()
@@ -189,13 +193,15 @@ pub fn ExpeditionToken(
                     }
                 }
 
-                for (i , slot) in SLOTS_CLOCKWISE.iter().cloned().enumerate() {
+                for (i , slot) in SLOTS_CLOCKWISE.iter().enumerate() {
                     ExpeditionWedge {
                         key: "{i}",
                         index: i,
                         slot: slot.clone(),
                         picked_by: progress.get(&slot).cloned(),
-                        selected_player,
+                        selectable: selectable.contains(&slot),
+                        selected: selected.as_ref() == Some(&slot),
+                        on_select,
                     }
                 }
             }
@@ -230,13 +236,13 @@ fn ExpeditionWedge(
     index: usize,
     slot: TEExpeditionSlot,
     picked_by: Option<PlayerId>,
-    selected_player: ReadSignal<Option<PlayerId>>,
+    selectable: bool,
+    selected: bool,
+    on_select: EventHandler<TEExpeditionSlot>,
 ) -> Element {
     let gc = use_context::<GameContext>();
-    let event = use_context::<EventContext>();
 
     let center = index as f64 * 60.0;
-    let claimable = *selected_player.read() != picked_by;
     let owner = picked_by.as_ref().and_then(|p| {
         gc.game_state()
             .players
@@ -245,8 +251,11 @@ fn ExpeditionWedge(
     });
 
     let mut class = format!("te-wedge te-wedge-{}", css_name(&slot));
-    if claimable {
+    if selectable {
         class.push_str(" te-wedge-claimable");
+    }
+    if selected {
+        class.push_str(" te-wedge-selected");
     }
     if picked_by.is_some() {
         class.push_str(" te-wedge-claimed");
@@ -267,10 +276,12 @@ fn ExpeditionWedge(
                 "aria-label": slot.description(),
                 // Dioxus doesn't have the svg `title` element, but setting it as inner html still gives a native tooltip.
                 dangerous_inner_html: tooltip,
-                onclick: move |_| {
-                    let s = slot.clone();
-                    if claimable {
-                        event.send_event(Event::ClaimThundersEdgeExpeditionSlot { player: selected_player(), slot: s });
+                onclick: {
+                    let slot = slot.clone();
+                    move |_| {
+                        if selectable {
+                            on_select(slot.clone());
+                        }
                     }
                 },
             }

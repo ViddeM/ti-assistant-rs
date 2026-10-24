@@ -30,7 +30,7 @@ use crate::{
         system::SystemId,
         tech::Technology,
     },
-    state::expedition::TEExpedition,
+    state::expedition::{TEExpedition, TEExpeditionSlot},
 };
 
 use super::{
@@ -170,6 +170,8 @@ pub enum ActionPhaseProgress {
     FrontierCard(FrontierCardProgress),
     /// The progress of a relic action.
     Relic(RelicProgress),
+    /// The progress of committing to the Thunder's Edge expedition at the end of a turn.
+    ThundersEdge(ThundersEdgeProgress),
 }
 
 impl ActionPhaseProgress {
@@ -182,6 +184,19 @@ impl ActionPhaseProgress {
     pub fn is_tactical(&self) -> bool {
         matches!(self, ActionPhaseProgress::Tactical(_))
     }
+}
+
+/// The progress of committing to the Thunder's Edge expedition at the end of a turn.
+///
+/// Only exists during [Phase::EndActionTurn]. Without it the player hasn't committed this turn.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "t")]
+pub enum ThundersEdgeProgress {
+    /// The player committed to the expedition by claiming `slot`.
+    Committed { slot: TEExpeditionSlot },
+    /// The commit claimed the final slot, the player must now place Thunder's Edge and decide who
+    /// wins it before the turn can end.
+    AwaitingPlacement { slot: TEExpeditionSlot },
 }
 
 /// Progress of a strategy card.

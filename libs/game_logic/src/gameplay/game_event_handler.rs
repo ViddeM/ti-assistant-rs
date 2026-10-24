@@ -31,16 +31,16 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
-        system::{AnomalyType, System, SystemType, systems},
+        system::{System, SystemType, systems},
         tech::{TechOrigin, TechType, Technology},
     },
     state::{
         agenda::{AgendaRound, Vote, VoteState},
-        expedition::TEExpedition,
+        expedition::{TECompletion, TEExpedition},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
             GameState, LeaderProgress, MapData, MiltyInformation, RelicProgress,
-            StrategicPrimaryProgress, StrategicProgress, TacticalProgress,
+            StrategicPrimaryProgress, StrategicProgress, TacticalProgress, ThundersEdgeProgress,
         },
         player::NewPlayer,
     },
@@ -1149,12 +1149,28 @@ fn try_update_game_state(
         Event::TakeAnotherTurn { player } => {
             game_state.assert_phase(Phase::EndActionTurn)?;
             game_state.assert_player_turn(&player)?;
+            ensure!(
+                !game_state.passed_players.contains(&player),
+                "A player that has passed cannot take another turn"
+            );
+
+            ensure!(
+                !is_awaiting_thunders_edge_placement(game_state),
+                "Thunder's Edge must be placed before taking another turn"
+            );
+            game_state.action_progress = None;
 
             game_state.phase = Phase::Action;
         }
         Event::EndTurn { player } => {
             game_state.assert_phase(Phase::EndActionTurn)?;
             game_state.assert_player_turn(&player)?;
+
+            ensure!(
+                !is_awaiting_thunders_edge_placement(game_state),
+                "Thunder's Edge must be placed before ending the turn"
+            );
+            game_state.action_progress = None;
 
             game_state.phase = Phase::Action;
             game_state.advance_turn(timestamp)?;
@@ -1175,7 +1191,14 @@ fn try_update_game_state(
             );
 
             game_state.passed_players.insert(player);
-            game_state.advance_turn(timestamp)?;
+
+            // A passing player may still commit to the expedition at the end of their turn.
+            let can_commit = (game_state.te_expedition.as_ref()).is_some_and(|te| !te.is_full());
+            if can_commit {
+                game_state.phase = Phase::EndActionTurn;
+            } else {
+                game_state.advance_turn(timestamp)?;
+            }
         }
         /* Status phase events */
         Event::ScorePublicObjective { player, objective } => {
@@ -1866,6 +1889,91 @@ fn try_update_game_state(
 
             player.breakthrough = breakthrough;
         }
+        Event::CommitToThundersEdgeExpedition { player, slot } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            game_state.assert_phase(Phase::EndActionTurn)?;
+            game_state.assert_player_turn(&player)?;
+
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Player has already committed to the expedition this turn"
+            );
+
+            let te = game_state
+                .te_expedition
+                .as_mut()
+                .expect("Thunders Edge enabled but not initialized");
+
+            ensure!(
+                !te.progress.contains_key(&slot),
+                "Expedition slot is already claimed"
+            );
+
+            let committer = game_state
+                .players
+                .get_mut(&player)
+                .context("Player not found")?;
+
+            te.progress.insert(slot.clone(), player);
+
+            if committer.breakthrough.is_none() {
+                committer.breakthrough = Some(committer.faction.breakthrough());
+            }
+
+            game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(if te.is_full() {
+                ThundersEdgeProgress::AwaitingPlacement { slot }
+            } else {
+                ThundersEdgeProgress::Committed { slot }
+            }));
+        }
+        Event::CompleteThundersEdgeExpedition {
+            player,
+            placed_in,
+            won_by,
+        } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            game_state.assert_phase(Phase::EndActionTurn)?;
+            game_state.assert_player_turn(&player)?;
+
+            let Some(ActionPhaseProgress::ThundersEdge(ThundersEdgeProgress::AwaitingPlacement {
+                slot,
+            })) = game_state.action_progress.clone()
+            else {
+                bail!("Thunder's Edge is not waiting to be placed");
+            };
+
+            let te = game_state
+                .te_expedition
+                .as_mut()
+                .expect("Thunders Edge enabled but not initialized");
+
+            ensure!(
+                System::valid_thunders_edge_systems().contains(&placed_in),
+                "System is not a valid candidate for Thunder's Edge"
+            );
+
+            let top_contributors = te
+                .get_top_expedition_contributors()?
+                .context("Not all expedition slots are claimed")?;
+            ensure!(
+                top_contributors.contains(&won_by),
+                "Only a player with the most claimed slots can win the expedition"
+            );
+
+            let winner = game_state
+                .players
+                .get_mut(&won_by)
+                .context("Player not found")?;
+            winner.planets.insert(Planet::ThundersEdge, BTreeSet::new());
+            if winner.breakthrough.is_none() {
+                winner.breakthrough = Some(winner.faction.breakthrough());
+            }
+
+            te.completed = Some(TECompletion { won_by, placed_in });
+            game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(
+                ThundersEdgeProgress::Committed { slot },
+            ));
+        }
         Event::SetThundersEdgeCompletion { new_completion } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
             let te = game_state
@@ -1886,21 +1994,37 @@ fn try_update_game_state(
                     "System is not a valid candidate for Thunder's Edge"
                 );
 
-                // Ensure the player exists.
-                let player = game_state
-                    .players
-                    .get_mut(&comp.completed_by)
-                    .context("Player not found")?;
-
-                if te.completed.is_none() {
-                    // Give the planet to new player
-                    player.planets.insert(Planet::ThundersEdge, BTreeSet::new());
-                }
+                ensure!(
+                    game_state.players.contains_key(&comp.won_by),
+                    "Player not found"
+                );
             } else {
                 ensure!(
-                    te.progress.len() < 6,
+                    !te.is_full(),
                     "Cannot uncomplete Thunders Edge expedition with all slots claimed"
                 );
+            }
+
+            // Move the planet from the previous winner (if they still hold it) to the new one.
+            if let Some(previous) = te.completed.as_ref() {
+                let changed_winner =
+                    (new_completion.as_ref()).is_none_or(|c| c.won_by != previous.won_by);
+                if changed_winner && let Some(p) = game_state.players.get_mut(&previous.won_by) {
+                    p.planets.remove(&Planet::ThundersEdge);
+                }
+            }
+            if let Some(comp) = new_completion.as_ref() {
+                let winner = game_state
+                    .players
+                    .get_mut(&comp.won_by)
+                    .context("Player not found")?;
+                winner
+                    .planets
+                    .entry(Planet::ThundersEdge)
+                    .or_insert_with(BTreeSet::new);
+                if winner.breakthrough.is_none() {
+                    winner.breakthrough = Some(winner.faction.breakthrough());
+                }
             }
 
             te.completed = new_completion;
@@ -1912,6 +2036,17 @@ fn try_update_game_state(
     game_state.score.update_player_points(&game_state.players);
 
     Ok(())
+}
+
+/// True if the current player has claimed the final expedition slot, but hasn't placed
+/// Thunder's Edge yet.
+fn is_awaiting_thunders_edge_placement(game_state: &GameState) -> bool {
+    matches!(
+        game_state.action_progress,
+        Some(ActionPhaseProgress::ThundersEdge(
+            ThundersEdgeProgress::AwaitingPlacement { .. }
+        ))
+    )
 }
 
 fn get_plagiarize_available_techs(

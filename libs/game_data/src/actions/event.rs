@@ -439,7 +439,25 @@ pub enum Event {
         slot: TEExpeditionSlot,
     },
 
-    /// Change who completed the Thunders Edge expedition.
+    /// Commit to the Thunders Edge expedition at the end of a players turn.
+    CommitToThundersEdgeExpedition {
+        /// The player committing, must be the current player.
+        player: PlayerId,
+        /// The (unclaimed) expedition slot being claimed.
+        slot: TEExpeditionSlot,
+    },
+
+    /// Complete the Thunders Edge expedition after the final slot was claimed.
+    CompleteThundersEdgeExpedition {
+        /// The player that claimed the final slot, must be the current player.
+        player: PlayerId,
+        /// The system Thunders Edge is placed in.
+        placed_in: SystemId,
+        /// The player who won the expedition, must be one of the players with the most slots.
+        won_by: PlayerId,
+    },
+
+    /// Change who won the Thunders Edge expedition (admin).
     SetThundersEdgeCompletion {
         /// The new completion, or None if it should be "uncompleted".
         new_completion: Option<TECompletion>,

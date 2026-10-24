@@ -51,14 +51,7 @@ pub fn thunders_edge_commit_and_complete() -> TestGame {
         )
         .commit_to_expedition(TEExpeditionSlot::Influence)
         .end_turn();
-    assert!(
-        g.state()
-            .te_expedition
-            .as_ref()
-            .unwrap()
-            .committed_by
-            .is_none()
-    );
+    assert!(g.state().action_progress.is_none());
     assert!(g.state().players[&p("Alice")].breakthrough.is_some());
     assert!(g.state().players[&p("Bob")].breakthrough.is_none());
 
@@ -94,9 +87,16 @@ pub fn thunders_edge_commit_and_complete() -> TestGame {
         .commit()
         .expect_rejected(
             complete("Carol", "Alice", system.clone()),
-            "Not all expedition slots",
+            "not waiting to be placed",
         )
         .commit_to_expedition(TEExpeditionSlot::TechSpecialityPlanet)
+        .expect_rejected(
+            Event::CommitToThundersEdgeExpedition {
+                player: p("Carol"),
+                slot: TEExpeditionSlot::TradeGoods,
+            },
+            "already committed",
+        )
         .expect_rejected(
             Event::TakeAnotherTurn { player: p("Carol") },
             "must be placed",
@@ -119,6 +119,10 @@ pub fn thunders_edge_commit_and_complete() -> TestGame {
             "wrong players turn",
         )
         .apply(complete("Carol", "Alice", system.clone()))
+        .expect_rejected(
+            complete("Carol", "Alice", system.clone()),
+            "not waiting to be placed",
+        )
         .end_turn();
 
     let te = g.state().te_expedition.as_ref().unwrap();
@@ -181,13 +185,7 @@ pub fn thunders_edge_admin_flow() -> TestGame {
             slot,
         });
     }
-    assert!(
-        !g.state()
-            .te_expedition
-            .as_ref()
-            .unwrap()
-            .completion_required()
-    );
+    assert!(g.state().action_progress.is_none());
 
     // Nothing is required of the players.
     g.turn("Alice").tactical().commit().end_turn();

@@ -1,11 +1,12 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use dioxus::prelude::*;
+use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
     components::system::System,
-    state::expedition::{TECompletion, TEExpedition, TEExpeditionSlot},
+    state::expedition::{TECompletion, TEExpeditionSlot},
 };
 
 use crate::{
@@ -18,9 +19,9 @@ use crate::{
 };
 
 mod breakthrough;
-mod expedition_token;
+pub mod expedition_token;
 
-const THUNDERS_EDGE_VIEW_MODE_SCSS: Asset =
+pub const THUNDERS_EDGE_VIEW_MODE_SCSS: Asset =
     asset!("/assets/styling/views/thunders_edge_view_mode.scss");
 
 #[component]
@@ -48,6 +49,7 @@ pub fn ThundersEdgeViewMode() -> Element {
 #[component]
 fn Expedition(progress: BTreeMap<TEExpeditionSlot, PlayerId>) -> Element {
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
 
     let mut selected_player: Signal<Option<PlayerId>> = use_signal(|| None);
 
@@ -56,6 +58,11 @@ fn Expedition(progress: BTreeMap<TEExpeditionSlot, PlayerId>) -> Element {
         players.sort();
         players
     });
+
+    // Admins can assign any slot to the selected player (or unclaim it), as long as it changes.
+    let selectable = TEExpeditionSlot::iter()
+        .filter(|slot| progress.get(slot) != selected_player().as_ref())
+        .collect::<BTreeSet<_>>();
 
     rsx! {
         div { class: "card column",
@@ -68,7 +75,17 @@ fn Expedition(progress: BTreeMap<TEExpeditionSlot, PlayerId>) -> Element {
                 on_select: move |p| selected_player.set(p),
             }
 
-            ExpeditionToken { progress, selected_player }
+            ExpeditionToken {
+                progress,
+                selectable,
+                on_select: move |slot| {
+                    event
+                        .send_event(Event::ClaimThundersEdgeExpeditionSlot {
+                            player: selected_player(),
+                            slot,
+                        });
+                },
+            }
         }
     }
 }
@@ -78,7 +95,7 @@ fn Completed(completed: ReadSignal<Option<TECompletion>>) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
-    let mut selected_player = use_signal(move || completed().map(|c| c.completed_by));
+    let mut selected_player = use_signal(move || completed().map(|c| c.won_by));
     let mut selected_system = use_signal(|| completed().map(|c| c.placed_in));
     let players = use_memo(move || gc.game_state().players.keys().cloned().collect::<Vec<_>>());
     let valid_systems = use_memo(move || {
@@ -96,14 +113,14 @@ fn Completed(completed: ReadSignal<Option<TECompletion>>) -> Element {
         };
         completed()
             == Some(TECompletion {
-                completed_by: p,
+                won_by: p,
                 placed_in: s,
             })
     });
 
     use_effect(move || {
         if let Some(c) = completed() {
-            selected_player.set(Some(c.completed_by));
+            selected_player.set(Some(c.won_by));
             selected_system.set(Some(c.placed_in));
         } else {
             selected_player.set(None);
@@ -113,7 +130,7 @@ fn Completed(completed: ReadSignal<Option<TECompletion>>) -> Element {
 
     rsx! {
         div { class: "card column margin-top",
-            h3 { "Completed" }
+            h3 { "Expedition winner" }
             PlayerDropdown {
                 class: "margin-top",
                 value: selected_player,
@@ -133,7 +150,7 @@ fn Completed(completed: ReadSignal<Option<TECompletion>>) -> Element {
                     event
                         .send_event(Event::SetThundersEdgeCompletion {
                             new_completion: Some(TECompletion {
-                                completed_by: selected_player().expect("Player to be set"),
+                                won_by: selected_player().expect("Player to be set"),
                                 placed_in: selected_system().expect("System to be set"),
                             }),
                         });

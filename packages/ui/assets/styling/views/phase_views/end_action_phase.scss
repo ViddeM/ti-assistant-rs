@@ -9,3 +9,20 @@
     margin-bottom: $margin-large;
   }
 }
+
+.expedition-commit,
+.expedition-complete {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > *:not(:last-child) {
+    margin-bottom: $margin-large;
+  }
+}
+
+.expedition-selected-slot {
+  display: flex;
+  align-items: center;
+  gap: $margin-large;
+}

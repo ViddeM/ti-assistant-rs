@@ -83,7 +83,8 @@ $te-silver: rgba(214, 220, 232, 0.85);
       fill: rgba($color, 0.42);
     }
 
-    &.te-wedge-claimable:hover {
+    &.te-wedge-claimable:hover,
+    &.te-wedge-selected {
       .te-wedge-shape {
         fill: rgba($color, 0.48);
         stroke: mix(white, $color, 30%);
@@ -102,6 +103,10 @@ $te-silver: rgba(214, 220, 232, 0.85);
 
 .te-wedge-claimable {
   cursor: pointer;
+}
+
+.te-wedge-selected .te-wedge-shape {
+  stroke-width: 6px;
 }
 
 .te-slot-mark {
