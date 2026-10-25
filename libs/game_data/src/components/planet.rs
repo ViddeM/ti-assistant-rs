@@ -965,7 +965,7 @@ impl Planet {
             ),
             Planet::OluzStation => space_station!("Oluz Station", 1, 1, Expansion::ThundersEdge),
             Planet::Cocytus => planet!("Cocytus", vec![], vec![], 3, 0, Expansion::ThundersEdge),
-            Planet::Styx => planet!("Styx", vec![], vec![], 3, 0, Expansion::ThundersEdge, true),
+            Planet::Styx => planet!("Styx", vec![], vec![], 4, 0, Expansion::ThundersEdge, true),
             Planet::Lethe => planet!("Lethe", vec![], vec![], 0, 2, Expansion::ThundersEdge),
             Planet::Phlegethon => {
                 planet!("Phlegethon", vec![], vec![], 1, 2, Expansion::ThundersEdge)
