@@ -294,9 +294,7 @@ players:
     color: Black
     planets:
       Cronos: []
-      CronosHollow: []
       Tallin: []
-      TallinHollow: []
     technologies:
       - NeuralMotivator
     relics: []

@@ -180,6 +180,9 @@ impl Faction {
                 SystemType::HomeSystem(f) => f.eq(self),
                 _ => false,
             })
+            // The Firmament / The Obsidian has a two-sided home system tile and starts the game as
+            // The Firmament (96A). 96B is the side it flips to when becoming The Obsidian.
+            .filter(|s| s.id != "96B")
             .flat_map(|s| &s.planets)
             .cloned()
             .collect()

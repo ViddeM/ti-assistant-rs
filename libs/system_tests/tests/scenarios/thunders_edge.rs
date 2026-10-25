@@ -284,6 +284,9 @@ pub fn firmament_becomes_obsidian() -> TestGame {
     );
     assert_eq!(g.player("Bob").firmament_side(), None);
     assert_eq!(g.player("Alice").faction_name(), "The Firmament");
+    let mut planets: Vec<_> = g.player("Alice").planets.keys().cloned().collect();
+    planets.sort();
+    assert_eq!(planets, [Planet::Cronos, Planet::Tallin]);
 
     g.apply(Event::SetBreakthrough {
         player: p("Alice"),
