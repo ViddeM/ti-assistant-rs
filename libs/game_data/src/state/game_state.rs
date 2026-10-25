@@ -525,6 +525,15 @@ impl GameState {
         Ok(())
     }
 
+    /// Asserts that the provided tech is available with the enabled expansions, i.e. that its
+    /// expansion is enabled and that it hasn't been replaced by a newer version in a codex.
+    pub fn assert_tech_enabled(&self, tech: &Technology) -> anyhow::Result<()> {
+        if !tech.is_enabled_in(&self.game_settings.expansions) {
+            bail!("{tech:?} is not available with the enabled expansions (replaced by a codex?)");
+        }
+        Ok(())
+    }
+
     /// Asserts that the configured expansions is valid for the provided action.
     pub fn assert_action_expansion(&self, action: &StrategicPrimaryAction) -> anyhow::Result<()> {
         match action {
@@ -533,10 +542,10 @@ impl GameState {
                 second_tech: extra,
             } => {
                 if let Some(t) = tech {
-                    self.assert_expansion(&t.info().expansion)?;
+                    self.assert_tech_enabled(t)?;
                 }
                 if let Some(t) = extra {
-                    self.assert_expansion(&t.info().expansion)?;
+                    self.assert_tech_enabled(t)?;
                 }
             }
             StrategicPrimaryAction::Imperial { score_objective } => {
@@ -556,15 +565,15 @@ impl GameState {
     ) -> anyhow::Result<()> {
         match action {
             StrategicSecondaryAction::Technology { tech } => {
-                self.assert_expansion(&tech.info().expansion)?;
+                self.assert_tech_enabled(tech)?;
             }
             StrategicSecondaryAction::TechnologyJolNar {
                 first_tech,
                 second_tech,
             } => {
-                self.assert_expansion(&first_tech.info().expansion)?;
+                self.assert_tech_enabled(first_tech)?;
                 if let Some(t) = second_tech {
-                    self.assert_expansion(&t.info().expansion)?;
+                    self.assert_tech_enabled(t)?;
                 }
             }
             StrategicSecondaryAction::Skip => {}

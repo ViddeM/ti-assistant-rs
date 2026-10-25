@@ -146,3 +146,41 @@ fn codex_iv_relics_need_codex_iv() {
         "Expansion is not enabled",
     );
 }
+
+#[test]
+fn codex_replaced_techs_are_rejected() {
+    let mut g = action_phase(three_players().pok().codex());
+    let add_tech = |tech| Event::AddTechToPlayer {
+        player: p("Alice"),
+        tech,
+    };
+    g.expect_rejected(add_tech(Technology::MagenDefenceGrid), "not available")
+        .expect_rejected(add_tech(Technology::MagenDefenceGridOmega), "not available")
+        .apply(add_tech(Technology::MagenDefenceGridOmegaOmega));
+    assert!(
+        g.player("Alice")
+            .technologies
+            .contains(&Technology::MagenDefenceGridOmegaOmega)
+    );
+
+    let mut g = three_players().pok().codex().start();
+    g.strategy_phase(&[
+        ("Alice", StrategyCard::Leadership),
+        ("Bob", StrategyCard::Diplomacy),
+        ("Carol", StrategyCard::Politics),
+        ("Alice", StrategyCard::Technology),
+        ("Bob", StrategyCard::Trade),
+        ("Carol", StrategyCard::Warfare),
+    ]);
+    g.turn("Alice").strategic(StrategyCard::Technology);
+    g.expect_rejected(
+        Event::StrategicActionPrimary {
+            player: p("Alice"),
+            action: StrategicPrimaryAction::Technology {
+                first_tech: Some(Technology::X89BacterialWeapon),
+                second_tech: None,
+            },
+        },
+        "not available",
+    );
+}

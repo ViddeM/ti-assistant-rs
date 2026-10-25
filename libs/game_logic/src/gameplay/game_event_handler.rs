@@ -789,7 +789,7 @@ fn try_update_game_state(
             if let Some(data) = data {
                 match data {
                     ActionCardAction::FocusedResearch { tech } => {
-                        game_state.assert_expansion(&tech.info().expansion)?;
+                        game_state.assert_tech_enabled(&tech)?;
                         let current_player = game_state.get_current_player()?;
                         current_player.research_tech(tech.clone())?;
                     }
@@ -797,7 +797,7 @@ fn try_update_game_state(
                         remove_tech,
                         take_tech,
                     } => {
-                        game_state.assert_expansion(&take_tech.info().expansion)?;
+                        game_state.assert_tech_enabled(&take_tech)?;
 
                         let current_player = game_state.get_current_player()?;
                         ensure!(
@@ -958,7 +958,7 @@ fn try_update_game_state(
             if let Some(progress) = data {
                 match progress {
                     FrontierCardAction::EnigmaticDevice { tech } => {
-                        game_state.assert_expansion(&tech.info().expansion)?;
+                        game_state.assert_tech_enabled(&tech)?;
 
                         let current_player = game_state.get_current_player()?;
                         current_player.research_tech(tech.clone())?;
@@ -1496,7 +1496,7 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::Relics)?;
 
             game_state.assert_expansion(&Relic::MawOfWorlds.info().expansion)?;
-            game_state.assert_expansion(&tech.info().expansion)?;
+            game_state.assert_tech_enabled(&tech)?;
 
             let Some(player) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist");
@@ -1719,7 +1719,7 @@ fn try_update_game_state(
             game_state.score.crown_of_emphidia = player;
         }
         Event::AddTechToPlayer { player, tech } => {
-            game_state.assert_expansion(&tech.info().expansion)?;
+            game_state.assert_tech_enabled(&tech)?;
 
             let Some(p) = game_state.players.get_mut(&player) else {
                 bail!("Player does not exist?");
