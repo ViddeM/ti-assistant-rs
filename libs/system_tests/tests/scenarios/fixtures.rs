@@ -1,6 +1,7 @@
 //! Shared starting points for scenarios.
 
-use ti_helper_system_tests::{TestGameBuilder, prelude::*};
+use ti_helper_game_data::common::milty_data::MiltyData;
+use ti_helper_system_tests::{TestGameBuilder, milty::milty_data, prelude::*};
 
 /// Alice (Sol), Bob (Hacan) and Carol (Xxcha), Alice is speaker.
 pub fn three_players() -> TestGameBuilder {
@@ -42,4 +43,16 @@ pub fn agenda_phase(builder: TestGameBuilder) -> TestGame {
     .complete();
     assert_eq!(g.phase(), Phase::Agenda);
     g
+}
+
+/// A milty draft for Ann (Arborec), Ben (Naaz-Rokha), Cid (Ral Nel), Dee (Deepwrought) and
+/// Eve (Firmament), Ben is speaker.
+pub fn five_player_draft() -> MiltyData {
+    milty_data(&[
+        ("Ann", Faction::Arborec, 2),
+        ("Ben", Faction::NaazRokhaAlliance, 0),
+        ("Cid", Faction::RalNelConsortium, 1),
+        ("Dee", Faction::DeepwroughtScholarate, 3),
+        ("Eve", Faction::FirmamentObsidian, 4),
+    ])
 }

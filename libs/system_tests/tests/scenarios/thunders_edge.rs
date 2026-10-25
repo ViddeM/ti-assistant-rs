@@ -4,12 +4,12 @@ use ti_helper_game_data::{
     components::breakthrough::Breakthrough,
     state::{
         faction_state::FirmamentSide,
-        game_state::{ActionPhaseProgress, TacticalProgress},
+        game_state::{ActionPhaseProgress, PlanetLocation, TacticalProgress},
     },
 };
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{action_phase, three_players};
+use crate::fixtures::{action_phase, five_player_draft, three_players};
 
 scenarios![
     thunders_edge_commit_and_complete,
@@ -397,4 +397,92 @@ pub fn thunders_edge_take_planets_without_tile() -> TestGame {
     assert!(g.player("Bob").planets.contains_key(&Planet::ThundersEdge));
     assert!(g.player("Carol").planets.contains_key(&Planet::Avernus));
     g
+}
+
+/// Only the planets on the shown side of the Firmament / The Obsidian home system tile are on
+/// the board, so the other side can't be taken.
+#[test]
+fn only_the_shown_side_of_the_firmament_home_system_is_on_the_board() {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::FirmamentObsidian)
+            .player("Bob", Faction::EmiratesOfHacan)
+            .player("Carol", Faction::XxchaKingdom)
+            .thunders_edge(),
+    );
+    let assert_locations = |g: &TestGame, on_board: [Planet; 2], hidden: [Planet; 2]| {
+        for planet in on_board {
+            assert_eq!(
+                g.state().planet_location(&planet),
+                PlanetLocation::SystemTile,
+                "{planet:?}"
+            );
+        }
+        for planet in hidden {
+            assert_eq!(
+                g.state().planet_location(&planet),
+                PlanetLocation::NotOnBoard,
+                "{planet:?}"
+            );
+        }
+    };
+
+    assert_locations(
+        &g,
+        [Planet::Cronos, Planet::Tallin],
+        [Planet::CronosHollow, Planet::TallinHollow],
+    );
+
+    g.apply(Event::PuppetsOfTheBlade { player: p("Alice") });
+    g.turn("Alice").end_turn();
+    assert_locations(
+        &g,
+        [Planet::CronosHollow, Planet::TallinHollow],
+        [Planet::Cronos, Planet::Tallin],
+    );
+
+    let bob = g
+        .turn("Bob")
+        .tactical()
+        .expect_rejected(take("Bob", Planet::Cronos), "isn't on the board")
+        .take(Planet::CronosHollow);
+    assert_eq!(activated_system(&bob), Some("96B".to_string()));
+    bob.commit().end_turn();
+
+    assert!(g.player("Bob").planets.contains_key(&Planet::CronosHollow));
+    assert!(
+        !g.player("Alice")
+            .planets
+            .contains_key(&Planet::CronosHollow)
+    );
+}
+
+/// In milty games the home system tile on the map is flipped as well.
+#[test]
+fn the_obsidian_flips_the_map_tile() {
+    let mut g = TestGame::builder().milty(five_player_draft()).create();
+    g.finish_creation().auto_setup().start_game();
+    g.strategy_phase(&[
+        ("Ben", StrategyCard::Diplomacy),
+        ("Cid", StrategyCard::Politics),
+        ("Ann", StrategyCard::Construction),
+        ("Dee", StrategyCard::Trade),
+        ("Eve", StrategyCard::Leadership),
+    ]);
+
+    let systems = |g: &TestGame| -> Vec<SystemId> {
+        let milty = g.state().map_data.milty_information.as_ref().unwrap();
+        milty
+            .hex_map
+            .tiles
+            .iter()
+            .map(|t| t.system.clone())
+            .collect()
+    };
+    assert!(systems(&g).contains(&"96A".to_string()));
+    assert!(!systems(&g).contains(&"96B".to_string()));
+
+    g.apply(Event::PuppetsOfTheBlade { player: p("Eve") });
+    assert!(!systems(&g).contains(&"96A".to_string()));
+    assert!(systems(&g).contains(&"96B".to_string()));
 }

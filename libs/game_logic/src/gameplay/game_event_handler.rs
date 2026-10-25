@@ -893,6 +893,13 @@ fn try_update_game_state(
                 player.flip_home_system_planets();
             }
 
+            // The home system tile is flipped as well.
+            if let Some(milty) = game_state.map_data.milty_information.as_mut() {
+                for tile in milty.hex_map.tiles.iter_mut().filter(|t| t.system == "96A") {
+                    tile.system = "96B".to_string();
+                }
+            }
+
             game_state.update_available_leaders();
             game_state.phase = Phase::EndActionTurn;
         }

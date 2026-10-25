@@ -1,7 +1,9 @@
 //! Creating and setting up games.
 
-use ti_helper_game_data::{common::milty_data::MiltyData, state::player::NewPlayer};
-use ti_helper_system_tests::{milty::milty_data, prelude::*};
+use ti_helper_game_data::state::player::NewPlayer;
+use ti_helper_system_tests::prelude::*;
+
+use crate::fixtures::five_player_draft;
 
 scenarios![
     setup_base_three_players,
@@ -213,16 +215,6 @@ pub fn setup_milty_import() -> TestGame {
     assert_eq!(milty.mirage_system.as_deref(), Some("65"));
     assert!(g.player("Ben").planets.contains_key(&Planet::Mirage));
     g
-}
-
-fn five_player_draft() -> MiltyData {
-    milty_data(&[
-        ("Ann", Faction::Arborec, 2),
-        ("Ben", Faction::NaazRokhaAlliance, 0),
-        ("Cid", Faction::RalNelConsortium, 1),
-        ("Dee", Faction::DeepwroughtScholarate, 3),
-        ("Eve", Faction::FirmamentObsidian, 4),
-    ])
 }
 
 #[test]

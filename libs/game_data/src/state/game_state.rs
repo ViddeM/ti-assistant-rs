@@ -34,6 +34,7 @@ use crate::{
 
 use super::{
     agenda::{AgendaRecord, AgendaState, VoteState},
+    faction_state::FirmamentSide,
     player::Player,
     score::Score,
     status::StatusPhaseState,
@@ -133,8 +134,9 @@ pub enum PlanetLocation {
     SystemTile,
     /// The planet is a token on the board, in the given system if that is tracked.
     Token(Option<SystemId>),
-    /// The planet hasn't been spawned (Mirage, Avernus, Thunder's Edge) or only exists as a card
-    /// (Custodia Vigilia).
+    /// The planet hasn't been spawned (Mirage, Avernus, Thunder's Edge), only exists as a card
+    /// (Custodia Vigilia) or is on the hidden side of the Firmament / The Obsidian home system
+    /// tile.
     NotOnBoard,
 }
 
@@ -542,13 +544,19 @@ impl GameState {
     ///
     /// Planets without a system tile are only on the board once they have been placed. Where
     /// Mirage and Avernus are isn't tracked, Thunder's Edge is where the expedition placed it and
-    /// Custodia Vigilia only exists as a card.
+    /// Custodia Vigilia only exists as a card. Only the planets on the shown side of the
+    /// Firmament / The Obsidian home system tile are on the board.
     pub fn planet_location(&self, planet: &Planet) -> PlanetLocation {
-        if planet.has_system_tile() {
-            return PlanetLocation::SystemTile;
-        }
-
         match planet {
+            // Only one side of the Firmament / The Obsidian home system tile (96A / 96B) is on
+            // the board.
+            Planet::Cronos | Planet::Tallin if self.obsidian_in_play() => {
+                PlanetLocation::NotOnBoard
+            }
+            Planet::CronosHollow | Planet::TallinHollow if !self.obsidian_in_play() => {
+                PlanetLocation::NotOnBoard
+            }
+            _ if planet.has_system_tile() => PlanetLocation::SystemTile,
             Planet::ThundersEdge => self
                 .te_expedition
                 .as_ref()
@@ -565,6 +573,13 @@ impl GameState {
             }
             _ => PlanetLocation::NotOnBoard,
         }
+    }
+
+    /// Whether the Firmament has flipped to The Obsidian.
+    fn obsidian_in_play(&self) -> bool {
+        self.players
+            .values()
+            .any(|p| p.firmament_side() == Some(FirmamentSide::Obsidian))
     }
 
     /// Asserts that the provided tech is available with the enabled expansions, i.e. that its
