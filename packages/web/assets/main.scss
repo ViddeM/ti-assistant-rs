@@ -12,10 +12,17 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   min-height: 100dvh;
+}
+
+html {
   background-color: #252525;
 }
 
-body {
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   background-image: url("/background_image.jpg");
   background-repeat: no-repeat;
   background-size: cover;
