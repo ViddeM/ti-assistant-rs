@@ -125,6 +125,19 @@ pub struct GameState {
     pub te_expedition: Option<TEExpedition>,
 }
 
+/// Where a planet is on the board, see [GameState::planet_location].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PlanetLocation {
+    /// The planet is part of a pre-defined system, see
+    /// [crate::components::system::System::for_planet].
+    SystemTile,
+    /// The planet is a token on the board, in the given system if that is tracked.
+    Token(Option<SystemId>),
+    /// The planet hasn't been spawned (Mirage, Avernus, Thunder's Edge) or only exists as a card
+    /// (Custodia Vigilia).
+    NotOnBoard,
+}
+
 /// Information relevant to things that has happened on the gameboard.
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -523,6 +536,35 @@ impl GameState {
             bail!("Expansion is not enabled {expansion:?}");
         }
         Ok(())
+    }
+
+    /// Where the planet is on the board.
+    ///
+    /// Planets without a system tile are only on the board once they have been placed. Where
+    /// Mirage and Avernus are isn't tracked, Thunder's Edge is where the expedition placed it and
+    /// Custodia Vigilia only exists as a card.
+    pub fn planet_location(&self, planet: &Planet) -> PlanetLocation {
+        if planet.has_system_tile() {
+            return PlanetLocation::SystemTile;
+        }
+
+        match planet {
+            Planet::ThundersEdge => self
+                .te_expedition
+                .as_ref()
+                .and_then(|te| te.completed.as_ref())
+                .map(|completion| PlanetLocation::Token(Some(completion.placed_in.clone())))
+                .unwrap_or(PlanetLocation::NotOnBoard),
+            Planet::Mirage | Planet::Avernus
+                if self
+                    .players
+                    .values()
+                    .any(|p| p.planets.contains_key(planet)) =>
+            {
+                PlanetLocation::Token(None)
+            }
+            _ => PlanetLocation::NotOnBoard,
+        }
     }
 
     /// Asserts that the provided tech is available with the enabled expansions, i.e. that its

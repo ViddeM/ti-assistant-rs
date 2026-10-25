@@ -165,7 +165,7 @@ pub fn action_tactical_planets_and_attachments() -> TestGame {
                 player: p("Carol"),
                 planet: Planet::Mirage,
             },
-            "Mirage must be spawned",
+            "isn't on the board",
         )
         .commit()
         .end_turn();

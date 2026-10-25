@@ -826,21 +826,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn every_planet_is_in_exactly_one_system() {
-        // These planets have no system tile, only a token or a card.
-        let without_tile = [
-            Planet::Mirage,
-            Planet::CustodiaVigilia,
-            Planet::ThundersEdge,
-            Planet::Avernus,
-        ];
-
+    fn planets_with_a_tile_are_in_exactly_one_system() {
         let failures = Planet::iter()
-            .filter(|planet| !without_tile.contains(planet))
+            .filter(|planet| planet.has_system_tile() != System::for_planet(planet).is_ok())
+            .collect::<Vec<_>>();
+        assert!(failures.is_empty(), "{failures:#?}");
+    }
+
+    #[test]
+    fn planets_have_the_expansion_of_their_system() {
+        let failures = Planet::iter()
+            .filter(|planet| planet.has_system_tile())
             .filter_map(|planet| {
-                System::for_planet(&planet)
-                    .err()
-                    .map(|err| format!("{planet:?}: {err}"))
+                let expansion = planet.info().expansion;
+                match System::for_planet(&planet) {
+                    Ok(system) if system.expansion == expansion => None,
+                    Ok(system) => Some(format!(
+                        "{planet:?}: {expansion:?} != {:?}",
+                        system.expansion
+                    )),
+                    Err(err) => Some(format!("{planet:?}: {err}")),
+                }
             })
             .collect::<Vec<_>>();
         assert!(failures.is_empty(), "{failures:#?}");

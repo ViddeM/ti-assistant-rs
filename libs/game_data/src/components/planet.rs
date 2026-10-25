@@ -1075,6 +1075,14 @@ impl Planet {
     pub fn is_mecatol_rex(&self) -> bool {
         matches!(self, Planet::MecatolRex | Planet::MecatolRexOmega)
     }
+
+    /// False for planets that only exist as a token or a card, i.e. that aren't in any pre-defined system.
+    pub fn has_system_tile(&self) -> bool {
+        !matches!(
+            self,
+            Planet::Mirage | Planet::CustodiaVigilia | Planet::ThundersEdge | Planet::Avernus
+        )
+    }
 }
 
 impl PartialOrd for Planet {

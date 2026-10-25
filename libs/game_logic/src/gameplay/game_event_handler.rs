@@ -23,7 +23,7 @@ use ti_helper_game_data::{
     components::{
         action_card::{ActionCard, ActionCardPlay},
         agenda::{AgendaElectKind, AgendaKind},
-        frontier_card::{FrontierCard, FrontierCardType},
+        frontier_card::FrontierCardType,
         leaders::LeaderAbilityKind,
         objectives::{Objective, ObjectiveKind},
         phase::Phase,
@@ -39,7 +39,7 @@ use ti_helper_game_data::{
         expedition::{TECompletion, TEExpedition},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
-            GameState, LeaderProgress, MapData, MiltyInformation, RelicProgress,
+            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation, RelicProgress,
             StrategicPrimaryProgress, StrategicProgress, TacticalProgress, ThundersEdgeProgress,
         },
         player::NewPlayer,
@@ -404,11 +404,12 @@ fn try_update_game_state(
         Event::TacticalActionTakePlanet { player, planet } => {
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
-            if planet == Planet::Mirage {
-                game_state.assert_expansion(&FrontierCard::Mirage.info().expansion)?;
-            } else {
-                game_state.assert_expansion(&System::for_planet(&planet)?.expansion)?;
-            }
+            let planet_system = match game_state.planet_location(&planet) {
+                PlanetLocation::SystemTile => Some(System::for_planet(&planet)?.id),
+                PlanetLocation::Token(system) => system,
+                PlanetLocation::NotOnBoard => bail!("{} isn't on the board", planet.info().name),
+            };
+            game_state.assert_expansion(&planet.info().expansion)?;
 
             ensure!(
                 game_state.action_progress.is_some(),
@@ -438,11 +439,6 @@ fn try_update_game_state(
                 })
                 .unwrap_or((None, BTreeSet::new()));
 
-            ensure!(
-                planet != Planet::Mirage || current_owner.is_some(),
-                "Mirage must be spawned using the frontier card action"
-            );
-
             let shard_of_the_throne = if let Some(current_owner) = current_owner.as_ref() {
                 let Some(p) = game_state.players.get_mut(current_owner) else {
                     bail!("Player doesn't exist {current_owner:?} (THIS IS A BUG!)");
@@ -468,12 +464,6 @@ fn try_update_game_state(
                 current_player.relics.insert(Relic::ShardOfTheThrone);
                 game_state.score.shard_of_the_throne = Some(current_player_id.clone());
             }
-
-            let planet_system = if planet == Planet::Mirage {
-                None
-            } else {
-                Some(System::for_planet(&planet)?.id)
-            };
 
             current_player.planets.insert(planet.clone(), attachments);
 

@@ -3,7 +3,7 @@ use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
     components::{planet::Planet, planet_attachment::PlanetAttachment},
-    state::game_state::{ActionPhaseProgress, TacticalProgress},
+    state::game_state::{ActionPhaseProgress, PlanetLocation, TacticalProgress},
 };
 
 use crate::{
@@ -84,15 +84,6 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
         planets
     });
 
-    // Only allow players to take mirage if someone else owns it, otherwise they'll need to use a frontier action.
-    let any_player_owns_mirage = use_memo(move || {
-        gc.game_state()
-            .players
-            .values()
-            .find(|p| p.planets.contains_key(&Planet::Mirage))
-            .is_some()
-    });
-
     let activated_system = use_memo(move || progress().activated_system);
     let available_planets_in_system = use_memo(move || {
         let mut planets = gc
@@ -116,7 +107,10 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
             .game_options()
             .planet_infos
             .iter()
-            .filter(|&(p, _)| !p.eq(&Planet::Mirage) || any_player_owns_mirage())
+            .filter(|(p, _)| {
+                // Check that the planet has been spawned (if not part of a pre-defined system).
+                gc.game_state().planet_location(p) != PlanetLocation::NotOnBoard
+            })
             .filter(|(p, _)| !current_player_planets().contains(p))
             .map(|(p, _)| p.clone())
             .collect::<Vec<_>>();

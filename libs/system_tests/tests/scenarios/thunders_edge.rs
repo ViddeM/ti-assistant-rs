@@ -1,7 +1,11 @@
 //! Thunder's Edge: committing to the expedition at the end of a turn and completing it.
 
 use ti_helper_game_data::{
-    components::breakthrough::Breakthrough, state::faction_state::FirmamentSide,
+    components::breakthrough::Breakthrough,
+    state::{
+        faction_state::FirmamentSide,
+        game_state::{ActionPhaseProgress, TacticalProgress},
+    },
 };
 use ti_helper_system_tests::prelude::*;
 
@@ -12,6 +16,7 @@ scenarios![
     thunders_edge_passing,
     thunders_edge_admin_flow,
     firmament_becomes_obsidian,
+    thunders_edge_take_planets_without_tile,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -326,4 +331,70 @@ fn only_the_firmament_can_become_the_obsidian() {
         Event::PuppetsOfTheBlade { player: p("Alice") },
         "Only The Firmament",
     );
+}
+
+fn take(player: &str, planet: Planet) -> Event {
+    Event::TacticalActionTakePlanet {
+        player: p(player),
+        planet,
+    }
+}
+
+fn activated_system(g: &TestGame) -> Option<SystemId> {
+    let Some(ActionPhaseProgress::Tactical(TacticalProgress {
+        activated_system, ..
+    })) = &g.state().action_progress
+    else {
+        panic!("no tactical action in progress");
+    };
+    activated_system.clone()
+}
+
+/// The Fracture planets are in their own systems. Planets without a system tile can be taken
+/// once they are on the board: Thunder's Edge where the expedition placed it, and Avernus once
+/// someone controls it. Custodia Vigilia only exists as a card.
+pub fn thunders_edge_take_planets_without_tile() -> TestGame {
+    let mut g = action_phase(three_players().thunders_edge());
+    let system = a_valid_system();
+
+    let alice = g
+        .turn("Alice")
+        .tactical()
+        .expect_rejected(take("Alice", Planet::ThundersEdge), "isn't on the board")
+        .expect_rejected(take("Alice", Planet::Avernus), "isn't on the board")
+        .expect_rejected(take("Alice", Planet::CustodiaVigilia), "isn't on the board")
+        .take(Planet::Lethe)
+        .take(Planet::Phlegethon);
+    assert_eq!(activated_system(&alice), Some("126".to_string()));
+    alice.commit().end_turn();
+
+    g.apply(Event::SetThundersEdgeCompletion {
+        new_completion: Some(TECompletion {
+            won_by: p("Alice"),
+            placed_in: system.clone(),
+        }),
+    })
+    .apply(Event::SetPlanetOwner {
+        player: Some(p("Alice")),
+        planet: Planet::Avernus,
+    });
+
+    let bob = g.turn("Bob").tactical().take(Planet::ThundersEdge);
+    assert_eq!(activated_system(&bob), Some(system));
+    bob.commit().end_turn();
+
+    let carol = g.turn("Carol").tactical().take(Planet::Avernus);
+    assert_eq!(activated_system(&carol), None);
+    carol.commit().end_turn();
+
+    assert!(g.player("Alice").planets.contains_key(&Planet::Lethe));
+    assert!(g.player("Alice").planets.contains_key(&Planet::Phlegethon));
+    assert!(
+        !g.player("Alice")
+            .planets
+            .contains_key(&Planet::ThundersEdge)
+    );
+    assert!(g.player("Bob").planets.contains_key(&Planet::ThundersEdge));
+    assert!(g.player("Carol").planets.contains_key(&Planet::Avernus));
+    g
 }
