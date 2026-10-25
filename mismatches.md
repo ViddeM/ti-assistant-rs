@@ -28,7 +28,7 @@ Paths below are relative to `libs/game_data/src/components/` unless stated other
 
 | # | Sev | Issue | Where | |
 |---|---|---|---|---|
-| 1 | 🔴 | **Fracture tiles 125, 126 and 127 all contain `Planet::Industrex`** (copy-paste error). Cocytus, Styx, Lethe and Phlegethon are in no system. `System::for_planet` errors if a planet is in 0 or more than 1 systems, so `TacticalActionTakePlanet` rejects Industrex and every Fracture planet (`game_event_handler.rs:410,475`). | `system.rs:801-818` | ✔ |
+| 1 | 🔴 | **Fracture tiles 125, 126 and 127 all contain `Planet::Industrex`** (copy-paste error). Cocytus, Styx, Lethe and Phlegethon are in no system. `System::for_planet` errors if a planet is in 0 or more than 1 systems, so `TacticalActionTakePlanet` rejects Industrex and every Fracture planet (`game_event_handler.rs:410,475`). **✅ Fixed.** | `system.rs:801-818` | ✔ |
 | 2 | 🔴 | **The planet-trait checks for elect votes are inverted.** `ensure!(!…contains(&PlanetTrait::Cultural))` (and the Hazardous and Industrial equivalents) rejects planets that *have* the trait. `VoteOptionDropdown` calls `AgendaElect::parse(..).expect(..)` (`packages/ui/src/components/dropdown.rs:443`), so picking a valid option should crash the UI for these 9 agendas: Core Mining, Demilitarized Zone, Holy Planet of Ixth, Research Team (×4), Senate Sanctuary, Terraforming Initiative. No test covers it. | `agenda/mod.rs:198-227` | ✔ |
 | 3 | 🔴 | **The Firmament starts with 4 planets** (Cronos, Tallin, Cronos Hollow, Tallin Hollow), because tiles 96A and 96B are both `HomeSystem(FirmamentObsidian)` and `get_starting_planets` collects every home-system tile for the faction. The wrong state is already baked into `setup_milty_import@state.snap`. | `common/faction.rs:175-186`, `system.rs:652-665` | ✔ |
 | 4 | 🔴 | **Some planets are in no system, so they can't be taken with a tactical action:** Thunder's Edge, Avernus, Custodia Vigilia and the Fracture planets. Mirage is special-cased; the others are not. Today the only way to give them to a player is the admin `SetPlanetOwner` event. | `system.rs` (no entries), `game_event_handler.rs:410` | ✔ |
@@ -268,7 +268,7 @@ Verified OK:
 ### Systems (`system.rs`)
 | Item | Sev | Issue | Location |
 |---|---|---|---|
-| Tiles 125, 126, 127 | 🔴 | All contain Industrex. They should be 125: Cocytus + egress; 126: Lethe + Phlegethon + egress; 127: empty / Styx / empty | `:801-818` ✔ |
+| Tiles 125, 126, 127 | 🔴 | All contain Industrex. They should be 125: Cocytus + egress; 126: Lethe + Phlegethon + egress; 127: empty / Styx / empty. **✅ Fixed** (planets only; egress not modelled) | `:801-818` ✔ |
 | Fracture structure | 🟡 | The Fracture is 7 systems on 3 tiles; the code models 3 single systems with no egress | `:801-818` |
 | Hyperlanes 119A–124B | 🟠 | missing (12 tile sides) | after `:800` |
 | Tile 56 (Empyrean home), tile 92 (Last Bastion home) | 🟡 | also nebulae, but `SystemType` can't be both a home system and an anomaly | `:452-457`, `:623-629` |

@@ -801,20 +801,48 @@ pub fn systems() -> HashMap<SystemId, System> {
         s!(
             "125",
             SystemType::Anomaly(vec![AnomalyType::TheFracture]),
-            vec![Planet::Industrex],
+            vec![Planet::Cocytus],
             Expansion::ThundersEdge
         ),
         s!(
             "126",
             SystemType::Anomaly(vec![AnomalyType::TheFracture]),
-            vec![Planet::Industrex],
+            vec![Planet::Lethe, Planet::Phlegethon],
             Expansion::ThundersEdge
         ),
         s!(
             "127",
             SystemType::Anomaly(vec![AnomalyType::TheFracture]),
-            vec![Planet::Industrex],
+            vec![Planet::Styx],
             Expansion::ThundersEdge
         ),
     ])
+}
+
+#[cfg(test)]
+mod tests {
+    use strum::IntoEnumIterator;
+
+    use super::*;
+
+    #[test]
+    fn every_planet_is_in_exactly_one_system() {
+        // These planets have no system tile, only a token or a card.
+        let without_tile = [
+            Planet::Mirage,
+            Planet::CustodiaVigilia,
+            Planet::ThundersEdge,
+            Planet::Avernus,
+        ];
+
+        let failures = Planet::iter()
+            .filter(|planet| !without_tile.contains(planet))
+            .filter_map(|planet| {
+                System::for_planet(&planet)
+                    .err()
+                    .map(|err| format!("{planet:?}: {err}"))
+            })
+            .collect::<Vec<_>>();
+        assert!(failures.is_empty(), "{failures:#?}");
+    }
 }
