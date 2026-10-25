@@ -11,6 +11,7 @@ scenarios![
     agenda_mutiny_and_seed_against,
     agenda_elect_law_and_secret_objective,
     agenda_override_outside_agenda_phase,
+    agenda_elect_planet_with_trait,
 ];
 
 fn vote(player: &str, outcome: AgendaElect, votes: u16) -> Event {
@@ -246,6 +247,80 @@ pub fn agenda_override_outside_agenda_phase() -> TestGame {
     assert_eq!(
         g.state().laws.get(&Agenda::MinisterOfWar),
         Some(&elect("Bob"))
+    );
+    g
+}
+
+/// The candidates of the vote currently in progress.
+fn candidates(g: &TestGame) -> Vec<AgendaElect> {
+    g.state()
+        .agenda
+        .as_ref()
+        .and_then(|a| a.vote.as_ref())
+        .expect("no agenda is revealed")
+        .candidates
+        .clone()
+}
+
+/// Agendas that elect a planet with a trait only offer planets with that trait, including traits
+/// gained from attachments, and the elected planet is recorded with the matching kind.
+pub fn agenda_elect_planet_with_trait() -> TestGame {
+    let mut g = agenda_phase(three_players().pok());
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Alice")),
+        planet: Planet::Quann,
+    })
+    .apply(Event::SetPlanetOwner {
+        player: Some(p("Bob")),
+        planet: Planet::Arnor,
+    })
+    .apply(Event::AddPlanetAttachment {
+        player: p("Bob"),
+        planet: Planet::Arnor,
+        attachment: PlanetAttachment::Terraform,
+    })
+    .apply(Event::SetPlanetOwner {
+        player: Some(p("Carol")),
+        planet: Planet::Wellon,
+    });
+    let alice_points = g.points("Alice");
+
+    // Arnor is industrial, Terraform makes it cultural as well.
+    let quann = AgendaElect::CulturalPlanet(Planet::Quann);
+    g.agenda(Agenda::HolyPlanetOfIxth).expect_rejected(
+        vote("Bob", AgendaElect::Planet(Planet::Quann), 1),
+        "invalid vote kind",
+    );
+    assert_eq!(
+        candidates(&g),
+        [AgendaElect::CulturalPlanet(Planet::Arnor), quann.clone()]
+    );
+    // The frontend sends the candidates in their string form.
+    for candidate in candidates(&g) {
+        assert_eq!(AgendaElect::parse(&candidate.name()).unwrap(), candidate);
+    }
+    g.apply(vote("Bob", quann.clone(), 1))
+        .apply(vote("Carol", quann.clone(), 1))
+        .apply(vote("Alice", quann.clone(), 1))
+        .apply(Event::ResolveAgenda {
+            outcome: Some(quann.clone()),
+        });
+    assert_eq!(g.state().laws.get(&Agenda::HolyPlanetOfIxth), Some(&quann));
+    assert_eq!(g.points("Alice"), alice_points + 1);
+
+    let wellon = AgendaElect::IndustrialPlanet(Planet::Wellon);
+    g.agenda(Agenda::ResearchTeamCybernetic);
+    assert_eq!(
+        candidates(&g),
+        [AgendaElect::IndustrialPlanet(Planet::Arnor), wellon.clone()]
+    );
+    g.apply(vote("Bob", wellon.clone(), 2))
+        .apply(Event::ResolveAgenda {
+            outcome: Some(wellon.clone()),
+        });
+    assert_eq!(
+        g.state().laws.get(&Agenda::ResearchTeamCybernetic),
+        Some(&wellon)
     );
     g
 }

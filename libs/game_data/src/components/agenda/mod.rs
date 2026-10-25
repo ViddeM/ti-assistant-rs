@@ -1,14 +1,11 @@
 use std::{cmp::Ordering, fmt::Display, str::FromStr};
 
-use anyhow::{Context, bail, ensure};
+use anyhow::{Context, bail};
 use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::{EnumDiscriminants, EnumIter};
 
-use crate::{
-    common::{expansions::Expansion, player_id::PlayerId},
-    components::planet::PlanetTrait,
-};
+use crate::common::{expansions::Expansion, player_id::PlayerId};
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
@@ -187,43 +184,19 @@ impl AgendaElect {
                 SecretObjective::from_str(v).context("Invalid secret objective")?,
             ),
             Self::PLANET => Self::Planet(Planet::from_str(v).context("Invalid planet")?),
+            // Attachments can add traits, so whether the planet has the right trait is decided
+            // when the candidates are listed (see `VoteState::new`), not here.
             Self::PLANET_WITH_TRAIT => {
-                let planet = Planet::from_str(v).context("Invalid planet")?;
-                ensure!(
-                    !planet.info().planet_traits.is_empty(),
-                    "Planet without traits provided for planet with trait agenda"
-                );
-                Self::PlanetWithTrait(planet)
+                Self::PlanetWithTrait(Planet::from_str(v).context("Invalid planet")?)
             }
             Self::CULTURAL_PLANET => {
-                let planet = Planet::from_str(v).context("Invalid planet")?;
-                ensure!(
-                    !planet.info().planet_traits.contains(&PlanetTrait::Cultural),
-                    "Planet without cultural trait provided for cultural planet"
-                );
-                Self::CulturalPlanet(planet)
+                Self::CulturalPlanet(Planet::from_str(v).context("Invalid planet")?)
             }
             Self::HAZARDOUS_PLANET => {
-                let planet = Planet::from_str(v).context("Invalid planet")?;
-                ensure!(
-                    !planet
-                        .info()
-                        .planet_traits
-                        .contains(&PlanetTrait::Hazardous),
-                    "Planet without hazardous trait provided for hazardous planet"
-                );
-                Self::HazardousPlanet(planet)
+                Self::HazardousPlanet(Planet::from_str(v).context("Invalid planet")?)
             }
             Self::INDUSTRIAL_PLANET => {
-                let planet = Planet::from_str(v).context("Invalid planet")?;
-                ensure!(
-                    !planet
-                        .info()
-                        .planet_traits
-                        .contains(&PlanetTrait::Industrial),
-                    "Planet without industrial trait provided for industrial planet"
-                );
-                Self::IndustrialPlanet(planet)
+                Self::IndustrialPlanet(Planet::from_str(v).context("Invalid planet")?)
             }
             v => bail!("Invalid vote option {v}"),
         })

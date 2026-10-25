@@ -107,7 +107,8 @@ impl VoteState {
         let info = agenda.info();
 
         // list eligible planets for the vote, given the provided trait filter
-        let planets = |trait_filter: fn(Vec<PlanetTrait>) -> bool| {
+        let planets = |trait_filter: fn(Vec<PlanetTrait>) -> bool,
+                       to_elect: fn(Planet) -> AgendaElect| {
             let eligible_planets: Vec<_> = Planet::iter()
                 // Filter to planets that are held by a player & map to a tuple of the planet, planet attachments.
                 .filter_map(|p| {
@@ -124,7 +125,7 @@ impl VoteState {
                 .filter(|(planet, attachments)| {
                     trait_filter(get_planet_traits(planet, attachments))
                 })
-                .map(|(p, _)| AgendaElect::Planet(p))
+                .map(|(p, _)| to_elect(p))
                 .collect();
 
             if eligible_planets.is_empty() {
@@ -169,11 +170,22 @@ impl VoteState {
 
                 eligible_objectives
             }
-            AgendaElectKind::Planet => planets(|_| true)?,
-            AgendaElectKind::PlanetWithTrait => planets(|t| !t.is_empty())?,
-            AgendaElectKind::CulturalPlanet => planets(|t| t.contains(&PlanetTrait::Cultural))?,
-            AgendaElectKind::HazardousPlanet => planets(|t| t.contains(&PlanetTrait::Hazardous))?,
-            AgendaElectKind::IndustrialPlanet => planets(|t| t.contains(&PlanetTrait::Industrial))?,
+            AgendaElectKind::Planet => planets(|_| true, AgendaElect::Planet)?,
+            AgendaElectKind::PlanetWithTrait => {
+                planets(|t| !t.is_empty(), AgendaElect::PlanetWithTrait)?
+            }
+            AgendaElectKind::CulturalPlanet => planets(
+                |t| t.contains(&PlanetTrait::Cultural),
+                AgendaElect::CulturalPlanet,
+            )?,
+            AgendaElectKind::HazardousPlanet => planets(
+                |t| t.contains(&PlanetTrait::Hazardous),
+                AgendaElect::HazardousPlanet,
+            )?,
+            AgendaElectKind::IndustrialPlanet => planets(
+                |t| t.contains(&PlanetTrait::Industrial),
+                AgendaElect::IndustrialPlanet,
+            )?,
 
             AgendaElectKind::Law => {
                 let mut laws: Vec<_> = game.laws.keys().map(|l| AgendaElect::Law(*l)).collect();

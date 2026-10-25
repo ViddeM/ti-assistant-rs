@@ -1,0 +1,202 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: false
+    codex2: false
+    codex3: false
+    codex4: false
+    thundersEdge: false
+phase: Agenda
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+      Quann: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+      Arnor:
+        - Terraform
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+      Wellon: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+    factionState: None
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Bob
+  - Carol
+  - Alice
+strategyCardHolders: {}
+currentPlayer: Bob
+spentStrategyCards: []
+passedPlayers: []
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 2
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ExpandBorders: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores:
+    - electableAgendaKind: HolyPlanetOfIxth
+      value:
+        planet: Quann
+  custodians: Alice
+agenda:
+  round: Completed
+  vote: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: HolyPlanetOfIxth
+      kind: Law
+      elect: CulturalPlanet
+      candidates:
+        - electKind: CulturalPlanet
+          value: Arnor
+        - electKind: CulturalPlanet
+          value: Quann
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: CulturalPlanet
+            value: Quann
+        Bob:
+          votes: 1
+          outcome:
+            electKind: CulturalPlanet
+            value: Quann
+        Carol:
+          votes: 1
+          outcome:
+            electKind: CulturalPlanet
+            value: Quann
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: CulturalPlanet
+            value: Quann
+      expectedOutcome:
+        electKind: CulturalPlanet
+        value: Quann
+    outcome:
+      electKind: CulturalPlanet
+      value: Quann
+  - round: 1
+    vote:
+      agenda: ResearchTeamCybernetic
+      kind: Law
+      elect: IndustrialPlanet
+      candidates:
+        - electKind: IndustrialPlanet
+          value: Arnor
+        - electKind: IndustrialPlanet
+          value: Wellon
+      playerVotes:
+        Bob:
+          votes: 2
+          outcome:
+            electKind: IndustrialPlanet
+            value: Wellon
+      outcomesByVotes:
+        - votes: 2
+          outcome:
+            electKind: IndustrialPlanet
+            value: Wellon
+      expectedOutcome:
+        electKind: IndustrialPlanet
+        value: Wellon
+    outcome:
+      electKind: IndustrialPlanet
+      value: Wellon
+laws:
+  HolyPlanetOfIxth:
+    electKind: CulturalPlanet
+    value: Quann
+  ResearchTeamCybernetic:
+    electKind: IndustrialPlanet
+    value: Wellon
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  scoredSecretObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  revealedObjective: ExpandBorders
+  expectedObjectivesBeforeStageTwo: 5
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 660
+    nanos: 0
+  Bob:
+    secs: 540
+    nanos: 0
+  Carol:
+    secs: 600
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:45:00Z"
+naaluTelepathy: ~
+teExpedition: ~
