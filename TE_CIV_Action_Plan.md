@@ -54,7 +54,8 @@ This app is used **alongside** the physical game. Every feature has to be faster
 | CIV relics: Circlet of the Void (no effect), Neuraloop (status phase), Book of Latvinia (VP or speaker) | ✅ (`codex.rs` scenarios) |
 | Galactic events (4 CIV + 16 TE = 20) | ❌ nothing |
 | Liberation of Ordinian | ❌ nothing |
-| Breakthrough effects, legendary planet abilities, Fracture, TE action cards, TE strategy cards, TE leader updates | ❌ |
+| TE action cards (14 new, Ω versions of 8 Codex I cards) and the tracked effects of Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String. Codex IV has no action cards | ✅ (`thunders_edge_action_cards`, `thunders_edge_overrule_and_strategize`, `thunders_edge_crisis_and_puppets_on_a_string` scenarios) |
+| Breakthrough effects, legendary planet abilities, Fracture, TE strategy cards, TE leader updates | ❌ |
 
 ---
 
@@ -164,7 +165,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | H2 Construction secondary hint | Info | `generic_strategy_card.rs:134`: "place token in system" becomes "pay 1 token" under TE. | P1 / S |
 | H3 The roadmap TODO "always display the correct variant" | — | Done by H1/H2 (Diplomacy and Construction are already right). | — |
 
-### TE-I Action cards
+### TE-I Action cards ✅
 
 ✅ The 14 cards and the Ω versions of the 8 Codex I cards are in (mismatches §2). The Ω versions replace the Codex I cards when Thunder's Edge is enabled (`ActionCard::is_enabled_in`). Codex IV has no action cards. Most of the new cards are **Info**. These touch tracked state:
 
@@ -172,8 +173,8 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 |---|---|---|---|
 | **Brilliance** (choose a player to gain their breakthrough) | Track | ✅ `ActionCardAction::Brilliance { player: Option<PlayerId> }` (None = the "ready a planet" option). The player must not have their breakthrough yet; it's unlocked with `Player::gain_breakthrough` (on-gain effects wait for E2). | P2 / S |
 | **Overrule** (perform the primary of a readied or unchosen strategy card) / **Strategize** (perform the secondary) | Track | ✅ `ActionCardAction::Overrule { card, primary: Option<StrategicPrimaryAction> }` / `Strategize { card, secondary: StrategicSecondaryAction }`. Both reuse the strategy card handlers (`perform_strategic_primary/secondary`), so only Technology, Politics and Imperial have effects; `primary` is required exactly for those cards (`StrategyCard::has_tracked_primary`). The card must not be exhausted (not in `spent_strategy_cards`), and it stays readied. The UI reuses the strategy card primary views. | P2 / M |
-| **Crisis** (skip the next player's turn) | Track | ✅ `PlayCrisis { player }` (the player who plays the card), sent from the End of Turn screen: it ends the turn and skips the next player's turn. It needs at least 2 players who haven't passed. In games with Crisis, passing always shows the End of Turn screen, so it can also be played after a pass. | P3 / S |
-| **Puppets on a String** (a passed player performs 1 action at the end of any player's turn) | Track | `PerformExtraAction { player }` makes the passed player current for one action, then the normal order resumes. Touches turn/time logic; do it after Crisis. | P3 / M |
+| **Crisis** (skip the next player's turn) | Track | ✅ `PlayCrisis { player }` (the player who plays the card), sent from the End of Turn screen: it ends the turn and skips the next player's turn. It needs at least 2 players who haven't passed. In games with Crisis or Puppets on a String, passing always shows the End of Turn screen, so the cards can also be played after a pass. | P3 / S |
+| **Puppets on a String** (a passed player performs 1 action at the end of any player's turn) | Track | ✅ `PlayPuppetsOnAString { player }`, sent from the End of Turn screen, ends the turn, makes the passed player current and stores the next player in `GameState::interrupted_turn`; `advance_turn` hands the turn to them after that action. The passed player can't pass again or take another turn. After the last player passes there's no next player, so the action phase ends after that action. | P3 / M |
 | **Mercenary Contract** (the planet's owner returns the planet card) | Assist | ✅ `ActionCardAction::MercenaryContract { planet: Option<Planet> }`: a non-home planet on the board owned by another player loses its owner (attachments go with the card, like `SetPlanetOwner` to nobody). None = the planet wasn't owned by another player. | P3 / S |
 | Black Market Dealings | Assist | Relics can change hands → E4 (admin). | — |
 | Crash Landing, Exchange Program, Extreme Duress, Lie in Wait, Pirate Contract/Fleet, Rescue | Info | ✅ Data only. | — |
@@ -459,7 +460,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - Monuments, Cultural Exchange, Rapid Mobilization, Minor Factions, Dangerous Wilds, Conventions of War Abandoned.
    - F2 Firmament plots.
 6. **Optional (P3).**
-   - Hidden Agenda UI, Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.
+   - Hidden Agenda UI, ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.
    - Liberation of Ordinian.
 
 ## 8. Open questions

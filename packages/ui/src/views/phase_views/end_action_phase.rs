@@ -114,7 +114,7 @@ pub fn EndActionPhaseView() -> Element {
     }
 }
 
-/// Crisis, which any player can play at the end of the turn.
+/// Crisis and Puppets on a String, which any player can play at the end of the turn.
 #[component]
 fn EndOfTurnActionCards(disabled: bool) -> Element {
     let gc = use_context::<GameContext>();
@@ -124,11 +124,26 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
 
     let crisis_enabled =
         use_memo(move || gc.game_options().action_cards.contains(&ActionCard::Crisis));
+    let puppets_enabled = use_memo(move || {
+        gc.game_options()
+            .action_cards
+            .contains(&ActionCard::PuppetsOnAString)
+    });
 
     let players = use_memo(move || gc.game_state().players.keys().cloned().collect::<Vec<_>>());
+    let passed_players = use_memo(move || {
+        gc.game_state()
+            .passed_players
+            .iter()
+            .cloned()
+            .collect::<Vec<_>>()
+    });
     let can_skip_turn = use_memo(move || {
         let state = gc.game_state();
         state.players.len() - state.passed_players.len() >= 2
+    });
+    let can_perform_action = use_memo(move || {
+        !passed_players().is_empty() && gc.game_state().interrupted_turn.is_none()
     });
 
     rsx! {
@@ -139,12 +154,27 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
                 "Crisis"
             }
         }
+        if puppets_enabled() {
+            Button {
+                disabled: disabled || !can_perform_action()
+                    || selected_card() == Some(ActionCard::PuppetsOnAString),
+                onclick: move |_| selected_card.set(Some(ActionCard::PuppetsOnAString)),
+                "Puppets on a String"
+            }
+        }
         match selected_card() {
             Some(ActionCard::Crisis) => rsx! {
                 PlayEndOfTurnActionCard {
                     card: ActionCard::Crisis,
                     players: players(),
                     on_play: move |player| event.send_event(Event::PlayCrisis { player }),
+                }
+            },
+            Some(ActionCard::PuppetsOnAString) => rsx! {
+                PlayEndOfTurnActionCard {
+                    card: ActionCard::PuppetsOnAString,
+                    players: passed_players(),
+                    on_play: move |player| event.send_event(Event::PlayPuppetsOnAString { player }),
                 }
             },
             _ => rsx! {},

@@ -80,6 +80,7 @@ spentStrategyCards:
   - Trade
   - Warfare
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10

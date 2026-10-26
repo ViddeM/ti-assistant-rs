@@ -47,7 +47,7 @@ Code problems found during the audit that aren't data-vs-wiki issues are in [§9
 
 ### Missing: Thunder's Edge cards (none of the 14 unique cards exist)
 
-**✅ Fixed.** All 14 cards exist, tagged Thunder's Edge. A Thunder's Edge game with Codex I and PoK has the 140-card deck from the wiki (checked by a unit test). The texts come from the wiki's *Action Cards* page, with obvious typos fixed ("daugfhter", "pirtaes", "hunder", "niether", "gives/shows you" in Extreme Duress, "player's hands" in Lie in Wait). Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String change tracked state (see the action plan, TE-I). The others are text only.
+**✅ Fixed.** All 14 cards exist, tagged Thunder's Edge. A Thunder's Edge game with Codex I and PoK has the 140-card deck from the wiki (checked by a unit test). The texts come from the wiki's *Action Cards* page, with obvious typos fixed ("daugfhter", "pirtaes", "hunder", "niether", "gives/shows you" in Extreme Duress, "player's hands" in Lie in Wait). Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String change tracked state and are implemented (see the action plan, TE-I). The others are text only.
 
 | Card | # in deck | Timing | Effect (short) | Relevant to the app? |
 |---|---|---|---|---|

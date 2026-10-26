@@ -58,6 +58,12 @@ pub fn ActionPhaseView() -> Element {
     let playable_strategy_cards =
         use_memo(move || get_playable_strategy_cards(gc.game_state(), current_player_id()));
 
+    let has_passed = use_memo(move || {
+        gc.game_state()
+            .passed_players
+            .contains(&current_player_id())
+    });
+
     let player_name = use_memo(move || {
         format!(
             "{} {}",
@@ -84,10 +90,19 @@ pub fn ActionPhaseView() -> Element {
                         ),
                         h4 { "{player_name}" }
                     }
+                    if let Some(interrupted) = gc.game_state().interrupted_turn.as_ref() {
+                        p { class: "info-text",
+                            "Puppets on a String: {current_player_id()} performs 1 action, then it's {interrupted}'s turn."
+                        }
+                    } else if has_passed() {
+                        p { class: "info-text",
+                            "Puppets on a String: {current_player_id()} performs 1 action, then the action phase ends."
+                        }
+                    }
                     div { class: "actions-container",
                         Button {
                             class: "action-button",
-                            disabled: !playable_strategy_cards().is_empty(),
+                            disabled: !playable_strategy_cards().is_empty() || has_passed(),
                             onclick: move |_| {
                                 event
                                     .send_event(Event::PassAction {

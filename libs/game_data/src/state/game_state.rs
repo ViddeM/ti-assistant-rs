@@ -80,6 +80,11 @@ pub struct GameState {
     /// Which players have passed this phase.
     pub passed_players: BTreeSet<PlayerId>,
 
+    /// The player whose turn starts once the current (passed) player has performed their action
+    /// from "Puppets on a String". It's `None` if the card was played after the last player
+    /// passed, in which case the action phase ends after that action.
+    pub interrupted_turn: Option<PlayerId>,
+
     /// Tracks progress of the current action (if any) that is being taken.
     pub action_progress: Option<ActionPhaseProgress>,
 
@@ -413,6 +418,11 @@ impl GameState {
 
         if self.commit_turn_time(timestamp)? {
             self.current_turn_start_time = Some(timestamp);
+        }
+
+        if let Some(player) = self.interrupted_turn.take() {
+            self.current_player = Some(player);
+            return Ok(());
         }
 
         // everyone has passed, i guess. what do?

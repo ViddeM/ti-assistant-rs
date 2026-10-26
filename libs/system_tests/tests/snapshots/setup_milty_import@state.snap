@@ -324,6 +324,7 @@ strategyCardHolders:
 currentPlayer: Cid
 spentStrategyCards: []
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10

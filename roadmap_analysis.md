@@ -44,7 +44,7 @@ Every claim below was checked against the code (file references given). "Display
 ## b) Missing major topics
 
 1. **Galactic events are only listed under Codex IV**, but 16 of the 20 are Thunder's Edge. The roadmap needs a galactic events section covering both expansions, plus a framework item (settings, selection UI, info display). See action plan §5.
-2. **Thunder's Edge action cards:** 14 new cards (20 in the deck), none in the code, plus 8 Ω rewordings of Codex I cards (Hack Election changes meaning). Brilliance, Overrule, Strategize, Crisis and Puppets on a String touch tracked state.
+2. **Thunder's Edge action cards:** 14 new cards (20 in the deck), none in the code, plus 8 Ω rewordings of Codex I cards (Hack Election changes meaning). Brilliance, Overrule, Strategize, Crisis and Puppets on a String touch tracked state. **✅ Done**, including Mercenary Contract; see action plan TE-I.
 3. **Thunder's Edge updates to existing factions:**
    - Keleres: Executive Order replaces the I.I.H.Q. tech, Agency Supply Network reworded, Custodia Vigilia Ω 2/2, two hero texts.
    - Naalu agent ΩΩ, Xxcha hero ΩΩ (now an ACTION), Yin ΩΩ ×3.

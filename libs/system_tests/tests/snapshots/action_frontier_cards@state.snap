@@ -74,6 +74,7 @@ currentPlayer: Carol
 spentStrategyCards:
   - Diplomacy
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10

@@ -50,6 +50,7 @@
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
+     - ✅ Crisis, Puppets on a String (TE)
  - ❌ Tech actions.
  - ❌ Time tracking
    - ✅ Pause timekeeping
@@ -253,10 +254,10 @@
  - ❌  new anomaly?
  - ❌  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
   - ✅  Ω action cards, replace the codex I versions when TE is enabled
- - ❌  new action cards (14 unique, 20 in the deck)
+  - ✅  new action cards (14 unique, 20 in the deck)
   - ✅  Brilliance (gain breakthrough)
   - ✅  Overrule / Strategize (primary / secondary of a readied or unchosen strategy card)
-  - ❌  Crisis (skip a turn), Puppets on a String (passed player performs an action)
+  - ✅  Crisis (skip a turn), Puppets on a String (passed player performs an action)
   - ✅  Mercenary Contract (owner returns the planet card)
   - ✅  Rest are not handled by this application.
  - ❌  updated strategy cards

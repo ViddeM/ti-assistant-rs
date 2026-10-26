@@ -74,6 +74,7 @@
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
+     - ✅ Crisis (skip a turn), Puppets on a String (a passed player performs an action) (TE) `[TE-I]`
  - ❌ Tech actions.
  - ❌ Time tracking
    - ✅ Pause timekeeping
@@ -309,10 +310,10 @@
    - ❌ "Fracture in play" flag + relic prompt when taking Fracture planets `[TE-B]`
  - 🚱 Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ✅, ΩΩ leaders ❌
  - ❌ Updated strategy cards: Construction ΩΩ, Warfare Ω (image + secondary hint) `[TE-H]`
- - ❌ New action cards (14 unique / 20 cards) + Ω versions of 8 Codex I cards, which replace the old ones when TE is enabled
+ - ✅ New action cards (14 unique / 20 cards) + Ω versions of 8 Codex I cards, which replace the old ones when TE is enabled
    - ✅ Brilliance (gain breakthrough) `[TE-I]`
    - ✅ Overrule / Strategize (perform another strategy card's primary / secondary) `[TE-I]`
-   - ❌ Crisis (skip a turn), Puppets on a String (extra action when passed) `[TE-I]`
+   - ✅ Crisis (skip a turn), Puppets on a String (extra action when passed) `[TE-I]`
    - ✅ Mercenary Contract (the owner returns the planet card) `[TE-I]`
  - ✅ Thunder's Edge expedition (commit, pass, complete, admin page)
  - ✅ Update milty import

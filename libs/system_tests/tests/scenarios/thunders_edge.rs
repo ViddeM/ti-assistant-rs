@@ -19,7 +19,7 @@ scenarios![
     thunders_edge_take_planets_without_tile,
     thunders_edge_action_cards,
     thunders_edge_overrule_and_strategize,
-    thunders_edge_crisis,
+    thunders_edge_crisis_and_puppets_on_a_string,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -695,9 +695,10 @@ pub fn thunders_edge_overrule_and_strategize() -> TestGame {
     g
 }
 
-/// At the end of a turn, Crisis skips the next player's turn. The expedition is full, so passing
-/// only ends at the end of the turn because of Crisis.
-pub fn thunders_edge_crisis() -> TestGame {
+/// At the end of a turn, Crisis skips the next player's turn, and Puppets on a String lets a
+/// passed player perform 1 action, also after the last player has passed. The expedition is full,
+/// so passing only ends at the end of the turn because of these cards.
+pub fn thunders_edge_crisis_and_puppets_on_a_string() -> TestGame {
     let mut g = action_phase(three_players().thunders_edge());
     for slot in [
         TEExpeditionSlot::Resources,
@@ -716,14 +717,38 @@ pub fn thunders_edge_crisis() -> TestGame {
     g.turn("Alice")
         .strategic(StrategyCard::Leadership)
         .commit()
+        .expect_rejected(
+            Event::PlayPuppetsOnAString { player: p("Carol") },
+            "Only a player that has passed",
+        )
         .apply(Event::PlayCrisis { player: p("Carol") });
     g.turn("Carol").play_card(StrategyCard::Politics);
     g.turn("Alice").play_card(StrategyCard::Construction);
     g.turn("Bob").play_card(StrategyCard::Diplomacy);
     g.turn("Carol").play_card(StrategyCard::Warfare);
-    g.turn("Alice").pass_and_stay().end_turn();
+    g.turn("Alice").pass();
 
-    g.turn("Bob").play_card(StrategyCard::Trade);
+    g.turn("Bob")
+        .strategic(StrategyCard::Trade)
+        .commit()
+        .apply(Event::PlayPuppetsOnAString { player: p("Alice") });
+    assert_eq!(g.state().interrupted_turn, Some(p("Carol")));
+
+    g.turn("Alice")
+        .expect_rejected(Event::PassAction { player: p("Alice") }, "already passed")
+        .tactical()
+        .commit()
+        .expect_rejected(
+            Event::TakeAnotherTurn { player: p("Alice") },
+            "cannot take another turn",
+        )
+        .expect_rejected(
+            Event::PlayPuppetsOnAString { player: p("Alice") },
+            "already performing an action",
+        )
+        .end_turn();
+    assert_eq!(g.state().interrupted_turn, None);
+
     g.turn("Carol").pass();
     g.turn("Bob")
         .pass_and_stay()
@@ -731,8 +756,10 @@ pub fn thunders_edge_crisis() -> TestGame {
             Event::PlayCrisis { player: p("Alice") },
             "at least 2 players",
         )
-        .end_turn();
+        .apply(Event::PlayPuppetsOnAString { player: p("Carol") });
+    assert_eq!(g.state().interrupted_turn, None);
 
+    g.turn("Carol").tactical().commit().end_turn();
     assert_eq!(g.phase(), Phase::Status);
     g
 }

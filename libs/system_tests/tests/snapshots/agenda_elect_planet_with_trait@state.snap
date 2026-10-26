@@ -71,6 +71,7 @@ strategyCardHolders: {}
 currentPlayer: Bob
 spentStrategyCards: []
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10

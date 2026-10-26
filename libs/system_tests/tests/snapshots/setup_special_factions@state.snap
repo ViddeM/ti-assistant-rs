@@ -67,6 +67,7 @@ strategyCardHolders: {}
 currentPlayer: Kel
 spentStrategyCards: []
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10

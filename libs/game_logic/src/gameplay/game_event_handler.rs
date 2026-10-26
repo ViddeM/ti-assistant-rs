@@ -1201,9 +1201,33 @@ fn try_update_game_state(
             game_state.advance_turn(timestamp)?;
             game_state.advance_turn(timestamp)?;
         }
+        Event::PlayPuppetsOnAString { player } => {
+            game_state.assert_phase(Phase::EndActionTurn)?;
+            game_state.assert_action_card_enabled(&ActionCard::PuppetsOnAString)?;
+            ensure!(
+                game_state.passed_players.contains(&player),
+                "Only a player that has passed can play Puppets on a String"
+            );
+            ensure!(
+                game_state.interrupted_turn.is_none(),
+                "A passed player is already performing an action"
+            );
+
+            end_action_turn(game_state)?;
+            let next_player = game_state.next_player_after(&game_state.current_player()?)?;
+            if game_state.commit_turn_time(timestamp)? {
+                game_state.current_turn_start_time = Some(timestamp);
+            }
+            game_state.interrupted_turn = next_player;
+            game_state.current_player = Some(player);
+        }
         Event::PassAction { player } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
+            ensure!(
+                !game_state.passed_players.contains(&player),
+                "{player} has already passed"
+            );
 
             let has_used_strategy_cards = game_state
                 .strategy_card_holders
@@ -1220,8 +1244,9 @@ fn try_update_game_state(
 
             // A passing player may still commit to the expedition at the end of their turn.
             let can_commit = (game_state.te_expedition.as_ref()).is_some_and(|te| !te.is_full());
-            let has_end_of_turn_cards =
-                ActionCard::Crisis.is_enabled_in(&game_state.game_settings.expansions);
+            let has_end_of_turn_cards = [ActionCard::Crisis, ActionCard::PuppetsOnAString]
+                .iter()
+                .any(|card| card.is_enabled_in(&game_state.game_settings.expansions));
             if can_commit || has_end_of_turn_cards {
                 game_state.phase = Phase::EndActionTurn;
             } else {

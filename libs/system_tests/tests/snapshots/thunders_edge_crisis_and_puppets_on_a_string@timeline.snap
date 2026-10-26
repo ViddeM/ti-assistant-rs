@@ -42,8 +42,14 @@ source: libs/system_tests/src/check.rs
   38 EndTurn(Alice)                           r1 Action             Bob
   39 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
   40 StrategicActionCommit                    r1 EndActionTurn      Bob
-  41 EndTurn(Bob)                             r1 Action             Carol
-  42 PassAction(Carol)                        r1 EndActionTurn      Carol
-  43 EndTurn(Carol)                           r1 Action             Bob
-  44 PassAction(Bob)                          r1 EndActionTurn      Bob
-  45 EndTurn(Bob)                             r1 Status             Bob
+  41 PlayPuppetsOnAString(Alice)              r1 Action             Alice
+  42 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  43 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  44 EndTurn(Alice)                           r1 Action             Carol
+  45 PassAction(Carol)                        r1 EndActionTurn      Carol
+  46 EndTurn(Carol)                           r1 Action             Bob
+  47 PassAction(Bob)                          r1 EndActionTurn      Bob
+  48 PlayPuppetsOnAString(Carol)              r1 Action             Carol
+  49 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
+  50 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
+  51 EndTurn(Carol)                           r1 Status             Carol

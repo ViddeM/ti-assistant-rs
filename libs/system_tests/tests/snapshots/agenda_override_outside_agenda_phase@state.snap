@@ -73,6 +73,7 @@ strategyCardHolders:
 currentPlayer: Alice
 spentStrategyCards: []
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10

@@ -80,6 +80,7 @@ spentStrategyCards:
   - Diplomacy
   - Technology
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10

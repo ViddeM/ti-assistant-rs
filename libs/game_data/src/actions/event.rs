@@ -263,6 +263,13 @@ pub enum Event {
         player: PlayerId,
     },
 
+    /// A player that has passed plays the Puppets on a String action card at the end of the
+    /// current turn, which ends the turn, and performs 1 action before the next player's turn.
+    PlayPuppetsOnAString {
+        /// The player that plays the card.
+        player: PlayerId,
+    },
+
     /// A player passes their turn.
     PassAction {
         /// The player that passed.

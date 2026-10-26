@@ -70,7 +70,7 @@ strategyCardHolders:
   Construction: Alice
   Trade: Bob
   Warfare: Carol
-currentPlayer: Bob
+currentPlayer: Carol
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -79,6 +79,7 @@ spentStrategyCards:
   - Trade
   - Warfare
 passedPlayers: []
+interruptedTurn: ~
 actionProgress: ~
 score:
   maxPoints: 10
@@ -115,13 +116,13 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 1020
+    secs: 1200
     nanos: 0
   Bob:
     secs: 600
     nanos: 0
   Carol:
-    secs: 660
+    secs: 840
     nanos: 0
 currentTurnStartTime: ~
 naaluTelepathy: ~
