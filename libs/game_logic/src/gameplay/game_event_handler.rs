@@ -1178,13 +1178,27 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::EndActionTurn)?;
             game_state.assert_player_turn(&player)?;
 
+            end_action_turn(game_state)?;
+            game_state.advance_turn(timestamp)?;
+        }
+        Event::PlayCrisis { player } => {
+            game_state.assert_phase(Phase::EndActionTurn)?;
+            game_state.assert_action_card_enabled(&ActionCard::Crisis)?;
             ensure!(
-                !is_awaiting_thunders_edge_placement(game_state),
-                "Thunder's Edge must be placed before ending the turn"
+                game_state.players.contains_key(&player),
+                "Player {player} not found"
             );
-            game_state.action_progress = None;
 
-            game_state.phase = Phase::Action;
+            let players_not_passed = (game_state.players.keys())
+                .filter(|p| !game_state.passed_players.contains(*p))
+                .count();
+            ensure!(
+                players_not_passed >= 2,
+                "Crisis can only be played while at least 2 players haven't passed"
+            );
+
+            end_action_turn(game_state)?;
+            game_state.advance_turn(timestamp)?;
             game_state.advance_turn(timestamp)?;
         }
         Event::PassAction { player } => {
@@ -1206,7 +1220,9 @@ fn try_update_game_state(
 
             // A passing player may still commit to the expedition at the end of their turn.
             let can_commit = (game_state.te_expedition.as_ref()).is_some_and(|te| !te.is_full());
-            if can_commit {
+            let has_end_of_turn_cards =
+                ActionCard::Crisis.is_enabled_in(&game_state.game_settings.expansions);
+            if can_commit || has_end_of_turn_cards {
                 game_state.phase = Phase::EndActionTurn;
             } else {
                 game_state.advance_turn(timestamp)?;
@@ -2234,6 +2250,17 @@ fn perform_strategic_secondary(
         _ => {}
     }
 
+    Ok(())
+}
+
+/// End the current action turn, which isn't possible while Thunder's Edge waits to be placed.
+fn end_action_turn(game_state: &mut GameState) -> Result<()> {
+    ensure!(
+        !is_awaiting_thunders_edge_placement(game_state),
+        "Thunder's Edge must be placed before ending the turn"
+    );
+    game_state.action_progress = None;
+    game_state.phase = Phase::Action;
     Ok(())
 }
 

@@ -5,7 +5,10 @@ use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::system::{System, SystemId},
+    components::{
+        action_card::ActionCard,
+        system::{System, SystemId},
+    },
     state::{
         expedition::{TEExpedition, TEExpeditionSlot},
         game_state::{ActionPhaseProgress, ThundersEdgeProgress},
@@ -103,8 +106,75 @@ pub fn EndActionPhaseView() -> Element {
                     },
                     "End Turn"
                 }
+                EndOfTurnActionCards { disabled: completion_required() }
             } else {
                 p { "Not your turn, currently {current_player_id()} is playing" }
+            }
+        }
+    }
+}
+
+/// Crisis, which any player can play at the end of the turn.
+#[component]
+fn EndOfTurnActionCards(disabled: bool) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected_card = use_signal(|| None);
+
+    let crisis_enabled =
+        use_memo(move || gc.game_options().action_cards.contains(&ActionCard::Crisis));
+
+    let players = use_memo(move || gc.game_state().players.keys().cloned().collect::<Vec<_>>());
+    let can_skip_turn = use_memo(move || {
+        let state = gc.game_state();
+        state.players.len() - state.passed_players.len() >= 2
+    });
+
+    rsx! {
+        if crisis_enabled() {
+            Button {
+                disabled: disabled || !can_skip_turn() || selected_card() == Some(ActionCard::Crisis),
+                onclick: move |_| selected_card.set(Some(ActionCard::Crisis)),
+                "Crisis"
+            }
+        }
+        match selected_card() {
+            Some(ActionCard::Crisis) => rsx! {
+                PlayEndOfTurnActionCard {
+                    card: ActionCard::Crisis,
+                    players: players(),
+                    on_play: move |player| event.send_event(Event::PlayCrisis { player }),
+                }
+            },
+            _ => rsx! {},
+        }
+    }
+}
+
+/// Choose the player that plays `card`.
+#[component]
+fn PlayEndOfTurnActionCard(
+    card: ActionCard,
+    players: Vec<PlayerId>,
+    on_play: EventHandler<PlayerId>,
+) -> Element {
+    let mut player = use_signal(|| None);
+
+    rsx! {
+        fieldset { class: "column",
+            legend { {card.info().name} }
+            p { {card.info().effect} }
+            PlayerDropdown {
+                value: player,
+                options: players,
+                on_select: move |p| player.set(p),
+            }
+            Button {
+                class: "margin-top",
+                disabled: player().is_none(),
+                onclick: move |_| on_play(player().expect("Player to be selected")),
+                "Play"
             }
         }
     }

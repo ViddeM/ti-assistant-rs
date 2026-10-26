@@ -19,6 +19,7 @@ scenarios![
     thunders_edge_take_planets_without_tile,
     thunders_edge_action_cards,
     thunders_edge_overrule_and_strategize,
+    thunders_edge_crisis,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -691,5 +692,47 @@ pub fn thunders_edge_overrule_and_strategize() -> TestGame {
     );
 
     g.turn("Carol").play_card(StrategyCard::Politics);
+    g
+}
+
+/// At the end of a turn, Crisis skips the next player's turn. The expedition is full, so passing
+/// only ends at the end of the turn because of Crisis.
+pub fn thunders_edge_crisis() -> TestGame {
+    let mut g = action_phase(three_players().thunders_edge());
+    for slot in [
+        TEExpeditionSlot::Resources,
+        TEExpeditionSlot::ActionCards,
+        TEExpeditionSlot::Influence,
+        TEExpeditionSlot::SecretObjective,
+        TEExpeditionSlot::TechSpecialityPlanet,
+        TEExpeditionSlot::TradeGoods,
+    ] {
+        g.apply(Event::ClaimThundersEdgeExpeditionSlot {
+            player: Some(p("Alice")),
+            slot,
+        });
+    }
+
+    g.turn("Alice")
+        .strategic(StrategyCard::Leadership)
+        .commit()
+        .apply(Event::PlayCrisis { player: p("Carol") });
+    g.turn("Carol").play_card(StrategyCard::Politics);
+    g.turn("Alice").play_card(StrategyCard::Construction);
+    g.turn("Bob").play_card(StrategyCard::Diplomacy);
+    g.turn("Carol").play_card(StrategyCard::Warfare);
+    g.turn("Alice").pass_and_stay().end_turn();
+
+    g.turn("Bob").play_card(StrategyCard::Trade);
+    g.turn("Carol").pass();
+    g.turn("Bob")
+        .pass_and_stay()
+        .expect_rejected(
+            Event::PlayCrisis { player: p("Alice") },
+            "at least 2 players",
+        )
+        .end_turn();
+
+    assert_eq!(g.phase(), Phase::Status);
     g
 }

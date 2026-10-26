@@ -428,6 +428,7 @@ pub fn action_cards() -> TestGame {
                 tech: Technology::GravityDrive,
             }),
         )
+        .expect_rejected(Event::PlayCrisis { player: p("Bob") }, "not available")
         .end_turn();
 
     g.apply(Event::AddTechToPlayer {

@@ -256,6 +256,13 @@ pub enum Event {
         player: PlayerId,
     },
 
+    /// A player plays the Crisis action card at the end of the current turn, which ends the turn
+    /// and skips the next player's turn.
+    PlayCrisis {
+        /// The player that plays the card.
+        player: PlayerId,
+    },
+
     /// A player passes their turn.
     PassAction {
         /// The player that passed.
