@@ -581,6 +581,10 @@ pub enum ActionCardAction {
         /// The player that gains their breakthrough, or `None` if a planet was readied instead.
         player: Option<PlayerId>,
     },
+    MercenaryContract {
+        /// The planet whose planet card is returned to the deck, if another player owned it.
+        planet: Option<Planet>,
+    },
 }
 
 /// Returns weather the [ActionCardAction] is for the provided [ActionCard].
@@ -597,6 +601,9 @@ pub fn action_matches_action_card(action: &Option<ActionCardAction>, card: &Acti
         }
         ActionCard::Brilliance => {
             matches!(action, Some(ActionCardAction::Brilliance { .. }))
+        }
+        ActionCard::MercenaryContract => {
+            matches!(action, Some(ActionCardAction::MercenaryContract { .. }))
         }
         _ => action.is_none(),
     }

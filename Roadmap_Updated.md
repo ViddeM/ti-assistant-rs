@@ -313,7 +313,7 @@
    - ✅ Brilliance (gain breakthrough) `[TE-I]`
    - ❌ Overrule / Strategize (perform another strategy card's primary / secondary) `[TE-I]`
    - ❌ Crisis (skip a turn), Puppets on a String (extra action when passed) `[TE-I]`
-   - ❌ Mercenary Contract (the owner returns the planet card) `[TE-I]`
+   - ✅ Mercenary Contract (the owner returns the planet card) `[TE-I]`
  - ✅ Thunder's Edge expedition (commit, pass, complete, admin page)
  - ✅ Update milty import
  - 👺 Coexistence (map visualization)

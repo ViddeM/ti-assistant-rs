@@ -8,13 +8,13 @@ use ti_helper_game_data::{
         action_card::ActionCard,
         tech::{TechOrigin, TechType, Technology},
     },
-    state::game_state::ActionPhaseProgress,
+    state::game_state::{ActionPhaseProgress, PlanetLocation},
 };
 
 use crate::{
     components::{
         button::Button,
-        dropdown::{Dropdown, PlayerDropdown, TechDropdown},
+        dropdown::{Dropdown, PlanetDropdown, PlayerDropdown, TechDropdown},
     },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
@@ -108,6 +108,11 @@ fn ActionCardProgressView(card: ActionCard) -> Element {
         ActionCard::Brilliance => {
             rsx! {
                 BrillianceView { send_commit_message }
+            }
+        }
+        ActionCard::MercenaryContract => {
+            rsx! {
+                MercenaryContractView { send_commit_message }
             }
         }
         _ => {
@@ -327,6 +332,70 @@ fn BrillianceView(send_commit_message: Callback<Option<ActionCardAction>>) -> El
                     }),
                 ),
                 "Ready a planet instead"
+            }
+        }
+    }
+}
+
+#[component]
+fn MercenaryContractView(send_commit_message: Callback<Option<ActionCardAction>>) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let mut selected_planet = use_signal(|| None);
+
+    let other_players_planets = use_memo(move || {
+        let state = gc.game_state();
+        let current_player = state
+            .current_player
+            .clone()
+            .expect("Current player to exist");
+        let mut planets = state
+            .players
+            .iter()
+            .filter(|&(id, _)| id != &current_player)
+            .flat_map(|(_, player)| player.planets.keys())
+            .filter(|planet| !planet.is_in_home_system())
+            .filter(|planet| state.planet_location(planet) != PlanetLocation::NotOnBoard)
+            .cloned()
+            .collect::<Vec<_>>();
+        planets.sort();
+        planets
+    });
+
+    rsx! {
+        div { class: "column",
+            p { class: "warning-text", "Remember: spend 2 trade goods" }
+            fieldset { class: "column",
+                legend { "Planet owned by another player" }
+                PlanetDropdown {
+                    value: selected_planet,
+                    options: other_players_planets(),
+                    on_select: move |p| selected_planet.set(p),
+                    disabled: other_players_planets().is_empty(),
+                }
+                Button {
+                    class: "margin-top",
+                    disabled: selected_planet().is_none(),
+                    onclick: move |_| {
+                        send_commit_message(
+                            Some(ActionCardAction::MercenaryContract {
+                                planet: selected_planet(),
+                            }),
+                        )
+                    },
+                    "Return planet card"
+                }
+            }
+            Button {
+                class: "margin-top",
+                onclick: move |_| {
+                    send_commit_message(
+                        Some(ActionCardAction::MercenaryContract {
+                            planet: None,
+                        }),
+                    )
+                },
+                "Planet not owned by another player"
             }
         }
     }

@@ -836,6 +836,31 @@ fn try_update_game_state(
                             target_player.gain_breakthrough();
                         }
                     }
+                    ActionCardAction::MercenaryContract { planet } => {
+                        if let Some(planet) = planet {
+                            ensure!(
+                                !planet.is_in_home_system(),
+                                "Cannot use Mercenary Contract on a home planet"
+                            );
+                            ensure!(
+                                game_state.planet_location(&planet) != PlanetLocation::NotOnBoard,
+                                "{} is not on the board",
+                                planet.info().name
+                            );
+                            let Some((owner, owner_player)) = game_state
+                                .players
+                                .iter_mut()
+                                .find(|(_, p)| p.planets.contains_key(&planet))
+                            else {
+                                bail!("{} is not owned by any player", planet.info().name);
+                            };
+                            ensure!(
+                                *owner != player,
+                                "Players keep their own planets when using Mercenary Contract"
+                            );
+                            owner_player.remove_planet(&planet);
+                        }
+                    }
                 }
             }
 

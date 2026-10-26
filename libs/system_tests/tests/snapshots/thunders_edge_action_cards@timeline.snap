@@ -16,12 +16,17 @@ source: libs/system_tests/src/check.rs
   12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
   13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
   14 CompleteStrategyPhase                    r1 Action             Alice
-  15 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
-  16 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
-  17 TakeAnotherTurn(Alice)                   r1 Action             Alice
-  18 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
-  19 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
-  20 EndTurn(Alice)                           r1 Action             Bob
-  21 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob
-  22 ActionCardActionCommit(Bob)              r1 EndActionTurn      Bob
-  23 EndTurn(Bob)                             r1 Action             Carol
+  15 SetPlanetOwner(Bob)                      r1 Action             Alice
+  16 SetPlanetOwner(Carol)                    r1 Action             Alice
+  17 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
+  18 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
+  19 TakeAnotherTurn(Alice)                   r1 Action             Alice
+  20 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
+  21 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
+  22 EndTurn(Alice)                           r1 Action             Bob
+  23 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob
+  24 ActionCardActionCommit(Bob)              r1 EndActionTurn      Bob
+  25 EndTurn(Bob)                             r1 Action             Carol
+  26 ActionCardActionBegin(Carol)             r1 ActionCardAction   Carol
+  27 ActionCardActionCommit(Carol)            r1 EndActionTurn      Carol
+  28 EndTurn(Carol)                           r1 Action             Alice

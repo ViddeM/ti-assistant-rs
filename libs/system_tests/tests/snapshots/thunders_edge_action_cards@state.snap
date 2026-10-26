@@ -49,6 +49,7 @@ players:
     planets:
       ArchonRen: []
       ArchonTau: []
+      Lazar: []
     technologies:
       - GravitonLaserSystem
     relics: []
@@ -70,7 +71,7 @@ strategyCardHolders:
   Construction: Alice
   Trade: Bob
   Warfare: Carol
-currentPlayer: Carol
+currentPlayer: Alice
 spentStrategyCards: []
 passedPlayers: []
 actionProgress: ~
@@ -105,15 +106,15 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 540
+    secs: 660
     nanos: 0
   Bob:
     secs: 300
     nanos: 0
   Carol:
-    secs: 120
+    secs: 300
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:23:00Z"
+currentTurnStartTime: "2025-01-01T12:28:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~

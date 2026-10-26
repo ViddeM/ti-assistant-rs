@@ -502,12 +502,23 @@ fn commit_action_card(player: &str, data: ActionCardAction) -> Event {
     }
 }
 
-/// Brilliance gives a player their breakthrough, and the Ω versions of the Codex cards replace
-/// the old ones.
+/// Brilliance gives a player their breakthrough, Mercenary Contract returns another player's
+/// planet card, and the Ω versions of the Codex cards replace the old ones.
 pub fn thunders_edge_action_cards() -> TestGame {
     let mut g = action_phase(three_players().pok().codex().thunders_edge());
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Bob")),
+        planet: Planet::Abyz,
+    })
+    .apply(Event::SetPlanetOwner {
+        player: Some(p("Carol")),
+        planet: Planet::Lazar,
+    });
     let brilliance = |player: Option<&str>| ActionCardAction::Brilliance {
         player: player.map(p),
+    };
+    let mercenary_contract = |planet| ActionCardAction::MercenaryContract {
+        planet: Some(planet),
     };
 
     g.turn("Alice")
@@ -533,6 +544,29 @@ pub fn thunders_edge_action_cards() -> TestGame {
         .apply(commit_action_card("Bob", brilliance(None)))
         .end_turn();
 
+    g.turn("Carol")
+        .apply(begin_action_card("Carol", ActionCard::MercenaryContract))
+        .expect_rejected(
+            commit_action_card("Carol", mercenary_contract(Planet::Arretze)),
+            "home planet",
+        )
+        .expect_rejected(
+            commit_action_card("Carol", mercenary_contract(Planet::Lazar)),
+            "keep their own planets",
+        )
+        .expect_rejected(
+            commit_action_card("Carol", mercenary_contract(Planet::Gral)),
+            "not owned by any player",
+        )
+        .apply(commit_action_card(
+            "Carol",
+            mercenary_contract(Planet::Abyz),
+        ))
+        .end_turn();
+
+    assert!(!g.player("Bob").planets.contains_key(&Planet::Abyz));
+    assert!(g.player("Bob").planets.contains_key(&Planet::Arretze));
+    assert!(g.player("Carol").planets.contains_key(&Planet::Lazar));
     assert_eq!(g.player("Alice").breakthrough, None);
     g
 }

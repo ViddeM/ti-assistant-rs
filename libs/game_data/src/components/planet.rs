@@ -4,7 +4,10 @@ use strum_macros::EnumIter;
 
 use crate::common::expansions::Expansion;
 
-use super::tech::TechCategory;
+use super::{
+    system::{SystemType, systems},
+    tech::TechCategory,
+};
 
 /// A planetary trait.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -1074,6 +1077,14 @@ impl Planet {
 
     pub fn is_mecatol_rex(&self) -> bool {
         matches!(self, Planet::MecatolRex | Planet::MecatolRexOmega)
+    }
+
+    /// Whether the planet is in a home system.
+    pub fn is_in_home_system(&self) -> bool {
+        systems().values().any(|system| {
+            matches!(system.system_type, SystemType::HomeSystem(..))
+                && system.planets.contains(self)
+        })
     }
 
     /// False for planets that only exist as a token or a card, i.e. that aren't in any pre-defined system.
