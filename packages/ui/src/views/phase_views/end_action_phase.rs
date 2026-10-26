@@ -86,25 +86,30 @@ pub fn EndActionPhaseView() -> Element {
             }
 
             if view.is_active() {
-                Button {
-                    disabled: has_passed() || completion_required(),
-                    onclick: move |_| {
-                        event
-                            .send_event(Event::TakeAnotherTurn {
-                                player: current_player_id(),
-                            })
-                    },
-                    "Take another turn"
-                }
-                Button {
-                    disabled: completion_required(),
-                    onclick: move |_| {
-                        event
-                            .send_event(Event::EndTurn {
-                                player: current_player_id(),
-                            })
-                    },
-                    "End Turn"
+                fieldset { class: "end-of-turn-section",
+                    legend { "Turn" }
+                    div { class: "end-of-turn-buttons",
+                        Button {
+                            disabled: has_passed() || completion_required(),
+                            onclick: move |_| {
+                                event
+                                    .send_event(Event::TakeAnotherTurn {
+                                        player: current_player_id(),
+                                    })
+                            },
+                            "Take another turn"
+                        }
+                        Button {
+                            disabled: completion_required(),
+                            onclick: move |_| {
+                                event
+                                    .send_event(Event::EndTurn {
+                                        player: current_player_id(),
+                                    })
+                            },
+                            "End Turn"
+                        }
+                    }
                 }
                 EndOfTurnActionCards { disabled: completion_required() }
             } else {
@@ -146,55 +151,67 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
         !passed_players().is_empty() && gc.game_state().interrupted_turn.is_none()
     });
 
+    if !crisis_enabled() && !puppets_enabled() {
+        return rsx! {};
+    }
+
     rsx! {
-        if crisis_enabled() {
-            Button {
-                disabled: disabled || !can_skip_turn() || selected_card() == Some(ActionCard::Crisis),
-                onclick: move |_| selected_card.set(Some(ActionCard::Crisis)),
-                "Crisis"
-            }
-        }
-        if puppets_enabled() {
-            Button {
-                disabled: disabled || !can_perform_action()
-                    || selected_card() == Some(ActionCard::PuppetsOnAString),
-                onclick: move |_| selected_card.set(Some(ActionCard::PuppetsOnAString)),
-                "Puppets on a String"
-            }
-        }
-        match selected_card() {
-            Some(ActionCard::Crisis) => rsx! {
-                PlayEndOfTurnActionCard {
-                    card: ActionCard::Crisis,
-                    players: players(),
-                    on_play: move |player| event.send_event(Event::PlayCrisis { player }),
+        fieldset { class: "end-of-turn-section",
+            legend { "Action cards" }
+            div { class: "end-of-turn-buttons",
+                if crisis_enabled() {
+                    Button {
+                        disabled: disabled || !can_skip_turn() || selected_card() == Some(ActionCard::Crisis),
+                        onclick: move |_| selected_card.set(Some(ActionCard::Crisis)),
+                        "Crisis"
+                    }
                 }
-            },
-            Some(ActionCard::PuppetsOnAString) => rsx! {
-                PlayEndOfTurnActionCard {
-                    card: ActionCard::PuppetsOnAString,
-                    players: passed_players(),
-                    on_play: move |player| event.send_event(Event::PlayPuppetsOnAString { player }),
+                if puppets_enabled() {
+                    Button {
+                        disabled: disabled || !can_perform_action()
+                            || selected_card() == Some(ActionCard::PuppetsOnAString),
+                        onclick: move |_| selected_card.set(Some(ActionCard::PuppetsOnAString)),
+                        "Puppets on a String"
+                    }
                 }
-            },
-            _ => rsx! {},
+            }
+            match selected_card() {
+                Some(ActionCard::Crisis) => rsx! {
+                    PlayEndOfTurnActionCard {
+                        card: ActionCard::Crisis,
+                        player_question: "Who plays Crisis?",
+                        players: players(),
+                        on_play: move |player| event.send_event(Event::PlayCrisis { player }),
+                    }
+                },
+                Some(ActionCard::PuppetsOnAString) => rsx! {
+                    PlayEndOfTurnActionCard {
+                        card: ActionCard::PuppetsOnAString,
+                        player_question: "Which passed player plays it and performs the action?",
+                        players: passed_players(),
+                        on_play: move |player| event.send_event(Event::PlayPuppetsOnAString { player }),
+                    }
+                },
+                _ => rsx! {},
+            }
         }
     }
 }
 
-/// Choose the player that plays `card`.
+/// Choose the player that plays `card`, `player_question` explains who that is.
 #[component]
 fn PlayEndOfTurnActionCard(
     card: ActionCard,
+    player_question: String,
     players: Vec<PlayerId>,
     on_play: EventHandler<PlayerId>,
 ) -> Element {
     let mut player = use_signal(|| None);
 
     rsx! {
-        fieldset { class: "column",
-            legend { {card.info().name} }
-            p { {card.info().effect} }
+        div { class: "column margin-top",
+            p { "{card.info().name}: {card.info().effect}" }
+            p { class: "margin-top", "{player_question}" }
             PlayerDropdown {
                 value: player,
                 options: players,
@@ -269,8 +286,8 @@ fn CommitToExpedition(
     }
 
     rsx! {
-        div { class: "expedition-commit column",
-            h3 { "Thunder's Edge expedition" }
+        fieldset { class: "expedition-commit column",
+            legend { "Thunder's Edge expedition" }
 
             if interactive {
                 if committed {
@@ -370,8 +387,8 @@ fn CompleteExpedition(
     let player_color = use_memo(move || gc.game_state().players[&p1].color.clone());
 
     rsx! {
-        div { class: "expedition-complete",
-            h3 { "Thunder's Edge" }
+        fieldset { class: "expedition-complete",
+            legend { "Thunder's Edge" }
 
             ExpeditionToken { progress: expedition().progress.clone() }
 

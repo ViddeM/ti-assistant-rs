@@ -10,6 +10,13 @@
   }
 }
 
+.end-of-turn-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $margin-large;
+}
+
 .expedition-commit,
 .expedition-complete {
   display: flex;
