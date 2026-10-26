@@ -265,12 +265,15 @@ fn ActionCardSelectView() -> Element {
     let event = use_context::<EventContext>();
 
     let action_cards = use_memo(move || {
-        gc.game_options()
+        let mut acs = gc
+            .game_options()
             .action_cards
             .iter()
             .filter(|ac| ac.info().play == ActionCardPlay::Action)
             .cloned()
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>();
+        acs.sort();
+        acs
     });
 
     let mut card: Signal<Option<ActionCard>> = use_signal(|| None);

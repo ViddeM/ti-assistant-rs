@@ -135,6 +135,21 @@ pub enum ActionCard {
     WarMachineOmega,
 }
 
+impl PartialOrd for ActionCard {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for ActionCard {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.info()
+            .name
+            .to_lowercase()
+            .cmp(&other.info().name.to_lowercase())
+    }
+}
+
 /// Codex cards paired with the version Thunder's Edge replaces them with.
 const REPLACED_IN_THUNDERS_EDGE: [(ActionCard, ActionCard); 8] = [
     (ActionCard::Blitz, ActionCard::BlitzOmega),
