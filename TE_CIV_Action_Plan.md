@@ -171,7 +171,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | Card | Verdict | Status | P / Effort |
 |---|---|---|---|
 | **Brilliance** (choose a player to gain their breakthrough) | Track | ✅ `ActionCardAction::Brilliance { player: Option<PlayerId> }` (None = the "ready a planet" option). The player must not have their breakthrough yet; it's unlocked with `Player::gain_breakthrough` (on-gain effects wait for E2). | P2 / S |
-| **Overrule** (perform the primary of a readied or unchosen strategy card) / **Strategize** (perform the secondary) | Track | Only Technology, Politics and Imperial have tracked effects. `ActionCardAction::Overrule { card, primary: StrategicPrimaryAction }` / `Strategize { card, secondary: StrategicSecondaryAction }`, reusing the primary/secondary handlers (pull them out of the `StrategicActionPrimary/Secondary` match arms into functions). Validate that the card is unchosen or readied. | P2 / M |
+| **Overrule** (perform the primary of a readied or unchosen strategy card) / **Strategize** (perform the secondary) | Track | ✅ `ActionCardAction::Overrule { card, primary: Option<StrategicPrimaryAction> }` / `Strategize { card, secondary: StrategicSecondaryAction }`. Both reuse the strategy card handlers (`perform_strategic_primary/secondary`), so only Technology, Politics and Imperial have effects; `primary` is required exactly for those cards (`StrategyCard::has_tracked_primary`). The card must not be exhausted (not in `spent_strategy_cards`), and it stays readied. The UI reuses the strategy card primary views. | P2 / M |
 | **Crisis** (skip the next player's turn) | Track | `SkipNextTurn { player }` (any player's end of turn). `advance_turn` skips the next non-passed player once. The card isn't an ACTION, so it needs its own button in the end-turn view. | P3 / S |
 | **Puppets on a String** (a passed player performs 1 action at the end of any player's turn) | Track | `PerformExtraAction { player }` makes the passed player current for one action, then the normal order resumes. Touches turn/time logic; do it after Crisis. | P3 / M |
 | **Mercenary Contract** (the planet's owner returns the planet card) | Assist | ✅ `ActionCardAction::MercenaryContract { planet: Option<Planet> }`: a non-home planet on the board owned by another player loses its owner (attachments go with the card, like `SetPlanetOwner` to nobody). None = the planet wasn't owned by another player. | P3 / S |
@@ -453,7 +453,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - A3/A6/A7 breakthrough actions, C3 Faunus, D2 Silver Flame.
    - TE-B Fracture flag and prompts.
    - E6 leader data → Ta Zern and Director Nel.
-   - Brilliance, Overrule, Strategize.
+   - ✅ Brilliance, Overrule, Strategize.
    - J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The heavier events (P2).**
    - Monuments, Cultural Exchange, Rapid Mobilization, Minor Factions, Dangerous Wilds, Conventions of War Abandoned.

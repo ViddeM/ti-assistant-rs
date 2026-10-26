@@ -591,6 +591,12 @@ pub enum ActionCardAction {
         /// The primary ability, for the strategy cards whose primary ability is tracked.
         primary: Option<StrategicPrimaryAction>,
     },
+    Strategize {
+        /// The strategy card whose secondary ability is performed.
+        card: StrategyCard,
+        /// The secondary ability that is performed.
+        secondary: StrategicSecondaryAction,
+    },
 }
 
 /// Returns weather the [ActionCardAction] is for the provided [ActionCard].
@@ -613,6 +619,9 @@ pub fn action_matches_action_card(action: &Option<ActionCardAction>, card: &Acti
         }
         ActionCard::Overrule => {
             matches!(action, Some(ActionCardAction::Overrule { .. }))
+        }
+        ActionCard::Strategize => {
+            matches!(action, Some(ActionCardAction::Strategize { .. }))
         }
         _ => action.is_none(),
     }

@@ -612,44 +612,24 @@ fn try_update_game_state(
                 "current player can't perform the secondary on a strategy card",
             );
 
-            game_state.assert_secondary_action_expansion(&action)?;
-
-            let Some(action_progress) = &mut game_state.action_progress else {
+            let Some(action_progress) = &game_state.action_progress else {
                 bail!("no strategic action in progress");
             };
-
-            match action_progress {
-                ActionPhaseProgress::Strategic(progress) => {
-                    ensure!(
-                        action.is_for_card(progress.card),
-                        "Mismatch between strategic progress {progress:?} and action {action:?}"
-                    );
-                    match action.clone() {
-                        StrategicSecondaryAction::Technology { tech } => {
-                            let player = game_state.players.get_mut(&player).unwrap();
-                            player.research_tech(tech)?;
-                        }
-                        StrategicSecondaryAction::TechnologyJolNar {
-                            first_tech,
-                            second_tech,
-                        } => {
-                            let player = game_state.players.get_mut(&player).unwrap();
-                            ensure!(
-                                player.faction == Faction::UniversitiesOfJolNar,
-                                "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary"
-                            );
-                            player.research_tech(first_tech)?;
-                            if let Some(t) = second_tech {
-                                player.research_tech(t)?;
-                            }
-                        }
-                        _ => {}
-                    }
-
-                    progress.other_players.insert(player.clone(), action.into());
-                }
-                _ => bail!("cannot perform strategic actions during non-strategy actions"),
+            let ActionPhaseProgress::Strategic(progress) = action_progress else {
+                bail!("cannot perform strategic actions during non-strategy actions");
             };
+            ensure!(
+                action.is_for_card(progress.card),
+                "Mismatch between strategic progress {progress:?} and action {action:?}"
+            );
+
+            perform_strategic_secondary(game_state, &player, &action)?;
+
+            let Some(ActionPhaseProgress::Strategic(progress)) = &mut game_state.action_progress
+            else {
+                bail!("no strategic action in progress");
+            };
+            progress.other_players.insert(player, action.into());
         }
         Event::StrategicActionCommit => {
             game_state.assert_phase(Phase::StrategicAction)?;
@@ -686,7 +666,7 @@ fn try_update_game_state(
                         "There are no techs available for the player to steal."
                     )
                 }
-                ActionCard::Overrule => {
+                ActionCard::Overrule | ActionCard::Strategize => {
                     ensure!(
                         game_state.spent_strategy_cards.len() < StrategyCard::iter().count(),
                         "There are no readied or unchosen strategy cards."
@@ -808,6 +788,18 @@ fn try_update_game_state(
                                 "The primary ability of {card} must be performed"
                             ),
                         }
+                    }
+                    ActionCardAction::Strategize { card, secondary } => {
+                        assert_readied_or_unchosen(game_state, card)?;
+                        ensure!(
+                            !secondary.skipped(),
+                            "The secondary ability of {card} must be performed"
+                        );
+                        ensure!(
+                            secondary.is_for_card(card),
+                            "Mismatch between strategy card {card:?} and secondary {secondary:?}"
+                        );
+                        perform_strategic_secondary(game_state, &player, &secondary)?;
                     }
                 }
             }
@@ -2204,6 +2196,45 @@ fn perform_strategic_primary(
             bail!("Mismatch between progress card {card:?} and action {action:?}")
         }
     }
+}
+
+/// Perform the tracked effects of a secondary ability for `player`.
+fn perform_strategic_secondary(
+    game_state: &mut GameState,
+    player: &PlayerId,
+    action: &StrategicSecondaryAction,
+) -> Result<()> {
+    game_state.assert_secondary_action_expansion(action)?;
+
+    match action.clone() {
+        StrategicSecondaryAction::Technology { tech } => {
+            let player = game_state
+                .players
+                .get_mut(player)
+                .context("Player not found")?;
+            player.research_tech(tech)?;
+        }
+        StrategicSecondaryAction::TechnologyJolNar {
+            first_tech,
+            second_tech,
+        } => {
+            let player = game_state
+                .players
+                .get_mut(player)
+                .context("Player not found")?;
+            ensure!(
+                player.faction == Faction::UniversitiesOfJolNar,
+                "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary"
+            );
+            player.research_tech(first_tech)?;
+            if let Some(t) = second_tech {
+                player.research_tech(t)?;
+            }
+        }
+        _ => {}
+    }
+
+    Ok(())
 }
 
 /// Asserts that `card` is readied or unchosen, i.e. that its primary ability hasn't been used

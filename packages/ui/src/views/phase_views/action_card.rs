@@ -5,7 +5,7 @@ use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::{
         event::{ActionCardAction, Event},
-        strategic::StrategicPrimaryAction,
+        strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::{faction::Faction, player_id::PlayerId},
     components::{
@@ -32,6 +32,7 @@ use crate::{
                 politics_primary_view::PoliticsPrimaryView,
                 technology_primary_view::TechnologyPrimaryView,
             },
+            secondary_card::generic_strategy_card::{action_for_card, get_cost_warning},
         },
         select_tech::SelectTechView,
     },
@@ -56,7 +57,7 @@ pub fn ActionCardView() -> Element {
             rsx! {
                 document::Stylesheet { href: ACTION_CARD_SCSS }
 
-                div { class: "card",
+                div { class: "card column",
                     h2 { "{card.card.info().name}" }
                     {
                         if view.is_active() {
@@ -133,6 +134,11 @@ fn ActionCardProgressView(card: ActionCard) -> Element {
         ActionCard::Overrule => {
             rsx! {
                 OverruleView { send_commit_message }
+            }
+        }
+        ActionCard::Strategize => {
+            rsx! {
+                StrategizeView { send_commit_message }
             }
         }
         _ => {
@@ -482,6 +488,67 @@ fn OverruleView(send_commit_message: Callback<Option<ActionCardAction>>) -> Elem
     }
 }
 
+#[component]
+fn StrategizeView(send_commit_message: Callback<Option<ActionCardAction>>) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let card = use_signal(|| None);
+
+    let current_player_id = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist")
+    });
+    let is_nekro = use_memo(move || {
+        gc.game_state().players[&current_player_id()].faction == Faction::NekroVirus
+    });
+
+    let commit = move |secondary| {
+        send_commit_message(Some(ActionCardAction::Strategize {
+            card: card().expect("Strategy card to be selected"),
+            secondary,
+        }))
+    };
+
+    rsx! {
+        div { class: "column",
+            ReadiedStrategyCardSelect { selected: card }
+            match card() {
+                None => rsx! {},
+                Some(StrategyCard::Technology) if is_nekro() => rsx! {
+                    p { "--Nekro Virus cannot research technologies--" }
+                },
+                Some(StrategyCard::Technology) => rsx! {
+                    fieldset { class: "column",
+                        legend { "Technology" }
+
+                        p { class: "warning-text", "Remember: pay 1 token and 4 resources" }
+                        SelectTechView {
+                            player_id: current_player_id(),
+                            on_select: move |tech| commit(StrategicSecondaryAction::Technology {
+                                tech,
+                            }),
+                        }
+                    }
+                },
+                Some(card) => rsx! {
+                    fieldset { class: "column",
+                        legend { "{card}" }
+
+                        if let Some(cost) = get_cost_warning(&card) {
+                            p { class: "warning-text", "Remember {cost}" }
+                        }
+                        p { "Secondary not tracked" }
+                        Button { class: "margin-top", onclick: move |_| commit(action_for_card(&card)), "Commit" }
+                    }
+
+                },
+            }
+        }
+    }
+}
+
 /// Buttons to pick 1 of the strategy cards that are readied or haven't been chosen.
 #[component]
 fn ReadiedStrategyCardSelect(selected: Signal<Option<StrategyCard>>) -> Element {
@@ -585,7 +652,7 @@ fn PlagiarizePlayerRow(
                         }
                     },
                     option { value: "", "--Select a tech--" }
-                    for (tech, tech_info) in available_player_techs().iter() {
+                    for (tech , tech_info) in available_player_techs().iter() {
                         option { key: "{tech}", value: "{tech.to_string()}", "{tech_info.name}" }
                     }
 

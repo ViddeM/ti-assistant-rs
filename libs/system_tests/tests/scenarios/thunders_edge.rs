@@ -18,7 +18,7 @@ scenarios![
     firmament_becomes_obsidian,
     thunders_edge_take_planets_without_tile,
     thunders_edge_action_cards,
-    thunders_edge_overrule,
+    thunders_edge_overrule_and_strategize,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -572,11 +572,12 @@ pub fn thunders_edge_action_cards() -> TestGame {
     g
 }
 
-/// Overrule performs the primary ability of strategy cards that are readied or unchosen, without
-/// exhausting them.
-pub fn thunders_edge_overrule() -> TestGame {
+/// Overrule and Strategize perform the primary and secondary abilities of strategy cards that
+/// are readied or unchosen, without exhausting them.
+pub fn thunders_edge_overrule_and_strategize() -> TestGame {
     let mut g = action_phase(three_players().thunders_edge());
     let overrule = |card, primary| ActionCardAction::Overrule { card, primary };
+    let strategize = |card, secondary| ActionCardAction::Strategize { card, secondary };
 
     g.turn("Alice").play_card(StrategyCard::Leadership);
 
@@ -614,7 +615,47 @@ pub fn thunders_edge_overrule() -> TestGame {
         ))
         .end_turn();
 
-    g.turn("Carol").tactical().commit().end_turn();
+    g.turn("Carol")
+        .apply(begin_action_card("Carol", ActionCard::Strategize))
+        .expect_rejected(
+            commit_action_card(
+                "Carol",
+                strategize(
+                    StrategyCard::Leadership,
+                    StrategicSecondaryAction::Leadership,
+                ),
+            ),
+            "exhausted",
+        )
+        .expect_rejected(
+            commit_action_card(
+                "Carol",
+                strategize(StrategyCard::Imperial, StrategicSecondaryAction::Skip),
+            ),
+            "must be performed",
+        )
+        .expect_rejected(
+            commit_action_card(
+                "Carol",
+                strategize(
+                    StrategyCard::Imperial,
+                    StrategicSecondaryAction::Technology {
+                        tech: Technology::PlasmaScoring,
+                    },
+                ),
+            ),
+            "Mismatch",
+        )
+        .apply(commit_action_card(
+            "Carol",
+            strategize(
+                StrategyCard::Technology,
+                StrategicSecondaryAction::Technology {
+                    tech: Technology::PlasmaScoring,
+                },
+            ),
+        ))
+        .end_turn();
 
     g.turn("Alice")
         .action_card(
@@ -641,6 +682,7 @@ pub fn thunders_edge_overrule() -> TestGame {
         .end_turn();
 
     assert!(g.player("Bob").has_tech(&Technology::GravityDrive));
+    assert!(g.player("Carol").has_tech(&Technology::PlasmaScoring));
     assert_eq!(g.points("Alice"), 1);
     assert_eq!(g.speaker(), Some("Bob"));
     assert_eq!(

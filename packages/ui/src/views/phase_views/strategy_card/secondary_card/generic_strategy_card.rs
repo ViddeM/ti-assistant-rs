@@ -112,7 +112,7 @@ fn RenderSecondaryAction(
     }
 }
 
-fn action_for_card(card: &StrategyCard) -> StrategicSecondaryAction {
+pub fn action_for_card(card: &StrategyCard) -> StrategicSecondaryAction {
     match card {
         StrategyCard::Leadership => StrategicSecondaryAction::Leadership,
         StrategyCard::Diplomacy => StrategicSecondaryAction::Diplomacy,
@@ -125,7 +125,7 @@ fn action_for_card(card: &StrategyCard) -> StrategicSecondaryAction {
     }
 }
 
-fn get_cost_warning(card: &StrategyCard) -> Option<String> {
+pub fn get_cost_warning(card: &StrategyCard) -> Option<String> {
     Some(
         match card {
             StrategyCard::Leadership => "pay 3 influence per token",

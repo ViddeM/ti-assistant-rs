@@ -22,8 +22,8 @@ source: libs/system_tests/src/check.rs
   18 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob
   19 ActionCardActionCommit(Bob)              r1 EndActionTurn      Bob
   20 EndTurn(Bob)                             r1 Action             Carol
-  21 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
-  22 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
+  21 ActionCardActionBegin(Carol)             r1 ActionCardAction   Carol
+  22 ActionCardActionCommit(Carol)            r1 EndActionTurn      Carol
   23 EndTurn(Carol)                           r1 Action             Alice
   24 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
   25 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice      Alice=1

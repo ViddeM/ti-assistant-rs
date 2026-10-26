@@ -52,6 +52,7 @@ players:
       ArchonTau: []
     technologies:
       - GravitonLaserSystem
+      - PlasmaScoring
     relics: []
     breakthrough: ~
     factionState: None
