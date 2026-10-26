@@ -577,6 +577,10 @@ pub enum ActionCardAction {
         /// The tech to gain.
         tech: Technology,
     },
+    Brilliance {
+        /// The player that gains their breakthrough, or `None` if a planet was readied instead.
+        player: Option<PlayerId>,
+    },
 }
 
 /// Returns weather the [ActionCardAction] is for the provided [ActionCard].
@@ -590,6 +594,9 @@ pub fn action_matches_action_card(action: &Option<ActionCardAction>, card: &Acti
         }
         ActionCard::Plagiarize => {
             matches!(action, Some(ActionCardAction::Plagiarize { .. }))
+        }
+        ActionCard::Brilliance => {
+            matches!(action, Some(ActionCardAction::Brilliance { .. }))
         }
         _ => action.is_none(),
     }

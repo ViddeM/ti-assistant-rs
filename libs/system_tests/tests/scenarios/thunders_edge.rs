@@ -495,9 +495,20 @@ fn begin_action_card(player: &str, card: ActionCard) -> Event {
     }
 }
 
-/// The Ω versions of the Codex cards replace the old ones.
+fn commit_action_card(player: &str, data: ActionCardAction) -> Event {
+    Event::ActionCardActionCommit {
+        player: p(player),
+        data: Some(data),
+    }
+}
+
+/// Brilliance gives a player their breakthrough, and the Ω versions of the Codex cards replace
+/// the old ones.
 pub fn thunders_edge_action_cards() -> TestGame {
     let mut g = action_phase(three_players().pok().codex().thunders_edge());
+    let brilliance = |player: Option<&str>| ActionCardAction::Brilliance {
+        player: player.map(p),
+    };
 
     g.turn("Alice")
         .expect_rejected(
@@ -505,6 +516,23 @@ pub fn thunders_edge_action_cards() -> TestGame {
             "not available",
         )
         .action_card(ActionCard::FighterConscriptionOmega, None)
+        .take_another_turn()
+        .action_card(ActionCard::Brilliance, Some(brilliance(Some("Bob"))))
         .end_turn();
+    assert_eq!(
+        g.player("Bob").breakthrough,
+        Some(Breakthrough::AutoFactories)
+    );
+
+    g.turn("Bob")
+        .apply(begin_action_card("Bob", ActionCard::Brilliance))
+        .expect_rejected(
+            commit_action_card("Bob", brilliance(Some("Bob"))),
+            "already gained their breakthrough",
+        )
+        .apply(commit_action_card("Bob", brilliance(None)))
+        .end_turn();
+
+    assert_eq!(g.player("Alice").breakthrough, None);
     g
 }

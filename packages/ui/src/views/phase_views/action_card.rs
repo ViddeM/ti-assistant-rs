@@ -14,7 +14,7 @@ use ti_helper_game_data::{
 use crate::{
     components::{
         button::Button,
-        dropdown::{Dropdown, TechDropdown},
+        dropdown::{Dropdown, PlayerDropdown, TechDropdown},
     },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
@@ -103,6 +103,11 @@ fn ActionCardProgressView(card: ActionCard) -> Element {
         ActionCard::Plagiarize => {
             rsx! {
                 PlagiarizeView { send_commit_message }
+            }
+        }
+        ActionCard::Brilliance => {
+            rsx! {
+                BrillianceView { send_commit_message }
             }
         }
         _ => {
@@ -276,6 +281,57 @@ fn PlagiarizeView(send_commit_message: Callback<Option<ActionCardAction>>) -> El
     }
 }
 
+#[component]
+fn BrillianceView(send_commit_message: Callback<Option<ActionCardAction>>) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let mut selected_player = use_signal(|| None);
+
+    let players_without_breakthrough = use_memo(move || {
+        gc.game_state()
+            .players
+            .iter()
+            .filter(|(_, player)| player.breakthrough.is_none())
+            .map(|(id, _)| id.clone())
+            .collect::<Vec<_>>()
+    });
+
+    rsx! {
+        div { class: "column",
+            fieldset { class: "column",
+                legend { "Choose a player to gain their breakthrough" }
+                PlayerDropdown {
+                    value: selected_player,
+                    options: players_without_breakthrough(),
+                    on_select: move |p| selected_player.set(p),
+                    disabled: players_without_breakthrough().is_empty(),
+                }
+                Button {
+                    class: "margin-top",
+                    disabled: selected_player().is_none(),
+                    onclick: move |_| {
+                        send_commit_message(
+                            Some(ActionCardAction::Brilliance {
+                                player: selected_player(),
+                            }),
+                        )
+                    },
+                    "Gain breakthrough"
+                }
+            }
+            Button {
+                class: "margin-top",
+                onclick: move |_| send_commit_message(
+                    Some(ActionCardAction::Brilliance {
+                        player: None,
+                    }),
+                ),
+                "Ready a planet instead"
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Props)]
 struct PlagiarizePlayerRowProps {
     player_id: PlayerId,
@@ -354,7 +410,7 @@ fn PlagiarizePlayerRow(
                         }
                     },
                     option { value: "", "--Select a tech--" }
-                    for (tech , tech_info) in available_player_techs().iter() {
+                    for (tech, tech_info) in available_player_techs().iter() {
                         option { key: "{tech}", value: "{tech.to_string()}", "{tech_info.name}" }
                     }
 

@@ -18,4 +18,10 @@ source: libs/system_tests/src/check.rs
   14 CompleteStrategyPhase                    r1 Action             Alice
   15 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
   16 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
-  17 EndTurn(Alice)                           r1 Action             Bob
+  17 TakeAnotherTurn(Alice)                   r1 Action             Alice
+  18 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
+  19 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
+  20 EndTurn(Alice)                           r1 Action             Bob
+  21 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob
+  22 ActionCardActionCommit(Bob)              r1 EndActionTurn      Bob
+  23 EndTurn(Bob)                             r1 Action             Carol

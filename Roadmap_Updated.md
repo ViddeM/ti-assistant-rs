@@ -310,7 +310,7 @@
  - 🚱 Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ✅, ΩΩ leaders ❌
  - ❌ Updated strategy cards: Construction ΩΩ, Warfare Ω (image + secondary hint) `[TE-H]`
  - ❌ New action cards (14 unique / 20 cards) + Ω versions of 8 Codex I cards, which replace the old ones when TE is enabled
-   - ❌ Brilliance (gain breakthrough) `[TE-I]`
+   - ✅ Brilliance (gain breakthrough) `[TE-I]`
    - ❌ Overrule / Strategize (perform another strategy card's primary / secondary) `[TE-I]`
    - ❌ Crisis (skip a turn), Puppets on a String (extra action when passed) `[TE-I]`
    - ❌ Mercenary Contract (the owner returns the planet card) `[TE-I]`

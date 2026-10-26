@@ -254,7 +254,7 @@
  - ❌  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
   - ✅  Ω action cards, replace the codex I versions when TE is enabled
  - ❌  new action cards (14 unique, 20 in the deck)
-  - ❌  Brilliance (gain breakthrough)
+  - ✅  Brilliance (gain breakthrough)
   - ❌  Overrule / Strategize (primary / secondary of a readied or unchosen strategy card)
   - ❌  Crisis (skip a turn), Puppets on a String (passed player performs an action)
   - ❌  Mercenary Contract (owner returns the planet card)

@@ -823,6 +823,19 @@ fn try_update_game_state(
                         let current_player = game_state.get_current_player()?;
                         current_player.take_tech(tech)?;
                     }
+                    ActionCardAction::Brilliance { player: target } => {
+                        if let Some(target) = target {
+                            let target_player = game_state
+                                .players
+                                .get_mut(&target)
+                                .context("Player not found")?;
+                            ensure!(
+                                target_player.breakthrough.is_none(),
+                                "{target} has already gained their breakthrough"
+                            );
+                            target_player.gain_breakthrough();
+                        }
+                    }
                 }
             }
 
@@ -1970,10 +1983,7 @@ fn try_update_game_state(
 
                 te.progress.insert(slot, p);
 
-                // If the player hasn't unlocked their breakthrough, unlock it.
-                if player.breakthrough.is_none() {
-                    player.breakthrough = Some(player.faction_breakthrough());
-                }
+                player.gain_breakthrough();
             } else {
                 te.progress.remove(&slot);
             }
@@ -2022,9 +2032,7 @@ fn try_update_game_state(
 
             te.progress.insert(slot.clone(), player);
 
-            if committer.breakthrough.is_none() {
-                committer.breakthrough = Some(committer.faction_breakthrough());
-            }
+            committer.gain_breakthrough();
 
             game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(if te.is_full() {
                 ThundersEdgeProgress::AwaitingPlacement { slot }
@@ -2071,9 +2079,7 @@ fn try_update_game_state(
                 .get_mut(&won_by)
                 .context("Player not found")?;
             winner.planets.insert(Planet::ThundersEdge, BTreeSet::new());
-            if winner.breakthrough.is_none() {
-                winner.breakthrough = Some(winner.faction_breakthrough());
-            }
+            winner.gain_breakthrough();
 
             te.completed = Some(TECompletion { won_by, placed_in });
             game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(
@@ -2128,9 +2134,7 @@ fn try_update_game_state(
                     .planets
                     .entry(Planet::ThundersEdge)
                     .or_insert_with(BTreeSet::new);
-                if winner.breakthrough.is_none() {
-                    winner.breakthrough = Some(winner.faction_breakthrough());
-                }
+                winner.gain_breakthrough();
             }
 
             te.completed = new_completion;

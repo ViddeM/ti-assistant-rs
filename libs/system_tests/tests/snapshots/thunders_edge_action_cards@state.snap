@@ -40,7 +40,7 @@ players:
       - AntimassDeflectors
       - SarweenTools
     relics: []
-    breakthrough: ~
+    breakthrough: AutoFactories
     factionState: None
   Carol:
     name: Carol
@@ -70,7 +70,7 @@ strategyCardHolders:
   Construction: Alice
   Trade: Bob
   Warfare: Carol
-currentPlayer: Bob
+currentPlayer: Carol
 spentStrategyCards: []
 passedPlayers: []
 actionProgress: ~
@@ -105,15 +105,15 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 360
+    secs: 540
     nanos: 0
   Bob:
-    secs: 120
+    secs: 300
     nanos: 0
   Carol:
     secs: 120
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:17:00Z"
+currentTurnStartTime: "2025-01-01T12:23:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~

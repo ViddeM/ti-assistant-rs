@@ -107,6 +107,13 @@ impl Player {
         }
     }
 
+    /// Unlock the player's breakthrough, unless it's already unlocked.
+    pub fn gain_breakthrough(&mut self) {
+        if self.breakthrough.is_none() {
+            self.breakthrough = Some(self.faction_breakthrough());
+        }
+    }
+
     /// Flip the player from The Firmament to The Obsidian ('Puppets of the Blade').
     ///
     /// This flips the faction specific components of the player, i.e. their breakthrough.

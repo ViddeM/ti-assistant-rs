@@ -134,8 +134,7 @@ impl Faction {
         })
     }
 
-    /// Get the breakthrough associated with the faction.
-    // TODO: How do we handle factions with flipped breakthroughs / obsdian firmament?
+    /// Get the initial breakthrough associated with the faction.
     pub fn breakthrough(&self) -> Breakthrough {
         match self {
             Faction::Arborec => Breakthrough::Psychospore,
