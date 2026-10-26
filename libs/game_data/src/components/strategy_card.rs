@@ -45,6 +45,15 @@ impl StrategyCard {
         }
     }
 
+    /// Whether the primary ability of this card has effects that are tracked, and so has to be
+    /// performed with a [crate::actions::strategic::StrategicPrimaryAction].
+    pub fn has_tracked_primary(&self) -> bool {
+        matches!(
+            self,
+            StrategyCard::Politics | StrategyCard::Technology | StrategyCard::Imperial
+        )
+    }
+
     pub fn name(&self) -> &'static str {
         match self {
             StrategyCard::Leadership => "leadership",

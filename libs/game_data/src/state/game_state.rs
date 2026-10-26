@@ -229,12 +229,7 @@ pub struct StrategicProgress {
 
 impl StrategicProgress {
     pub fn is_done(&self) -> bool {
-        match self.card {
-            StrategyCard::Politics | StrategyCard::Technology | StrategyCard::Imperial => {
-                self.primary.is_some()
-            }
-            _ => true,
-        }
+        !self.card.has_tracked_primary() || self.primary.is_some()
     }
 }
 

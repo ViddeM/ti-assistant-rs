@@ -1,23 +1,20 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    actions::{event::Event, strategic::StrategicPrimaryAction},
-    state::game_state::{StrategicPrimaryProgress, StrategicProgress},
+    actions::strategic::StrategicPrimaryAction, state::game_state::StrategicPrimaryProgress,
 };
 
 use crate::{
     components::{button::Button, dropdown::ObjectiveDropdown},
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
+    data::{game_context::GameContext, player_view::PlayerViewContext},
 };
 
 #[component]
-pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
+pub fn ImperialPrimaryView(
+    primary: Option<StrategicPrimaryProgress>,
+    on_commit: EventHandler<StrategicPrimaryAction>,
+) -> Element {
     let view = use_context::<PlayerViewContext>();
     let gc = use_context::<GameContext>();
-    let event = use_context::<EventContext>();
-
-    let primary = use_memo(move || progress().primary);
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -59,7 +56,7 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
 
     rsx! {
         div { class: "primary-container",
-            if let Some(StrategicPrimaryProgress::Imperial { objective }) = primary() {
+            if let Some(StrategicPrimaryProgress::Imperial { objective }) = primary.clone() {
                 div { class: "primary-choice-container",
                     p {
                         if let Some(objective) = objective {
@@ -86,13 +83,9 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
 
                                 Button {
                                     onclick: move |_| {
-                                        event
-                                            .send_event(Event::StrategicActionPrimary {
-                                                player: current_player(),
-                                                action: StrategicPrimaryAction::Imperial {
-                                                    score_objective: None,
-                                                },
-                                            });
+                                        on_commit(StrategicPrimaryAction::Imperial {
+                                            score_objective: None,
+                                        });
                                     },
                                     if has_mecatol_rex() {
                                         "Gain 1 VP"
@@ -102,15 +95,11 @@ pub fn ImperialPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                                 }
                                 Button {
                                     onclick: move |_| {
-                                        event
-                                            .send_event(Event::StrategicActionPrimary {
-                                                player: current_player(),
-                                                action: StrategicPrimaryAction::Imperial {
-                                                    score_objective: Some(
-                                                        selected_objective().expect("Selected objective to be set"),
-                                                    ),
-                                                },
-                                            });
+                                        on_commit(StrategicPrimaryAction::Imperial {
+                                            score_objective: Some(
+                                                selected_objective().expect("Selected objective to be set"),
+                                            ),
+                                        });
                                     },
                                     disabled: selected_objective().is_none(),
                                     "Score"

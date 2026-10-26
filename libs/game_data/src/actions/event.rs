@@ -585,6 +585,12 @@ pub enum ActionCardAction {
         /// The planet whose planet card is returned to the deck, if another player owned it.
         planet: Option<Planet>,
     },
+    Overrule {
+        /// The strategy card whose primary ability is performed.
+        card: StrategyCard,
+        /// The primary ability, for the strategy cards whose primary ability is tracked.
+        primary: Option<StrategicPrimaryAction>,
+    },
 }
 
 /// Returns weather the [ActionCardAction] is for the provided [ActionCard].
@@ -604,6 +610,9 @@ pub fn action_matches_action_card(action: &Option<ActionCardAction>, card: &Acti
         }
         ActionCard::MercenaryContract => {
             matches!(action, Some(ActionCardAction::MercenaryContract { .. }))
+        }
+        ActionCard::Overrule => {
+            matches!(action, Some(ActionCardAction::Overrule { .. }))
         }
         _ => action.is_none(),
     }

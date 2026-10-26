@@ -11,6 +11,15 @@
   margin-bottom: 0.5rem;
 }
 
+.strategy-card-select {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $margin;
+  margin-bottom: $margin-large;
+}
+
 .plagiarize-table {
   & > tbody select {
     width: 100%;

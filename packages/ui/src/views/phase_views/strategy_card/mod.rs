@@ -26,7 +26,8 @@ use crate::{
 pub mod primary_views;
 pub mod secondary_card;
 
-const STRATEGY_CARD_SCSS: Asset = asset!("/assets/styling/views/strategy_card/strategy_card.scss");
+pub const STRATEGY_CARD_SCSS: Asset =
+    asset!("/assets/styling/views/strategy_card/strategy_card.scss");
 
 #[component]
 pub fn StrategyCardView() -> Element {
@@ -90,15 +91,29 @@ pub fn StrategyCardView() -> Element {
 
 #[component]
 fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let primary = progress().primary;
+    let on_commit = move |action| {
+        event.send_event(Event::StrategicActionPrimary {
+            player: gc
+                .game_state()
+                .current_player()
+                .expect("Current player to exist in action phase"),
+            action,
+        })
+    };
+
     match progress().card {
         StrategyCard::Politics => rsx! {
-            PoliticsPrimaryView { progress }
+            PoliticsPrimaryView { primary, on_commit }
         },
         StrategyCard::Technology => rsx! {
-            TechnologyPrimaryView { progress }
+            TechnologyPrimaryView { primary, on_commit }
         },
         StrategyCard::Imperial => rsx! {
-            ImperialPrimaryView { progress }
+            ImperialPrimaryView { primary, on_commit }
         },
         _ => {
             rsx! {

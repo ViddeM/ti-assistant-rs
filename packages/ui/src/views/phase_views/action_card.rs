@@ -1,11 +1,16 @@
 use std::str::FromStr;
 
 use dioxus::prelude::*;
+use strum::IntoEnumIterator;
 use ti_helper_game_data::{
-    actions::event::{ActionCardAction, Event},
-    common::player_id::PlayerId,
+    actions::{
+        event::{ActionCardAction, Event},
+        strategic::StrategicPrimaryAction,
+    },
+    common::{faction::Faction, player_id::PlayerId},
     components::{
         action_card::ActionCard,
+        strategy_card::StrategyCard,
         tech::{TechOrigin, TechType, Technology},
     },
     state::game_state::{ActionPhaseProgress, PlanetLocation},
@@ -19,7 +24,17 @@ use crate::{
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
-    views::select_tech::SelectTechView,
+    views::{
+        phase_views::strategy_card::{
+            STRATEGY_CARD_SCSS,
+            primary_views::{
+                imperial_primary_view::ImperialPrimaryView,
+                politics_primary_view::PoliticsPrimaryView,
+                technology_primary_view::TechnologyPrimaryView,
+            },
+        },
+        select_tech::SelectTechView,
+    },
 };
 
 const ACTION_CARD_SCSS: Asset = asset!("/assets/styling/views/phase_views/action_card.scss");
@@ -113,6 +128,11 @@ fn ActionCardProgressView(card: ActionCard) -> Element {
         ActionCard::MercenaryContract => {
             rsx! {
                 MercenaryContractView { send_commit_message }
+            }
+        }
+        ActionCard::Overrule => {
+            rsx! {
+                OverruleView { send_commit_message }
             }
         }
         _ => {
@@ -396,6 +416,92 @@ fn MercenaryContractView(send_commit_message: Callback<Option<ActionCardAction>>
                     )
                 },
                 "Planet not owned by another player"
+            }
+        }
+    }
+}
+
+#[component]
+fn OverruleView(send_commit_message: Callback<Option<ActionCardAction>>) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let card = use_signal(|| None);
+
+    let is_nekro = use_memo(move || {
+        let state = gc.game_state();
+        let current_player = state
+            .current_player
+            .as_ref()
+            .expect("Current player to exist");
+        state.players[current_player].faction == Faction::NekroVirus
+    });
+
+    let commit = move |card, primary| {
+        send_commit_message(Some(ActionCardAction::Overrule { card, primary }))
+    };
+    let on_commit =
+        move |primary| commit(card().expect("Strategy card to be selected"), Some(primary));
+
+    rsx! {
+        document::Stylesheet { href: STRATEGY_CARD_SCSS }
+
+        div { class: "column",
+            ReadiedStrategyCardSelect { selected: card }
+            match card() {
+                None => rsx! {},
+                Some(StrategyCard::Technology) if is_nekro() => rsx! {
+                    p { "--Unable to research technologies--" }
+                    Button {
+                        onclick: move |_| {
+                            commit(
+                                StrategyCard::Technology,
+                                Some(StrategicPrimaryAction::Technology {
+                                    first_tech: None,
+                                    second_tech: None,
+                                }),
+                            )
+                        },
+                        "Commit"
+                    }
+                },
+                Some(StrategyCard::Technology) => rsx! {
+                    TechnologyPrimaryView { on_commit }
+                },
+                Some(StrategyCard::Politics) => rsx! {
+                    PoliticsPrimaryView { on_commit }
+                },
+                Some(StrategyCard::Imperial) => rsx! {
+                    ImperialPrimaryView { on_commit }
+                },
+                Some(card) => rsx! {
+                    p { "Primary not tracked" }
+                    Button { onclick: move |_| commit(card, None), "Commit" }
+                },
+            }
+        }
+    }
+}
+
+/// Buttons to pick 1 of the strategy cards that are readied or haven't been chosen.
+#[component]
+fn ReadiedStrategyCardSelect(selected: Signal<Option<StrategyCard>>) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let cards = use_memo(move || {
+        StrategyCard::iter()
+            .filter(|card| !gc.game_state().spent_strategy_cards.contains(card))
+            .collect::<Vec<_>>()
+    });
+
+    rsx! {
+        div { class: "strategy-card-select",
+            for card in cards() {
+                Button {
+                    key: "{card}",
+                    disabled: selected() == Some(card),
+                    onclick: move |_| selected.set(Some(card)),
+                    "{card}"
+                }
             }
         }
     }

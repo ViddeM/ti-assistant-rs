@@ -6,7 +6,7 @@ use crate::{
 };
 
 /// Primary action taken during a strategy card.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum StrategicPrimaryAction {
     /// The primary action for the technology card.
     Technology {

@@ -5,6 +5,7 @@ use std::{
 
 use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
+use strum::IntoEnumIterator;
 
 use super::{color_assignment::assign_colors, error::GameError};
 
@@ -582,92 +583,26 @@ fn try_update_game_state(
         Event::StrategicActionPrimary { player, action } => {
             game_state.assert_phase(Phase::StrategicAction)?;
             game_state.assert_player_turn(&player)?;
-            ensure!(
-                game_state.action_progress.is_some(),
-                "Invalid game state: expected action_progress not to be None"
-            );
-
-            game_state.assert_action_expansion(&action)?;
-
-            let progress = game_state.action_progress.as_mut().unwrap();
-            let progress = match progress {
-                ActionPhaseProgress::Strategic(p) => p,
-                _ => bail!("Invalid action phase progress '{:?}'", progress),
+            let Some(progress) = &game_state.action_progress else {
+                bail!("Invalid game state: expected action_progress not to be None");
+            };
+            let ActionPhaseProgress::Strategic(progress) = progress else {
+                bail!("Invalid action phase progress '{:?}'", progress);
             };
 
             ensure!(
                 progress.primary.is_none(),
                 "Primary action has already been performed"
             );
+            let card = progress.card;
 
-            match (progress.card, action) {
-                (
-                    StrategyCard::Technology,
-                    StrategicPrimaryAction::Technology {
-                        first_tech,
-                        second_tech,
-                    },
-                ) => {
-                    ensure!(
-                        second_tech.is_none() || first_tech.is_some(),
-                        "Cannot take a second tech without a first tech"
-                    );
+            let primary = perform_strategic_primary(game_state, &player, card, action)?;
 
-                    /* Set the progress */
-                    progress.primary = Some(StrategicPrimaryProgress::Technology {
-                        first_tech: first_tech.clone(),
-                        second_tech: second_tech.clone(),
-                    });
-
-                    /* Give the tech(s) to the current player */
-                    let current_player = game_state.get_current_player()?;
-
-                    if let Some(t) = first_tech.clone() {
-                        current_player.research_tech(t.clone())?;
-                    }
-                    if let Some(t) = second_tech.clone() {
-                        current_player.research_tech(t.clone())?;
-                    }
-                }
-                (StrategyCard::Politics, StrategicPrimaryAction::Politics { new_speaker }) => {
-                    progress.primary = Some(StrategicPrimaryProgress::Politics {
-                        new_speaker: new_speaker.clone(),
-                    });
-
-                    game_state.speaker = Some(new_speaker);
-                }
-                (StrategyCard::Imperial, StrategicPrimaryAction::Imperial { score_objective }) => {
-                    if let Some(objective) = score_objective {
-                        let Some(players) =
-                            game_state.score.revealed_objectives.get_mut(&objective)
-                        else {
-                            bail!("objective {objective:?} has not been revealed");
-                        };
-
-                        if !players.insert(player.clone()) {
-                            bail!("player {player:?} has already scored {objective:?}");
-                        }
-                    }
-
-                    progress.primary = Some(StrategicPrimaryProgress::Imperial {
-                        objective: score_objective,
-                    });
-
-                    let current_player = game_state.get_current_player()?;
-                    if current_player
-                        .planets
-                        .keys()
-                        .find(|p| p.is_mecatol_rex())
-                        .is_some()
-                    {
-                        let imperial_points = game_state.score.imperial.entry(player).or_default();
-                        *imperial_points = imperial_points.saturating_add(1);
-                    }
-                }
-                (card, action) => {
-                    bail!("Mismatch between progress card {card:?} and action {action:?}")
-                }
-            }
+            let Some(ActionPhaseProgress::Strategic(progress)) = &mut game_state.action_progress
+            else {
+                bail!("not currently performing a strategic action");
+            };
+            progress.primary = Some(primary);
         }
         Event::StrategicActionSecondary { player, action } => {
             game_state.assert_phase(Phase::StrategicAction)?;
@@ -723,12 +658,7 @@ fn try_update_game_state(
                 bail!("not currently performing a strategic action");
             };
 
-            let has_primary = matches!(
-                progress.card,
-                StrategyCard::Politics | StrategyCard::Technology | StrategyCard::Imperial
-            );
-
-            if has_primary {
+            if progress.card.has_tracked_primary() {
                 ensure!(
                     progress.primary.is_some(),
                     "has not performed strategy card primary"
@@ -754,6 +684,12 @@ fn try_update_game_state(
                     ensure!(
                         !get_plagiarize_available_techs(game_state)?.is_empty(),
                         "There are no techs available for the player to steal."
+                    )
+                }
+                ActionCard::Overrule => {
+                    ensure!(
+                        game_state.spent_strategy_cards.len() < StrategyCard::iter().count(),
+                        "There are no readied or unchosen strategy cards."
                     )
                 }
                 _ => {}
@@ -859,6 +795,18 @@ fn try_update_game_state(
                                 "Players keep their own planets when using Mercenary Contract"
                             );
                             owner_player.remove_planet(&planet);
+                        }
+                    }
+                    ActionCardAction::Overrule { card, primary } => {
+                        assert_readied_or_unchosen(game_state, card)?;
+                        match primary {
+                            Some(primary) => {
+                                perform_strategic_primary(game_state, &player, card, primary)?;
+                            }
+                            None => ensure!(
+                                !card.has_tracked_primary(),
+                                "The primary ability of {card} must be performed"
+                            ),
                         }
                     }
                 }
@@ -2182,6 +2130,90 @@ fn is_awaiting_thunders_edge_placement(game_state: &GameState) -> bool {
             ThundersEdgeProgress::AwaitingPlacement { .. }
         ))
     )
+}
+
+/// Perform the tracked effects of the primary ability of `card` for `player`.
+fn perform_strategic_primary(
+    game_state: &mut GameState,
+    player: &PlayerId,
+    card: StrategyCard,
+    action: StrategicPrimaryAction,
+) -> Result<StrategicPrimaryProgress> {
+    game_state.assert_action_expansion(&action)?;
+
+    match (card, action) {
+        (
+            StrategyCard::Technology,
+            StrategicPrimaryAction::Technology {
+                first_tech,
+                second_tech,
+            },
+        ) => {
+            ensure!(
+                second_tech.is_none() || first_tech.is_some(),
+                "Cannot take a second tech without a first tech"
+            );
+
+            let player = game_state
+                .players
+                .get_mut(player)
+                .context("Player not found")?;
+            if let Some(t) = first_tech.clone() {
+                player.research_tech(t)?;
+            }
+            if let Some(t) = second_tech.clone() {
+                player.research_tech(t)?;
+            }
+
+            Ok(StrategicPrimaryProgress::Technology {
+                first_tech,
+                second_tech,
+            })
+        }
+        (StrategyCard::Politics, StrategicPrimaryAction::Politics { new_speaker }) => {
+            game_state.speaker = Some(new_speaker.clone());
+
+            Ok(StrategicPrimaryProgress::Politics { new_speaker })
+        }
+        (StrategyCard::Imperial, StrategicPrimaryAction::Imperial { score_objective }) => {
+            if let Some(objective) = score_objective {
+                let Some(players) = game_state.score.revealed_objectives.get_mut(&objective) else {
+                    bail!("objective {objective:?} has not been revealed");
+                };
+
+                if !players.insert(player.clone()) {
+                    bail!("player {player:?} has already scored {objective:?}");
+                }
+            }
+
+            let controls_mecatol_rex = (game_state.players.get(player))
+                .context("Player not found")?
+                .planets
+                .keys()
+                .any(|p| p.is_mecatol_rex());
+            if controls_mecatol_rex {
+                let imperial_points = game_state.score.imperial.entry(player.clone()).or_default();
+                *imperial_points = imperial_points.saturating_add(1);
+            }
+
+            Ok(StrategicPrimaryProgress::Imperial {
+                objective: score_objective,
+            })
+        }
+        (card, action) => {
+            bail!("Mismatch between progress card {card:?} and action {action:?}")
+        }
+    }
+}
+
+/// Asserts that `card` is readied or unchosen, i.e. that its primary ability hasn't been used
+/// this round.
+fn assert_readied_or_unchosen(game_state: &GameState, card: StrategyCard) -> Result<()> {
+    ensure!(
+        !game_state.spent_strategy_cards.contains(&card),
+        "{card} has been exhausted, only readied or unchosen strategy cards can be used"
+    );
+    Ok(())
 }
 
 fn get_plagiarize_available_techs(

@@ -18,6 +18,7 @@ scenarios![
     firmament_becomes_obsidian,
     thunders_edge_take_planets_without_tile,
     thunders_edge_action_cards,
+    thunders_edge_overrule,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -568,5 +569,85 @@ pub fn thunders_edge_action_cards() -> TestGame {
     assert!(g.player("Bob").planets.contains_key(&Planet::Arretze));
     assert!(g.player("Carol").planets.contains_key(&Planet::Lazar));
     assert_eq!(g.player("Alice").breakthrough, None);
+    g
+}
+
+/// Overrule performs the primary ability of strategy cards that are readied or unchosen, without
+/// exhausting them.
+pub fn thunders_edge_overrule() -> TestGame {
+    let mut g = action_phase(three_players().thunders_edge());
+    let overrule = |card, primary| ActionCardAction::Overrule { card, primary };
+
+    g.turn("Alice").play_card(StrategyCard::Leadership);
+
+    g.turn("Bob")
+        .apply(begin_action_card("Bob", ActionCard::Overrule))
+        .expect_rejected(
+            commit_action_card("Bob", overrule(StrategyCard::Leadership, None)),
+            "exhausted",
+        )
+        .expect_rejected(
+            commit_action_card("Bob", overrule(StrategyCard::Technology, None)),
+            "must be performed",
+        )
+        .expect_rejected(
+            commit_action_card(
+                "Bob",
+                overrule(
+                    StrategyCard::Diplomacy,
+                    Some(StrategicPrimaryAction::Politics {
+                        new_speaker: p("Bob"),
+                    }),
+                ),
+            ),
+            "Mismatch",
+        )
+        .apply(commit_action_card(
+            "Bob",
+            overrule(
+                StrategyCard::Technology,
+                Some(StrategicPrimaryAction::Technology {
+                    first_tech: Some(Technology::GravityDrive),
+                    second_tech: None,
+                }),
+            ),
+        ))
+        .end_turn();
+
+    g.turn("Carol").tactical().commit().end_turn();
+
+    g.turn("Alice")
+        .action_card(
+            ActionCard::Overrule,
+            Some(overrule(
+                StrategyCard::Imperial,
+                Some(StrategicPrimaryAction::Imperial {
+                    score_objective: Some(PublicObjective::CornerTheMarket.into()),
+                }),
+            )),
+        )
+        .end_turn();
+
+    g.turn("Bob")
+        .action_card(
+            ActionCard::Overrule,
+            Some(overrule(
+                StrategyCard::Politics,
+                Some(StrategicPrimaryAction::Politics {
+                    new_speaker: p("Bob"),
+                }),
+            )),
+        )
+        .end_turn();
+
+    assert!(g.player("Bob").has_tech(&Technology::GravityDrive));
+    assert_eq!(g.points("Alice"), 1);
+    assert_eq!(g.speaker(), Some("Bob"));
+    assert_eq!(
+        g.state().spent_strategy_cards,
+        [StrategyCard::Leadership].into()
+    );
+
+    g.turn("Carol").play_card(StrategyCard::Politics);
     g
 }

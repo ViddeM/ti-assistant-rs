@@ -1,20 +1,19 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    actions::{event::Event, strategic::StrategicPrimaryAction},
-    state::game_state::{StrategicPrimaryProgress, StrategicProgress},
+    actions::strategic::StrategicPrimaryAction, state::game_state::StrategicPrimaryProgress,
 };
 
 use crate::{
     components::{button::Button, dropdown::PlayerDropdown},
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
+    data::{game_context::GameContext, player_view::PlayerViewContext},
 };
 
 #[component]
-pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
+pub fn PoliticsPrimaryView(
+    primary: Option<StrategicPrimaryProgress>,
+    on_commit: EventHandler<StrategicPrimaryAction>,
+) -> Element {
     let gc = use_context::<GameContext>();
-    let event = use_context::<EventContext>();
     let view = use_context::<PlayerViewContext>();
 
     let current_player = use_memo(move || {
@@ -39,11 +38,9 @@ pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
         players
     });
 
-    let primary = use_memo(move || progress().primary);
-
     rsx! {
         div { class: "full-width",
-            if let Some(StrategicPrimaryProgress::Politics { new_speaker }) = primary() {
+            if let Some(StrategicPrimaryProgress::Politics { new_speaker }) = primary.clone() {
                 p { "new speaker {new_speaker}" }
             } else if view.is_active() {
                 fieldset {
@@ -57,16 +54,10 @@ pub fn PoliticsPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
                         Button {
                             class: "margin-top",
                             disabled: new_speaker().is_none(),
-                            onclick: {
-                                move |_| {
-                                    event
-                                        .send_event(Event::StrategicActionPrimary {
-                                            player: current_player(),
-                                            action: StrategicPrimaryAction::Politics {
-                                                new_speaker: new_speaker().expect("New speaker to be selected"),
-                                            },
-                                        })
-                                }
+                            onclick: move |_| {
+                                on_commit(StrategicPrimaryAction::Politics {
+                                    new_speaker: new_speaker().expect("New speaker to be selected"),
+                                })
                             },
                             "Commit"
                         }

@@ -1,21 +1,19 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    actions::{event::Event, strategic::StrategicPrimaryAction},
-    common::faction::Faction,
-    components::tech::Technology,
-    state::game_state::{StrategicPrimaryProgress, StrategicProgress},
+    actions::strategic::StrategicPrimaryAction, common::faction::Faction,
+    components::tech::Technology, state::game_state::StrategicPrimaryProgress,
 };
 
 use crate::{
-    components::button::Button,
-    data::{event_context::EventContext, game_context::GameContext},
-    views::select_tech::SelectTechView,
+    components::button::Button, data::game_context::GameContext, views::select_tech::SelectTechView,
 };
 
 #[component]
-pub fn TechnologyPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element {
+pub fn TechnologyPrimaryView(
+    primary: Option<StrategicPrimaryProgress>,
+    on_commit: EventHandler<StrategicPrimaryAction>,
+) -> Element {
     let gc = use_context::<GameContext>();
-    let event = use_context::<EventContext>();
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -43,14 +41,12 @@ pub fn TechnologyPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element
         };
     }
 
-    let primary = use_memo(move || progress().primary);
-
     let filtered_techs = use_memo(move || first_tech().map(|t: Technology| vec![t]));
 
     if let Some(StrategicPrimaryProgress::Technology {
         first_tech,
         second_tech,
-    }) = primary()
+    }) = primary.clone()
     {
         // Action has already been taken, display the chosen techs.
         return rsx! {
@@ -79,16 +75,11 @@ pub fn TechnologyPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element
                         player_id: current_player(),
                         filtered_techs: filtered_techs(),
                         on_select: move |extra| {
-                            event
-                                .send_event(Event::StrategicActionPrimary {
-                                    player: current_player(),
-                                    action: StrategicPrimaryAction::Technology {
-                                        // Expect here to avoid silent errors.
-                                        first_tech: Some(first_tech().expect("First tech to be selected")),
-                                        second_tech: Some(extra),
-                                    },
-                                });
-
+                            on_commit(StrategicPrimaryAction::Technology {
+                                // Expect here to avoid silent errors.
+                                first_tech: Some(first_tech().expect("First tech to be selected")),
+                                second_tech: Some(extra),
+                            });
                         },
                     }
                 }
@@ -105,14 +96,10 @@ pub fn TechnologyPrimaryView(progress: ReadSignal<StrategicProgress>) -> Element
             }
             Button {
                 onclick: move |_| {
-                    event
-                        .send_event(Event::StrategicActionPrimary {
-                            player: current_player(),
-                            action: StrategicPrimaryAction::Technology {
-                                first_tech: first_tech(),
-                                second_tech: None,
-                            },
-                        })
+                    on_commit(StrategicPrimaryAction::Technology {
+                        first_tech: first_tech(),
+                        second_tech: None,
+                    })
                 },
                 if first_tech().is_some() {
                     "Done"
