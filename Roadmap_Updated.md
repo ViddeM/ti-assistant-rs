@@ -266,6 +266,7 @@
    - ✅ Circlet of the Void (the effects are not tracked)
    - ✅ Neuraloop (status phase only, not objectives revealed outside of it) `[CIV-2]`
    - ✅ Book of Latvinia (the techs gained with it are added manually) `[CIV-1]`
+ - ✅ Action cards: Codex IV has none
  - ❌ Galactic events: Minor Factions, Total War, Age of Commerce, Age of Exploration (see "Galactic Events") `[GE]`
  - ❌ Liberation of Ordinian scenario `[LO]`
 
@@ -306,12 +307,13 @@
  - ❌ The Fracture
    - ❌ Fix Fracture tile data (Known bugs)
    - ❌ "Fracture in play" flag + relic prompt when taking Fracture planets `[TE-B]`
- - 🚱 Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ❌, ΩΩ leaders ❌
+ - 🚱 Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ✅, ΩΩ leaders ❌
  - ❌ Updated strategy cards: Construction ΩΩ, Warfare Ω (image + secondary hint) `[TE-H]`
- - ❌ New action cards (14 unique / 20 cards, data) + Ω rewording of 8 Codex I cards
+ - ❌ New action cards (14 unique / 20 cards) + Ω versions of 8 Codex I cards, which replace the old ones when TE is enabled
    - ❌ Brilliance (gain breakthrough) `[TE-I]`
    - ❌ Overrule / Strategize (perform another strategy card's primary / secondary) `[TE-I]`
    - ❌ Crisis (skip a turn), Puppets on a String (extra action when passed) `[TE-I]`
+   - ❌ Mercenary Contract (the owner returns the planet card) `[TE-I]`
  - ✅ Thunder's Edge expedition (commit, pass, complete, admin page)
  - ✅ Update milty import
  - 👺 Coexistence (map visualization)

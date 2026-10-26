@@ -33,7 +33,7 @@ Paths below are relative to `libs/game_data/src/components/` unless stated other
 | 3 | 🔴 | **The Firmament starts with 4 planets** (Cronos, Tallin, Cronos Hollow, Tallin Hollow), because tiles 96A and 96B are both `HomeSystem(FirmamentObsidian)` and `get_starting_planets` collects every home-system tile for the faction. The wrong state is already baked into `setup_milty_import@state.snap`. **✅ Fixed.** | `common/faction.rs:175-186`, `system.rs:652-665` | ✔ |
 | 4 | 🔴 | **Some planets are in no system, so they can't be taken with a tactical action:** Thunder's Edge, Avernus, Custodia Vigilia and the Fracture planets. Mirage is special-cased; the others are not. Today the only way to give them to a player is the admin `SetPlanetOwner` event. **✅ Fixed** (Fracture planets in #1). Thunder's Edge can now be taken once the expedition has placed it (in that system), and Avernus once someone controls it (system not tracked, like Mirage). Correction: Custodia Vigilia should *not* be takeable; it has no tile and the Keleres "cannot lose" it. It should be granted with I.I.H.Q. instead (action plan E2), which is still open. | `system.rs` (no entries), `game_event_handler.rs:410` | ✔ |
 | 5 | 🟠 | **Styx has 3 resources; it should have 4** (4/0 on 4 separate wiki pages). **✅ Fixed** | `planet.rs:968` | ✔ |
-| 6 | 🟠 | **14 Thunder's Edge action cards are missing** (20 cards in total; see §2). | `action_card.rs:15-112` | |
+| 6 | 🟠 | **14 Thunder's Edge action cards are missing** (20 cards in total; see §2). **✅ Fixed**, including the Ω versions of 8 Codex I cards. | `action_card.rs:15-112` | ✔ |
 | 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
 | 8 | 🟠 | **Keleres hasn't been updated for Thunder's Edge.** The I.I.H.Q. Modernization *tech* stays enabled alongside the new I.I.H.Q. *breakthrough*. The replacement tech Executive Order is missing, Agency Supply Network has the Codex III text, and Custodia Vigilia should be 2/2 under Thunder's Edge. | `tech.rs:1026-1105`, `planet.rs:786-796` | |
 | 9 | 🟠 | **None of Thunder's Edge's updated leader cards exist:** Naalu agent, Xxcha hero, all three Yin leaders, two Keleres heroes, and the Jol-Nar commander rename. `Leader::is_enabled_in` only knows about the Codex III swaps. | `components/leaders.rs:86-115` | |
@@ -46,6 +46,8 @@ Code problems found during the audit that aren't data-vs-wiki issues are in [§9
 ## 2. Action cards (`action_card.rs`)
 
 ### Missing: Thunder's Edge cards (none of the 14 unique cards exist)
+
+**✅ Fixed.** All 14 cards exist, tagged Thunder's Edge. A Thunder's Edge game with Codex I and PoK has the 140-card deck from the wiki (checked by a unit test). The texts come from the wiki's *Action Cards* page, with obvious typos fixed ("daugfhter", "pirtaes", "hunder", "niether", "gives/shows you" in Extreme Duress, "player's hands" in Lie in Wait). Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String change tracked state (see the action plan, TE-I). The others are text only.
 
 | Card | # in deck | Timing | Effect (short) | Relevant to the app? |
 |---|---|---|---|---|
@@ -79,7 +81,7 @@ Code problems found during the audit that aren't data-vs-wiki issues are in [§9
 | Master Plan | ⚪ | "You may perform an additional action this turn." | "Perform an additional action." | `:847-854` |
 | Blitz | ⚪ | "…that do not have… gain" | "…that does not have… gains" (grammar) | `:762-768` |
 
-There's no versioning for action cards. Either switch the text when Thunder's Edge is enabled, or (simpler) always use the Ω text, since Ω cards replace the old ones.
+**✅ Fixed.** The Ω versions are separate cards (`BlitzOmega` …) tagged Thunder's Edge. `ActionCard::is_enabled_in` swaps them in when Thunder's Edge is enabled, so games without Thunder's Edge keep the Codex I wording. The Ω versions are still Codex I cards, so like the originals they need Codex I enabled. Playing a replaced version is rejected.
 
 ### Questionable internal timing categories
 
@@ -92,6 +94,7 @@ There's no versioning for action cards. Either switch the text when Thunder's Ed
 - **93 cards:** All 93 code entries (59 Base, 17 Codex I, 17 PoK) match on name, deck count, timing text and effect text.
 - **Errata:** The errata for Bribery, Direct Hit, Unstable Planet and Veto are applied.
 - **Typos only:** "Chose" in Signal Jamming (`:630`, copied from the wiki) and a missing space ".Then" in Deadly Plot (`:960`).
+- **Codex IV:** It added no action cards (its components are relics and galactic events), and Thunder's Edge removed none.
 
 ---
 

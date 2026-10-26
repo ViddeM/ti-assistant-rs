@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::expansions::Expansion;
+use crate::common::{expansions::Expansion, game_settings::Expansions};
 
 use super::phase::Phase;
 
@@ -109,7 +109,46 @@ pub enum ActionCard {
     Scuttle,
     SeizeArtifact,
     Waylay,
+    /* Thunder's Edge */
+    BlackMarketDealings,
+    Brilliance,
+    CrashLanding,
+    Crisis,
+    ExchangeProgram,
+    ExtremeDuress,
+    LieInWait,
+    MercenaryContract,
+    Overrule,
+    PirateContract,
+    PirateFleet,
+    PuppetsOnAString,
+    Rescue,
+    Strategize,
+    /* Thunder's Edge versions of Codex cards */
+    BlitzOmega,
+    CounterstrokeOmega,
+    FighterConscriptionOmega,
+    GhostSquadOmega,
+    HackElectionOmega,
+    MasterPlanOmega,
+    SolarFlareOmega,
+    WarMachineOmega,
 }
+
+/// Codex cards paired with the version Thunder's Edge replaces them with.
+const REPLACED_IN_THUNDERS_EDGE: [(ActionCard, ActionCard); 8] = [
+    (ActionCard::Blitz, ActionCard::BlitzOmega),
+    (ActionCard::Counterstroke, ActionCard::CounterstrokeOmega),
+    (
+        ActionCard::FighterConscription,
+        ActionCard::FighterConscriptionOmega,
+    ),
+    (ActionCard::GhostSquad, ActionCard::GhostSquadOmega),
+    (ActionCard::HackElection, ActionCard::HackElectionOmega),
+    (ActionCard::MasterPlan, ActionCard::MasterPlanOmega),
+    (ActionCard::SolarFlare, ActionCard::SolarFlareOmega),
+    (ActionCard::WarMachine, ActionCard::WarMachineOmega),
+];
 
 /// When an action card can be played.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -121,6 +160,7 @@ pub enum ActionCardPlay {
     Action,
     AfterActionCardIsPlayed,
     AfterStrategyCardIsPlayed,
+    EndOfTurn,
     NotImplemented,
 }
 
@@ -187,6 +227,24 @@ macro_rules! ai {
 }
 
 impl ActionCard {
+    /// Is this action card enabled for the given [Expansions]?
+    pub fn is_enabled_in(&self, expansions: &Expansions) -> bool {
+        if !expansions.is_enabled(&self.info().expansion) {
+            return false;
+        }
+
+        for (codex, omega) in &REPLACED_IN_THUNDERS_EDGE {
+            if self == codex {
+                return !expansions.thunders_edge;
+            }
+            if self == omega {
+                return expansions.is_enabled(&codex.info().expansion);
+            }
+        }
+
+        true
+    }
+
     /// Returns the [ActionCardInfo] for the action card.
     pub fn info(&self) -> ActionCardInfo {
         match self {
@@ -1084,6 +1142,266 @@ impl ActionCard {
                 r#"Hits from this roll are produced against all ships (not just fighters)."#,
                 r#"The destroyers sprayed fire with their secondary batteries as they advanced. The Mahact dreadnought began to list, fire and atmosphere gushing from a thousand tiny wounds."#
             ),
+            /* Thunder's Edge */
+            ActionCard::BlackMarketDealings => ai!(
+                ActionCard::BlackMarketDealings,
+                "Black Market Dealings",
+                Expansion::ThundersEdge,
+                1,
+                r#"When you are negotiating a transaction:"#,
+                r#"You and the other player can include relics, action cards, and unscored secret objectives as part of the transaction. This card cannot be cancelled."#,
+                r#"A chill went up Riod's spine as the Empyrean extended a clawed hand, a small black box floating in their palm, sucking up all the light and life in the room."#
+            ),
+            ActionCard::Brilliance => ai!(
+                ActionCard::Brilliance,
+                "Brilliance",
+                Expansion::ThundersEdge,
+                1,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Ready 1 of your planets that has a technology specialty or choose 1 player to gain their breakthrough."#,
+                r#"Crocoan gently stroked the bloodied feathers of the screeching cir-le-sh. Such a beautiful song. At last, he'd cracked the code. Soon, Garanthis would be filled with a chorus of such soulful music."#
+            ),
+            ActionCard::CrashLanding => ai!(
+                ActionCard::CrashLanding,
+                "Crash Landing",
+                Expansion::ThundersEdge,
+                1,
+                r#"When your last ship in the active system is destroyed:"#,
+                r#"Place 1 of your ground forces from the space area of the active system onto a planet in that system other than Mecatol Rex; if the planet contains other players' units, place your ground force into coexistence."#,
+                r#"The Long Fall spiraled toward the surface of the rocky planet. Living up to its name, Connor thought dryly."#
+            ),
+            ActionCard::Crisis => ai!(
+                ActionCard::Crisis,
+                "Crisis",
+                Expansion::ThundersEdge,
+                1,
+                r#"At the end of any player's turn, if there are at least 2 players who have not passed:"#,
+                ActionCardPlay::EndOfTurn,
+                r#"Skip the next player's turn."#,
+                r#"4X41A "Apollo" shrieked in the skies of Ordinian. Blazing shards of metal and fire rained down upon the planet's surface - the remains of Nekro whose atoms were undergoing a rapid and violent disintegration."#
+            ),
+            ActionCard::ExchangeProgram => ai!(
+                ActionCard::ExchangeProgram,
+                "Exchange Program",
+                Expansion::ThundersEdge,
+                1,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Choose another player. You and the player may agree to place 1 infantry from each of your reinforcements into coexistence on a planet the other player controls that contains their ground forces; if no agreement is reached, you each discard 1 token from your fleet pool."#,
+                r#"Madness. Magmus thought to himself. A city. Under water. Absurd."#
+            ),
+            ActionCard::ExtremeDuress => ai!(
+                ActionCard::ExtremeDuress,
+                "Extreme Duress",
+                Expansion::ThundersEdge,
+                1,
+                r#"At the start of another player's turn, if they have a readied strategy card:"#,
+                r#"If that player's next action is not a strategic action, they discard all of their action cards, give you all of their trade goods, and show you all of their secret objectives."#,
+                r#"Kan Kip Rel tugged nervously at his collar, fingering the explosive device he knew was there."#
+            ),
+            ActionCard::LieInWait => ai!(
+                ActionCard::LieInWait,
+                "Lie in Wait",
+                Expansion::ThundersEdge,
+                1,
+                r#"After 2 of your neighbors resolve a transaction:"#,
+                r#"Look at each of those players' hands of action cards, then choose and take 1 action card from each."#,
+                r#"Suffi sauntered towards the huddle of paralyzed Hylar, whistling and twirling her pistols as she walked. "I'll be taking these," she said, flashing a grin, and snatched the humming data drives from each of them in turn."#
+            ),
+            ActionCard::MercenaryContract => ai!(
+                ActionCard::MercenaryContract,
+                "Mercenary Contract",
+                Expansion::ThundersEdge,
+                1,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Spend 2 trade goods to place 2 neutral infantry on any non-home planet that contains no units; if that planet was owned by another player, they return its planet card to the planet card deck."#,
+                r#""Just sign right here - yep, right below the smeared blood. You got it, champ, get at 'em.""#
+            ),
+            ActionCard::Overrule => ai!(
+                ActionCard::Overrule,
+                "Overrule",
+                Expansion::ThundersEdge,
+                1,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Perform the primary ability of any readied or unchosen strategy card."#,
+                r#"Treilla absentmindedly smiled at the audacity of the newly promoted commander. Making waves like this - he'd likely be dead or demoted within a day or two. Still, she found the posturing... amusing."#
+            ),
+            ActionCard::PirateContract => ai!(
+                ActionCard::PirateContract,
+                "Pirate Contract",
+                Expansion::ThundersEdge,
+                4,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Place 1 neutral destroyer in a non-home system that contains no non-neutral ships."#,
+                r#"(1) Suffi accepted the contract, swearing her solemn vow that she would see the viceroy's daughter kidnapped and held for ransom by the day's end.(2) Suffi accepted the contract, swearing her solemn vow as one of Mogar's Raiders that she would be loyal to the crew above all else.(3) Suffi accepted the contract, swearing her solemn vow as a member of the Shadowscald that the job would be completed, one way or another.(4) Satisfied, Suffi cashed in her contracts, wondering how long it would take any of them to notice she was gone. After all, it was much too late, with any luck."#
+            ),
+            ActionCard::PirateFleet => ai!(
+                ActionCard::PirateFleet,
+                "Pirate Fleet",
+                Expansion::ThundersEdge,
+                1,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Spend 3 resources to place 1 neutral carrier, 1 neutral cruiser, 1 neutral destroyer, and 2 neutral fighters in a non-home system that contains no non-neutral ships."#,
+                r#"Felix rubbed his temples as the pirates - well, the other pirates - blipped one by one on the ship's scanner. It was going to be a very long day."#
+            ),
+            ActionCard::PuppetsOnAString => ai!(
+                ActionCard::PuppetsOnAString,
+                "Puppets on a String",
+                Expansion::ThundersEdge,
+                1,
+                r#"At the end of any player's turn, if you have passed:"#,
+                ActionCardPlay::EndOfTurn,
+                r#"Perform 1 action."#,
+                r#"A red light flashed as the pile that was once thought to be destroyed remains of unit.dsgn.ASTAROTH came once more to life. "YOU THOUGHT. YOU BELIEVED YOUR VICTORY SECURE. BUT YOU WERE WRONG.""#
+            ),
+            ActionCard::Rescue => ai!(
+                ActionCard::Rescue,
+                "Rescue",
+                Expansion::ThundersEdge,
+                1,
+                r#"After another player moves ships into a system that contains your ships:"#,
+                r#"You may move 1 of your ships into the active system from any system that does not contain one of your command tokens."#,
+                r#""Hold on..." Tuck pleaded. "We are coming. Hold on, please...""#
+            ),
+            ActionCard::Strategize => ai!(
+                ActionCard::Strategize,
+                "Strategize",
+                Expansion::ThundersEdge,
+                4,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Perform the secondary ability of any readied or unchosen strategy card."#,
+                r#"(1) Sweat dripped down Mathis' brow. To show weakness now would mean defeat. Death would be preferable to that. But then, as if the divine providence of the Lazax were within her, she saw something she had overlooked. An opening! Her hand darted forward as she made her play. She smirked.(2) Strategy. What meaning could be derived from the word, what flesh could be sucked clean off its bones? There was a spark, almost like remembering, but it faded. Violently.(3) No, there would be no strategy here, only hunger. Life, blood, love, life, fear, fear, fear. Let the ants mill about with their strategies. No strategy would avail them today.(4) Kyver stared at Mathis in the eye, unblinking. For a time, neither made a move. The greens and browns of Kyver's eyes were impassive. They betrayed nothing of his intent. Nothing of his past or his future. They were but windows to the wild, unforgiving jungles of Retillion."#
+            ),
+            /* Thunder's Edge versions of Codex cards */
+            ActionCard::BlitzOmega => ai!(
+                ActionCard::BlitzOmega,
+                "Blitz Ω",
+                Expansion::ThundersEdge,
+                1,
+                r#"At the start of an invasion:"#,
+                r#"Each of your non-fighter ships in the active system that does not have BOMBARDMENT gains BOMBARDMENT 6 until the end of the invasion."#,
+                r#""T-these weren't meant to be used like this. T-this is a t-terrible idea." Tai mumbled, wringing his hands. "Well 'course it is," Dart grinned, slamming his fist down on the release lock. "But we've got about sixty kilotons of 'surprise' and nothing to lose!""#
+            ),
+            ActionCard::CounterstrokeOmega => ai!(
+                ActionCard::CounterstrokeOmega,
+                "Counterstroke Ω",
+                Expansion::ThundersEdge,
+                1,
+                r#"After another player activates a system that contains 1 of your command tokens:"#,
+                r#"Return that command token to your tactic pool."#,
+                r#""That's the thing about loyalty - " Viktor mused, turning one of the pieces backward, facing its own side. "It can be bought.""#
+            ),
+            ActionCard::FighterConscriptionOmega => ai!(
+                ActionCard::FighterConscriptionOmega,
+                "Fighter Conscription Ω",
+                Expansion::ThundersEdge,
+                1,
+                r#"As an Action:"#,
+                ActionCardPlay::Action,
+                r#"Place 1 fighter from your reinforcements in each system that contains 1 or more of your space docks or ships that have a capacity value; they cannot be placed in systems that contain other players' ships."#,
+                r#"T'esla grinned as her shimmering vessel lifted off the flight deck - at last, that damned Viscount would experience the superiority of Naalu dogfighting. "Get ready," she hissed into the comms."#
+            ),
+            ActionCard::GhostSquadOmega => ai!(
+                ActionCard::GhostSquadOmega,
+                "Ghost Squad Ω",
+                Expansion::ThundersEdge,
+                1,
+                r#"After another player commits units to land on a planet you control:"#,
+                r#"Move any number of ground forces from any planet you control in the active system to any other planet you control in the active system."#,
+                r#"The L1 advance team was expecting to find the outpost abandoned. What they found - unfortunately for them - was Connor."#
+            ),
+            ActionCard::HackElectionOmega => ai!(
+                ActionCard::HackElectionOmega,
+                "Hack Election Ω",
+                Expansion::ThundersEdge,
+                1,
+                r#"After an agenda is revealed:"#,
+                ActionCardPlay::Agenda(AgendaStagePlay::AfterReveal),
+                r#"During this agenda, you vote last."#,
+                r#"YOUR [NULL ID] STATELY GAME WILL BE FOR NAUGHT<<[VAR:42687] ORDER WILL ARISE FROM [VAR:89001] CHAOS<< IT IS OUR HAND THAT CONTROLS THE OUTCOME"#
+            ),
+            ActionCard::MasterPlanOmega => ai!(
+                ActionCard::MasterPlanOmega,
+                "Master Plan Ω",
+                Expansion::ThundersEdge,
+                1,
+                r#"After you perform an action:"#,
+                ActionCardPlay::AfterActionCardIsPlayed,
+                r#"Perform an additional action."#,
+                r#"Viktor laced his long fingers with a wicked smile. Unlenn would be proud. The tactician's reputation was well-earned; even pawns could unseat kings."#
+            ),
+            ActionCard::SolarFlareOmega => ai!(
+                ActionCard::SolarFlareOmega,
+                "Solar Flare Ω",
+                Expansion::ThundersEdge,
+                1,
+                r#"After you activate a system:"#,
+                r#"During the "Movement" step of this tactical action, other players cannot use SPACE CANNON against your ships."#,
+                r#"Meian braced for combat as the fleet entered the Ordinian system, but there were no Valefar droneships waiting to meet them. The solar flare gambit had succeeded - they were completely undetected."#
+            ),
+            ActionCard::WarMachineOmega => ai!(
+                ActionCard::WarMachineOmega,
+                "War Machine Ω",
+                Expansion::ThundersEdge,
+                4,
+                r#"When 1 or more of your units use PRODUCTION:"#,
+                r#"Apply +4 to the total PRODUCTION value of those units and reduce the combined cost of the produced units by 1."#,
+                r#"(1) "This would take weeks to replace if you had run it backwards," Varish called as she rotated the massive capacitor bank. "Okay, fire it up."(2) The station vibrated as the device sputtered to life, emitting a high-pitched buzz to Varish's ears. "Micro-wormholes are cycling at 19 kilohertz," Cole read. "The entropic field tap's stable."(3) The station's production facilities spooled up to new intensities, lights flaring as the assembly line drones increased their speeds to keep up.(4) "Varish, let the Commanders know they can contact the Tetrarchy. Tell them the fighter squadron assembly will be done ahead of schedule, and under budget.""#
+            ),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use strum::IntoEnumIterator;
+
+    use super::*;
+
+    #[test]
+    fn thunders_edge_replaces_codex_cards() {
+        for (codex_1, thunders_edge) in [(false, false), (true, false), (false, true), (true, true)]
+        {
+            let expansions = Expansions {
+                codex_1,
+                thunders_edge,
+                ..Default::default()
+            };
+
+            for (codex, omega) in REPLACED_IN_THUNDERS_EDGE {
+                assert_eq!(
+                    codex.is_enabled_in(&expansions),
+                    codex_1 && !thunders_edge,
+                    "{codex:?} with codex_1: {codex_1}, thunders_edge: {thunders_edge}"
+                );
+                assert_eq!(
+                    omega.is_enabled_in(&expansions),
+                    codex_1 && thunders_edge,
+                    "{omega:?} with codex_1: {codex_1}, thunders_edge: {thunders_edge}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn thunders_edge_deck_has_140_cards() {
+        let expansions = Expansions {
+            prophecy_of_kings: true,
+            codex_1: true,
+            thunders_edge: true,
+            ..Default::default()
+        };
+        let deck_size: usize = ActionCard::iter()
+            .filter(|card| card.is_enabled_in(&expansions))
+            .map(|card| card.info().num_in_deck)
+            .sum();
+
+        assert_eq!(deck_size, 140);
     }
 }

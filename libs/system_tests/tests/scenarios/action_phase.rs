@@ -400,7 +400,8 @@ pub fn action_strategic_politics_and_imperial() -> TestGame {
     g
 }
 
-/// Action cards that change technologies, plus cards that can't be played as actions.
+/// Action cards that change technologies, plus cards that can't be played as actions or need
+/// Thunder's Edge.
 pub fn action_cards() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     let begin = |player: &str, card: ActionCard| Event::ActionCardActionBegin {
@@ -416,6 +417,10 @@ pub fn action_cards() -> TestGame {
         .expect_rejected(
             begin("Alice", ActionCard::Sabotage),
             "cannot be played as an action",
+        )
+        .expect_rejected(
+            begin("Alice", ActionCard::FighterConscriptionOmega),
+            "not available",
         )
         .action_card(
             ActionCard::FocusedResearch,

@@ -591,6 +591,15 @@ impl GameState {
         Ok(())
     }
 
+    /// Asserts that the provided action card is available with the enabled expansions, i.e. that
+    /// its expansion is enabled and that it hasn't been replaced by a newer version.
+    pub fn assert_action_card_enabled(&self, card: &ActionCard) -> anyhow::Result<()> {
+        if !card.is_enabled_in(&self.game_settings.expansions) {
+            bail!("{card:?} is not available with the enabled expansions");
+        }
+        Ok(())
+    }
+
     /// Asserts that the configured expansions is valid for the provided action.
     pub fn assert_action_expansion(&self, action: &StrategicPrimaryAction) -> anyhow::Result<()> {
         match action {

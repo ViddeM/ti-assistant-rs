@@ -741,7 +741,7 @@ fn try_update_game_state(
         Event::ActionCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
-            game_state.assert_expansion(&card.info().expansion)?;
+            game_state.assert_action_card_enabled(&card)?;
 
             let card_info = card.info();
             ensure!(

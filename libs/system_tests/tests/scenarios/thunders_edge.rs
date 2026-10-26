@@ -1,4 +1,4 @@
-//! Thunder's Edge: committing to the expedition at the end of a turn and completing it.
+//! Thunder's Edge: the expedition, The Obsidian, its planets and its action cards.
 
 use ti_helper_game_data::{
     components::breakthrough::Breakthrough,
@@ -17,6 +17,7 @@ scenarios![
     thunders_edge_admin_flow,
     firmament_becomes_obsidian,
     thunders_edge_take_planets_without_tile,
+    thunders_edge_action_cards,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -485,4 +486,25 @@ fn the_obsidian_flips_the_map_tile() {
     g.apply(Event::PuppetsOfTheBlade { player: p("Eve") });
     assert!(!systems(&g).contains(&"96A".to_string()));
     assert!(systems(&g).contains(&"96B".to_string()));
+}
+
+fn begin_action_card(player: &str, card: ActionCard) -> Event {
+    Event::ActionCardActionBegin {
+        player: p(player),
+        card,
+    }
+}
+
+/// The Ω versions of the Codex cards replace the old ones.
+pub fn thunders_edge_action_cards() -> TestGame {
+    let mut g = action_phase(three_players().pok().codex().thunders_edge());
+
+    g.turn("Alice")
+        .expect_rejected(
+            begin_action_card("Alice", ActionCard::FighterConscription),
+            "not available",
+        )
+        .action_card(ActionCard::FighterConscriptionOmega, None)
+        .end_turn();
+    g
 }

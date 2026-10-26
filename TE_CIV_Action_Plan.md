@@ -166,9 +166,9 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 ### TE-I Action cards
 
-First add the 14 missing cards as data (mismatches §2) and the Ω wording. Most of them are **Info**. These touch tracked state:
+✅ The 14 cards and the Ω versions of the 8 Codex I cards are in (mismatches §2). The Ω versions replace the Codex I cards when Thunder's Edge is enabled (`ActionCard::is_enabled_in`). Codex IV has no action cards. Most of the new cards are **Info**. These touch tracked state:
 
-| Card | Verdict | Plan | P / Effort |
+| Card | Verdict | Status | P / Effort |
 |---|---|---|---|
 | **Brilliance** (choose a player to gain their breakthrough) | Track | `ActionCardAction::Brilliance { player: Option<PlayerId> }` (None = the "ready a planet" option) → E2. | P2 / S |
 | **Overrule** (perform the primary of a readied or unchosen strategy card) / **Strategize** (perform the secondary) | Track | Only Technology, Politics and Imperial have tracked effects. `ActionCardAction::Overrule { card, primary: StrategicPrimaryAction }` / `Strategize { card, secondary: StrategicSecondaryAction }`, reusing the primary/secondary handlers (pull them out of the `StrategicActionPrimary/Secondary` match arms into functions). Validate that the card is unchosen or readied. | P2 / M |
@@ -176,7 +176,8 @@ First add the 14 missing cards as data (mismatches §2) and the Ω wording. Most
 | **Puppets on a String** (a passed player performs 1 action at the end of any player's turn) | Track | `PerformExtraAction { player }` makes the passed player current for one action, then the normal order resumes. Touches turn/time logic; do it after Crisis. | P3 / M |
 | **Mercenary Contract** (the planet's owner returns the planet card) | Assist | `ActionCardAction::MercenaryContract { planet }` → remove the owner. | P3 / S |
 | Black Market Dealings | Assist | Relics can change hands → E4 (admin). | — |
-| Crash Landing, Exchange Program, Extreme Duress, Lie in Wait, Pirate Contract/Fleet, Rescue | Info | — | — |
+| Crash Landing, Exchange Program, Extreme Duress, Lie in Wait, Pirate Contract/Fleet, Rescue | Info | ✅ Data only. | — |
+| Hack Election Ω ("you vote last") | Info | ✅ Data only; voting order isn't enforced. | — |
 
 ### TE-J Map
 
@@ -442,7 +443,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - E5 victory target.
    - TE-H strategy card images and hint.
    - TE-E-1 leader updates, TE-F1 Keleres.
-   - The 14 action cards (data only) and the Ω wording.
+   - ✅ The 14 action cards (data only) and the Ω wording.
 2. **Core TE effects (P1/P2).**
    - E2/E3/E4 helpers.
    - A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C1 Styx, C2 Jupiter Brain, D1 Quantumcore, CIV-1 Book of Latvinia.

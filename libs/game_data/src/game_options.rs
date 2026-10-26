@@ -111,7 +111,7 @@ impl GameOptions {
                 .filter(|tech| tech.is_enabled_in(expansions))
                 .collect(),
             action_cards: ActionCard::iter()
-                .filter(|card| expansions.is_enabled(&card.info().expansion))
+                .filter(|card| card.is_enabled_in(expansions))
                 .collect(),
             agendas: Agenda::iter()
                 .filter(|agenda| expansions.is_enabled(&agenda.info().expansion))
