@@ -37,7 +37,8 @@ mod tests {
     use std::fmt::Debug;
 
     use crate::components::{
-        action_card::ActionCard, agenda::Agenda, leaders::Leader, planet::Planet,
+        action_card::ActionCard, agenda::Agenda, frontier_card::FrontierCard, leaders::Leader,
+        planet::Planet, planet_attachment::PlanetAttachment, relic::Relic,
         strategy_card::StrategyCardVersion, tech::Technology,
     };
 
@@ -125,5 +126,20 @@ mod tests {
     #[test]
     fn agenda_versions_are_consistent() {
         check_versions::<Agenda>();
+    }
+
+    #[test]
+    fn relic_versions_are_consistent() {
+        check_versions::<Relic>();
+    }
+
+    #[test]
+    fn frontier_card_versions_are_consistent() {
+        check_versions::<FrontierCard>();
+    }
+
+    #[test]
+    fn planet_attachment_versions_are_consistent() {
+        check_versions::<PlanetAttachment>();
     }
 }

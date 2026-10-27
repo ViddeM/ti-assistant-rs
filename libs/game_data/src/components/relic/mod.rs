@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::expansions::Expansion;
+use crate::common::{expansions::Expansion, versions::Versioned};
 
 #[derive(
     Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
@@ -37,6 +37,16 @@ pub enum Relic {
     CircletOfTheVoid,
     BookOfLatvinia,
     Neuraloop,
+}
+
+impl Versioned for Relic {
+    const REQUIRES: Expansion = Expansion::ProphecyOfKings;
+
+    const VERSIONS: &'static [&'static [Self]] = &[];
+
+    fn expansion(&self) -> Expansion {
+        self.info().expansion
+    }
 }
 
 impl PartialOrd for Relic {

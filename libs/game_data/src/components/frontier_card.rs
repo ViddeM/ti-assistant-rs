@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::expansions::Expansion;
+use crate::common::{expansions::Expansion, versions::Versioned};
 
 /// A frontier card.
 #[derive(
@@ -25,6 +25,16 @@ pub enum FrontierCard {
     KeleresShip,
     MajorEntropicField,
     MinorEntropicField,
+}
+
+impl Versioned for FrontierCard {
+    const REQUIRES: Expansion = Expansion::ProphecyOfKings;
+
+    const VERSIONS: &'static [&'static [Self]] = &[];
+
+    fn expansion(&self) -> Expansion {
+        self.info().expansion
+    }
 }
 
 impl PartialOrd for FrontierCard {

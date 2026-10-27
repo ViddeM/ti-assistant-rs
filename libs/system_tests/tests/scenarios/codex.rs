@@ -156,7 +156,7 @@ fn codex_iv_relics_need_codex_iv() {
             player: p("Alice"),
             relic: Relic::Neuraloop,
         },
-        "Expansion is not enabled",
+        "not available",
     );
 }
 

@@ -885,7 +885,7 @@ fn try_update_game_state(
         Event::FrontierCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
-            game_state.assert_expansion(&card.info().expansion)?;
+            game_state.assert_enabled(&card)?;
             ensure!(
                 card.info().frontier_type == FrontierCardType::Action,
                 "Only able to play frontier card actions during action phase"
@@ -980,7 +980,7 @@ fn try_update_game_state(
         Event::GainRelicAction { player, relic } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
-            game_state.assert_expansion(&relic.info().expansion)?;
+            game_state.assert_enabled(&relic)?;
             ensure!(
                 !game_state
                     .players
@@ -1007,7 +1007,7 @@ fn try_update_game_state(
         Event::RelicActionBegin { player, relic } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
-            game_state.assert_expansion(&relic.info().expansion)?;
+            game_state.assert_enabled(&relic)?;
             ensure!(
                 relic.info().play == RelicPlay::Action,
                 "Only able to play relic actions during action phase"
@@ -1426,7 +1426,7 @@ fn try_update_game_state(
             replacement,
         } => {
             game_state.assert_phase(Phase::Status)?;
-            game_state.assert_expansion(&Relic::Neuraloop.info().expansion)?;
+            game_state.assert_enabled(&Relic::Neuraloop)?;
             game_state.assert_expansion(&replacement.info().expansion)?;
 
             let Some(p) = game_state.players.get(&player) else {
@@ -1487,7 +1487,7 @@ fn try_update_game_state(
         Event::PlayCrownOfEmphidia { player } => {
             game_state.assert_phase(Phase::Relics)?;
 
-            game_state.assert_expansion(&Relic::TheCrownOfEmphidia.info().expansion)?;
+            game_state.assert_enabled(&Relic::TheCrownOfEmphidia)?;
 
             let Some(p) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist");
@@ -1512,7 +1512,7 @@ fn try_update_game_state(
         Event::PlayMawOfWorlds { player, tech } => {
             game_state.assert_phase(Phase::Relics)?;
 
-            game_state.assert_expansion(&Relic::MawOfWorlds.info().expansion)?;
+            game_state.assert_enabled(&Relic::MawOfWorlds)?;
             game_state.assert_enabled(&tech)?;
 
             let Some(player) = game_state.players.get_mut(&player) else {

@@ -92,8 +92,8 @@ impl GameOptions {
                 .map(|p| (p.clone(), p.info()))
                 .collect(),
             planet_attachments: PlanetAttachment::iter()
+                .filter(|attachment| attachment.is_enabled_in(expansions))
                 .map(|a| (a.clone(), a.info()))
-                .filter(|(_, info)| expansions.is_enabled(&info.expansion))
                 .collect(),
             objectives: PublicObjective::iter()
                 .map(Objective::from)
@@ -118,10 +118,10 @@ impl GameOptions {
                 }),
             leaders,
             frontier_cards: FrontierCard::iter()
-                .filter(|card| expansions.is_enabled(&card.info().expansion))
+                .filter(|card| card.is_enabled_in(expansions))
                 .collect(),
             relics: Relic::iter()
-                .filter(|relic| expansions.is_enabled(&relic.info().expansion))
+                .filter(|relic| relic.is_enabled_in(expansions))
                 .collect(),
         }
     }
