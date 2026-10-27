@@ -732,7 +732,7 @@ fn RelicPointRows() -> Element {
             .map(|(id, p)| (id.clone(), p.clone()))
             .collect::<Vec<_>>();
 
-        players.sort_by(|(a, _), (b, _)| a.cmp(b));
+        players.sort_by_key(|(p, _)| p.to_lowercase());
         players
     });
 
