@@ -56,6 +56,7 @@ source: libs/system_tests/src/check.rs
   52 CastAgendaVote(Carol)                    r1 Agenda             Bob
   53 CastAgendaVote(Alice)                    r1 Agenda             Bob
   54 ResolveAgenda                            r1 Agenda             Bob        Alice=2
-  55 RevealAgenda                             r1 Agenda             Bob
-  56 CastAgendaVote(Bob)                      r1 Agenda             Bob
-  57 ResolveAgenda                            r1 Agenda             Bob
+  55 SetPlanetOwner                           r1 Agenda             Bob        Alice=1
+  56 RevealAgenda                             r1 Agenda             Bob
+  57 CastAgendaVote(Bob)                      r1 Agenda             Bob
+  58 ResolveAgenda                            r1 Agenda             Bob

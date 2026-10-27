@@ -22,7 +22,6 @@ players:
     color: Pink
     planets:
       Jord: []
-      Quann: []
     technologies:
       - AntimassDeflectors
       - NeuralMotivator
@@ -76,7 +75,7 @@ actionProgress: ~
 score:
   maxPoints: 10
   playerPoints:
-    Alice: 2
+    Alice: 1
     Bob: 0
     Carol: 0
   revealedObjectives:

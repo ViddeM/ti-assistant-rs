@@ -307,6 +307,11 @@ pub fn agenda_elect_planet_with_trait() -> TestGame {
         });
     assert_eq!(g.state().laws.get(&Agenda::HolyPlanetOfIxth), Some(&quann));
     assert_eq!(g.points("Alice"), alice_points + 1);
+    g.apply(Event::SetPlanetOwner {
+        player: None,
+        planet: Planet::Quann,
+    });
+    assert_eq!(g.points("Alice"), alice_points);
 
     let wellon = AgendaElect::IndustrialPlanet(Planet::Wellon);
     g.agenda(Agenda::ResearchTeamCybernetic);

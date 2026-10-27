@@ -575,8 +575,7 @@ fn AgendaScoreRow(
                 .iter()
                 .find(|(_, p)| p.planets.contains_key(&planet))
                 .map(|(id, _)| id)
-                .cloned()
-                .expect("Planet owner to exist");
+                .cloned();
 
             rsx! {
                 {heading(Agenda::HolyPlanetOfIxth)}
@@ -585,7 +584,7 @@ fn AgendaScoreRow(
                         players
                             .iter()
                             .map(|p| {
-                                let score = if planet_owner.eq(p) { 1 } else { 0 };
+                                let score = if planet_owner.as_ref() == Some(p) { 1 } else { 0 };
                                 rsx! {
                                     td { key: "{p}", class: "align-center", "{score}" }
                                 }
