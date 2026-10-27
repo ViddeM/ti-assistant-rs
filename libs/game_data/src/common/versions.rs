@@ -4,8 +4,8 @@ use super::{expansions::Expansion, game_settings::Expansions};
 pub trait Versioned: PartialEq + Sized + 'static {
     /// An expansion every component of this kind needs on top of its own.
     const REQUIRES: Expansion = Expansion::Base;
-    /// The versions of each component that has more than one, oldest first.
-    const VERSIONS: &'static [&'static [Self]];
+    /// The versions of each component that newer versions replace, written with `replacements!`.
+    const REPLACEMENTS: &'static [Chain<Self>] = &[];
     /// Components that an expansion removes without a replacement.
     const REMOVED: &'static [(Self, Expansion)] = &[];
 
@@ -14,23 +14,83 @@ pub trait Versioned: PartialEq + Sized + 'static {
 
     /// Whether this version is in play with the provided expansions.
     fn is_enabled_in(&self, expansions: &Expansions) -> bool {
-        expansions.is_enabled(&Self::REQUIRES)
-            && expansions.is_enabled(&self.expansion())
-            && !Self::REMOVED
-                .iter()
-                .any(|(component, expansion)| component == self && expansions.is_enabled(expansion))
-            && Self::VERSIONS
-                .iter()
-                .find(|versions| versions.contains(self))
-                .is_none_or(|versions| {
-                    expansions.is_enabled(&versions[0].expansion())
-                        && versions
-                            .iter()
-                            .rfind(|version| expansions.is_enabled(&version.expansion()))
-                            == Some(self)
-                })
+        if !expansions.is_enabled(&Self::REQUIRES) {
+            // The component hasn't been introduced in these expansions.
+            return false;
+        }
+
+        if !expansions.is_enabled(&self.expansion()) {
+            // The component hasn't been introduced in these expansions.
+            return false;
+        }
+
+        if Self::REMOVED
+            .iter()
+            .filter(|(component, _)| component == self)
+            .any(|(_, expansion)| expansions.is_enabled(expansion))
+        {
+            // The component has been removed in one of the enabled expansions.
+            return false;
+        }
+
+        if let Some(chain) = Self::REPLACEMENTS.iter().find(|chain| chain.contains(self)) {
+            // The component is part of a replacement chain; check that this is the version that is in play given the current expansions.
+            return chain.in_play(expansions) == Some(self);
+        }
+
+        true
     }
 }
+
+/// The versions of a component, from the oldest to the newest.
+#[derive(Debug)]
+pub struct Chain<T: 'static>(&'static [T]);
+
+impl<T: 'static> Chain<T> {
+    pub(crate) const fn new(versions: &'static [T]) -> Self {
+        Self(versions)
+    }
+}
+
+impl<T: Versioned> Chain<T> {
+    /// The first version of the component.
+    pub fn oldest(&self) -> &T {
+        &self.0[0]
+    }
+
+    /// The versions of the component, from the newest to the oldest.
+    pub fn newest_first(&self) -> impl Iterator<Item = &T> {
+        self.0.iter().rev()
+    }
+
+    /// Whether the provided component is one of these versions.
+    fn contains(&self, component: &T) -> bool {
+        self.0.contains(component)
+    }
+
+    /// The newest version that comes with the provided expansions, or none if the component hasn't been introduced in any of them.
+    fn in_play(&self, expansions: &Expansions) -> Option<&T> {
+        if !expansions.is_enabled(&self.oldest().expansion()) {
+            return None;
+        }
+        self.newest_first()
+            .find(|version| expansions.is_enabled(&version.expansion()))
+    }
+}
+
+/// Defines `REPLACEMENTS` from chains of versions written `Old -> New`.
+macro_rules! replacements {
+    ($(
+        $first:ident $(($($first_args:tt)*))? $(-> $next:ident $(($($next_args:tt)*))?)+
+    ),* $(,)?) => {
+        const REPLACEMENTS: &'static [$crate::common::versions::Chain<Self>] = &[$(
+            $crate::common::versions::Chain::new(&[
+                Self::$first $(($($first_args)*))? $(, Self::$next $(($($next_args)*))?)+
+            ])
+        ),*];
+    };
+}
+pub(crate) use replacements;
 
 #[cfg(test)]
 mod tests {
@@ -56,34 +116,35 @@ mod tests {
     }
 
     fn check_versions<T: Versioned + Debug>() {
-        for (i, versions) in T::VERSIONS.iter().enumerate() {
+        for (i, chain) in T::REPLACEMENTS.iter().enumerate() {
+            let versions: Vec<&T> = chain.newest_first().collect();
             for (j, version) in versions.iter().enumerate() {
                 for other in &versions[j + 1..] {
-                    assert_ne!(version, other, "{versions:?}");
-                    assert_ne!(version.expansion(), other.expansion(), "{versions:?}");
+                    assert_ne!(version, other, "{chain:?}");
+                    assert_ne!(version.expansion(), other.expansion(), "{chain:?}");
                 }
-                for other in &T::VERSIONS[i + 1..] {
+                for other in &T::REPLACEMENTS[i + 1..] {
                     assert!(!other.contains(version), "{version:?} is in two chains");
                 }
             }
         }
 
         for expansions in all_expansions() {
-            for versions in T::VERSIONS {
-                let in_play = versions
-                    .iter()
+            for chain in T::REPLACEMENTS {
+                let in_play = chain
+                    .newest_first()
                     .filter(|version| version.is_enabled_in(&expansions))
                     .count();
-                assert!(in_play <= 1, "{versions:?} with {expansions:?}");
+                assert!(in_play <= 1, "{chain:?} with {expansions:?}");
 
                 let removed = T::REMOVED.iter().any(|(component, expansion)| {
-                    versions.contains(component) && expansions.is_enabled(expansion)
+                    chain.contains(component) && expansions.is_enabled(expansion)
                 });
                 if expansions.is_enabled(&T::REQUIRES)
-                    && expansions.is_enabled(&versions[0].expansion())
+                    && expansions.is_enabled(&chain.oldest().expansion())
                     && !removed
                 {
-                    assert_eq!(in_play, 1, "{versions:?} with {expansions:?}");
+                    assert_eq!(in_play, 1, "{chain:?} with {expansions:?}");
                 }
             }
 

@@ -315,8 +315,6 @@ impl PlanetAttachment {
 impl Versioned for PlanetAttachment {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
-    const VERSIONS: &'static [&'static [Self]] = &[];
-
     fn expansion(&self) -> Expansion {
         self.info().expansion
     }

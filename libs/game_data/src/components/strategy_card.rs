@@ -2,7 +2,11 @@ use serde::{Deserialize, Serialize};
 use strum::{EnumString, IntoEnumIterator};
 use strum_macros::{Display, EnumIter};
 
-use crate::common::{expansions::Expansion, game_settings::Expansions, versions::Versioned};
+use crate::common::{
+    expansions::Expansion,
+    game_settings::Expansions,
+    versions::{Versioned, replacements},
+};
 
 /// A strategy card.
 #[derive(
@@ -117,21 +121,11 @@ impl StrategyCardVersion {
 }
 
 impl Versioned for StrategyCardVersion {
-    const VERSIONS: &'static [&'static [Self]] = &[
-        &[
-            StrategyCardVersion::Diplomacy,
-            StrategyCardVersion::DiplomacyOmega,
-        ],
-        &[
-            StrategyCardVersion::Construction,
-            StrategyCardVersion::ConstructionOmega,
-            StrategyCardVersion::ConstructionOmegaOmega,
-        ],
-        &[
-            StrategyCardVersion::Warfare,
-            StrategyCardVersion::WarfareOmega,
-        ],
-    ];
+    replacements! {
+        Diplomacy -> DiplomacyOmega,
+        Construction -> ConstructionOmega -> ConstructionOmegaOmega,
+        Warfare -> WarfareOmega,
+    }
 
     fn expansion(&self) -> Expansion {
         match self {

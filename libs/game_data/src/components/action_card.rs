@@ -2,7 +2,10 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::{expansions::Expansion, versions::Versioned};
+use crate::common::{
+    expansions::Expansion,
+    versions::{Versioned, replacements},
+};
 
 use super::phase::Phase;
 
@@ -227,19 +230,16 @@ macro_rules! ai {
 }
 
 impl Versioned for ActionCard {
-    const VERSIONS: &'static [&'static [Self]] = &[
-        &[ActionCard::Blitz, ActionCard::BlitzOmega],
-        &[ActionCard::Counterstroke, ActionCard::CounterstrokeOmega],
-        &[
-            ActionCard::FighterConscription,
-            ActionCard::FighterConscriptionOmega,
-        ],
-        &[ActionCard::GhostSquad, ActionCard::GhostSquadOmega],
-        &[ActionCard::HackElection, ActionCard::HackElectionOmega],
-        &[ActionCard::MasterPlan, ActionCard::MasterPlanOmega],
-        &[ActionCard::SolarFlare, ActionCard::SolarFlareOmega],
-        &[ActionCard::WarMachine, ActionCard::WarMachineOmega],
-    ];
+    replacements! {
+        Blitz -> BlitzOmega,
+        Counterstroke -> CounterstrokeOmega,
+        FighterConscription -> FighterConscriptionOmega,
+        GhostSquad -> GhostSquadOmega,
+        HackElection -> HackElectionOmega,
+        MasterPlan -> MasterPlanOmega,
+        SolarFlare -> SolarFlareOmega,
+        WarMachine -> WarMachineOmega,
+    }
 
     fn expansion(&self) -> Expansion {
         self.info().expansion
@@ -1378,9 +1378,9 @@ mod tests {
                 ..Default::default()
             };
 
-            for versions in ActionCard::VERSIONS {
-                let [codex, omega] = versions else {
-                    panic!("{versions:?} should be a Codex card and its Ω version");
+            for chain in ActionCard::REPLACEMENTS {
+                let [omega, codex] = chain.newest_first().collect::<Vec<_>>()[..] else {
+                    panic!("{chain:?} should be a Codex card and its Ω version");
                 };
                 assert_eq!(
                     codex.is_enabled_in(&expansions),

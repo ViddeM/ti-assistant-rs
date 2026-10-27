@@ -30,8 +30,6 @@ pub enum FrontierCard {
 impl Versioned for FrontierCard {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
-    const VERSIONS: &'static [&'static [Self]] = &[];
-
     fn expansion(&self) -> Expansion {
         self.info().expansion
     }

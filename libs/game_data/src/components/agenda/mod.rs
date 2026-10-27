@@ -5,7 +5,11 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::{EnumDiscriminants, EnumIter};
 
-use crate::common::{expansions::Expansion, player_id::PlayerId, versions::Versioned};
+use crate::common::{
+    expansions::Expansion,
+    player_id::PlayerId,
+    versions::{Versioned, replacements},
+};
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
@@ -681,10 +685,9 @@ impl Agenda {
 }
 
 impl Versioned for Agenda {
-    const VERSIONS: &'static [&'static [Self]] = &[&[
-        Agenda::RepresentativeGovernmentTI4,
-        Agenda::RepresentativeGovernmentPOK,
-    ]];
+    replacements! {
+        RepresentativeGovernmentTI4 -> RepresentativeGovernmentPOK,
+    }
 
     const REMOVED: &'static [(Self, Expansion)] = &[
         (Agenda::CoreMining, Expansion::ProphecyOfKings),

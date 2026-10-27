@@ -3,7 +3,11 @@ use std::{collections::HashMap, fmt::Display};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
-use crate::common::{expansions::Expansion, faction::Faction, versions::Versioned};
+use crate::common::{
+    expansions::Expansion,
+    faction::Faction,
+    versions::{Versioned, replacements},
+};
 
 /// What category the tech belongs to.
 #[derive(
@@ -253,24 +257,13 @@ macro_rules! tr {
 }
 
 impl Versioned for Technology {
-    const VERSIONS: &'static [&'static [Self]] = &[
-        &[
-            Technology::MagenDefenceGrid,
-            Technology::MagenDefenceGridOmega,
-            Technology::MagenDefenceGridOmegaOmega,
-        ],
-        &[
-            Technology::X89BacterialWeapon,
-            Technology::X89BacterialWeaponOmega,
-            Technology::X89BacterialWeaponOmegaOmega,
-        ],
-        &[Technology::MagmusReactor, Technology::MagmusReactorOmega],
-        &[
-            Technology::WormholeGenerator,
-            Technology::WormholeGeneratorOmega,
-        ],
-        &[Technology::YinSpinner, Technology::YinSpinnerOmega],
-    ];
+    replacements! {
+        MagenDefenceGrid -> MagenDefenceGridOmega -> MagenDefenceGridOmegaOmega,
+        X89BacterialWeapon -> X89BacterialWeaponOmega -> X89BacterialWeaponOmegaOmega,
+        MagmusReactor -> MagmusReactorOmega,
+        WormholeGenerator -> WormholeGeneratorOmega,
+        YinSpinner -> YinSpinnerOmega,
+    }
 
     fn expansion(&self) -> Expansion {
         self.info().expansion

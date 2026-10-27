@@ -10,7 +10,11 @@ pub use hero::*;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
-use crate::common::{expansions::Expansion, faction::Faction, versions::Versioned};
+use crate::common::{
+    expansions::Expansion,
+    faction::Faction,
+    versions::{Versioned, replacements},
+};
 
 /// A leader, i.e. an agent, commander, or hero.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
@@ -61,29 +65,14 @@ pub enum LeaderAbilityKind {
 impl Versioned for Leader {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
-    const VERSIONS: &'static [&'static [Self]] = &[
-        &[Leader::Agent(Agent::Zeu), Leader::Agent(Agent::ZeuCxIII)],
-        &[
-            Leader::Commander(Commander::Maban),
-            Leader::Commander(Commander::MabanCxIII),
-        ],
-        &[
-            Leader::Hero(Hero::XxekirGrom),
-            Leader::Hero(Hero::XxekirGromCxIII),
-        ],
-        &[
-            Leader::Agent(Agent::BrotherMilor),
-            Leader::Agent(Agent::BrotherMilorCxIII),
-        ],
-        &[
-            Leader::Commander(Commander::BrotherOmar),
-            Leader::Commander(Commander::BrotherOmarCxIII),
-        ],
-        &[
-            Leader::Hero(Hero::DannelOfTheTenth),
-            Leader::Hero(Hero::DannelOfTheTenthCxIII),
-        ],
-    ];
+    replacements! {
+        Agent(Agent::Zeu) -> Agent(Agent::ZeuCxIII),
+        Commander(Commander::Maban) -> Commander(Commander::MabanCxIII),
+        Hero(Hero::XxekirGrom) -> Hero(Hero::XxekirGromCxIII),
+        Agent(Agent::BrotherMilor) -> Agent(Agent::BrotherMilorCxIII),
+        Commander(Commander::BrotherOmar) -> Commander(Commander::BrotherOmarCxIII),
+        Hero(Hero::DannelOfTheTenth) -> Hero(Hero::DannelOfTheTenthCxIII),
+    }
 
     fn expansion(&self) -> Expansion {
         match self {
