@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::{EnumDiscriminants, EnumIter};
 
-use crate::common::{expansions::Expansion, player_id::PlayerId};
+use crate::common::{expansions::Expansion, player_id::PlayerId, versions::Versioned};
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
 
@@ -678,24 +678,30 @@ impl Agenda {
             },
         }
     }
+}
 
-    /// Returns true if this agenda is disabled in pok.
-    pub fn disabled_in_pok(&self) -> bool {
-        matches!(
-            self,
-            Self::CoreMining
-                | Self::DemilitarizedZone
-                | Self::HolyPlanetOfIxth
-                | Self::RepresentativeGovernmentTI4
-                | Self::ResearchTeamBiotic
-                | Self::ResearchTeamCybernetic
-                | Self::ResearchTeamPropulsion
-                | Self::ResearchTeamWarfare
-                | Self::SenateSanctuary
-                | Self::ShardOfTheThrone
-                | Self::TerraformingInitiative
-                | Self::TheCrownOfEmphidia
-                | Self::TheCrownOfThalnos
-        )
+impl Versioned for Agenda {
+    const VERSIONS: &'static [&'static [Self]] = &[&[
+        Agenda::RepresentativeGovernmentTI4,
+        Agenda::RepresentativeGovernmentPOK,
+    ]];
+
+    const REMOVED: &'static [(Self, Expansion)] = &[
+        (Agenda::CoreMining, Expansion::ProphecyOfKings),
+        (Agenda::DemilitarizedZone, Expansion::ProphecyOfKings),
+        (Agenda::HolyPlanetOfIxth, Expansion::ProphecyOfKings),
+        (Agenda::ResearchTeamBiotic, Expansion::ProphecyOfKings),
+        (Agenda::ResearchTeamCybernetic, Expansion::ProphecyOfKings),
+        (Agenda::ResearchTeamPropulsion, Expansion::ProphecyOfKings),
+        (Agenda::ResearchTeamWarfare, Expansion::ProphecyOfKings),
+        (Agenda::SenateSanctuary, Expansion::ProphecyOfKings),
+        (Agenda::ShardOfTheThrone, Expansion::ProphecyOfKings),
+        (Agenda::TerraformingInitiative, Expansion::ProphecyOfKings),
+        (Agenda::TheCrownOfEmphidia, Expansion::ProphecyOfKings),
+        (Agenda::TheCrownOfThalnos, Expansion::ProphecyOfKings),
+    ];
+
+    fn expansion(&self) -> Expansion {
+        self.info().expansion
     }
 }

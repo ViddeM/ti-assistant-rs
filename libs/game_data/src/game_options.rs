@@ -107,8 +107,7 @@ impl GameOptions {
                 .filter(|card| card.is_enabled_in(expansions))
                 .collect(),
             agendas: Agenda::iter()
-                .filter(|agenda| expansions.is_enabled(&agenda.info().expansion))
-                .filter(|agenda| !(expansions.prophecy_of_kings && agenda.disabled_in_pok()))
+                .filter(|agenda| agenda.is_enabled_in(expansions))
                 .collect(),
             leaders_by_faction: leaders
                 .iter()
