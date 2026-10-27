@@ -1228,7 +1228,7 @@ impl Technology {
                 "Plane Splitter",
                 TechType::Category(TechCategory::Cybernetic),
                 TechOrigin::Faction(Faction::FirmamentObsidian),
-                tr!([(TechCategory::Cybernetic, 1)]),
+                tr!([(TechCategory::Cybernetic, 2)]),
                 Expansion::ThundersEdge,
                 &[
                     "When you gain this card, put The Fracture into play.",

@@ -37,7 +37,7 @@ Paths below are relative to `libs/game_data/src/components/` unless stated other
 | 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
 | 8 | 🟠 | **Keleres hasn't been updated for Thunder's Edge.** The I.I.H.Q. Modernization *tech* stays enabled alongside the new I.I.H.Q. *breakthrough*. The replacement tech Executive Order is missing, Agency Supply Network has the Codex III text, and Custodia Vigilia should be 2/2 under Thunder's Edge. | `tech.rs:1026-1105`, `planet.rs:786-796` | |
 | 9 | 🟠 | **None of Thunder's Edge's updated leader cards exist:** Naalu agent, Xxcha hero, all three Yin leaders, two Keleres heroes, and the Jol-Nar commander rename. `Leader::is_enabled_in` only knows about the Codex III swaps. | `components/leaders.rs:86-115` | |
-| 10 | 🟠 | **Plane Splitter needs 2 cybernetic prerequisites; the code has 1.** | `tech.rs:1231` | ✔ |
+| 10 | 🟠 | **Plane Splitter needs 2 cybernetic prerequisites; the code has 1.** **✅ Fixed** | `tech.rs:1231` | ✔ |
 
 Code problems found during the audit that aren't data-vs-wiki issues are in [§9](#9-other-code-issues-found-during-the-audit).
 
@@ -198,7 +198,7 @@ With the three fixes the split becomes 20 Base / 20 PoK secrets (the code curren
 ### Wrong values
 | Item | Sev | Field | Code | Wiki | Location |
 |---|---|---|---|---|---|
-| Plane Splitter | 🟠 | prerequisites | 1× Cybernetic | 2× Cybernetic | `:1231` ✔ |
+| Plane Splitter | 🟠 | prerequisites | 1× Cybernetic | 2× Cybernetic. **✅ Fixed** | `:1231` ✔ |
 | Magmus Reactor (base) | 🟠 | name | "Magmus Reactor/ Magmus Reactor Ω" | "Magmus Reactor" (the base version shows an Ω label) | `:1165` ✔ |
 | I.I.H.Q. Modernization | 🟠 | expansion | Base | Codex III | `:1031` ✔ |
 | Agency Supply Network | 🟠 | expansion | Base | Codex III | `:1101` ✔ |
