@@ -164,7 +164,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
 | H1 Construction ΩΩ and Warfare Ω images | Info | Add the two images and use the `thunders_edge` arm that is already matched but ignored in `get_strategy_card_image` (`info_context.rs:135-151`). | P1 / S |
-| H2 Construction secondary hint | Info | `generic_strategy_card.rs:134`: "place token in system" becomes "pay 1 token" under TE. | P1 / S |
+| H2 Construction secondary hint | Info | ✅ `get_cost_warning` (`generic_strategy_card.rs`) takes the expansions: "place token in system" becomes "pay 1 token" under TE. | P1 / S |
 | H3 The roadmap TODO "always display the correct variant" | — | Done by H1/H2 (Diplomacy and Construction are already right). | — |
 
 ### TE-I Action cards ✅
@@ -443,7 +443,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 
 1. **Bugs and data (P1, all S).**
    - mismatches §1 items 1–5 (Fracture tiles, agenda trait checks, Firmament planets, token planets, Styx).
-   - TE-H strategy card images and hint.
+   - TE-H1 strategy card images (✅ H2 hint).
    - TE-E-1 leader updates, TE-F1 Keleres.
    - ✅ The 14 action cards (data only) and the Ω wording.
 2. **Core TE effects (P1/P2).**

@@ -242,7 +242,7 @@ The code only stores names and initiative numbers, which are correct. The change
 |---|---|---|---|
 | Diplomacy | Primary readies "up to 2 exhausted planets you control" | **Codex I** (the roadmap lists it under PoK) | ✔ The image switches on `codex_1` |
 | Construction | Secondary reworded, same effect | PoK | ✔ The image switches on `prophecy_of_kings` |
-| **Construction ΩΩ** | Primary: place a structure **or** use the PRODUCTION of 1 space dock, then place a structure. Secondary: "Spend 1 token from your strategy pool to place 1 structure" (**no longer places a token in a system**) | Thunder's Edge | ❌ No image. `expansions.thunders_edge` is matched but never used (`info_context.rs:141-145`). The secondary hint "place token in system" (`generic_strategy_card.rs:134`) is wrong under Thunder's Edge |
+| **Construction ΩΩ** | Primary: place a structure **or** use the PRODUCTION of 1 space dock, then place a structure. Secondary: "Spend 1 token from your strategy pool to place 1 structure" (**no longer places a token in a system**) | Thunder's Edge | ❌ No image. `expansions.thunders_edge` is matched but never used (`info_context.rs:141-145`). The secondary hint "place token in system" (`generic_strategy_card.rs:134`) is wrong under Thunder's Edge. **✅ Fixed** for the hint; the image is still missing |
 | **Warfare Ω** | Primary: tactical action without placing a command token (the system still counts as activated) and redistribute tokens. Secondary: PRODUCTION in home system | Thunder's Edge | ❌ Always the base image (`info_context.rs:151`) |
 
 ### Breakthroughs (`breakthrough/`)

@@ -8,6 +8,7 @@ use ti_helper_game_data::{
         event::Event,
         strategic::{StrategicSecondaryAction, StrategicSecondaryProgress},
     },
+    common::game_settings::Expansions,
     components::strategy_card::StrategyCard,
     state::game_state::StrategicProgress,
 };
@@ -94,7 +95,8 @@ fn RenderSecondaryAction(
     card: StrategyCard,
     send_secondary_message: EventHandler<StrategicSecondaryAction>,
 ) -> Element {
-    let cost_warning = get_cost_warning(&card);
+    let gc = use_context::<GameContext>();
+    let cost_warning = get_cost_warning(&card, &gc.game_state().game_settings.expansions);
 
     rsx! {
         if let Some(c) = cost_warning {
@@ -125,12 +127,13 @@ pub fn action_for_card(card: &StrategyCard) -> StrategicSecondaryAction {
     }
 }
 
-pub fn get_cost_warning(card: &StrategyCard) -> Option<String> {
+pub fn get_cost_warning(card: &StrategyCard, expansions: &Expansions) -> Option<String> {
     Some(
         match card {
             StrategyCard::Leadership => "pay 3 influence per token",
             StrategyCard::Diplomacy => "pay 1 token",
             StrategyCard::Politics => "pay 1 token",
+            StrategyCard::Construction if expansions.thunders_edge => "pay 1 token",
             StrategyCard::Construction => "place token in system",
             StrategyCard::Trade => "pay 1 token",
             StrategyCard::Warfare => "pay 1 token",
