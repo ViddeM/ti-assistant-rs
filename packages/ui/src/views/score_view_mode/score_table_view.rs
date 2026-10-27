@@ -609,7 +609,7 @@ fn AgendaScoreRow(
             }
         },
         ScorableAgenda::PoliticalCensure { player } => rsx! {
-            {heading(Agenda::ShardOfTheThrone)}
+            {heading(Agenda::PoliticalCensure)}
             tr {
                 {
 

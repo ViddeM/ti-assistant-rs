@@ -16,7 +16,7 @@
  - ✅ Styx resources 3 → 4
  - ❌ Configured victory points ignored (score hard-codes 10) (lowest priority: game end is handled at the table) `[E5]`
  - ❌ Stage II gating wrong with Incentive Program / Classified Document Leaks
- - ❌ Political Censure score row is labelled "Shard of the Throne"
+ - ✅ Political Censure score row is labelled "Shard of the Throne"
  - ❌ Wrong expansion tags: Raise a Fleet, Dictate Policy, Drive the Debate (→ PoK); I.I.H.Q. Modernization, Agency Supply Network (→ Codex III)
 
 ## Infra
