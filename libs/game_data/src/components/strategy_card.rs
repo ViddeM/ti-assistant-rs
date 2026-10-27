@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{EnumString, IntoEnumIterator};
 use strum_macros::{Display, EnumIter};
 
-use crate::common::{expansions::Expansion, game_settings::Expansions};
+use crate::common::{expansions::Expansion, game_settings::Expansions, versions::Versioned};
 
 /// A strategy card.
 #[derive(
@@ -73,8 +73,7 @@ impl StrategyCard {
     /// newest version whose expansion is enabled.
     pub fn version(&self, expansions: &Expansions) -> StrategyCardVersion {
         StrategyCardVersion::iter()
-            .filter(|v| v.card() == *self && expansions.is_enabled(&v.expansion()))
-            .last()
+            .find(|v| v.card() == *self && v.is_enabled_in(expansions))
             .expect("every strategy card has a base version")
     }
 }
@@ -115,9 +114,26 @@ impl StrategyCardVersion {
             StrategyCardVersion::Imperial => StrategyCard::Imperial,
         }
     }
+}
 
-    /// The expansion that introduced this version.
-    pub fn expansion(&self) -> Expansion {
+impl Versioned for StrategyCardVersion {
+    const VERSIONS: &'static [&'static [Self]] = &[
+        &[
+            StrategyCardVersion::Diplomacy,
+            StrategyCardVersion::DiplomacyOmega,
+        ],
+        &[
+            StrategyCardVersion::Construction,
+            StrategyCardVersion::ConstructionOmega,
+            StrategyCardVersion::ConstructionOmegaOmega,
+        ],
+        &[
+            StrategyCardVersion::Warfare,
+            StrategyCardVersion::WarfareOmega,
+        ],
+    ];
+
+    fn expansion(&self) -> Expansion {
         match self {
             StrategyCardVersion::Leadership => Expansion::Base,
             StrategyCardVersion::Diplomacy => Expansion::Base,
