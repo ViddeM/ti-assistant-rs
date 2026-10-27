@@ -826,9 +826,52 @@ fn RelicPointRows() -> Element {
         }
     });
 
+    let book_of_latvinia_enabled =
+        use_memo(move || gc.game_options().relics.contains(&Relic::BookOfLatvinia));
+    let book_of_latvinia_holder = use_memo(move || gc.game_state().score.book_of_latvinia.clone());
+    let book_of_latvinia_render = use_memo(move || {
+        if book_of_latvinia_enabled() {
+            Some(rsx! {
+                SubSectionHeading {
+                    player_count: players().len(),
+                    top_border: true,
+                    name: "Book of Latvinia",
+                    info: Info::Relic(Relic::BookOfLatvinia),
+                }
+                tr {
+                    {
+                        players()
+                            .into_iter()
+                            .map(|(id, p)| {
+                                let is_holder = book_of_latvinia_holder().eq(&Some(id.clone()));
+                                rsx! {
+                                    td { key: "{id}", class: "align-center",
+                                        FactionButton {
+                                            faction: p.faction,
+                                            faction_state: p.faction_state.clone(),
+                                            selected: is_holder,
+                                            onclick: move || {
+                                                event
+                                                    .send_event(Event::SetBookOfLatviniaOwner {
+                                                        player: if is_holder { None } else { Some(id.clone()) },
+                                                    })
+                                            },
+                                        }
+                                    }
+                                }
+                            })
+                    }
+                }
+            })
+        } else {
+            None
+        }
+    });
+
     rsx! {
         {crown_of_emphidia_render()}
         {shard_of_the_throne_render()}
+        {book_of_latvinia_render()}
     }
 }
 

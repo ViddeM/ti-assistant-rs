@@ -34,3 +34,5 @@ source: libs/system_tests/src/check.rs
   30 RelicActionBegin(Carol)                  r1 RelicAction        Carol
   31 RelicActionCommit(Carol)                 r1 EndActionTurn      Carol      speaker=Carol
   32 EndTurn(Carol)                           r1 Action             Alice
+  33 SetBookOfLatviniaOwner(Carol)            r1 Action             Alice      Bob=0 Carol=1
+  34 SetBookOfLatviniaOwner                   r1 Action             Alice      Carol=0

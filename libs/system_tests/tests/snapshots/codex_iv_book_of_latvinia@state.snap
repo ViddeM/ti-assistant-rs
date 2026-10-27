@@ -85,7 +85,7 @@ score:
   maxPoints: 10
   playerPoints:
     Alice: 0
-    Bob: 1
+    Bob: 0
     Carol: 0
   revealedObjectives:
     CornerTheMarket: []
@@ -94,7 +94,7 @@ score:
   supportForTheThrone: {}
   shardOfTheThrone: ~
   crownOfEmphidia: ~
-  bookOfLatvinia: Bob
+  bookOfLatvinia: ~
   extraPoints: {}
   imperial: {}
   agendaScores: []

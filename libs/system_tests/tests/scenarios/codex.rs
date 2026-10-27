@@ -7,7 +7,7 @@ use crate::fixtures::{SIMPLE_PICKS, action_phase, three_players};
 scenarios![codex_iv_book_of_latvinia, codex_iv_neuraloop,];
 
 /// Book of Latvinia gives a point to a player that controls all 4 technology specialties, and
-/// the speaker token to anyone else.
+/// the speaker token to anyone else. The point can also be moved or removed by hand.
 pub fn codex_iv_book_of_latvinia() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     for planet in [Planet::NewAlbion, Planet::Gral, Planet::Lazar, Planet::Abyz] {
@@ -44,6 +44,19 @@ pub fn codex_iv_book_of_latvinia() -> TestGame {
     assert_eq!(g.points("Carol"), 0);
     assert_eq!(g.speaker(), Some("Carol"));
     assert!(g.player("Carol").relics.is_empty());
+
+    g.apply(Event::SetBookOfLatviniaOwner {
+        player: Some(p("Carol")),
+    });
+    assert_eq!([g.points("Bob"), g.points("Carol")], [0, 1]);
+    g.expect_rejected(
+        Event::SetBookOfLatviniaOwner {
+            player: Some(p("Nobody")),
+        },
+        "Player doesn't exist",
+    )
+    .apply(Event::SetBookOfLatviniaOwner { player: None });
+    assert_eq!(g.state().score.book_of_latvinia, None);
     g
 }
 

@@ -445,6 +445,12 @@ pub enum Event {
         player: Option<PlayerId>,
     },
 
+    /// Give / remove the Book of Latvinia point to/from a player.
+    SetBookOfLatviniaOwner {
+        /// The player that should receive it, or None if no one should have it.
+        player: Option<PlayerId>,
+    },
+
     /// Add the tech to the players list of techs.
     AddTechToPlayer {
         /// The player to receive the technology.

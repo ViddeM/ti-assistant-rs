@@ -1734,6 +1734,20 @@ fn try_update_game_state(
 
             game_state.score.crown_of_emphidia = player;
         }
+        Event::SetBookOfLatviniaOwner { player } => {
+            if let Some(p) = player.as_ref() {
+                ensure!(
+                    game_state.players.contains_key(p),
+                    "Player doesn't exist '{p}'"
+                );
+            }
+
+            game_state.players.values_mut().for_each(|p| {
+                p.relics.remove(&Relic::BookOfLatvinia);
+            });
+
+            game_state.score.book_of_latvinia = player;
+        }
         Event::AddTechToPlayer { player, tech } => {
             game_state.assert_tech_enabled(&tech)?;
 
