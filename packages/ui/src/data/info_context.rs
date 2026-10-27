@@ -130,6 +130,8 @@ impl InfoDescription {
 const CONSTRUCTION_OMEGA_IMAGE: Asset =
     asset!("/assets/images/strat_cards/construction_omega.webp");
 const CONSTRUCTION_IMAGE: Asset = asset!("/assets/images/strat_cards/construction.webp");
+const CONSTRUCTION_OMEGA_OMEGA_IMAGE: Asset =
+    asset!("/assets/images/strat_cards/construction_omega_omega.webp");
 const DIPLOMACY_OMEGA_IMAGE: Asset = asset!("/assets/images/strat_cards/diplomacy_omega.webp");
 const DIPLOMACY_IMAGE: Asset = asset!("/assets/images/strat_cards/diplomacy.webp");
 const IMPERIAL_IMAGE: Asset = asset!("/assets/images/strat_cards/imperial.webp");
@@ -138,6 +140,7 @@ const POLITICS_IMAGE: Asset = asset!("/assets/images/strat_cards/politics.webp")
 const TECHNOLOGY_IMAGE: Asset = asset!("/assets/images/strat_cards/technology.webp");
 const TRADE_IMAGE: Asset = asset!("/assets/images/strat_cards/trade.webp");
 const WARFARE_IMAGE: Asset = asset!("/assets/images/strat_cards/warfare.webp");
+const WARFARE_OMEGA_IMAGE: Asset = asset!("/assets/images/strat_cards/warfare_omega.webp");
 
 fn get_strategy_card_image(version: StrategyCardVersion) -> Asset {
     match version {
@@ -147,10 +150,10 @@ fn get_strategy_card_image(version: StrategyCardVersion) -> Asset {
         StrategyCardVersion::Politics => POLITICS_IMAGE,
         StrategyCardVersion::Construction => CONSTRUCTION_IMAGE,
         StrategyCardVersion::ConstructionOmega => CONSTRUCTION_OMEGA_IMAGE,
-        StrategyCardVersion::ConstructionOmegaOmega => CONSTRUCTION_OMEGA_IMAGE,
+        StrategyCardVersion::ConstructionOmegaOmega => CONSTRUCTION_OMEGA_OMEGA_IMAGE,
         StrategyCardVersion::Trade => TRADE_IMAGE,
         StrategyCardVersion::Warfare => WARFARE_IMAGE,
-        StrategyCardVersion::WarfareOmega => WARFARE_IMAGE,
+        StrategyCardVersion::WarfareOmega => WARFARE_OMEGA_IMAGE,
         StrategyCardVersion::Technology => TECHNOLOGY_IMAGE,
         StrategyCardVersion::Imperial => IMPERIAL_IMAGE,
     }

@@ -89,7 +89,7 @@
    - ❌ Track purged heroes (used heroes stay playable) `[E6]`
    - ❌ Leader actions with data (Ta Zern, Xxekir Grom, Ul, Rin, …) `[E6]`
  - ✅ Strategy cards (speaker handling etc)
-   - 🚱 Always display the correct variant (Diplomacy and Construction ✅, Thunder's Edge Construction ΩΩ and Warfare Ω ❌) `[TE-H]`
+   - ✅ Always display the correct variant (`StrategyCard::version`) `[TE-H]`
  - ✅ Real names for things
    - ✅ Planets
    - ✅ Objectives
@@ -309,7 +309,7 @@
    - ❌ Fix Fracture tile data (Known bugs)
    - ❌ "Fracture in play" flag + relic prompt when taking Fracture planets `[TE-B]`
  - 🚱 Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ✅, ΩΩ leaders ❌
- - 🚱 Updated strategy cards: Construction ΩΩ, Warfare Ω (image ❌, secondary hint ✅) `[TE-H]`
+ - ✅ Updated strategy cards: Construction ΩΩ, Warfare Ω (image ✅, secondary hint ✅) `[TE-H]`
  - ✅ New action cards (14 unique / 20 cards) + Ω versions of 8 Codex I cards, which replace the old ones when TE is enabled
    - ✅ Brilliance (gain breakthrough) `[TE-I]`
    - ✅ Overrule / Strategize (perform another strategy card's primary / secondary) `[TE-I]`
