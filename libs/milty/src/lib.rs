@@ -124,12 +124,13 @@ impl MiltyImport for MiltyData {
         }
 
         let game_name = milty_conf.name.clone().unwrap_or_default();
+        let hex_map = HexMap::from_milty_string(tts_string, expansions.thunders_edge)?;
 
         Ok(MiltyData {
             players,
             expansions,
             game_name: html_escape::decode_html_entities(&game_name).to_string(),
-            hex_map: HexMap::from_milty_string(tts_string, milty_conf.include_te_tiles)?,
+            hex_map,
         })
     }
 }
