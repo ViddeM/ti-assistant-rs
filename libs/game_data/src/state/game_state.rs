@@ -1,5 +1,6 @@
 use std::{
     collections::{BTreeMap, BTreeSet, HashMap},
+    fmt::Debug,
     time::Duration,
 };
 
@@ -587,20 +588,11 @@ impl GameState {
             .any(|p| p.firmament_side() == Some(FirmamentSide::Obsidian))
     }
 
-    /// Asserts that the provided tech is available with the enabled expansions, i.e. that its
-    /// expansion is enabled and that it hasn't been replaced by a newer version in a codex.
-    pub fn assert_tech_enabled(&self, tech: &Technology) -> anyhow::Result<()> {
-        if !tech.is_enabled_in(&self.game_settings.expansions) {
-            bail!("{tech:?} is not available with the enabled expansions (replaced by a codex?)");
-        }
-        Ok(())
-    }
-
-    /// Asserts that the provided action card is available with the enabled expansions, i.e. that
-    /// its expansion is enabled and that it hasn't been replaced by a newer version.
-    pub fn assert_action_card_enabled(&self, card: &ActionCard) -> anyhow::Result<()> {
-        if !card.is_enabled_in(&self.game_settings.expansions) {
-            bail!("{card:?} is not available with the enabled expansions");
+    /// Asserts that the provided component is available with the enabled expansions, i.e. that
+    /// its expansion is enabled and that it hasn't been removed or replaced by a newer version.
+    pub fn assert_enabled<T: Versioned + Debug>(&self, component: &T) -> anyhow::Result<()> {
+        if !component.is_enabled_in(&self.game_settings.expansions) {
+            bail!("{component:?} is not available with the enabled expansions");
         }
         Ok(())
     }
@@ -613,10 +605,10 @@ impl GameState {
                 second_tech: extra,
             } => {
                 if let Some(t) = tech {
-                    self.assert_tech_enabled(t)?;
+                    self.assert_enabled(t)?;
                 }
                 if let Some(t) = extra {
-                    self.assert_tech_enabled(t)?;
+                    self.assert_enabled(t)?;
                 }
             }
             StrategicPrimaryAction::Imperial { score_objective } => {
@@ -636,15 +628,15 @@ impl GameState {
     ) -> anyhow::Result<()> {
         match action {
             StrategicSecondaryAction::Technology { tech } => {
-                self.assert_tech_enabled(tech)?;
+                self.assert_enabled(tech)?;
             }
             StrategicSecondaryAction::TechnologyJolNar {
                 first_tech,
                 second_tech,
             } => {
-                self.assert_tech_enabled(first_tech)?;
+                self.assert_enabled(first_tech)?;
                 if let Some(t) = second_tech {
-                    self.assert_tech_enabled(t)?;
+                    self.assert_enabled(t)?;
                 }
             }
             StrategicSecondaryAction::Skip => {}
