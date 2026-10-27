@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::{expansions::Expansion, game_settings::Expansions};
+use crate::common::{expansions::Expansion, versions::Versioned};
 
 use super::phase::Phase;
 
@@ -150,21 +150,6 @@ impl Ord for ActionCard {
     }
 }
 
-/// Codex cards paired with the version Thunder's Edge replaces them with.
-const REPLACED_IN_THUNDERS_EDGE: [(ActionCard, ActionCard); 8] = [
-    (ActionCard::Blitz, ActionCard::BlitzOmega),
-    (ActionCard::Counterstroke, ActionCard::CounterstrokeOmega),
-    (
-        ActionCard::FighterConscription,
-        ActionCard::FighterConscriptionOmega,
-    ),
-    (ActionCard::GhostSquad, ActionCard::GhostSquadOmega),
-    (ActionCard::HackElection, ActionCard::HackElectionOmega),
-    (ActionCard::MasterPlan, ActionCard::MasterPlanOmega),
-    (ActionCard::SolarFlare, ActionCard::SolarFlareOmega),
-    (ActionCard::WarMachine, ActionCard::WarMachineOmega),
-];
-
 /// When an action card can be played.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[allow(missing_docs)]
@@ -241,25 +226,27 @@ macro_rules! ai {
     };
 }
 
-impl ActionCard {
-    /// Is this action card enabled for the given [Expansions]?
-    pub fn is_enabled_in(&self, expansions: &Expansions) -> bool {
-        if !expansions.is_enabled(&self.info().expansion) {
-            return false;
-        }
+impl Versioned for ActionCard {
+    const VERSIONS: &'static [&'static [Self]] = &[
+        &[ActionCard::Blitz, ActionCard::BlitzOmega],
+        &[ActionCard::Counterstroke, ActionCard::CounterstrokeOmega],
+        &[
+            ActionCard::FighterConscription,
+            ActionCard::FighterConscriptionOmega,
+        ],
+        &[ActionCard::GhostSquad, ActionCard::GhostSquadOmega],
+        &[ActionCard::HackElection, ActionCard::HackElectionOmega],
+        &[ActionCard::MasterPlan, ActionCard::MasterPlanOmega],
+        &[ActionCard::SolarFlare, ActionCard::SolarFlareOmega],
+        &[ActionCard::WarMachine, ActionCard::WarMachineOmega],
+    ];
 
-        for (codex, omega) in &REPLACED_IN_THUNDERS_EDGE {
-            if self == codex {
-                return !expansions.thunders_edge;
-            }
-            if self == omega {
-                return expansions.is_enabled(&codex.info().expansion);
-            }
-        }
-
-        true
+    fn expansion(&self) -> Expansion {
+        self.info().expansion
     }
+}
 
+impl ActionCard {
     /// Returns the [ActionCardInfo] for the action card.
     pub fn info(&self) -> ActionCardInfo {
         match self {
@@ -1377,6 +1364,8 @@ impl ActionCard {
 mod tests {
     use strum::IntoEnumIterator;
 
+    use crate::common::game_settings::Expansions;
+
     use super::*;
 
     #[test]
@@ -1389,7 +1378,10 @@ mod tests {
                 ..Default::default()
             };
 
-            for (codex, omega) in REPLACED_IN_THUNDERS_EDGE {
+            for versions in ActionCard::VERSIONS {
+                let [codex, omega] = versions else {
+                    panic!("{versions:?} should be a Codex card and its Ω version");
+                };
                 assert_eq!(
                     codex.is_enabled_in(&expansions),
                     codex_1 && !thunders_edge,
