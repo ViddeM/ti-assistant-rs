@@ -10,7 +10,7 @@ pub use hero::*;
 use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
-use crate::common::{faction::Faction, game_settings::Expansions};
+use crate::common::{expansions::Expansion, faction::Faction, versions::Versioned};
 
 /// A leader, i.e. an agent, commander, or hero.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
@@ -58,6 +58,45 @@ pub enum LeaderAbilityKind {
     Other,
 }
 
+impl Versioned for Leader {
+    const REQUIRES: Expansion = Expansion::ProphecyOfKings;
+
+    const VERSIONS: &'static [&'static [Self]] = &[
+        &[Leader::Agent(Agent::Zeu), Leader::Agent(Agent::ZeuCxIII)],
+        &[
+            Leader::Commander(Commander::Maban),
+            Leader::Commander(Commander::MabanCxIII),
+        ],
+        &[
+            Leader::Hero(Hero::XxekirGrom),
+            Leader::Hero(Hero::XxekirGromCxIII),
+        ],
+        &[
+            Leader::Agent(Agent::BrotherMilor),
+            Leader::Agent(Agent::BrotherMilorCxIII),
+        ],
+        &[
+            Leader::Commander(Commander::BrotherOmar),
+            Leader::Commander(Commander::BrotherOmarCxIII),
+        ],
+        &[
+            Leader::Hero(Hero::DannelOfTheTenth),
+            Leader::Hero(Hero::DannelOfTheTenthCxIII),
+        ],
+    ];
+
+    fn expansion(&self) -> Expansion {
+        match self {
+            Leader::Agent(Agent::ZeuCxIII | Agent::BrotherMilorCxIII)
+            | Leader::Commander(Commander::MabanCxIII | Commander::BrotherOmarCxIII)
+            | Leader::Hero(Hero::XxekirGromCxIII | Hero::DannelOfTheTenthCxIII) => {
+                Expansion::CodexIII
+            }
+            _ => self.info().faction().expansion(),
+        }
+    }
+}
+
 impl Leader {
     /// Get the [LeaderInfo] of this [Leader].
     pub fn info(&self) -> LeaderInfo {
@@ -66,55 +105,6 @@ impl Leader {
             Leader::Commander(c) => c.info().into(),
             Leader::Hero(h) => h.info().into(),
         }
-    }
-
-    /// Is this leader enabled for the given [Expansions]?
-    pub fn is_enabled_in(&self, expansions: &Expansions) -> bool {
-        use {Agent::*, Commander::*, Hero::*};
-
-        // leaders are a PoK feature
-        if !expansions.prophecy_of_kings {
-            return false;
-        }
-
-        // check if the expansion that adds this leaders faction is enabled.
-        let faction_source = self.info().faction().expansion();
-        if !expansions.is_enabled(&faction_source) {
-            return false;
-        }
-
-        // check if leader is patched in codex 3
-
-        let removed_in_codex_3 = &[
-            Zeu.into(),
-            Maban.into(),
-            XxekirGrom.into(),
-            BrotherMilor.into(),
-            BrotherOmar.into(),
-            DannelOfTheTenth.into(),
-        ];
-
-        let added_in_codex_3 = &[
-            ZeuCxIII.into(),
-            MabanCxIII.into(),
-            XxekirGromCxIII.into(),
-            BrotherMilorCxIII.into(),
-            BrotherOmarCxIII.into(),
-            DannelOfTheTenthCxIII.into(),
-        ];
-
-        let is_removed_in_codex_3 = removed_in_codex_3.contains(self);
-        let is_added_in_codex_3 = added_in_codex_3.contains(self);
-
-        if expansions.codex_3 && is_removed_in_codex_3 {
-            return false;
-        }
-
-        if !expansions.codex_3 && is_added_in_codex_3 {
-            return false;
-        }
-
-        true
     }
 
     /// Returns an iterator over all leaders.

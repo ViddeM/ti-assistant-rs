@@ -36,7 +36,7 @@ pub trait Versioned: PartialEq + Sized + 'static {
 mod tests {
     use std::fmt::Debug;
 
-    use crate::components::{action_card::ActionCard, tech::Technology};
+    use crate::components::{action_card::ActionCard, leaders::Leader, tech::Technology};
 
     use super::*;
 
@@ -102,5 +102,10 @@ mod tests {
     #[test]
     fn action_card_versions_are_consistent() {
         check_versions::<ActionCard>();
+    }
+
+    #[test]
+    fn leader_versions_are_consistent() {
+        check_versions::<Leader>();
     }
 }
