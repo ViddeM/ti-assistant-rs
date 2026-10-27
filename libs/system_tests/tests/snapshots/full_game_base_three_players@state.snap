@@ -463,12 +463,9 @@ statusPhaseState:
   revealedObjective: CentralizeGalacticTrade
   expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
-  Alice:
-    - JaceX4thAirLegion
+  Alice: []
   Bob: []
-  Carol:
-    - GgrucotoRinn
-    - XxekirGrom
+  Carol: []
 timeTrackingPaused: false
 playersPlayTime:
   Alice:

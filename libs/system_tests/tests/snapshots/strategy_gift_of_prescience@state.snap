@@ -105,8 +105,7 @@ statusPhaseState:
   revealedObjective: ErectAMonument
   expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
-  Alice:
-    - ZeuCxIII
+  Alice: []
   Bob: []
   Carol: []
 timeTrackingPaused: false

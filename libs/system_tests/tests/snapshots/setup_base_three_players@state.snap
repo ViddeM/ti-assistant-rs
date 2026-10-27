@@ -95,8 +95,7 @@ statusPhaseState: ~
 availableLeaders:
   Alice: []
   Bob: []
-  Carol:
-    - GgrucotoRinn
+  Carol: []
 timeTrackingPaused: false
 playersPlayTime: {}
 currentTurnStartTime: "2025-01-01T12:07:00Z"

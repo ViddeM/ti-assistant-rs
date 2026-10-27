@@ -810,6 +810,7 @@ fn try_update_game_state(
         Event::LeaderActionBegin { player, leader } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
+            game_state.assert_enabled(&leader)?;
             ensure!(
                 leader.info().ability_kind() == LeaderAbilityKind::Action,
                 "{}'s ability can't be played as an action",

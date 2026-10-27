@@ -105,8 +105,7 @@ statusPhaseState: ~
 availableLeaders:
   Alice: []
   Bob: []
-  Carol:
-    - GgrucotoRinn
+  Carol: []
 timeTrackingPaused: false
 playersPlayTime:
   Alice:

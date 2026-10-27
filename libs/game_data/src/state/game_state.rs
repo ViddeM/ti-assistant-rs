@@ -729,6 +729,7 @@ impl GameState {
             };
 
             let available_to_this_player = Leader::iter()
+                .filter(|leader| leader.is_enabled_in(&self.game_settings.expansions))
                 // TODO: there may be cases where players can use other players factions
                 .filter(|leader| leader.info().faction() == player.faction || yssaril_agent(leader))
                 .filter(|leader| leader.info().ability_kind() == LeaderAbilityKind::Action)
