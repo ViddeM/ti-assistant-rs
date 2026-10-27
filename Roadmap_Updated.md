@@ -67,7 +67,7 @@
      - ✅ Book of Latvinia (Codex IV)
      - ❌ The Silver Flame (TE) `[TE-D2]`
    - ❌ Legendary planets
-     - ❌ Styx (TE) `[TE-C1]`
+     - ✅ Styx (TE) `[TE-C1]`
    - ❌ Galactic event VP sources (Total War, Zealous Orthodoxy, Monuments) `[GE]`
    - ❌ Use the configured victory points (currently hard-coded to 10) (lowest priority: game end is handled at the table) `[E5]`
    - ❌ Winning the game (when reaching the winning score) (lowest priority: game end is handled at the table) `[E5]`
@@ -301,7 +301,7 @@
  - ✅ New anomaly (entropic scar, data only)
  - ❌ New legendary planet abilities
    - ❌ Thunder's Edge: gain breakthrough on gain + "Jupiter Brain" button reusing Take Another Turn `[TE-C2]`
-   - ❌ Styx (1 extra point as long as you hold the planet) `[TE-C1]`
+   - ✅ Styx (1 extra point as long as you hold the planet) `[TE-C1]`
    - 👺 Avernus (Action, nothing to track)
    - ❌ Faunus (gain control of a planet when you pass) `[TE-C3]`
    - 👺 Mecatol Rex Ω, Ordinian, Emelpar, Garbozia, Industrex, Tempesta (text only)

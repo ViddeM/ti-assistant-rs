@@ -5,7 +5,7 @@ use strum::{Display, EnumString};
 use ti_helper_game_data::{
     actions::event::Event,
     common::{faction::Faction, player_id::PlayerId},
-    components::{agenda::Agenda, objectives::ObjectiveKind, relic::Relic},
+    components::{agenda::Agenda, objectives::ObjectiveKind, planet::Planet, relic::Relic},
     state::{faction_state::FactionState, player::Player, score::ScorableAgenda},
 };
 
@@ -14,7 +14,11 @@ use crate::{
         button::Button, faction_button::FactionButton, faction_icon::FactionIcon,
         info_button::InfoButton,
     },
-    data::{event_context::EventContext, game_context::GameContext, info_context::Info},
+    data::{
+        event_context::EventContext,
+        game_context::GameContext,
+        info_context::{Info, InfoDescription},
+    },
 };
 
 #[component]
@@ -33,6 +37,7 @@ pub fn ScoreTableView() -> Element {
     });
     let player_count = use_memo(move || players.len());
     let custodians = use_memo(move || gc.game_state().score.custodians.clone());
+    let thunders_edge = use_memo(move || gc.game_state().game_settings.expansions.thunders_edge);
 
     let revealed_stage_one_objectives = use_memo(move || {
         let mut objectives = gc
@@ -236,6 +241,16 @@ pub fn ScoreTableView() -> Element {
                 }
                 RelicPointRows {}
 
+                // Legendary Planets
+                if thunders_edge() {
+                    TableSectionHeader {
+                        player_count: player_count(),
+                        title: "Legendary Planets",
+                        styling_prefix: StylingPrefix::LegendaryPlanet,
+                    }
+                    LegendaryPlanetPointRows { players: players().into_iter().map(|(p, _)| p).collect::<Vec<_>>() }
+                }
+
                 // Support for the Throne
                 TableSectionHeader {
                     player_count: player_count(),
@@ -366,6 +381,7 @@ enum StylingPrefix {
     Secret,
     Agenda,
     Relic,
+    LegendaryPlanet,
     Custodians,
     Imperial,
     Spftt,
@@ -514,6 +530,52 @@ fn PlayerSecretObjectivesScore(player_id: PlayerId) -> Element {
 
     rsx! {
         p { "{player_secrets()}" }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Props)]
+struct LegendaryPlanetPointRowsProps {
+    players: Vec<PlayerId>,
+}
+
+#[component]
+fn LegendaryPlanetPointRows(
+    LegendaryPlanetPointRowsProps { players }: LegendaryPlanetPointRowsProps,
+) -> Element {
+    let gc = use_context::<GameContext>();
+    let styx_owner = use_memo(move || {
+        gc.game_state()
+            .players
+            .iter()
+            .find(|(_, p)| p.planets.contains_key(&Planet::Styx))
+            .map(|(id, _)| id.clone())
+    });
+
+    rsx! {
+        SubSectionHeading {
+            player_count: players.len(),
+            top_border: false,
+            name: "Styx",
+            info: Info::Custom {
+                title: "Styx".to_string(),
+                subtitle: "Legendary planet".to_string(),
+                description: InfoDescription::Description(
+                    "The player who controls Styx has 1 victory point from it.".to_string(),
+                ),
+            },
+        }
+        tr {
+            {
+                players
+                    .iter()
+                    .map(|p| {
+                        let score = if styx_owner().as_ref() == Some(p) { 1 } else { 0 };
+                        rsx! {
+                            td { key: "{p}", class: "align-center", "{score}" }
+                        }
+                    })
+            }
+        }
     }
 }
 

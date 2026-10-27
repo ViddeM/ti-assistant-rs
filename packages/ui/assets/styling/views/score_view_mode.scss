@@ -90,6 +90,7 @@ $agenda-color: hsl(0, 0%, 100%);
 $custodians-color: hsl(0, 0%, 70%);
 $imperial-color: hsl(276, 100%, 68%);
 $relic-color: hsl(51, 100%, 50%);
+$legendary-planet-color: hsl(190, 80%, 50%);
 $spftt-color: hsl(360, 60%, 60%);
 $extra-color: hsl(120, 70%, 40%);
 
@@ -129,6 +130,10 @@ $extra-color: hsl(120, 70%, 40%);
   color: $relic-color;
 }
 
+.legendary-planet-color {
+  color: $legendary-planet-color;
+}
+
 .stage-one-background-color {
   background-color: $stage-one-color;
 }
@@ -163,6 +168,10 @@ $extra-color: hsl(120, 70%, 40%);
 
 .relic-background-color {
   background-color: $relic-color;
+}
+
+.legendary-planet-background-color {
+  background-color: $legendary-planet-color;
 }
 
 .faction-button {

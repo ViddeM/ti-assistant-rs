@@ -112,7 +112,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| C1 **Styx**: "gain 1 VP when you gain this card, lose it when you lose it" | Track | Derived: +1 VP for whoever controls Styx in `update_player_points`, plus a score table row (copy `HolyPlanetOfIxth`). No events needed. | P1 / S |
+| C1 **Styx**: "gain 1 VP when you gain this card, lose it when you lose it" | Track | ✅ Derived: +1 VP for whoever controls Styx in `update_player_points`, plus a "Legendary Planets" section in the score table (Thunder's Edge only). No events needed. | P1 / S |
 | C2 **Thunder's Edge** "Jupiter Brain" | Track + Assist | (a) Through E3: gaining the planet → E2 (breakthrough if missing). Today this only happens when the expedition completes. (b) "Exhaust at end of turn: perform 1 action": in the `EndActionTurn` view (`end_action_phase.rs`), show a **"Jupiter Brain: take 1 more action"** button to the owner that sends the existing `TakeAnotherTurn`. No new event, no exhaust tracking (players police once-per-round themselves). This replaces the "use Take Another Turn" workaround from the roadmap. | P1 / S |
 | C3 **Faunus** "Maxis Central Control" (when you pass, gain a non-home, non-legendary planet with no units or attachments) | Track | `PassAction` already routes to `EndActionTurn` while the expedition is open (`game_event_handler.rs:1232-1238`); extend that condition to "owns Faunus". In that view, show a planet picker (unowned planets plus other players' planets that have no attachments, non-home, non-legendary) → event `UseFaunus { player, planet }` (validates, moves ownership through E3). | P2 / S |
 | C4 **Avernus** "The Nucleus" (ACTION: Star Forge without a token) | Info | Nothing tracked. At most a "legendary planet action" entry that just ends the turn. | P3 / S |
@@ -448,7 +448,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ The 14 action cards (data only) and the Ω wording.
 2. **Core TE effects (P1/P2).**
    - E2/E3/E4 helpers.
-   - A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C1 Styx, C2 Jupiter Brain, D1 Quantumcore, CIV-1 Book of Latvinia.
+   - A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C2 Jupiter Brain, D1 Quantumcore, CIV-1 Book of Latvinia.
+   - ✅ C1 Styx.
 3. **Galactic event framework plus the cheap tracked events (P1).**
    - Stellar Atomics, Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Civilized Society.
 4. **TE actions (P2).**

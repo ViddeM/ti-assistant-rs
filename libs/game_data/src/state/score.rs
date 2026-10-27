@@ -111,6 +111,11 @@ impl Score {
                 player_points += 1;
             }
 
+            // Check if the player controls Styx
+            if player.planets.contains_key(&Planet::Styx) {
+                player_points += 1;
+            }
+
             player_points += self
                 .agenda_scores
                 .iter()

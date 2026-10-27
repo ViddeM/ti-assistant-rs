@@ -17,6 +17,7 @@ scenarios![
     thunders_edge_admin_flow,
     firmament_becomes_obsidian,
     thunders_edge_take_planets_without_tile,
+    thunders_edge_styx_victory_point,
     thunders_edge_action_cards,
     thunders_edge_overrule_and_strategize,
     thunders_edge_crisis_and_puppets_on_a_string,
@@ -399,6 +400,34 @@ pub fn thunders_edge_take_planets_without_tile() -> TestGame {
     );
     assert!(g.player("Bob").planets.contains_key(&Planet::ThundersEdge));
     assert!(g.player("Carol").planets.contains_key(&Planet::Avernus));
+    g
+}
+
+/// Whoever controls Styx has 1 VP from it.
+pub fn thunders_edge_styx_victory_point() -> TestGame {
+    let mut g = action_phase(three_players().thunders_edge());
+    let points = |g: &TestGame| [g.points("Alice"), g.points("Bob")];
+    assert_eq!(points(&g), [0, 0]);
+
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::Styx)
+        .commit()
+        .end_turn();
+    assert_eq!(points(&g), [1, 0]);
+
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Styx)
+        .commit()
+        .end_turn();
+    assert_eq!(points(&g), [0, 1]);
+
+    g.apply(Event::SetPlanetOwner {
+        player: None,
+        planet: Planet::Styx,
+    });
+    assert_eq!(points(&g), [0, 0]);
     g
 }
 
