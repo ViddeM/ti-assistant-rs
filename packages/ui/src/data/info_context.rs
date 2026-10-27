@@ -2,8 +2,12 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::game_settings::Expansions,
     components::{
-        agenda::Agenda, leaders::Leader, objectives::Objective, relic::Relic,
-        strategy_card::StrategyCard, tech::Technology,
+        agenda::Agenda,
+        leaders::Leader,
+        objectives::Objective,
+        relic::Relic,
+        strategy_card::{StrategyCard, StrategyCardVersion},
+        tech::Technology,
     },
 };
 
@@ -90,7 +94,7 @@ impl Info {
             Info::Strategy(strategy_card) => InfoDescription::Custom(rsx! {
                 img {
                     alt: format!("Strategy card {strategy_card}"),
-                    src: get_strategy_card_image(strategy_card, expansions),
+                    src: get_strategy_card_image(strategy_card.version(expansions)),
                 }
             }),
             Info::Tech(technology) => {
@@ -123,9 +127,10 @@ impl InfoDescription {
     }
 }
 
-const CONSTRUCTION_POK_IMAGE: Asset = asset!("/assets/images/strat_cards/construction_pok.webp");
+const CONSTRUCTION_OMEGA_IMAGE: Asset =
+    asset!("/assets/images/strat_cards/construction_omega.webp");
 const CONSTRUCTION_IMAGE: Asset = asset!("/assets/images/strat_cards/construction.webp");
-const DIPLOMACY_CODEX_IMAGE: Asset = asset!("/assets/images/strat_cards/diplomacy_codex.webp");
+const DIPLOMACY_OMEGA_IMAGE: Asset = asset!("/assets/images/strat_cards/diplomacy_omega.webp");
 const DIPLOMACY_IMAGE: Asset = asset!("/assets/images/strat_cards/diplomacy.webp");
 const IMPERIAL_IMAGE: Asset = asset!("/assets/images/strat_cards/imperial.webp");
 const LEADERSHIP_IMAGE: Asset = asset!("/assets/images/strat_cards/leadership.webp");
@@ -134,22 +139,19 @@ const TECHNOLOGY_IMAGE: Asset = asset!("/assets/images/strat_cards/technology.we
 const TRADE_IMAGE: Asset = asset!("/assets/images/strat_cards/trade.webp");
 const WARFARE_IMAGE: Asset = asset!("/assets/images/strat_cards/warfare.webp");
 
-fn get_strategy_card_image(card: &StrategyCard, expansions: &Expansions) -> Asset {
-    match (
-        card,
-        expansions.prophecy_of_kings,
-        expansions.thunders_edge,
-        expansions.codex_1,
-    ) {
-        (StrategyCard::Construction, true, _, _) => CONSTRUCTION_POK_IMAGE,
-        (StrategyCard::Construction, false, _, _) => CONSTRUCTION_IMAGE,
-        (StrategyCard::Leadership, _, _, _) => LEADERSHIP_IMAGE,
-        (StrategyCard::Diplomacy, _, _, true) => DIPLOMACY_CODEX_IMAGE,
-        (StrategyCard::Diplomacy, _, _, false) => DIPLOMACY_IMAGE,
-        (StrategyCard::Politics, _, _, _) => POLITICS_IMAGE,
-        (StrategyCard::Trade, _, _, _) => TRADE_IMAGE,
-        (StrategyCard::Warfare, _, _, _) => WARFARE_IMAGE,
-        (StrategyCard::Technology, _, _, _) => TECHNOLOGY_IMAGE,
-        (StrategyCard::Imperial, _, _, _) => IMPERIAL_IMAGE,
+fn get_strategy_card_image(version: StrategyCardVersion) -> Asset {
+    match version {
+        StrategyCardVersion::Leadership => LEADERSHIP_IMAGE,
+        StrategyCardVersion::Diplomacy => DIPLOMACY_IMAGE,
+        StrategyCardVersion::DiplomacyOmega => DIPLOMACY_OMEGA_IMAGE,
+        StrategyCardVersion::Politics => POLITICS_IMAGE,
+        StrategyCardVersion::Construction => CONSTRUCTION_IMAGE,
+        StrategyCardVersion::ConstructionOmega => CONSTRUCTION_OMEGA_IMAGE,
+        StrategyCardVersion::ConstructionOmegaOmega => CONSTRUCTION_OMEGA_IMAGE,
+        StrategyCardVersion::Trade => TRADE_IMAGE,
+        StrategyCardVersion::Warfare => WARFARE_IMAGE,
+        StrategyCardVersion::WarfareOmega => WARFARE_IMAGE,
+        StrategyCardVersion::Technology => TECHNOLOGY_IMAGE,
+        StrategyCardVersion::Imperial => IMPERIAL_IMAGE,
     }
 }

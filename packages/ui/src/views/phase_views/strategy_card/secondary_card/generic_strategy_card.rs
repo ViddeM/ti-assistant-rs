@@ -8,8 +8,7 @@ use ti_helper_game_data::{
         event::Event,
         strategic::{StrategicSecondaryAction, StrategicSecondaryProgress},
     },
-    common::game_settings::Expansions,
-    components::strategy_card::StrategyCard,
+    components::strategy_card::{StrategyCard, StrategyCardVersion},
     state::game_state::StrategicProgress,
 };
 
@@ -96,7 +95,7 @@ fn RenderSecondaryAction(
     send_secondary_message: EventHandler<StrategicSecondaryAction>,
 ) -> Element {
     let gc = use_context::<GameContext>();
-    let cost_warning = get_cost_warning(&card, &gc.game_state().game_settings.expansions);
+    let cost_warning = get_cost_warning(card.version(&gc.game_state().game_settings.expansions));
 
     rsx! {
         if let Some(c) = cost_warning {
@@ -127,18 +126,20 @@ pub fn action_for_card(card: &StrategyCard) -> StrategicSecondaryAction {
     }
 }
 
-pub fn get_cost_warning(card: &StrategyCard, expansions: &Expansions) -> Option<String> {
+pub fn get_cost_warning(version: StrategyCardVersion) -> Option<String> {
     Some(
-        match card {
-            StrategyCard::Leadership => "pay 3 influence per token",
-            StrategyCard::Diplomacy => "pay 1 token",
-            StrategyCard::Politics => "pay 1 token",
-            StrategyCard::Construction if expansions.thunders_edge => "pay 1 token",
-            StrategyCard::Construction => "place token in system",
-            StrategyCard::Trade => "pay 1 token",
-            StrategyCard::Warfare => "pay 1 token",
-            StrategyCard::Imperial => "pay 1 token",
-            _ => return None,
+        match version {
+            StrategyCardVersion::Leadership => "pay 3 influence per token",
+            StrategyCardVersion::Diplomacy | StrategyCardVersion::DiplomacyOmega => "pay 1 token",
+            StrategyCardVersion::Politics => "pay 1 token",
+            StrategyCardVersion::Construction | StrategyCardVersion::ConstructionOmega => {
+                "place token in system"
+            }
+            StrategyCardVersion::ConstructionOmegaOmega => "pay 1 token",
+            StrategyCardVersion::Trade => "pay 1 token",
+            StrategyCardVersion::Warfare | StrategyCardVersion::WarfareOmega => "pay 1 token",
+            StrategyCardVersion::Technology => return None,
+            StrategyCardVersion::Imperial => "pay 1 token",
         }
         .to_string(),
     )

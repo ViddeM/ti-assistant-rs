@@ -236,12 +236,12 @@ With the three fixes the split becomes 20 Base / 20 PoK secrets (the code curren
 ## 8. Strategy cards, breakthroughs, planets, systems, factions, leaders
 
 ### Strategy cards (`strategy_card.rs`, images in `packages/ui/src/data/info_context.rs`)
-The code only stores names and initiative numbers, which are correct. The changed card texts are only reflected through the card images:
+The code only stores names and initiative numbers, which are correct. The changed card texts are only reflected through the card images. `StrategyCard::version` picks the newest `StrategyCardVersion` whose expansion is enabled, and the image and secondary hint match on it:
 
 | Card | Change | Source | Reflected? |
 |---|---|---|---|
-| Diplomacy | Primary readies "up to 2 exhausted planets you control" | **Codex I** (the roadmap lists it under PoK) | ✔ The image switches on `codex_1` |
-| Construction | Secondary reworded, same effect | PoK | ✔ The image switches on `prophecy_of_kings` |
+| Diplomacy Ω | Primary readies "up to 2 exhausted planets you control" | **Codex I** (the roadmap lists it under PoK) | ✔ `DiplomacyOmega`, `diplomacy_omega.webp` |
+| Construction Ω | Secondary reworded, same effect | PoK | ✔ `ConstructionOmega`, `construction_omega.webp` |
 | **Construction ΩΩ** | Primary: place a structure **or** use the PRODUCTION of 1 space dock, then place a structure. Secondary: "Spend 1 token from your strategy pool to place 1 structure" (**no longer places a token in a system**) | Thunder's Edge | ❌ No image. `expansions.thunders_edge` is matched but never used (`info_context.rs:141-145`). The secondary hint "place token in system" (`generic_strategy_card.rs:134`) is wrong under Thunder's Edge. **✅ Fixed** for the hint; the image is still missing |
 | **Warfare Ω** | Primary: tactical action without placing a command token (the system still counts as activated) and redistribute tokens. Secondary: PRODUCTION in home system | Thunder's Edge | ❌ Always the base image (`info_context.rs:151`) |
 

@@ -536,7 +536,7 @@ fn StrategizeView(send_commit_message: Callback<Option<ActionCardAction>>) -> El
                     fieldset { class: "column",
                         legend { "{card}" }
 
-                        if let Some(cost) = get_cost_warning(&card, &gc.game_state().game_settings.expansions) {
+                        if let Some(cost) = get_cost_warning(card.version(&gc.game_state().game_settings.expansions)) {
                             p { class: "warning-text", "Remember {cost}" }
                         }
                         p { "Secondary not tracked" }
