@@ -3,7 +3,7 @@ use std::{collections::HashMap, fmt::Display};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
-use crate::common::{expansions::Expansion, faction::Faction, game_settings::Expansions};
+use crate::common::{expansions::Expansion, faction::Faction, versions::Versioned};
 
 /// What category the tech belongs to.
 #[derive(
@@ -252,71 +252,32 @@ macro_rules! tr {
     };
 }
 
-impl Technology {
-    /// Is this tech enabled for the given [Expansions]?
-    pub fn is_enabled_in(&self, expansions: &Expansions) -> bool {
-        use Technology::*;
+impl Versioned for Technology {
+    const VERSIONS: &'static [&'static [Self]] = &[
+        &[
+            Technology::MagenDefenceGrid,
+            Technology::MagenDefenceGridOmega,
+            Technology::MagenDefenceGridOmegaOmega,
+        ],
+        &[
+            Technology::X89BacterialWeapon,
+            Technology::X89BacterialWeaponOmega,
+            Technology::X89BacterialWeaponOmegaOmega,
+        ],
+        &[Technology::MagmusReactor, Technology::MagmusReactorOmega],
+        &[
+            Technology::WormholeGenerator,
+            Technology::WormholeGeneratorOmega,
+        ],
+        &[Technology::YinSpinner, Technology::YinSpinnerOmega],
+    ];
 
-        // check if the expansion that adds this tech is enabled.
-        let faction_source = self.info().expansion;
-        if !expansions.is_enabled(&faction_source) {
-            return false;
-        }
-
-        // check if tech is patched in codex 1
-
-        let removed_in_codex_1 = &[
-            MagenDefenceGrid,
-            X89BacterialWeapon,
-            MagmusReactor,
-            WormholeGenerator,
-            YinSpinner,
-        ];
-
-        let added_in_codex_1 = &[
-            MagenDefenceGridOmega,
-            X89BacterialWeaponOmega,
-            MagmusReactorOmega,
-            WormholeGeneratorOmega,
-            YinSpinnerOmega,
-        ];
-
-        let is_removed_in_codex_1 = removed_in_codex_1.contains(self);
-        let is_added_in_codex_1 = added_in_codex_1.contains(self);
-
-        if expansions.codex_1 && is_removed_in_codex_1 {
-            return false;
-        }
-
-        if !expansions.codex_1 && is_added_in_codex_1 {
-            return false;
-        }
-
-        // check if tech is patched in codex 4
-
-        let removed_in_codex_4 = &[
-            MagenDefenceGrid,
-            MagenDefenceGridOmega,
-            X89BacterialWeapon,
-            X89BacterialWeaponOmega,
-        ];
-
-        let added_in_codex_4 = &[MagenDefenceGridOmegaOmega, X89BacterialWeaponOmegaOmega];
-
-        let is_removed_in_codex_4 = removed_in_codex_4.contains(self);
-        let is_added_in_codex_4 = added_in_codex_4.contains(self);
-
-        if expansions.codex_4 && is_removed_in_codex_4 {
-            return false;
-        }
-
-        if !expansions.codex_4 && is_added_in_codex_4 {
-            return false;
-        }
-
-        true
+    fn expansion(&self) -> Expansion {
+        self.info().expansion
     }
+}
 
+impl Technology {
     /// Returns the [TechInfo] for this technology.
     pub fn info(&self) -> TechInfo {
         match self {
@@ -1274,6 +1235,8 @@ impl Technology {
 
 #[cfg(test)]
 mod tests {
+    use crate::common::game_settings::Expansions;
+
     use super::*;
 
     #[test]

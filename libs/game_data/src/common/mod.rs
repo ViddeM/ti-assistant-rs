@@ -12,3 +12,5 @@ pub mod map;
 pub mod milty_data;
 /// A unique identifier for a player in a game.
 pub mod player_id;
+/// Versions of components that replace each other as expansions are added.
+pub mod versions;

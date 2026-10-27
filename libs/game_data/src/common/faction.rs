@@ -14,7 +14,7 @@ use crate::{
     state::game_state::GameState,
 };
 
-use super::{expansions::Expansion, game_settings::Expansions};
+use super::{expansions::Expansion, game_settings::Expansions, versions::Versioned};
 
 // TODO: Avoid having duplicate strings for parsing / display.
 

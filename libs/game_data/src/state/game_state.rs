@@ -13,7 +13,7 @@ use crate::{
     },
     common::{
         expansions::Expansion, faction::Faction, game_settings::GameSettings, map::HexMap,
-        player_id::PlayerId,
+        player_id::PlayerId, versions::Versioned,
     },
     components::{
         action_card::ActionCard,
