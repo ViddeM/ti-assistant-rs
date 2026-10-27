@@ -37,8 +37,8 @@ mod tests {
     use std::fmt::Debug;
 
     use crate::components::{
-        action_card::ActionCard, leaders::Leader, strategy_card::StrategyCardVersion,
-        tech::Technology,
+        action_card::ActionCard, leaders::Leader, planet::Planet,
+        strategy_card::StrategyCardVersion, tech::Technology,
     };
 
     use super::*;
@@ -115,5 +115,10 @@ mod tests {
     #[test]
     fn strategy_card_versions_are_consistent() {
         check_versions::<StrategyCardVersion>();
+    }
+
+    #[test]
+    fn planet_versions_are_consistent() {
+        check_versions::<Planet>();
     }
 }

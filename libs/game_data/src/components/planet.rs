@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::expansions::Expansion;
+use crate::common::{expansions::Expansion, versions::Versioned};
 
 use super::{
     system::{SystemType, systems},
@@ -1093,6 +1093,14 @@ impl Planet {
             self,
             Planet::Mirage | Planet::CustodiaVigilia | Planet::ThundersEdge | Planet::Avernus
         )
+    }
+}
+
+impl Versioned for Planet {
+    const VERSIONS: &'static [&'static [Self]] = &[&[Planet::MecatolRex, Planet::MecatolRexOmega]];
+
+    fn expansion(&self) -> Expansion {
+        self.info().expansion
     }
 }
 
