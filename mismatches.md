@@ -34,7 +34,7 @@ Paths below are relative to `libs/game_data/src/components/` unless stated other
 | 4 | 🔴 | **Some planets are in no system, so they can't be taken with a tactical action:** Thunder's Edge, Avernus, Custodia Vigilia and the Fracture planets. Mirage is special-cased; the others are not. Today the only way to give them to a player is the admin `SetPlanetOwner` event. **✅ Fixed** (Fracture planets in #1). Thunder's Edge can now be taken once the expedition has placed it (in that system), and Avernus once someone controls it (system not tracked, like Mirage). Correction: Custodia Vigilia should *not* be takeable; it has no tile and the Keleres "cannot lose" it. It should be granted with I.I.H.Q. instead (action plan E2), which is still open. | `system.rs` (no entries), `game_event_handler.rs:410` | ✔ |
 | 5 | 🟠 | **Styx has 3 resources; it should have 4** (4/0 on 4 separate wiki pages). **✅ Fixed** | `planet.rs:968` | ✔ |
 | 6 | 🟠 | **14 Thunder's Edge action cards are missing** (20 cards in total; see §2). **✅ Fixed**, including the Ω versions of 8 Codex I cards. | `action_card.rs:15-112` | ✔ |
-| 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
+| 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. **✅ Fixed** for the two techs. The three objectives are left open on purpose: the handlers call `assert_expansion`, so retagging would stop stored base-only games that used one of them from replaying. | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
 | 8 | 🟠 | **Keleres hasn't been updated for Thunder's Edge.** The I.I.H.Q. Modernization *tech* stays enabled alongside the new I.I.H.Q. *breakthrough*. The replacement tech Executive Order is missing, Agency Supply Network has the Codex III text, and Custodia Vigilia should be 2/2 under Thunder's Edge. | `tech.rs:1026-1105`, `planet.rs:786-796` | |
 | 9 | 🟠 | **None of Thunder's Edge's updated leader cards exist:** Naalu agent, Xxcha hero, all three Yin leaders, two Keleres heroes, and the Jol-Nar commander rename. `Leader::is_enabled_in` only knows about the Codex III swaps. | `components/leaders.rs:86-115` | |
 | 10 | 🟠 | **Plane Splitter needs 2 cybernetic prerequisites; the code has 1.** **✅ Fixed** | `tech.rs:1231` | ✔ |
@@ -200,8 +200,8 @@ With the three fixes the split becomes 20 Base / 20 PoK secrets (the code curren
 |---|---|---|---|---|---|
 | Plane Splitter | 🟠 | prerequisites | 1× Cybernetic | 2× Cybernetic. **✅ Fixed** | `:1231` ✔ |
 | Magmus Reactor (base) | 🟠 | name | "Magmus Reactor/ Magmus Reactor Ω" | "Magmus Reactor" (the base version shows an Ω label) | `:1165` ✔ |
-| I.I.H.Q. Modernization | 🟠 | expansion | Base | Codex III | `:1031` ✔ |
-| Agency Supply Network | 🟠 | expansion | Base | Codex III | `:1101` ✔ |
+| I.I.H.Q. Modernization | 🟠 | expansion | Base | Codex III. **✅ Fixed** | `:1031` ✔ |
+| Agency Supply Network | 🟠 | expansion | Base | Codex III. **✅ Fixed** | `:1101` ✔ |
 | Non-Euclidean Shielding | ⚪ | name | "Non-Euclid**i**an Shielding" | "Non-Euclid**e**an Shielding" | `:1157` ✔ |
 | I.I.H.Q. Modernization | ⚪ | name | "I.I.H.Q Modernization" (the breakthrough is "I.I.H.Q. Modernization") | "I.I.H.Q. Modernization" | `:1027` |
 | Super-Dreadnought II | ⚪ | name | no hyphen | hyphenated on the Unit Upgrade and L1Z1X pages; no hyphen on the Technology page | `:724` |

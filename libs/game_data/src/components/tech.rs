@@ -1028,7 +1028,7 @@ impl Technology {
                 TechType::Category(TechCategory::Cybernetic),
                 TechOrigin::Faction(Faction::CouncilKeleres),
                 tr!([(TechCategory::Cybernetic, 1)]),
-                Expansion::Base,
+                Expansion::CodexIII,
                 &[
                     "You are neighbors with all players that have units or control planets in or adjacent to the Mecatol Rex system."
                 ],
@@ -1098,7 +1098,7 @@ impl Technology {
                 TechType::Category(TechCategory::Cybernetic),
                 TechOrigin::Faction(Faction::CouncilKeleres),
                 tr!([(TechCategory::Cybernetic, 2)]),
-                Expansion::Base,
+                Expansion::CodexIII,
                 &[
                     "Whenever you resolve one of your PRODUCTION abilities, you may resolve an additional one of your PRODUCTION abilities in any system; the additional use does not trigger this ability."
                 ],
