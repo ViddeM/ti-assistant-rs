@@ -179,7 +179,6 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
                 Some(ActionCard::Crisis) => rsx! {
                     PlayEndOfTurnActionCard {
                         card: ActionCard::Crisis,
-                        player_question: "Who plays Crisis?",
                         players: players(),
                         on_play: move |player| event.send_event(Event::PlayCrisis { player }),
                     }
@@ -187,7 +186,6 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
                 Some(ActionCard::PuppetsOnAString) => rsx! {
                     PlayEndOfTurnActionCard {
                         card: ActionCard::PuppetsOnAString,
-                        player_question: "Which passed player plays it and performs the action?",
                         players: passed_players(),
                         on_play: move |player| event.send_event(Event::PlayPuppetsOnAString { player }),
                     }
@@ -202,7 +200,6 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
 #[component]
 fn PlayEndOfTurnActionCard(
     card: ActionCard,
-    player_question: String,
     players: Vec<PlayerId>,
     on_play: EventHandler<PlayerId>,
 ) -> Element {
@@ -211,7 +208,7 @@ fn PlayEndOfTurnActionCard(
     rsx! {
         div { class: "column margin-top",
             p { "{card.info().name}: {card.info().effect}" }
-            p { class: "margin-top", "{player_question}" }
+            p { class: "margin-top", "Played by:" }
             PlayerDropdown {
                 value: player,
                 options: players,
