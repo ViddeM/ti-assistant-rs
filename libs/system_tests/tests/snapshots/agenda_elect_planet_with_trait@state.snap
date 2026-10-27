@@ -5,7 +5,7 @@ round: 1
 gameSettings:
   maxPoints: 10
   expansions:
-    prophecyOfKings: true
+    prophecyOfKings: false
     codex1: false
     codex2: false
     codex3: false
@@ -184,8 +184,7 @@ statusPhaseState:
 availableLeaders:
   Alice: []
   Bob: []
-  Carol:
-    - GgrucotoRinn
+  Carol: []
 timeTrackingPaused: false
 playersPlayTime:
   Alice:

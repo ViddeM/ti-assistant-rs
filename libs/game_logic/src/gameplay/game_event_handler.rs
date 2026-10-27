@@ -410,7 +410,7 @@ fn try_update_game_state(
                 PlanetLocation::Token(system) => system,
                 PlanetLocation::NotOnBoard => bail!("{} isn't on the board", planet.info().name),
             };
-            game_state.assert_expansion(&planet.info().expansion)?;
+            game_state.assert_enabled(&planet)?;
 
             ensure!(
                 game_state.action_progress.is_some(),
@@ -1534,7 +1534,7 @@ fn try_update_game_state(
         /* Agenda phase events */
         Event::RevealAgenda { agenda } => {
             game_state.assert_phase(Phase::Agenda)?;
-            game_state.assert_expansion(&agenda.info().expansion)?;
+            game_state.assert_enabled(&agenda)?;
             let vote = VoteState::new(agenda, game_state)?;
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
@@ -1786,7 +1786,7 @@ fn try_update_game_state(
             }
         }
         Event::SetPlanetOwner { player, planet } => {
-            game_state.assert_expansion(&planet.info().expansion)?;
+            game_state.assert_enabled(&planet)?;
 
             if let Some(p) = &player {
                 ensure!(game_state.players.contains_key(p), "Player does not exist");
@@ -1911,7 +1911,7 @@ fn try_update_game_state(
         }
 
         Event::AddAgendaBegin { agenda } => {
-            game_state.assert_expansion(&agenda.info().expansion)?;
+            game_state.assert_enabled(&agenda)?;
             ensure!(
                 game_state.agenda_override_state.is_none(),
                 "There is already an agenda override in progress, cancel or resolve that before starting a new one."

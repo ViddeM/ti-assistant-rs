@@ -265,7 +265,7 @@ fn candidates(g: &TestGame) -> Vec<AgendaElect> {
 /// Agendas that elect a planet with a trait only offer planets with that trait, including traits
 /// gained from attachments, and the elected planet is recorded with the matching kind.
 pub fn agenda_elect_planet_with_trait() -> TestGame {
-    let mut g = agenda_phase(three_players().pok());
+    let mut g = agenda_phase(three_players());
     g.apply(Event::SetPlanetOwner {
         player: Some(p("Alice")),
         planet: Planet::Quann,
