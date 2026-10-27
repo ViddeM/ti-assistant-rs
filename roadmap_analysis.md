@@ -52,7 +52,7 @@ Every claim below was checked against the code (file references given). "Display
 
    The roadmap's "updated codexes: go over all of them" doesn't say what this involves.
 4. **Thunder's Edge faction unit upgrades:** Helios V2, Linkship II and Exile II are missing (data).
-5. **Victory target / winning:** `GameSettings.max_points` is ignored and the score hard-codes 10 (`state/score.rs:63`). "Winning the game" is ❌, but this underlying bug isn't on the roadmap. It blocks Civilized Society and Liberation of Ordinian (12/10).
+5. **Victory target / winning:** `GameSettings.max_points` is ignored and the score hard-codes 10 (`state/score.rs:63`). "Winning the game" is ❌, but this underlying bug isn't on the roadmap. It blocks Civilized Society and Liberation of Ordinian (12/10). → lowest priority (2026-10-27): game end is handled at the table. Revisit with the galactic events.
 6. **Firmament "Plots within Plots":** scoring another player's secret must give **no VP** (it creates a plot instead), and Puppets of the Blade needs at least 1 plot. Not mentioned; it affects score correctness.
 7. **Crimson Rebellion starts with its breakthrough** (and rolls for the Fracture during setup). Not handled or mentioned.
 8. **Styx VP** is listed, but other VP sources added by Thunder's Edge and Codex IV aren't:

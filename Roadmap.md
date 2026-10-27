@@ -46,7 +46,7 @@
      - ❌ Obsidian (Draw and have 1 extra secret objective) :: Note we don't track the cap atm so technically it is not required to be implemented?
      - ✅ Shard of the Throne (Player with this card has 1 extra VP)
      - ✅ Crown of Emphydia (Purge to gain 1 VP)
-   - ❌ Winning the game (when reaching the winning score).
+   - ❌ Winning the game (when reaching the winning score) (lowest priority: game end is handled at the table).
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
@@ -122,7 +122,7 @@
    - ✅ Reveal objectives
    - ❌ Display number of action cards to draw & tokens to receive.
  - ❌ Agenda Phase (see below)
- - ❌ Handle game end
+ - ❌ Handle game end (lowest priority: game end is handled at the table)
  - ❌ Personal views
    - ✅ Frontend only personal views
      - ✅ URL stored views

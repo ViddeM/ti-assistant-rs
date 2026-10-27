@@ -335,7 +335,7 @@ These aren't data-vs-wiki mismatches, but they came up while checking:
 
 | Sev | Issue | Location |
 |---|---|---|
-| 🔴 | `Score::update_player_points` hard-codes `self.max_points = 10; // TODO set up score`. `GameSettings.max_points` (set in new game / milty) is never used, and nothing in the UI shows the VP target | `state/score.rs:63` ✔ |
+| 🟡 | `Score::update_player_points` hard-codes `self.max_points = 10; // TODO set up score`. `GameSettings.max_points` (set in new game / milty) is never used, and nothing in the UI shows the VP target. Low priority: nothing reads it and game end is handled at the table | `state/score.rs:63` ✔ |
 | 🟠 | The Political Censure row in the score table renders the heading "Shard of the Throne" (copy-paste) | `packages/ui/src/views/score_view_mode/score_table_view.rs:612-613` ✔ |
 | 🟠 | The **stage II gating** (`expected_objectives_before_stage_two`) counts Incentive Program and Classified Document Leaks among the *laws in play*. Incentive Program is a **directive**, so it's never counted: an extra Stage I revealed through `RevealExtraPublicObjective` makes the status phase demand Stage II one round early. Classified Document Leaks (a law) adds +1, but nothing ever turns the elected secret into a public objective (`RevealExtraPublicObjective` only takes a `PublicObjective`), so the app demands a 6th Stage I instead. Found by reading the code; no test covers it | `state/game_state.rs:608-621`, `game_event_handler.rs:1328-1340` ✔ |
 | 🟡 | Heroes are never marked as purged, so a used hero stays in the playable leader list | `state/game_state.rs:649-678` ✔ |

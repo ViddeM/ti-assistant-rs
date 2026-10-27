@@ -9,12 +9,12 @@
 > Updated 2026-10-25 from the analysis in [`roadmap_analysis.md`](./roadmap_analysis.md). Item IDs in brackets (e.g. `[TE-C1]`, `[GE]`) point to [`TE_CIV_Action_Plan.md`](./TE_CIV_Action_Plan.md); data errors are listed in [`mismatches.md`](./mismatches.md).
 
 ## Known bugs (see mismatches.md §1 and §9)
- - ❌ Fracture tiles 125–127 all contain Industrex; Fracture planets can't be taken in a tactical action
- - ❌ Elect cultural/hazardous/industrial planet: the trait check is inverted (the vote dropdown likely panics)
- - ❌ Firmament starts with 4 planets (tiles 96A + 96B)
- - ❌ Thunder's Edge / Avernus / Custodia Vigilia can't be taken in a tactical action (no system) `[E1]`
- - ❌ Styx resources 3 → 4
- - ❌ Configured victory points ignored (score hard-codes 10) `[E5]`
+ - ✅ Fracture tiles 125–127 all contain Industrex; Fracture planets can't be taken in a tactical action
+ - ✅ Elect cultural/hazardous/industrial planet: the trait check is inverted (the vote dropdown likely panics)
+ - ✅ Firmament starts with 4 planets (tiles 96A + 96B)
+ - ✅ Thunder's Edge / Avernus can't be taken in a tactical action (no system) `[E1]`; Custodia Vigilia should be granted through I.I.H.Q. instead `[A4]`
+ - ✅ Styx resources 3 → 4
+ - ❌ Configured victory points ignored (score hard-codes 10) (lowest priority: game end is handled at the table) `[E5]`
  - ❌ Stage II gating wrong with Incentive Program / Classified Document Leaks
  - ❌ Political Censure score row is labelled "Shard of the Throne"
  - ❌ Wrong expansion tags: Raise a Fleet, Dictate Policy, Drive the Debate (→ PoK); I.I.H.Q. Modernization, Agency Supply Network (→ Codex III)
@@ -69,8 +69,8 @@
    - ❌ Legendary planets
      - ❌ Styx (TE) `[TE-C1]`
    - ❌ Galactic event VP sources (Total War, Zealous Orthodoxy, Monuments) `[GE]`
-   - ❌ Use the configured victory points (currently hard-coded to 10) `[E5]`
-   - ❌ Winning the game (when reaching the winning score) `[E5]`
+   - ❌ Use the configured victory points (currently hard-coded to 10) (lowest priority: game end is handled at the table) `[E5]`
+   - ❌ Winning the game (when reaching the winning score) (lowest priority: game end is handled at the table) `[E5]`
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
@@ -122,7 +122,7 @@
    - ✅ Reveal objectives
    - ❌ Display number of action cards to draw & tokens to receive.
  - ❌ Agenda Phase (see below)
- - ❌ Handle game end
+ - ❌ Handle game end (lowest priority: game end is handled at the table)
    - ❌ Elimination (needed by Conventions of War Abandoned / Silver Flame edge cases)
  - ❌ Personal views
    - ✅ Frontend only personal views

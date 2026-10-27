@@ -20,6 +20,8 @@ This app is used **alongside** the physical game. Every feature has to be faster
 - **Positional rules:** movement, adjacency.
 - **Randomness:** dice. The backend must stay deterministic for undo and replay, so players roll at the table and enter the result.
 
+**Lowest priority:** game end (reaching the VP target, winners, tiebreaks, elimination). Players handle it at the table.
+
 **How each rule effect is classified:**
 
 | Verdict | Meaning |
@@ -69,7 +71,7 @@ Several TE, CIV and galactic-event features need the same building blocks. Build
 | E2 | **`GameState::gain_breakthrough(player)`** | The "unlock breakthrough if none" logic is copy-pasted in 4 places (`ClaimThundersEdgeExpeditionSlot`, `CommitToThundersEdgeExpedition`, `CompleteThundersEdgeExpedition`, `SetThundersEdgeCompletion`), and many new sources are coming (Thunder's Edge planet, Quantumcore, Brilliance, Rapid Mobilization, Crimson setup). | One helper that sets the breakthrough and applies its **on-gain effects**: I.I.H.Q. → Custodia Vigilia (Ω); Stellar Genesis → Avernus; Al'Raith → Fracture in play. It also returns a flag so the UI can show the **"roll for the Fracture"** prompt (see TE-B). 🚱 `Player::gain_breakthrough` now replaces the 4 copies and is used by Brilliance; the on-gain effects and the flag are still open. | P1 / S |
 | E3 | **`on_planet_gained(player, planet, previous_owner)` hook** | Thunder's Edge planet (gain breakthrough), Fracture planets (gain relic), Dangerous Wilds, Minor Factions alliance reminder, Monuments. | Called from `TacticalActionTakePlanet`, `SetPlanetOwner` and the new planet-granting effects. It returns "pending prompts" for the UI. Keep it pure state + flags; no new phases. | P1 / S |
 | E4 | **`SetRelicOwner { relic, player: Option<PlayerId> }` (any phase)** | Today a relic can only be gained through `GainRelicAction`, which is an *action* (it asserts the Action phase and ends the turn). Many effects hand out relics outside that action: Fracture planets, Vaults of the Heir, Black Market Dealings, Cultural Exchange (The Obsidian), Liberation of Ordinian setup, transactions (Silver Flame). | Admin-style event like `SetShardForTheThroneOwner`, reusing that event's Shard of the Throne bookkeeping. Gaining The Quantumcore calls E2. | P1 / S |
-| E5 | **Use the configured victory target and add a victory check** | `Score::update_player_points` hard-codes `max_points = 10` (`state/score.rs:63`). Civilized Society, Liberation of Ordinian (12/10) and every new VP source depend on this. | Take `max_points` from `GameSettings`. Add `GameState::winners() -> Vec<PlayerId>` (scenario/event aware) and a non-blocking "X reached N VP" banner. Show the target in the score view. | P1 / S |
+| E5 | **Victory target and game end** | The configured target is ignored (`state/score.rs:63`), but nothing reads it, and game end is handled at the table. Revisit it with the galactic events (Civilized Society), where it may matter more. | If ever wanted: use `GameSettings::max_points` and show the target. | P3 (lowest) / S |
 | E6 | **Data on leader actions** | `LeaderActionBegin` jumps straight to `EndActionTurn` without data (TODO list at `game_event_handler.rs:851-867`). Ta Zern, and later others, need data. | Add `LeaderAction` data, mirroring `RelicAction` + `action_matches_relic`, and use the existing (unused) `Phase::LeaderAction` + `LeaderActionCommit { data }`. Leaders without data keep the one-click path. Also track **purged heroes** (`purged_leaders: BTreeSet<Leader>`) so used heroes disappear from `available_leaders`. | P2 / M |
 | E7 | **Galactic event framework** | Prerequisite for §5. | See §5.0. | P2 / M |
 | E8 | **A leader-faction override** | Cultural Exchange Program, and Creuss's "Unknown" leaders in Liberation of Ordinian. | `leader_faction: BTreeMap<PlayerId, Faction>` in `GameState`, read by `update_available_leaders` (`state/game_state.rs:649`). | P2 / S |
@@ -431,7 +433,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 | LO-2 Setup automation | At `CreationDone`/`StartGame`: speaker = Nekro (validate `SetupSpeaker` or set it automatically); Nekro gets `Planet::Ordinian` (the "Hyperion VI" legendary already exists from TE data); Naaz-Rokha gets Circlet of the Void and Nomad gets Neuraloop (E4); Nekro techs = Dacxive + the two scenario techs (new `Technology` variants, `Faction(NekroVirus)`, `Expansion::CodexIV`, enabled only in the scenario). | M |
 | LO-3 "Mecatol Rex means Ordinian" | Add `GameState::is_centre_planet(&Planet)` (scenario aware) and use it instead of `Planet::is_mecatol_rex()` wherever rules apply: custodians grant (`game_event_handler.rs:481`; **disabled** in the scenario), Imperial "+1 VP while controlling Mecatol Rex", Stellar Converter exclusion, agenda elect "non-Mecatol" checks. | S |
 | LO-4 Liberate/Control Ordinian objective | Add `PublicObjective::LiberateOrdinian` (Stage I, 1 VP, scored through `ScoreExtraPublicObjective` because it's an action-phase score) and `PublicObjective::ControlOrdinian` (Stage II; VP and timing to be read off the card), both scenario-only. Reveal LiberateOrdinian with the initial objectives without counting it towards the 5 Stage I (`expected_objectives_before_stage_two` +1). When the first Stage II is revealed, also reveal ControlOrdinian and reject further scoring of LiberateOrdinian (existing VPs stay). | M |
-| LO-5 Victory rule | E5 with a scenario override: the Sol+Xxcha pair needs 12 + 10 (in either order); everyone else needs 10. Show both alliance members together in the score view. | S |
+| LO-5 Victory rule | Info only: show the rule in the scenario info (the Sol+Xxcha pair needs 12 + 10, in either order; everyone else needs 10). The winner is decided at the table. | S |
 | LO-6 Leaders | Creuss uses the "Unknown" leaders through E8, mapped to new leader variants (the names differ from the TE ones, so don't reuse `AhkRavin` …; only Forlorn Shadow is an ACTION). Add FSS Orlando as a hero available to both Sol and Xxcha with a custom unlock check (instead of "3 objectives"). | M |
 | LO-7 Preset map | Optional: ship a fixed `HexMap` so the map view works without milty (Ordinian tile in the centre). Needs tile art for the Codex Ordinian system. | P3 / M (👺 unless asked for) |
 
@@ -441,7 +443,6 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 
 1. **Bugs and data (P1, all S).**
    - mismatches §1 items 1–5 (Fracture tiles, agenda trait checks, Firmament planets, token planets, Styx).
-   - E5 victory target.
    - TE-H strategy card images and hint.
    - TE-E-1 leader updates, TE-F1 Keleres.
    - ✅ The 14 action cards (data only) and the Ω wording.
@@ -462,6 +463,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 6. **Optional (P3).**
    - Hidden Agenda UI, ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.
    - Liberation of Ordinian.
+   - E5 victory target and game end (lowest priority).
 
 ## 8. Open questions
 
