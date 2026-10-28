@@ -632,6 +632,27 @@ impl GameState {
         Ok(previous_owner)
     }
 
+    /// Give `relic` to `owner`, or to nobody, taking it from whoever had it.
+    pub fn set_relic_owner(&mut self, relic: Relic, owner: Option<PlayerId>) -> anyhow::Result<()> {
+        if let Some(p) = owner.as_ref() {
+            ensure!(self.players.contains_key(p), "Player doesn't exist '{p}'");
+        }
+
+        for (id, player) in self.players.iter_mut() {
+            if owner.as_ref() == Some(id) {
+                player.relics.insert(relic.clone());
+            } else {
+                player.relics.remove(&relic);
+            }
+        }
+
+        if relic == Relic::ShardOfTheThrone {
+            self.score.shard_of_the_throne = owner;
+        }
+
+        Ok(())
+    }
+
     /// Unlock the player's breakthrough and apply its on-gain effects, unless it's already
     /// unlocked.
     pub fn gain_breakthrough(&mut self, player: &PlayerId) -> anyhow::Result<()> {

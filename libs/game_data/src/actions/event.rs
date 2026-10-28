@@ -451,6 +451,14 @@ pub enum Event {
         player: Option<PlayerId>,
     },
 
+    /// Give / remove a relic to/from a player.
+    SetRelicOwner {
+        /// The relic to give or remove.
+        relic: Relic,
+        /// The player that should receive it, or None if no one should have it.
+        player: Option<PlayerId>,
+    },
+
     /// Add the tech to the players list of techs.
     AddTechToPlayer {
         /// The player to receive the technology.

@@ -938,19 +938,7 @@ fn try_update_game_state(
                 "Relic {relic:?} is already owned by another player."
             );
 
-            match relic {
-                Relic::ShardOfTheThrone => {
-                    ensure!(
-                        game_state.score.shard_of_the_throne.is_none(),
-                        "Shard of the Throne is already assigned to a player? (This is a bug)"
-                    );
-                    game_state.score.shard_of_the_throne = Some(player);
-                }
-                _ => { /* Has no relevant effect at this point */ }
-            }
-
-            let player = game_state.get_current_player()?;
-            player.relics.insert(relic);
+            game_state.set_relic_owner(relic, Some(player))?;
             game_state.phase = Phase::EndActionTurn;
         }
         Event::RelicActionBegin { player, relic } => {
@@ -1648,26 +1636,7 @@ fn try_update_game_state(
                 .insert(pub_obj, BTreeSet::new());
         }
         Event::SetShardForTheThroneOwner { player } => {
-            if let Some(p) = player.as_ref() {
-                ensure!(
-                    game_state.players.contains_key(p),
-                    "Player doesn't exist '{p}'"
-                );
-            }
-
-            // Remove shard of the throne relic from the player who has it.
-            game_state.players.values_mut().for_each(|p| {
-                p.relics.remove(&Relic::ShardOfTheThrone);
-            });
-
-            if let Some(p) = player.as_ref() {
-                // Give the relic to the new owner.
-                let Some(new_owner) = game_state.players.get_mut(p) else {
-                    bail!("Player doesn't exist?")
-                };
-                new_owner.relics.insert(Relic::ShardOfTheThrone);
-            }
-            game_state.score.shard_of_the_throne = player;
+            game_state.set_relic_owner(Relic::ShardOfTheThrone, player)?;
         }
         Event::SetCrownOfEmphidiaOwner { player } => {
             if let Some(p) = player.as_ref() {
@@ -1697,6 +1666,10 @@ fn try_update_game_state(
             });
 
             game_state.score.book_of_latvinia = player;
+        }
+        Event::SetRelicOwner { relic, player } => {
+            game_state.assert_enabled(&relic)?;
+            game_state.set_relic_owner(relic, player)?;
         }
         Event::AddTechToPlayer { player, tech } => {
             game_state.assert_enabled(&tech)?;

@@ -288,7 +288,7 @@
    - ❌ The Quantumcore (gain breakthrough when gained) `[TE-D1]`
    - ❌ The Silver Flame (roll: +1 VP or lose home system / can't score publics) `[TE-D2]`
    - ❌ The Triad (badge only, relic fragments aren't tracked) `[TE-D3]`
-   - ❌ Non-action "gain relic" event (Fracture planets, Vaults, Cultural Exchange …) `[E4]`
+   - ✅ Non-action "gain relic" event (Fracture planets, Vaults, Cultural Exchange …) `[E4]`
  - 🚱 New factions (missing unit upgrades; ✅ Firmament planet bug, ✅ Plane Splitter prereqs)
    - ❌ Firmament "Plots within Plots" (no VP for scoring others' secrets, plots enable Puppets of the Blade) `[TE-F2]`
    - ❌ Deepwrought Radical Advancement tech swap (optional) `[TE-F3]`
