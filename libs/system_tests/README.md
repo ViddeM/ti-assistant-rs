@@ -144,7 +144,7 @@ When the game changes:
   - If the field matters to the flow of the game, as the speaker and turn order do, consider adding it to `changes` in `src/timeline.rs`. Doing so changes every timeline snapshot too.
 - **New expansion**:
   - Add a builder method like `.thunders_edge()`.
-  - Enable the expansion in `milty_data` (`src/milty.rs`), which turns on all expansions.
+  - Enable the expansion in `milty_data_on_map` (`src/milty.rs`), which turns on all expansions.
 - **New component enum** used in a `BTreeSet` or `BTreeMap`: add it to `libs/game_data/tests/ord_consistency.rs`.
 - **New types that scenarios use often**: add them to `prelude` in `src/lib.rs`.
 

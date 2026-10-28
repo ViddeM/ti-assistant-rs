@@ -1,0 +1,355 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: true
+    codex2: true
+    codex3: true
+    codex4: true
+    thundersEdge: true
+phase: Strategy
+mapData:
+  miltyInformation:
+    hexMap:
+      tiles:
+        - system: "112"
+          position:
+            Pos:
+              ring: 0
+              position: 0
+              rotation: 0
+        - system: "97"
+          position:
+            Pos:
+              ring: 1
+              position: 0
+              rotation: 0
+        - system: "98"
+          position:
+            Pos:
+              ring: 1
+              position: 1
+              rotation: 0
+        - system: "99"
+          position:
+            Pos:
+              ring: 1
+              position: 2
+              rotation: 0
+        - system: "100"
+          position:
+            Pos:
+              ring: 1
+              position: 3
+              rotation: 0
+        - system: "101"
+          position:
+            Pos:
+              ring: 1
+              position: 4
+              rotation: 0
+        - system: "102"
+          position:
+            Pos:
+              ring: 1
+              position: 5
+              rotation: 0
+        - system: "103"
+          position:
+            Pos:
+              ring: 2
+              position: 0
+              rotation: 0
+        - system: "104"
+          position:
+            Pos:
+              ring: 2
+              position: 1
+              rotation: 0
+        - system: "105"
+          position:
+            Pos:
+              ring: 2
+              position: 2
+              rotation: 0
+        - system: "106"
+          position:
+            Pos:
+              ring: 2
+              position: 3
+              rotation: 0
+        - system: "107"
+          position:
+            Pos:
+              ring: 2
+              position: 4
+              rotation: 0
+        - system: "108"
+          position:
+            Pos:
+              ring: 2
+              position: 5
+              rotation: 0
+        - system: "109"
+          position:
+            Pos:
+              ring: 2
+              position: 6
+              rotation: 0
+        - system: "110"
+          position:
+            Pos:
+              ring: 2
+              position: 7
+              rotation: 0
+        - system: "111"
+          position:
+            Pos:
+              ring: 2
+              position: 8
+              rotation: 0
+        - system: "115"
+          position:
+            Pos:
+              ring: 2
+              position: 9
+              rotation: 0
+        - system: "116"
+          position:
+            Pos:
+              ring: 2
+              position: 10
+              rotation: 0
+        - system: "117"
+          position:
+            Pos:
+              ring: 2
+              position: 11
+              rotation: 0
+        - system: 96A
+          position:
+            Pos:
+              ring: 3
+              position: 0
+              rotation: 0
+        - system: "125"
+          position:
+            Pos:
+              ring: 3
+              position: 1
+              rotation: 0
+        - system: "126"
+          position:
+            Pos:
+              ring: 3
+              position: 2
+              rotation: 0
+        - system: "95"
+          position:
+            Pos:
+              ring: 3
+              position: 3
+              rotation: 0
+        - system: "127"
+          position:
+            Pos:
+              ring: 3
+              position: 4
+              rotation: 0
+        - system: "113"
+          position:
+            Pos:
+              ring: 3
+              position: 5
+              rotation: 0
+        - system: "94"
+          position:
+            Pos:
+              ring: 3
+              position: 6
+              rotation: 0
+        - system: "114"
+          position:
+            Pos:
+              ring: 3
+              position: 7
+              rotation: 0
+        - system: "93"
+          position:
+            Pos:
+              ring: 3
+              position: 9
+              rotation: 0
+        - system: "92"
+          position:
+            Pos:
+              ring: 3
+              position: 12
+              rotation: 0
+        - system: "82"
+          position: OutsideGalaxy
+        - system: "118"
+          position: OutsideGalaxy
+      ring_count: 4
+    mirageSystem: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Ann:
+    name: Ann
+    faction: FirmamentObsidian
+    color: Black
+    planets:
+      Olergodt: []
+      Lemox: []
+      Capha: []
+      Tinnes: []
+      Styx: []
+      MecatolRexOmega: []
+      Cronos: []
+      Tallin: []
+      LuthienVi: []
+    technologies:
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState:
+      Firmament:
+        side: Firmament
+  Ben:
+    name: Ben
+    faction: DeepwroughtScholarate
+    color: Blue
+    planets:
+      Andeara: []
+      TheWatchtower: []
+      Faunus: []
+      Kostboth: []
+      Cresius: []
+      Ikatena: []
+      Horizon: []
+    technologies:
+      - NeuralMotivator
+      - PlasmaScoring
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Cid:
+    name: Cid
+    faction: CrimsonRebellion
+    color: Red
+    planets:
+      ViraPicsIII: []
+      Garbozia: []
+      LazulRex: []
+      Bellatrix: []
+      Tarana: []
+      Cocytus: []
+      AhkCreuxx: []
+    technologies:
+      - PlasmaScoring
+    relics: []
+    breakthrough: ResonanceGenerator
+    factionState: None
+  Dee:
+    name: Dee
+    faction: RalNelConsortium
+    color: Green
+    planets:
+      Lesab: []
+      Emelpar: []
+      Hercalor: []
+      TsionStation: []
+      OluzStation: []
+      Lethe: []
+      MezLoOrzFeiZsha: []
+      RepoLoOrzQet: []
+    technologies:
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Eve:
+    name: Eve
+    faction: LastBastion
+    color: Orange
+    planets:
+      Tempesta: []
+      Industrex: []
+      Tiamat: []
+      NewTerra: []
+      Phlegethon: []
+      ThundersEdge: []
+      Ordinian: []
+      Revelation: []
+      Elnath: []
+    technologies:
+      - SarweenTools
+    relics: []
+    breakthrough: TheIcon
+    factionState: None
+speaker: Ann
+tableOrder:
+  - Ann
+  - Ben
+  - Cid
+  - Dee
+  - Eve
+turnOrder:
+  - Ann
+  - Ben
+  - Cid
+  - Dee
+  - Eve
+strategyCardHolders: {}
+currentPlayer: Ann
+spentStrategyCards: []
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Ann: 2
+    Ben: 0
+    Cid: 0
+    Dee: 0
+    Eve: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: Ann
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Ann: []
+  Ben: []
+  Cid:
+    - AhkRavin
+  Dee:
+    - KanKipRel
+  Eve: []
+timeTrackingPaused: false
+playersPlayTime: {}
+currentTurnStartTime: "2025-01-01T12:08:00Z"
+naaluTelepathy: ~
+teExpedition:
+  completed:
+    won_by: Eve
+    placed_in: "114"
+  progress: {}
+bookOfLatviniaResearch: ~

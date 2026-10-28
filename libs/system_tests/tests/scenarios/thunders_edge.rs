@@ -1,13 +1,19 @@
 //! Thunder's Edge: the expedition, The Obsidian, its planets and its action cards.
 
 use ti_helper_game_data::{
-    components::breakthrough::Breakthrough,
+    common::{expansions::Expansion, map::HexPosition},
+    components::{
+        breakthrough::Breakthrough,
+        system::{SystemType, systems},
+    },
     state::{
         faction_state::FirmamentSide,
         game_state::{ActionPhaseProgress, PlanetLocation, TacticalProgress},
     },
 };
 use ti_helper_system_tests::prelude::*;
+
+use ti_helper_system_tests::milty::{EVERY_THUNDERS_EDGE_TILE_MAP, milty_data_on_map};
 
 use crate::fixtures::{action_phase, five_player_draft, three_players};
 
@@ -23,6 +29,7 @@ scenarios![
     thunders_edge_overrule_and_strategize,
     thunders_edge_crisis_and_puppets_on_a_string,
     thunders_edge_quantumcore,
+    thunders_edge_map_tiles,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -625,6 +632,66 @@ fn the_obsidian_flips_the_map_tile() {
     g.apply(Event::PuppetsOfTheBlade { player: p("Eve") });
     assert!(!systems(&g).contains(&"96A".to_string()));
     assert!(systems(&g).contains(&"96B".to_string()));
+}
+
+/// Every Thunder's Edge system tile is on the map, each of their planets has an owner and
+/// Thunder's Edge is placed in the entropic scar 114.
+pub fn thunders_edge_map_tiles() -> TestGame {
+    let players = ["Ann", "Ben", "Cid", "Dee", "Eve"];
+    let mut g = TestGame::builder()
+        .milty(milty_data_on_map(
+            EVERY_THUNDERS_EDGE_TILE_MAP,
+            &[
+                ("Ann", Faction::FirmamentObsidian, 0),
+                ("Ben", Faction::DeepwroughtScholarate, 1),
+                ("Cid", Faction::CrimsonRebellion, 2),
+                ("Dee", Faction::RalNelConsortium, 3),
+                ("Eve", Faction::LastBastion, 4),
+            ],
+        ))
+        .create();
+    g.finish_creation().auto_setup().start_game();
+
+    let systems = systems();
+    let tiles = g
+        .state()
+        .map_data
+        .milty_information
+        .as_ref()
+        .unwrap()
+        .hex_map
+        .tiles
+        .clone();
+    let planets = tiles
+        .iter()
+        .map(|tile| &systems[&tile.system])
+        .filter(|system| system.expansion == Expansion::ThundersEdge)
+        .filter(|system| !matches!(system.system_type, SystemType::HomeSystem(_)))
+        .flat_map(|system| system.planets.clone());
+    for (index, planet) in planets.enumerate() {
+        g.apply(Event::SetPlanetOwner {
+            player: Some(p(players[index % players.len()])),
+            planet,
+        });
+    }
+
+    g.apply(Event::SetThundersEdgeCompletion {
+        new_completion: Some(TECompletion {
+            won_by: p("Eve"),
+            placed_in: "114".to_string(),
+        }),
+    });
+
+    assert!(
+        tiles
+            .iter()
+            .any(|tile| tile.system == "118" && tile.position == HexPosition::OutsideGalaxy)
+    );
+    assert_eq!(
+        g.state().planet_location(&Planet::ThundersEdge),
+        PlanetLocation::Token(Some("114".to_string()))
+    );
+    g
 }
 
 fn begin_action_card(player: &str, card: ActionCard) -> Event {
