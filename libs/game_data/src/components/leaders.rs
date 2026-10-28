@@ -66,12 +66,21 @@ impl Component for Leader {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
     replacements! {
-        Agent(Agent::Zeu) -> Agent(Agent::ZeuCxIII),
+        Agent(Agent::Zeu) -> Agent(Agent::ZeuCxIII) -> Agent(Agent::ZeuTE),
         Commander(Commander::Maban) -> Commander(Commander::MabanCxIII),
-        Hero(Hero::XxekirGrom) -> Hero(Hero::XxekirGromCxIII),
-        Agent(Agent::BrotherMilor) -> Agent(Agent::BrotherMilorCxIII),
-        Commander(Commander::BrotherOmar) -> Commander(Commander::BrotherOmarCxIII),
-        Hero(Hero::DannelOfTheTenth) -> Hero(Hero::DannelOfTheTenthCxIII),
+        Hero(Hero::XxekirGrom) -> Hero(Hero::XxekirGromCxIII) -> Hero(Hero::XxekirGromTE),
+        Agent(Agent::BrotherMilor)
+            -> Agent(Agent::BrotherMilorCxIII)
+            -> Agent(Agent::BrotherMilorTE),
+        Commander(Commander::BrotherOmar)
+            -> Commander(Commander::BrotherOmarCxIII)
+            -> Commander(Commander::BrotherOmarTE),
+        Hero(Hero::DannelOfTheTenth)
+            -> Hero(Hero::DannelOfTheTenthCxIII)
+            -> Hero(Hero::DannelOfTheTenthTE),
+        Commander(Commander::TaZern) -> Commander(Commander::AgnlanOln),
+        Hero(Hero::KuuasiAunJalatai) -> Hero(Hero::KuuasiAunJalataiTE),
+        Hero(Hero::OdlynnMyrr) -> Hero(Hero::OdlynnMyrrTE),
     }
 
     fn expansion(&self) -> Expansion {

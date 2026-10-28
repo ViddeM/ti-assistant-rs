@@ -134,7 +134,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| E-1 TE leader card updates (Z'eu ΩΩ, Xxekir Grom ΩΩ, Yin ΩΩ ×3, Odlynn Myrr, Kuuasi Aun Jalatai, Jol-Nar commander renamed to Agnlan Oln) | Data | Add the variants plus TE swap lists in `Leader::is_enabled_in` (mirror the Codex III lists). Xxekir Grom ΩΩ becomes an ACTION hero ("place up to 4 PDS/mechs"), so it will show up as playable. | P1 / S |
+| E-1 TE leader card updates (Z'eu ΩΩ, Xxekir Grom ΩΩ, Yin ΩΩ ×3, Odlynn Myrr, Kuuasi Aun Jalatai, Jol-Nar commander renamed to Agnlan Oln) | Data | ✅ The variants are in, chained after the older versions in `Leader`'s `replacements!`. Xxekir Grom ΩΩ is an ACTION hero ("place up to 4 PDS/mechs"), so it shows up as playable. | P1 / S |
 | E-2 **Director Nel** (Ral Nel hero, "after the last player passes: no longer passed, purge") | Track | When the last player passes, `advance_turn` (`state/game_state.rs:400-428`) switches straight to Status and clears `passed_players`. Add `PlayDirectorNel { player }`, valid in Status while `status_phase_state` is still untouched, for a Ral Nel player with the hero unlocked and not purged. It sets `phase = Action`, `passed_players = everyone else`, `current_player = player`, clears `status_phase_state`, and purges the hero (E6). The status phase starts again normally when they pass. The Status view shows the button only when it applies. | P2 / M |
 | E-3 **Ta Zern** (Deepwrought hero, `TaZernTE`): purge a non-unit-upgrade tech from everyone; those who lost it research another | Track | `LeaderAction::TaZern { tech, replacements: BTreeMap<PlayerId, Technology> }` (E6). Remove `tech` from every player, add the replacements, and record `purged_techs: BTreeSet<Technology>` so pickers hide the tech for the rest of the game. | P2 / M |
 | E-4 Sharsiss (plots) | Track (if F2 is built) | `LeaderAction::Sharsiss { add_plot / add_token }`, which edits Firmament plots. Without F2 it stays a no-data action (as today). | P3 / S |
@@ -444,7 +444,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 1. **Bugs and data (P1, all S).**
    - mismatches §1 items 1–5 (Fracture tiles, agenda trait checks, Firmament planets, token planets, Styx).
    - ✅ TE-H1 strategy card images and the H2 hint.
-   - TE-E-1 leader updates, TE-F1 Keleres.
+   - ✅ TE-E-1 leader updates.
+   - TE-F1 Keleres.
    - ✅ The 14 action cards (data only) and the Ω wording.
 2. **Core TE effects (P1/P2).**
    - E2/E3/E4 helpers.

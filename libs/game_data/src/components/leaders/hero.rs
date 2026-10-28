@@ -42,6 +42,7 @@ pub enum Hero {
     ConservatorProcyon,
     DannelOfTheTenth,
     DannelOfTheTenthCxIII, // patch of Dannel from Codex III
+    DannelOfTheTenthTE,    // patch of Dannel from Thunder's Edge
     DarktalonTreilla,
     GurnoAggero,
     HarkaLeeds,
@@ -51,11 +52,13 @@ pub enum Hero {
     ItFeedsOnCarrion,
     JaceX4thAirLegion,
     KuuasiAunJalatai,
+    KuuasiAunJalataiTE, // patch of Kuuasi Aun Jalatai from Thunder's Edge
     KyverBladeAndKey,
     LetaniMiasmiala,
     MathisMathinus,
     MirikAunSissiri,
     OdlynnMyrr,
+    OdlynnMyrrTE, // patch of Odlynn Myrr from Thunder's Edge
     RiftwalkerMeian,
     RinTheMastersLegacy,
     ShvalHarbinger,
@@ -65,6 +68,7 @@ pub enum Hero {
     UnitDsgnFlayesh,
     XxekirGrom,
     XxekirGromCxIII, // patch of Xxekir Grom from Codex III
+    XxekirGromTE,    // patch of Xxekir Grom from Thunder's Edge
     // Thunder's Edge
     DirectorNel,
     TaZernTE, // Name collision with PoK commander for Universities of Jol-Nar.
@@ -269,6 +273,14 @@ impl Hero {
                 expansion: CodexIII,
                 kind: Other,
             },
+            Hero::XxekirGromTE => info! {
+                tag: XxekirGromTE,
+                name: "Xxekir Grom ΩΩ",
+                ability: "Planetary Defense Nexus",
+                faction: XxchaKingdom,
+                expansion: ThundersEdge,
+                kind: Action,
+            },
             Hero::DannelOfTheTenth => info! {
                 tag: DannelOfTheTenth,
                 name: "Dannel of the Tenth",
@@ -283,6 +295,14 @@ impl Hero {
                 ability: "Quantum Dissemination",
                 faction: YinBrotherhood,
                 expansion: CodexIII,
+                kind: Action,
+            },
+            Hero::DannelOfTheTenthTE => info! {
+                tag: DannelOfTheTenthTE,
+                name: "Dannel of the Tenth ΩΩ",
+                ability: "Quantum Dissemination",
+                faction: YinBrotherhood,
+                expansion: ThundersEdge,
                 kind: Action,
             },
             Hero::KyverBladeAndKey => info! {
@@ -309,12 +329,28 @@ impl Hero {
                 expansion: CodexIII,
                 kind: Other,
             },
+            Hero::KuuasiAunJalataiTE => info! {
+                tag: KuuasiAunJalataiTE,
+                name: "Kuuasi Aun Jalatai Ω",
+                ability: "Overwing Zeta",
+                faction: CouncilKeleres,
+                expansion: ThundersEdge,
+                kind: Other,
+            },
             Hero::OdlynnMyrr => info! {
                 tag: OdlynnMyrr,
                 name: "Odlynn Myrr",
                 ability: "Operation Archon",
                 faction: CouncilKeleres,
                 expansion: CodexIII,
+                kind: Other,
+            },
+            Hero::OdlynnMyrrTE => info! {
+                tag: OdlynnMyrrTE,
+                name: "Odlynn Myrr Ω",
+                ability: "Operation Archon",
+                faction: CouncilKeleres,
+                expansion: ThundersEdge,
                 kind: Other,
             },
             Hero::HarkaLeeds => info! {

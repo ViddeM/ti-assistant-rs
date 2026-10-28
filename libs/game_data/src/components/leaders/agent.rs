@@ -38,6 +38,7 @@ pub enum Agent {
     BerekarBerekon,
     BrotherMilor,
     BrotherMilorCxIII, // patch of Brother Milor from Codex III
+    BrotherMilorTE,    // patch of Brother Milor from Thunder's Edge
     CaptainMendosa,
     CarthOfGoldenSands,
     CleverCleverSsruu,
@@ -61,6 +62,7 @@ pub enum Agent {
     ViscountUnlenn,
     Zeu,
     ZeuCxIII, // patch of Zeu from Codex III
+    ZeuTE,    // patch of Zeu from Thunder's Edge
     XanderAlexinVictoriIII,
     /// Thunder's Edge
     DameBriar,
@@ -186,6 +188,13 @@ impl Agent {
                 expansion: CodexIII,
                 kind: Action,
             },
+            Agent::ZeuTE => info! {
+                tag: ZeuTE,
+                name: "Z'eu ΩΩ",
+                faction: NaaluCollective,
+                expansion: ThundersEdge,
+                kind: Other,
+            },
             Agent::GarvAndGunn => info! {
                 tag: GarvAndGunn,
                 name: "Garv and Gunn",
@@ -254,6 +263,13 @@ impl Agent {
                 name: "Brother Milor Ω",
                 faction: YinBrotherhood,
                 expansion: CodexIII,
+                kind: Other,
+            },
+            Agent::BrotherMilorTE => info! {
+                tag: BrotherMilorTE,
+                name: "Brother Milor ΩΩ",
+                faction: YinBrotherhood,
+                expansion: ThundersEdge,
                 kind: Other,
             },
             Agent::CleverCleverSsruu => info! {

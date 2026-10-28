@@ -295,7 +295,7 @@
    - ❌ Unit upgrades: Helios V2, Linkship II, Exile II (data)
  - ❌ Updates to existing factions
    - ❌ Keleres: Executive Order replaces I.I.H.Q. tech, Agency Supply Network Ω, Custodia Vigilia Ω `[TE-F1]`
-   - ❌ Leaders ΩΩ: Naalu agent, Xxcha hero, Yin agent/commander/hero; Keleres heroes; Jol-Nar commander → Agnlan Oln `[TE-E-1]`
+   - ✅ Leaders ΩΩ: Naalu agent, Xxcha hero, Yin agent/commander/hero; Keleres heroes; Jol-Nar commander → Agnlan Oln `[TE-E-1]`
  - ✅ New planets
  - 🚱 Space stations (planet cards ✅, can't be elected in agendas ❌) `[TE-G]`
  - ✅ New anomaly (entropic scar, data only)
@@ -308,7 +308,7 @@
  - ❌ The Fracture
    - ❌ Fix Fracture tile data (Known bugs)
    - ❌ "Fracture in play" flag + relic prompt when taking Fracture planets `[TE-B]`
- - 🚱 Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ✅, ΩΩ leaders ❌
+ - ✅ Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ✅, ΩΩ leaders ✅
  - ✅ Updated strategy cards: Construction ΩΩ, Warfare Ω (image ✅, secondary hint ✅) `[TE-H]`
  - ✅ New action cards (14 unique / 20 cards) + Ω versions of 8 Codex I cards, which replace the old ones when TE is enabled
    - ✅ Brilliance (gain breakthrough) `[TE-I]`

@@ -38,6 +38,7 @@ pub struct CommanderInfo {
 pub enum Commander {
     BrotherOmar,
     BrotherOmarCxIII, // patch of Brother Omar from Codex III
+    BrotherOmarTE,    // patch of Brother Omar from Thunder's Edge
     ClaireGibson,
     DartandTai,
     DirzugaRophal,
@@ -58,6 +59,7 @@ pub enum Commander {
     SoAta,
     SuffiAnKeleres,
     TaZern,
+    AgnlanOln, // patch of Ta Zern from Thunder's Edge
     ThatWhichMoldsFlesh,
     TrrakanAunZulok,
     Tungstantus,
@@ -222,6 +224,13 @@ impl Commander {
                 faction: UniversitiesOfJolNar,
                 expansion: ProphecyOfKings,
             },
+            Commander::AgnlanOln => info! {
+                tag: AgnlanOln,
+                name: "Agnlan Oln",
+                unlock: "Own 8 technologies",
+                faction: UniversitiesOfJolNar,
+                expansion: ThundersEdge,
+            },
             Commander::ThatWhichMoldsFlesh => info! {
                 tag: ThatWhichMoldsFlesh,
                 name: "That Which Molds Flesh",
@@ -256,6 +265,13 @@ impl Commander {
                 unlock: "Use one of your faction abilities",
                 faction: YinBrotherhood,
                 expansion: CodexIII,
+            },
+            Commander::BrotherOmarTE => info! {
+                tag: BrotherOmarTE,
+                name: "Brother Omar ΩΩ",
+                unlock: "Use one of your faction abilities",
+                faction: YinBrotherhood,
+                expansion: ThundersEdge,
             },
             Commander::SoAta => info! {
                 tag: SoAta,

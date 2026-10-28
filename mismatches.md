@@ -36,7 +36,7 @@ Paths below are relative to `libs/game_data/src/components/` unless stated other
 | 6 | 🟠 | **14 Thunder's Edge action cards are missing** (20 cards in total; see §2). **✅ Fixed**, including the Ω versions of 8 Codex I cards. | `action_card.rs:15-112` | ✔ |
 | 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. **✅ Fixed** for the two techs. The three objectives are left open on purpose: the handlers call `assert_expansion`, so retagging would stop stored base-only games that used one of them from replaying. | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
 | 8 | 🟠 | **Keleres hasn't been updated for Thunder's Edge.** The I.I.H.Q. Modernization *tech* stays enabled alongside the new I.I.H.Q. *breakthrough*. The replacement tech Executive Order is missing, Agency Supply Network has the Codex III text, and Custodia Vigilia should be 2/2 under Thunder's Edge. | `tech.rs:1026-1105`, `planet.rs:786-796` | |
-| 9 | 🟠 | **None of Thunder's Edge's updated leader cards exist:** Naalu agent, Xxcha hero, all three Yin leaders, two Keleres heroes, and the Jol-Nar commander rename. `Leader::is_enabled_in` only knows about the Codex III swaps. | `components/leaders.rs:86-115` | |
+| 9 | 🟠 | **None of Thunder's Edge's updated leader cards exist:** Naalu agent, Xxcha hero, all three Yin leaders, two Keleres heroes, and the Jol-Nar commander rename. `Leader::is_enabled_in` only knows about the Codex III swaps. **✅ Fixed.** All 8 exist, tagged Thunder's Edge, and replace the older versions through the `replacements!` chains in `leaders.rs`. The Keleres heroes also need Codex III, like the faction. A stored Thunder's Edge game that played Z'eu Ω or Dannel of the Tenth Ω as an action won't replay any more (`LeaderActionBegin` asserts the leader is enabled). | `components/leaders.rs:86-115` | ✔ |
 | 10 | 🟠 | **Plane Splitter needs 2 cybernetic prerequisites; the code has 1.** **✅ Fixed** | `tech.rs:1231` | ✔ |
 
 Code problems found during the audit that aren't data-vs-wiki issues are in [§9](#9-other-code-issues-found-during-the-audit).
@@ -302,13 +302,13 @@ Missing: Thunder's Edge updates (the Omegas page, Thunder's Edge section)
 
 | Leader | Sev | Thunder's Edge change |
 |---|---|---|
-| Z'eu ΩΩ (Naalu agent) | 🟠 | New ability: "After any player's command token is placed in a system: You may exhaust this card to return that token to that player's reinforcements." |
-| Xxekir Grom ΩΩ (Xxcha hero) | 🟠 | "PLANETARY DEFENSE NEXUS — ACTION: Place any combination of up to 4 PDS or mechs onto planets you control; ready each planet that you place a unit on. Then, purge this card." |
-| Brother Milor ΩΩ / Brother Omar ΩΩ / Dannel of the Tenth ΩΩ (Yin) | 🟡 | Rewordings: "during combat"; "ignore **all** prerequisites"; "resolve ground combats…, players cannot use SPACE CANNON…" |
-| Odlynn Myrr (Keleres hero) | 🟡 | "For each player that **abstains or** votes for another outcome…" |
-| Kuuasi Aun Jalatai (Keleres hero) | ⚪ | "…any combination of up to 2 cruisers or destroyers…" |
-| Jol-Nar commander | 🟡 | Thunder's Edge renames "Ta Zern" to **"Agnlan Oln"** (same ability). The code has "Ta-Zern" (with a hyphen) at `commander.rs:198` ✔ |
-| Version switching | 🟠 | `Leader::is_enabled_in` only has Codex III swap lists (`leaders.rs:86-115`) |
+| Z'eu ΩΩ (Naalu agent) | 🟠 | New ability: "After any player's command token is placed in a system: You may exhaust this card to return that token to that player's reinforcements." **✅ Fixed** |
+| Xxekir Grom ΩΩ (Xxcha hero) | 🟠 | "PLANETARY DEFENSE NEXUS — ACTION: Place any combination of up to 4 PDS or mechs onto planets you control; ready each planet that you place a unit on. Then, purge this card." **✅ Fixed** |
+| Brother Milor ΩΩ / Brother Omar ΩΩ / Dannel of the Tenth ΩΩ (Yin) | 🟡 | Rewordings: "during combat"; "ignore **all** prerequisites"; "resolve ground combats…, players cannot use SPACE CANNON…" **✅ Fixed** |
+| Odlynn Myrr (Keleres hero) | 🟡 | "For each player that **abstains or** votes for another outcome…" **✅ Fixed** (Odlynn Myrr Ω) |
+| Kuuasi Aun Jalatai (Keleres hero) | ⚪ | "…any combination of up to 2 cruisers or destroyers…" **✅ Fixed** (Kuuasi Aun Jalatai Ω) |
+| Jol-Nar commander | 🟡 | Thunder's Edge renames "Ta Zern" to **"Agnlan Oln"** (same ability). The code has "Ta-Zern" (with a hyphen) at `commander.rs:198` ✔. **✅ Fixed** (Agnlan Oln added; the PoK Ta-Zern is unchanged) |
+| Version switching | 🟠 | `Leader::is_enabled_in` only has Codex III swap lists (`leaders.rs:86-115`). **✅ Fixed** |
 
 Wrong values
 

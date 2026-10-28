@@ -47,8 +47,8 @@ Every claim below was checked against the code (file references given). "Display
 2. **Thunder's Edge action cards:** 14 new cards (20 in the deck), none in the code, plus 8 Ω rewordings of Codex I cards (Hack Election changes meaning). Brilliance, Overrule, Strategize, Crisis and Puppets on a String touch tracked state. **✅ Done**, including Mercenary Contract; see action plan TE-I.
 3. **Thunder's Edge updates to existing factions:**
    - Keleres: Executive Order replaces the I.I.H.Q. tech, Agency Supply Network reworded, Custodia Vigilia Ω 2/2, two hero texts.
-   - Naalu agent ΩΩ, Xxcha hero ΩΩ (now an ACTION), Yin ΩΩ ×3.
-   - Jol-Nar commander renamed to Agnlan Oln.
+   - Naalu agent ΩΩ, Xxcha hero ΩΩ (now an ACTION), Yin ΩΩ ×3. **✅ Done.**
+   - Jol-Nar commander renamed to Agnlan Oln. **✅ Done.**
 
    The roadmap's "updated codexes: go over all of them" doesn't say what this involves.
 4. **Thunder's Edge faction unit upgrades:** Helios V2, Linkship II and Exile II are missing (data).
