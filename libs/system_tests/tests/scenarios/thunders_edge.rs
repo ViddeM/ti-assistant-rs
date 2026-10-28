@@ -494,6 +494,23 @@ pub fn thunders_edge_breakthrough_planets() -> TestGame {
     g
 }
 
+/// The Crimson Rebellion starts with its breakthrough unlocked.
+#[test]
+fn the_crimson_rebellion_starts_with_its_breakthrough() {
+    let g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::CrimsonRebellion)
+            .player("Bob", Faction::EmiratesOfHacan)
+            .player("Carol", Faction::XxchaKingdom)
+            .thunders_edge(),
+    );
+    assert_eq!(
+        g.player("Alice").breakthrough,
+        Some(Breakthrough::ResonanceGenerator)
+    );
+    assert_eq!(g.player("Bob").breakthrough, None);
+}
+
 /// Only the planets on the shown side of the Firmament / The Obsidian home system tile are on
 /// the board, so the other side can't be taken.
 #[test]

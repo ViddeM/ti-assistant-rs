@@ -68,6 +68,10 @@ impl NewPlayer {
             Faction::FirmamentObsidian => FactionState::Firmament(FirmamentState::default()),
             _ => FactionState::None,
         };
+        let breakthrough = match self.faction {
+            Faction::CrimsonRebellion => Some(self.faction.breakthrough()),
+            _ => None,
+        };
         Player {
             name: self.name,
             faction: self.faction,
@@ -75,7 +79,7 @@ impl NewPlayer {
             planets,
             technologies: techs,
             relics: BTreeSet::new(),
-            breakthrough: None,
+            breakthrough,
             faction_state: Arc::new(faction_state),
         }
     }

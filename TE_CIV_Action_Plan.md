@@ -86,7 +86,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| A1 Crimson Rebellion starts with its breakthrough | Track | In setup (`NewPlayer::setup` or `StartGame`), call E2 for Crimson Rebellion. Show the "roll for the Fracture" prompt during setup (the wiki says to roll during "Gather Starting Components"). | P1 / S |
+| A1 Crimson Rebellion starts with its breakthrough | Track | ✅ `NewPlayer::setup` gives Crimson Rebellion its breakthrough (Resonance Generator has no on-gain effect). The "roll for the Fracture" prompt during setup (the wiki says to roll during "Gather Starting Components") is TE-B3. | P1 / S |
 | A2 Breakthrough info | Info | Add `Info::Breakthrough` to `packages/ui/src/data/info_context.rs`. Show the description and synergy colours on the TE page (`thunders_edge_view_mode/breakthrough.rs`) and in the player sidebar. | P2 / S |
 | A3 Generic breakthrough action button | Assist | Add a "Breakthrough" entry to the action phase component list (`action_phase.rs` `ComponentSelectRow`) for the current player's breakthrough when `kind == Action`, via event `PlayBreakthroughAction { player, data: Option<BreakthroughAction> }`. Without data it goes straight to `EndActionTurn`, like leaders. Fix Deorbit Barrage's kind (mismatches §8). Covers Psychospore, Deorbit Barrage and Resonance Generator. | P2 / S |
 | A4 I.I.H.Q. Modernization (Keleres) | Track | ✅ Through E2: gain the `CustodiaVigiliaOmega` planet (2/2). ✅ Executive Order replaces the I.I.H.Q. *tech* under TE (F1). Keep the neighbours clause as info. | P1 / S |
@@ -448,7 +448,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ The 14 action cards (data only) and the Ω wording.
 2. **Core TE effects (P1/P2).**
    - E2/E3/E4 helpers.
-   - A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C2 Jupiter Brain, D1 Quantumcore, CIV-1 Book of Latvinia.
+   - ✅ A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C2 Jupiter Brain.
+   - D1 Quantumcore, CIV-1 Book of Latvinia.
    - ✅ C1 Styx.
 3. **Galactic event framework plus the cheap tracked events (P1).**
    - Stellar Atomics, Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Civilized Society.
