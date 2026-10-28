@@ -43,7 +43,7 @@ players:
       - AntimassDeflectors
       - SarweenTools
     relics: []
-    breakthrough: ~
+    breakthrough: AutoFactories
     factionState: None
   Carol:
     name: Carol

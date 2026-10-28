@@ -357,7 +357,8 @@ fn activated_system(g: &TestGame) -> Option<SystemId> {
 
 /// The Fracture planets are in their own systems. Planets without a system tile can be taken
 /// once they are on the board: Thunder's Edge where the expedition placed it, and Avernus once
-/// someone controls it. Custodia Vigilia only exists as a card.
+/// someone controls it. Custodia Vigilia only exists as a card. Taking Thunder's Edge unlocks
+/// the breakthrough.
 pub fn thunders_edge_take_planets_without_tile() -> TestGame {
     let mut g = action_phase(three_players().thunders_edge());
     let system = a_valid_system();
@@ -403,6 +404,10 @@ pub fn thunders_edge_take_planets_without_tile() -> TestGame {
             .contains_key(&Planet::ThundersEdge)
     );
     assert!(g.player("Bob").planets.contains_key(&Planet::ThundersEdge));
+    assert_eq!(
+        g.player("Bob").breakthrough,
+        Some(Breakthrough::AutoFactories)
+    );
     assert!(g.player("Carol").planets.contains_key(&Planet::Avernus));
     g
 }

@@ -2007,17 +2007,11 @@ fn try_update_game_state(
                 "Only a player with the most claimed slots can win the expedition"
             );
 
-            let winner = game_state
-                .players
-                .get_mut(&won_by)
-                .context("Player not found")?;
-            winner.planets.insert(Planet::ThundersEdge, BTreeSet::new());
-
             te.completed = Some(TECompletion {
                 won_by: won_by.clone(),
                 placed_in,
             });
-            game_state.gain_breakthrough(&won_by)?;
+            game_state.set_planet_owner(Planet::ThundersEdge, Some(won_by))?;
             game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(
                 ThundersEdgeProgress::Committed { slot },
             ));
@@ -2053,28 +2047,12 @@ fn try_update_game_state(
                 );
             }
 
-            // Move the planet from the previous winner (if they still hold it) to the new one.
-            if let Some(previous) = te.completed.as_ref() {
-                let changed_winner =
-                    (new_completion.as_ref()).is_none_or(|c| c.won_by != previous.won_by);
-                if changed_winner && let Some(p) = game_state.players.get_mut(&previous.won_by) {
-                    p.planets.remove(&Planet::ThundersEdge);
-                }
-            }
-            if let Some(comp) = new_completion.as_ref() {
-                let winner = game_state
-                    .players
-                    .get_mut(&comp.won_by)
-                    .context("Player not found")?;
-                winner
-                    .planets
-                    .entry(Planet::ThundersEdge)
-                    .or_insert_with(BTreeSet::new);
-            }
-
+            let changed_winner = (te.completed.as_ref()).map(|c| &c.won_by)
+                != (new_completion.as_ref()).map(|c| &c.won_by);
             te.completed = new_completion.clone();
-            if let Some(comp) = new_completion {
-                game_state.gain_breakthrough(&comp.won_by)?;
+            if changed_winner {
+                game_state
+                    .set_planet_owner(Planet::ThundersEdge, new_completion.map(|c| c.won_by))?;
             }
         }
     }
