@@ -12,7 +12,7 @@ use ti_helper_game_data::common::{
 /// It contains the home systems of the Ral Nel Consortium, the Deepwrought Scholarate and the
 /// Firmament / The Obsidian, so those factions must be in the game. The other two players'
 /// home systems are empty (`0`), so any factions can be used for them.
-pub const FIVE_PLAYER_MAP: &str = "65 74 41 85A0 113 100 63 39 102 28 36 87A2 78 87A0 59 34 32 68 96a 47 49 95 50 64 94 24 83A0 85A0 83A1 35 93 80 67 0 107 110";
+pub const FIVE_PLAYER_MAP: &str = "65 74 41 85A0 113 100 63 39 102 28 36 87A2 78 87A0 59 34 32 68 96a 47 49 95 50 64 0 24 83A0 85A0 83A1 35 93 80 67 0 107 110";
 
 /// Milty data for the players `(name, faction, table order)` on [FIVE_PLAYER_MAP].
 pub fn milty_data(players: &[(&str, Faction, u32)]) -> MiltyData {

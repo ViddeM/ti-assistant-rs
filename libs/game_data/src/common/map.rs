@@ -30,6 +30,8 @@ impl HexMap {
     const WORMHOLE_NEXUS_TILE_ID: &'static str = "82";
     const CREUSS_WORMHILE_ID: u32 = 17;
     const CREUSS_HOME_SYSTEM: &'static str = "51";
+    const CRIMSON_REBELLION_GATE_ID: u32 = 94;
+    const CRIMSON_REBELLION_HOME_SYSTEM: &'static str = "118";
 
     /// The system ID for the mecatol rex system.
     const MECATOL_REX_ID: u32 = 18;
@@ -116,6 +118,21 @@ impl HexMap {
 
             tiles.push(Tile {
                 system: creuss_home_system.id.clone(),
+                position: HexPosition::OutsideGalaxy,
+            });
+        }
+
+        if map.contains(&MiltySystemId::Standard {
+            number: Self::CRIMSON_REBELLION_GATE_ID,
+            variant: None,
+        }) {
+            let crimson_rebellion_home_system =
+                systems.get(Self::CRIMSON_REBELLION_HOME_SYSTEM).ok_or(
+                    HexMapError::SystemDoesntExist("Crimson Rebellion homesystem"),
+                )?;
+
+            tiles.push(Tile {
+                system: crimson_rebellion_home_system.id.clone(),
                 position: HexPosition::OutsideGalaxy,
             });
         }
@@ -281,7 +298,7 @@ struct HyperLaneTile {
 mod test {
     use crate::components::system::systems;
 
-    use super::MiltySystemId;
+    use super::{HexMap, HexPosition, MiltySystemId};
 
     #[test]
     fn milty_variants_match_system_ids() {
@@ -297,5 +314,19 @@ mod test {
                 "{milty_id} became {id}, which is not a known system"
             );
         }
+    }
+
+    #[test]
+    fn crimson_rebellion_home_system_is_outside_the_galaxy_with_its_gate() {
+        let crimson_rebellion_home_is_outside = |milty_string: &str| {
+            HexMap::from_milty_string(milty_string, true)
+                .expect("to parse")
+                .tiles
+                .iter()
+                .any(|tile| tile.system == "118" && tile.position == HexPosition::OutsideGalaxy)
+        };
+
+        assert!(crimson_rebellion_home_is_outside("94 26 27 28 29 30"));
+        assert!(!crimson_rebellion_home_is_outside("93 26 27 28 29 30"));
     }
 }

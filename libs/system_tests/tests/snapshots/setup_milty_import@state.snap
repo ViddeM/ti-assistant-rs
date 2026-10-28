@@ -166,12 +166,6 @@ mapData:
               ring: 3
               position: 5
               rotation: 0
-        - system: "94"
-          position:
-            Pos:
-              ring: 3
-              position: 6
-              rotation: 0
         - system: "24"
           position:
             Pos:
