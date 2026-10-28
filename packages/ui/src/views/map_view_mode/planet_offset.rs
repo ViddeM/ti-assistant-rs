@@ -2,7 +2,7 @@ use ti_helper_game_data::components::planet::Planet;
 
 /// Returns the visual offset of the planet on the system tile image, as a fraction of the tile size (x right, y up).
 ///
-/// Planets without a known offset (and planets that are not on the map) are placed in the center of the tile.
+/// Planets that aren't on a system tile are placed in the center of the tile.
 pub fn planet_offset(planet: &Planet) -> (f32, f32) {
     match planet {
         Planet::Jord
@@ -32,8 +32,21 @@ pub fn planet_offset(planet: &Planet) -> (f32, f32) {
         | Planet::Vorhal
         | Planet::Primor
         | Planet::HopesEnd
+        | Planet::Faunus
+        | Planet::Garbozia
+        | Planet::Emelpar
+        | Planet::Tempesta
+        | Planet::Olergodt
+        | Planet::ViraPicsIII
+        | Planet::Lesab
+        | Planet::Industrex
+        | Planet::Lemox
         | Planet::MecatolRexOmega
-        | Planet::MecatolRex => (0.0, 0.0),
+        | Planet::MecatolRex
+        | Planet::CustodiaVigilia
+        | Planet::CustodiaVigiliaOmega
+        | Planet::ThundersEdge
+        | Planet::Avernus => (0.0, 0.0),
         Planet::Maaluuk
         | Planet::ArcPrime
         | Planet::LisisII
@@ -64,7 +77,18 @@ pub fn planet_offset(planet: &Planet) -> (f32, f32) {
         | Planet::Lisis
         | Planet::Cealdri
         | Planet::VegaMajor
-        | Planet::Retillion => (-0.1, 0.19),
+        | Planet::Retillion
+        | Planet::Ordinian
+        | Planet::MezLoOrzFeiZsha
+        | Planet::Cronos
+        | Planet::CronosHollow
+        | Planet::Andeara
+        | Planet::NewTerra
+        | Planet::Cresius
+        | Planet::Tiamat
+        | Planet::Kostboth
+        | Planet::Bellatrix
+        | Planet::Tarana => (-0.1, 0.19),
         Planet::Druaa
         | Planet::Jol
         | Planet::Quinarra
@@ -87,19 +111,37 @@ pub fn planet_offset(planet: &Planet) -> (f32, f32) {
         | Planet::Velnor
         | Planet::Xanhact
         | Planet::VegaMinor
-        | Planet::Shalloq => (0.09, -0.20),
-        Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir => (0.12, 0.21),
-        Planet::RigelIII | Planet::Loki | Planet::Hercant | Planet::Valk => (-0.24, 0.05),
+        | Planet::Shalloq
+        | Planet::Tinnes
+        | Planet::LazulRex
+        | Planet::Hercalor
+        | Planet::Capha
+        | Planet::TsionStation => (0.09, -0.20),
+        Planet::RigelII | Planet::Abaddon | Planet::Arretze | Planet::Ylir | Planet::Horizon => {
+            (0.12, 0.21)
+        }
+        Planet::RigelIII | Planet::Loki | Planet::Hercant | Planet::Valk | Planet::Elnath => {
+            (-0.24, 0.05)
+        }
         Planet::RigelI
         | Planet::Ashtroth
         | Planet::Kamdorn
         | Planet::Avar
         | Planet::WrenTerra
         | Planet::Ragh
-        | Planet::ArchonTau => (0.15, -0.26),
+        | Planet::ArchonTau
+        | Planet::LuthienVi => (0.15, -0.26),
         Planet::Mallice => (0.20, 0.12),
         Planet::Mirage => (0.12, -0.25),
-        // TODO: Handle thunder's edge planets (probably skip the catch-all).
-        _ => (0.0, 0.0),
+        Planet::RepoLoOrzQet | Planet::Tallin | Planet::TallinHollow => (0.15, -0.18),
+        Planet::Ikatena => (0.01, 0.06),
+        Planet::Revelation => (0.16, -0.14),
+        Planet::OluzStation => (0.05, -0.19),
+        Planet::TheWatchtower => (0.07, -0.22),
+        Planet::AhkCreuxx => (0.0, 0.11),
+        Planet::Cocytus => (-0.22, -0.18),
+        Planet::Lethe => (0.17, -0.04),
+        Planet::Phlegethon => (0.27, -0.29),
+        Planet::Styx => (0.0, 0.19),
     }
 }

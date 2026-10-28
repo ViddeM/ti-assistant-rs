@@ -391,7 +391,10 @@ fn get_tile_position(coord: &Coordinate) -> (f32, f32) {
 #[cfg(test)]
 mod test {
     use strum::IntoEnumIterator;
-    use ti_helper_game_data::{common::map::Coordinate, components::planet::Planet};
+    use ti_helper_game_data::{
+        common::map::Coordinate,
+        components::{planet::Planet, system::systems},
+    };
 
     use super::{get_tile_position, planet_offset};
 
@@ -476,6 +479,19 @@ mod test {
                 "{planet:?} is outside the tile"
             );
         }
+    }
+
+    #[test]
+    fn planets_in_the_same_system_have_different_offsets() {
+        let failures = systems()
+            .into_values()
+            .filter(|system| {
+                let offsets = system.planets.iter().map(planet_offset).collect::<Vec<_>>();
+                (0..offsets.len()).any(|i| offsets[i + 1..].contains(&offsets[i]))
+            })
+            .map(|system| system.id)
+            .collect::<Vec<_>>();
+        assert!(failures.is_empty(), "{failures:#?}");
     }
 
     fn test_tile(ring: u32, position: u32, expected_x: i32, expected_y: i32) {

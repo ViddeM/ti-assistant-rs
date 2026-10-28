@@ -138,6 +138,7 @@
  - ✅ Planet destruction (Stellar Converter relic)
  - ✅ Mirage
  - ✅ Crimson Rebellion home system off the board
+ - ✅ Thunder's Edge planet positions on their tiles
  - ❌ Thunder's Edge planet where it was placed `[TE-J1]`
  - ❌ Hyperlane tiles 119A–124B (TE) missing from the system data
  - 👺 Fracture tiles / ingress tokens / Avernus token / coexistence
