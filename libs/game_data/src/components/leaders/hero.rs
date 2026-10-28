@@ -280,7 +280,7 @@ impl Hero {
             Hero::DannelOfTheTenthCxIII => info! {
                 tag: DannelOfTheTenthCxIII,
                 name: "Dannel of the Tenth Ω",
-                ability: "Spinner Overdrive Ω",
+                ability: "Quantum Dissemination",
                 faction: YinBrotherhood,
                 expansion: CodexIII,
                 kind: Action,
@@ -360,7 +360,7 @@ impl Hero {
             Hero::SharsissHollow => info! {
                 tag: SharsissHollow,
                 name: "Sharsiss Hollow",
-                ability: "Teh Blade Revealed",
+                ability: "The Blade Revealed",
                 faction: FirmamentObsidian,
                 expansion: ThundersEdge,
                 kind: Action,
@@ -368,7 +368,7 @@ impl Hero {
             Hero::LyraKeen => info! {
                 tag: LyraKeen,
                 name: "Lyra Keen",
-                ability: "Entity 4X41A Apollo",
+                ability: "Entity 4X41A \"Apollo\"",
                 faction: LastBastion,
                 expansion: ThundersEdge,
                 kind: Other,

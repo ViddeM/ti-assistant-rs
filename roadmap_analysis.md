@@ -87,7 +87,7 @@ Every claim below was checked against the code (file references given). "Display
   - "space stations ✅" is fine for the planet cards, but the agenda rule is missing.
 - **Political Censure ✅:** the scoring works, but the score table labels its row "Shard of the Throne" (`score_table_view.rs:612-613`).
 - **Codex II "3 new relics ✅":** Thunder's Edge reprinted Dynamis Core and Nano-Forge with changed text (mismatches §5).
-- **Codex III "updated leaders ✅":** correct, apart from Dannel Ω's ability name ("Spinner Overdrive Ω" should be "Quantum Dissemination").
+- **Codex III "updated leaders ✅":** correct, apart from Dannel Ω's ability name ("Spinner Overdrive Ω" should be "Quantum Dissemination"). **✅ Fixed.**
 - **Codex IV "relics ✅":** correct. Book of Latvinia's "research 2 techs on gain" could become a prompt instead of manual work (action plan CIV-1).
 - **Bottom TODO "Look over all strategy cards…":** Diplomacy and Construction are done; Construction ΩΩ and Warfare Ω (Thunder's Edge) are not. The `thunders_edge` flag is matched in `get_strategy_card_image` but never used, and the Construction secondary hint "place token in system" is wrong under Thunder's Edge.
 - **"Faction specific setups → agents ❌":** unclear what this means. No faction setup involves agents. Clarify or remove.

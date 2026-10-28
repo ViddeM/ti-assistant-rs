@@ -183,7 +183,7 @@ impl Commander {
             Commander::MabanCxIII => info! {
                 tag: MabanCxIII,
                 name: "M'aban Ω",
-                unlock: "Have ground units in or adjacent to the Mexatol Rex system",
+                unlock: "Have ground forces in or adjacent to the Mecatol Rex system",
                 faction: NaaluCollective,
                 expansion: CodexIII,
             },

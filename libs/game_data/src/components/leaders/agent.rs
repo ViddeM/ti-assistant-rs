@@ -272,7 +272,7 @@ impl Agent {
             },
             Agent::FieldMarshallMercer => info! {
                 tag: FieldMarshallMercer,
-                name: "Field Marshall Mercer",
+                name: "Field Marshal Mercer",
                 faction: Nomad,
                 expansion: ProphecyOfKings,
                 kind: Other,

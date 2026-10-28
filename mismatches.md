@@ -314,13 +314,13 @@ Wrong values
 
 | Leader | Sev | Field | Code | Wiki | Location |
 |---|---|---|---|---|---|
-| Dannel of the Tenth Ω | 🟡 | ability name | "Spinner Overdrive Ω" | "QUANTUM DISSEMINATION" | `hero.rs:256` ✔ |
-| Sharsiss Hollow | ⚪ | ability name | "Teh Blade Revealed" | "The Blade Revealed" | `hero.rs:326` ✔ |
-| M'aban Ω | ⚪ | unlock | "…ground units…Mexatol Rex…" | "…ground forces…Mecatol Rex…" | `commander.rs:169` ✔ |
-| Brother Omar Ω | ⚪ | description | "his card satisfies…" | "This card satisfies…" | `description/BrotherOmarCxIII` |
-| Field Marshal Mercer | ⚪ | name | "Field Marshall" | "Field Marshal" | `agent.rs:245` ✔ |
-| Lyra Keen | ⚪ | ability name | Entity 4X41A Apollo | ENTITY 4X41A "APOLLO" | `hero.rs:333` |
-| Riftwalker Meian | ⚪ | description | stray `"` at the end | | `description/RiftwalkerMeian` |
+| Dannel of the Tenth Ω | 🟡 | ability name | "Spinner Overdrive Ω" | "QUANTUM DISSEMINATION". **✅ Fixed** | `hero.rs:256` ✔ |
+| Sharsiss Hollow | ⚪ | ability name | "Teh Blade Revealed" | "The Blade Revealed". **✅ Fixed** | `hero.rs:326` ✔ |
+| M'aban Ω | ⚪ | unlock | "…ground units…Mexatol Rex…" | "…ground forces…Mecatol Rex…". **✅ Fixed** | `commander.rs:169` ✔ |
+| Brother Omar Ω | ⚪ | description | "his card satisfies…" | "This card satisfies…". **✅ Fixed** | `description/BrotherOmarCxIII` |
+| Field Marshal Mercer | ⚪ | name | "Field Marshall" | "Field Marshal". **✅ Fixed** | `agent.rs:245` ✔ |
+| Lyra Keen | ⚪ | ability name | Entity 4X41A Apollo | ENTITY 4X41A "APOLLO". **✅ Fixed** | `hero.rs:333` |
+| Riftwalker Meian | ⚪ | description | stray `"` at the end | **✅ Fixed** | `description/RiftwalkerMeian` |
 
 Verified OK:
 - **PoK leaders:** All PoK faction leaders match on name, faction, ability kind, unlock and text.
