@@ -89,7 +89,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | A1 Crimson Rebellion starts with its breakthrough | Track | In setup (`NewPlayer::setup` or `StartGame`), call E2 for Crimson Rebellion. Show the "roll for the Fracture" prompt during setup (the wiki says to roll during "Gather Starting Components"). | P1 / S |
 | A2 Breakthrough info | Info | Add `Info::Breakthrough` to `packages/ui/src/data/info_context.rs`. Show the description and synergy colours on the TE page (`thunders_edge_view_mode/breakthrough.rs`) and in the player sidebar. | P2 / S |
 | A3 Generic breakthrough action button | Assist | Add a "Breakthrough" entry to the action phase component list (`action_phase.rs` `ComponentSelectRow`) for the current player's breakthrough when `kind == Action`, via event `PlayBreakthroughAction { player, data: Option<BreakthroughAction> }`. Without data it goes straight to `EndActionTurn`, like leaders. Fix Deorbit Barrage's kind (mismatches §8). Covers Psychospore, Deorbit Barrage and Resonance Generator. | P2 / S |
-| A4 I.I.H.Q. Modernization (Keleres) | Track | Through E2: gain the `CustodiaVigilia` planet (2/2 Ω values under TE). Disable the I.I.H.Q. *tech* and add Executive Order when TE is on (mismatches §7). Keep the neighbours clause as info. | P1 / S |
+| A4 I.I.H.Q. Modernization (Keleres) | Track | Through E2: gain the `CustodiaVigiliaOmega` planet (2/2). ✅ Executive Order replaces the I.I.H.Q. *tech* under TE (F1). Keep the neighbours clause as info. | P1 / S |
 | A5 Stellar Genesis (Muaat) | Track | Through E2: gain `Avernus` (token planet, see E1). Moving the token along with war suns is 👺. | P1 / S |
 | A6 Vaults of the Heir (Mahact) | Track | `BreakthroughAction::VaultsOfTheHeir { purged_tech, relic }`: remove the tech, give the relic (reuse the E4 logic, including the "relic already owned" check). | P2 / S |
 | A7 Visionaria Select (Deepwrought) | Track | `BreakthroughAction::VisionariaSelect { researched: BTreeMap<PlayerId, Technology> }`. Each listed player gains their tech (non-faction, non-unit-upgrade only) and Deepwrought gains every listed tech it doesn't already own. Trade goods and promissory notes stay at the table. | P2 / M |
@@ -144,7 +144,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| F1 Keleres TE update | Data | Executive Order, Agency Supply Network TE text, I.I.H.Q. via breakthrough (A4), Custodia Vigilia Ω 2/2, hero texts. | P1 / S |
+| F1 Keleres TE update | Data | ✅ Executive Order and Agency Supply Network Ω replace the Codex III techs, Custodia Vigilia Ω (2/2) replaces Custodia Vigilia, and the hero texts are in (E-1). Like the faction, they need Codex III. I.I.H.Q. via breakthrough is A4. | P1 / S |
 | F2 **Firmament "Plots within Plots"** | Track | Scoring another player's secret gives **no VP**; instead a plot card with that player's token goes into play. Add `plots: Vec<Plot { secret: SecretObjective, puppeted: BTreeSet<PlayerId> }>` to `FirmamentState` (`state/faction_state.rs`) and an event `AddPlot { player, secret, puppeted }`, offered as "Score as plot" in the secret objectives view. It enables: validating Puppets of the Blade (needs ≥1 plot), Captain Aroz unlock display, the puppeted-player list for The Reaping, and Sharsiss (E-4). Plots must not add VP. | P2 / M |
 | F3 Deepwrought "Radical Advancement" (status phase start: swap a non-unit-upgrade tech for a same-colour tech with exactly 1 more prerequisite) | Assist | In the status phase view, if the player owns it, add a "swap tech" form (remove + add, validated with `TechInfo.requirements`). Event `SwapTech { player, remove, add }`, which can be reused for Divert Funding-like effects and Rin. | P3 / S |
 | F4 Deepwrought ocean cards (1/1 planet-like cards) | Assist | Optional "ocean cards: N" counter for resource/influence totals. | P3 / S |
@@ -444,8 +444,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 1. **Bugs and data (P1, all S).**
    - mismatches §1 items 1–5 (Fracture tiles, agenda trait checks, Firmament planets, token planets, Styx).
    - ✅ TE-H1 strategy card images and the H2 hint.
-   - ✅ TE-E-1 leader updates.
-   - TE-F1 Keleres.
+   - ✅ TE-E-1 leader updates, TE-F1 Keleres.
    - ✅ The 14 action cards (data only) and the Ω wording.
 2. **Core TE effects (P1/P2).**
    - E2/E3/E4 helpers.

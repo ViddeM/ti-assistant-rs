@@ -199,6 +199,7 @@ pub enum Planet {
     Mallice,
     Mirage,
     CustodiaVigilia,
+    CustodiaVigiliaOmega,
     Lesab,
     Olergodt,
     ViraPicsIII,
@@ -800,6 +801,15 @@ impl Planet {
                     true
                 )
             }
+            Planet::CustodiaVigiliaOmega => planet!(
+                "Custodia Vigilia Ω",
+                vec![],
+                vec![],
+                2,
+                2,
+                Expansion::ThundersEdge,
+                true
+            ),
             Planet::Lesab => planet!(
                 "Lesab",
                 vec![PlanetTrait::Industrial, PlanetTrait::Hazardous],
@@ -1094,7 +1104,11 @@ impl Planet {
     pub fn has_system_tile(&self) -> bool {
         !matches!(
             self,
-            Planet::Mirage | Planet::CustodiaVigilia | Planet::ThundersEdge | Planet::Avernus
+            Planet::Mirage
+                | Planet::CustodiaVigilia
+                | Planet::CustodiaVigiliaOmega
+                | Planet::ThundersEdge
+                | Planet::Avernus
         )
     }
 }
@@ -1102,6 +1116,7 @@ impl Planet {
 impl Component for Planet {
     replacements! {
         MecatolRex -> MecatolRexOmega,
+        CustodiaVigilia -> CustodiaVigiliaOmega,
     }
 
     fn expansion(&self) -> Expansion {

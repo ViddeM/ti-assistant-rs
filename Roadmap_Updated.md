@@ -293,8 +293,8 @@
    - ❌ Firmament "Plots within Plots" (no VP for scoring others' secrets, plots enable Puppets of the Blade) `[TE-F2]`
    - ❌ Deepwrought Radical Advancement tech swap (optional) `[TE-F3]`
    - ❌ Unit upgrades: Helios V2, Linkship II, Exile II (data)
- - ❌ Updates to existing factions
-   - ❌ Keleres: Executive Order replaces I.I.H.Q. tech, Agency Supply Network Ω, Custodia Vigilia Ω `[TE-F1]`
+ - ✅ Updates to existing factions
+   - ✅ Keleres: Executive Order replaces I.I.H.Q. tech, Agency Supply Network Ω, Custodia Vigilia Ω `[TE-F1]`
    - ✅ Leaders ΩΩ: Naalu agent, Xxcha hero, Yin agent/commander/hero; Keleres heroes; Jol-Nar commander → Agnlan Oln `[TE-E-1]`
  - ✅ New planets
  - 🚱 Space stations (planet cards ✅, can't be elected in agendas ❌) `[TE-G]`

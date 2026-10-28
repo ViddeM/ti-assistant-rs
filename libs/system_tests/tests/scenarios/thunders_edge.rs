@@ -366,7 +366,10 @@ pub fn thunders_edge_take_planets_without_tile() -> TestGame {
         .tactical()
         .expect_rejected(take("Alice", Planet::ThundersEdge), "isn't on the board")
         .expect_rejected(take("Alice", Planet::Avernus), "isn't on the board")
-        .expect_rejected(take("Alice", Planet::CustodiaVigilia), "isn't on the board")
+        .expect_rejected(
+            take("Alice", Planet::CustodiaVigiliaOmega),
+            "isn't on the board",
+        )
         .take(Planet::Lethe)
         .take(Planet::Phlegethon);
     assert_eq!(activated_system(&alice), Some("126".to_string()));
