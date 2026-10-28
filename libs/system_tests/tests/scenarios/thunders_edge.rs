@@ -18,6 +18,7 @@ scenarios![
     firmament_becomes_obsidian,
     thunders_edge_take_planets_without_tile,
     thunders_edge_styx_victory_point,
+    thunders_edge_breakthrough_planets,
     thunders_edge_action_cards,
     thunders_edge_overrule_and_strategize,
     thunders_edge_crisis_and_puppets_on_a_string,
@@ -431,6 +432,60 @@ pub fn thunders_edge_styx_victory_point() -> TestGame {
         planet: Planet::Styx,
     });
     assert_eq!(points(&g), [0, 0]);
+    g
+}
+
+/// Gaining a breakthrough applies its on-gain effects: I.I.H.Q. Modernization gives the Keleres
+/// Custodia Vigilia, and Stellar Genesis gives Muaat Avernus, which other players can then take.
+pub fn thunders_edge_breakthrough_planets() -> TestGame {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::CouncilKeleres)
+            .player("Bob", Faction::EmbersOfMuaat)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .codex()
+            .thunders_edge(),
+    );
+
+    g.turn("Alice")
+        .tactical()
+        .commit()
+        .commit_to_expedition(TEExpeditionSlot::Resources)
+        .end_turn();
+    assert_eq!(
+        g.player("Alice").breakthrough,
+        Some(Breakthrough::IIHQModernization)
+    );
+    assert!(
+        g.player("Alice")
+            .planets
+            .contains_key(&Planet::CustodiaVigiliaOmega)
+    );
+
+    g.apply(Event::SetBreakthrough {
+        player: p("Bob"),
+        breakthrough: Some(Breakthrough::StellarGenesis),
+    });
+    assert!(g.player("Bob").planets.contains_key(&Planet::Avernus));
+    g.turn("Bob").tactical().commit().end_turn();
+
+    g.turn("Carol")
+        .tactical()
+        .expect_rejected(
+            take("Carol", Planet::CustodiaVigiliaOmega),
+            "isn't on the board",
+        )
+        .take(Planet::Avernus)
+        .commit()
+        .end_turn();
+    assert!(!g.player("Bob").planets.contains_key(&Planet::Avernus));
+    assert!(g.player("Carol").planets.contains_key(&Planet::Avernus));
+    assert!(
+        g.player("Alice")
+            .planets
+            .contains_key(&Planet::CustodiaVigiliaOmega)
+    );
     g
 }
 

@@ -19,6 +19,7 @@ use crate::{
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
+        breakthrough::Breakthrough,
         frontier_card::FrontierCard,
         leaders::{Leader, LeaderAbilityKind},
         objectives::Objective,
@@ -623,6 +624,37 @@ impl GameState {
         player.planets.insert(planet, attachments);
 
         Ok(previous_owner)
+    }
+
+    /// Unlock the player's breakthrough and apply its on-gain effects, unless it's already
+    /// unlocked.
+    pub fn gain_breakthrough(&mut self, player: &PlayerId) -> anyhow::Result<()> {
+        let player_state = self.players.get_mut(player).context("Player not found")?;
+        if player_state.breakthrough.is_some() {
+            return Ok(());
+        }
+
+        let breakthrough = player_state.faction_breakthrough();
+        player_state.breakthrough = Some(breakthrough.clone());
+        self.apply_breakthrough_gained(player, &breakthrough)
+    }
+
+    /// Apply the effects of `player` gaining `breakthrough`.
+    pub fn apply_breakthrough_gained(
+        &mut self,
+        player: &PlayerId,
+        breakthrough: &Breakthrough,
+    ) -> anyhow::Result<()> {
+        match breakthrough {
+            Breakthrough::IIHQModernization => {
+                self.set_planet_owner(Planet::CustodiaVigiliaOmega, Some(player.clone()))?;
+            }
+            Breakthrough::StellarGenesis => {
+                self.set_planet_owner(Planet::Avernus, Some(player.clone()))?;
+            }
+            _ => {}
+        }
+        Ok(())
     }
 
     /// Whether the Firmament has flipped to The Obsidian.

@@ -692,13 +692,13 @@ fn try_update_game_state(
                         if let Some(target) = target {
                             let target_player = game_state
                                 .players
-                                .get_mut(&target)
+                                .get(&target)
                                 .context("Player not found")?;
                             ensure!(
                                 target_player.breakthrough.is_none(),
                                 "{target} has already gained their breakthrough"
                             );
-                            target_player.gain_breakthrough();
+                            game_state.gain_breakthrough(&target)?;
                         }
                     }
                     ActionCardAction::MercenaryContract { planet } => {
@@ -1910,11 +1910,9 @@ fn try_update_game_state(
             );
 
             if let Some(p) = player {
-                let player = game_state.players.get_mut(&p).context("Player not found")?;
+                te.progress.insert(slot, p.clone());
 
-                te.progress.insert(slot, p);
-
-                player.gain_breakthrough();
+                game_state.gain_breakthrough(&p)?;
             } else {
                 te.progress.remove(&slot);
             }
@@ -1927,17 +1925,22 @@ fn try_update_game_state(
             if let Some(b) = &breakthrough {
                 game_state.assert_enabled(b)?;
             }
-            let player = game_state
+            let player_state = game_state
                 .players
                 .get_mut(&player)
                 .context("Player not found")?;
 
             ensure!(
-                breakthrough != player.breakthrough,
+                breakthrough != player_state.breakthrough,
                 "Cannot set breakthrough to None"
             );
 
-            player.breakthrough = breakthrough;
+            let previous = std::mem::replace(&mut player_state.breakthrough, breakthrough.clone());
+            if previous.is_none()
+                && let Some(b) = &breakthrough
+            {
+                game_state.apply_breakthrough_gained(&player, b)?;
+            }
         }
         Event::CommitToThundersEdgeExpedition { player, slot } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
@@ -1959,20 +1962,16 @@ fn try_update_game_state(
                 "Expedition slot is already claimed"
             );
 
-            let committer = game_state
-                .players
-                .get_mut(&player)
-                .context("Player not found")?;
+            te.progress.insert(slot.clone(), player.clone());
 
-            te.progress.insert(slot.clone(), player);
-
-            committer.gain_breakthrough();
-
-            game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(if te.is_full() {
+            let progress = if te.is_full() {
                 ThundersEdgeProgress::AwaitingPlacement { slot }
             } else {
                 ThundersEdgeProgress::Committed { slot }
-            }));
+            };
+
+            game_state.gain_breakthrough(&player)?;
+            game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(progress));
         }
         Event::CompleteThundersEdgeExpedition {
             player,
@@ -2013,9 +2012,12 @@ fn try_update_game_state(
                 .get_mut(&won_by)
                 .context("Player not found")?;
             winner.planets.insert(Planet::ThundersEdge, BTreeSet::new());
-            winner.gain_breakthrough();
 
-            te.completed = Some(TECompletion { won_by, placed_in });
+            te.completed = Some(TECompletion {
+                won_by: won_by.clone(),
+                placed_in,
+            });
+            game_state.gain_breakthrough(&won_by)?;
             game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(
                 ThundersEdgeProgress::Committed { slot },
             ));
@@ -2068,10 +2070,12 @@ fn try_update_game_state(
                     .planets
                     .entry(Planet::ThundersEdge)
                     .or_insert_with(BTreeSet::new);
-                winner.gain_breakthrough();
             }
 
-            te.completed = new_completion;
+            te.completed = new_completion.clone();
+            if let Some(comp) = new_completion {
+                game_state.gain_breakthrough(&comp.won_by)?;
+            }
         }
     }
 
