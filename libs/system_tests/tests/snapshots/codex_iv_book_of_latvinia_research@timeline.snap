@@ -1,0 +1,25 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+   9 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  10 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  11 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  14 CompleteStrategyPhase                    r1 Action             Alice
+  15 GainRelicAction(Alice)                   r1 EndActionTurn      Alice
+  16 ResearchBookOfLatviniaTechs(Alice)       r1 EndActionTurn      Alice
+  17 EndTurn(Alice)                           r1 Action             Bob
+  18 SetRelicOwner(Bob)                       r1 Action             Bob
+  19 ResearchBookOfLatviniaTechs(Bob)         r1 Action             Bob
+  20 SetRelicOwner(Carol)                     r1 Action             Bob
+  21 SetRelicOwner                            r1 Action             Bob

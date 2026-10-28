@@ -459,6 +459,15 @@ pub enum Event {
         player: Option<PlayerId>,
     },
 
+    /// Research up to 2 technologies with no prerequisites after gaining the Book of Latvinia,
+    /// no technologies skips the research.
+    ResearchBookOfLatviniaTechs {
+        /// The player that gained the Book of Latvinia.
+        player: PlayerId,
+        /// The technologies to research, at most 2.
+        technologies: Vec<Technology>,
+    },
+
     /// Add the tech to the players list of techs.
     AddTechToPlayer {
         /// The player to receive the technology.

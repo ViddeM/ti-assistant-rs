@@ -131,6 +131,10 @@ pub struct GameState {
 
     /// The current expedition for Thunder's edge or None if thunder's edge is not in play.
     pub te_expedition: Option<TEExpedition>,
+
+    /// The player (if any) that gained the Book of Latvinia and may still research up to 2
+    /// technologies with no prerequisites.
+    pub book_of_latvinia_research: Option<PlayerId>,
 }
 
 /// Where a planet is on the board, see [GameState::planet_location].
@@ -634,8 +638,9 @@ impl GameState {
 
     /// Give `relic` to `owner`, or to nobody, taking it from whoever had it.
     ///
-    /// Shard of the Throne's point follows the relic, and gaining The Quantumcore unlocks the new
-    /// owner's breakthrough.
+    /// Shard of the Throne's point follows the relic, gaining The Quantumcore unlocks the new
+    /// owner's breakthrough, and gaining the Book of Latvinia lets the new owner research up to 2
+    /// technologies.
     pub fn set_relic_owner(&mut self, relic: Relic, owner: Option<PlayerId>) -> anyhow::Result<()> {
         if let Some(p) = owner.as_ref() {
             ensure!(self.players.contains_key(p), "Player doesn't exist '{p}'");
@@ -652,6 +657,7 @@ impl GameState {
         match (&relic, owner) {
             (Relic::ShardOfTheThrone, owner) => self.score.shard_of_the_throne = owner,
             (Relic::TheQuantumcore, Some(owner)) => self.gain_breakthrough(&owner)?,
+            (Relic::BookOfLatvinia, owner) => self.book_of_latvinia_research = owner,
             _ => {}
         }
 

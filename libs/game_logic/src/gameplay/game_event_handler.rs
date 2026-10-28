@@ -1084,6 +1084,7 @@ fn try_update_game_state(
                 } else {
                     game_state.speaker = Some(player.clone());
                 }
+                game_state.book_of_latvinia_research = None;
             }
 
             game_state
@@ -1670,6 +1671,35 @@ fn try_update_game_state(
         Event::SetRelicOwner { relic, player } => {
             game_state.assert_enabled(&relic)?;
             game_state.set_relic_owner(relic, player)?;
+        }
+        Event::ResearchBookOfLatviniaTechs {
+            player,
+            technologies,
+        } => {
+            ensure!(
+                game_state.book_of_latvinia_research.as_ref() == Some(&player),
+                "{player} has no Book of Latvinia research"
+            );
+            ensure!(
+                technologies.len() <= 2,
+                "The Book of Latvinia researches at most 2 technologies"
+            );
+            for tech in &technologies {
+                game_state.assert_enabled(tech)?;
+                ensure!(
+                    tech.info().requirements.is_empty(),
+                    "{tech:?} has prerequisites"
+                );
+            }
+
+            let p = game_state
+                .players
+                .get_mut(&player)
+                .context("Player doesn't exist")?;
+            for tech in technologies {
+                p.research_tech(tech)?;
+            }
+            game_state.book_of_latvinia_research = None;
         }
         Event::AddTechToPlayer { player, tech } => {
             game_state.assert_enabled(&tech)?;

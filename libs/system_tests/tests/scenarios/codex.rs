@@ -4,7 +4,11 @@ use ti_helper_system_tests::prelude::*;
 
 use crate::fixtures::{SIMPLE_PICKS, action_phase, three_players};
 
-scenarios![codex_iv_book_of_latvinia, codex_iv_neuraloop,];
+scenarios![
+    codex_iv_book_of_latvinia,
+    codex_iv_book_of_latvinia_research,
+    codex_iv_neuraloop,
+];
 
 /// Book of Latvinia gives a point to a player that controls all 4 technology specialties, and
 /// the speaker token to anyone else. The point can also be moved or removed by hand.
@@ -57,6 +61,77 @@ pub fn codex_iv_book_of_latvinia() -> TestGame {
     )
     .apply(Event::SetBookOfLatviniaOwner { player: None });
     assert_eq!(g.state().score.book_of_latvinia, None);
+    g
+}
+
+/// Gaining the Book of Latvinia, as an action or by hand, lets the new owner research up to 2
+/// technologies with no prerequisites, or skip it.
+pub fn codex_iv_book_of_latvinia_research() -> TestGame {
+    let mut g = action_phase(three_players().pok().codex());
+    let research = |player: &str, technologies: &[Technology]| Event::ResearchBookOfLatviniaTechs {
+        player: p(player),
+        technologies: technologies.to_vec(),
+    };
+
+    g.turn("Alice")
+        .gain_relic(Relic::BookOfLatvinia)
+        .expect_rejected(
+            research("Bob", &[Technology::SarweenTools]),
+            "no Book of Latvinia research",
+        )
+        .expect_rejected(
+            research(
+                "Alice",
+                &[
+                    Technology::SarweenTools,
+                    Technology::PlasmaScoring,
+                    Technology::DarkEnergyTap,
+                ],
+            ),
+            "at most 2 technologies",
+        )
+        .expect_rejected(
+            research("Alice", &[Technology::GravityDrive]),
+            "has prerequisites",
+        )
+        .expect_rejected(
+            research("Alice", &[Technology::AntimassDeflectors]),
+            "already has tech",
+        )
+        .apply(research(
+            "Alice",
+            &[Technology::SarweenTools, Technology::PlasmaScoring],
+        ))
+        .expect_rejected(
+            research("Alice", &[Technology::DarkEnergyTap]),
+            "no Book of Latvinia research",
+        )
+        .end_turn();
+    assert!(
+        g.player("Alice")
+            .technologies
+            .is_superset(&[Technology::SarweenTools, Technology::PlasmaScoring].into())
+    );
+
+    let bob_techs = g.player("Bob").technologies.clone();
+    g.apply(Event::SetRelicOwner {
+        relic: Relic::BookOfLatvinia,
+        player: Some(p("Bob")),
+    });
+    assert_eq!(g.state().book_of_latvinia_research, Some(p("Bob")));
+    g.apply(research("Bob", &[]));
+    assert_eq!(g.state().book_of_latvinia_research, None);
+    assert_eq!(g.player("Bob").technologies, bob_techs);
+
+    g.apply(Event::SetRelicOwner {
+        relic: Relic::BookOfLatvinia,
+        player: Some(p("Carol")),
+    })
+    .apply(Event::SetRelicOwner {
+        relic: Relic::BookOfLatvinia,
+        player: None,
+    });
+    assert_eq!(g.state().book_of_latvinia_research, None);
     g
 }
 
