@@ -14,7 +14,7 @@ use crate::{
         planet::Planet,
         planet_attachment::PlanetAttachment,
         relic::Relic,
-        tech::{TechCategory, Technology},
+        tech::{TechCategory, TechOrigin, Technology},
     },
     state::faction_state::{FactionState, FirmamentSide, FirmamentState},
 };
@@ -162,11 +162,25 @@ impl Player {
 
     /// Research a technology (for actions stating 'gain', use [`take_tech()`] instead), performing necessary checks for that action.
     pub fn research_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
+        self.assert_can_research(&tech)?;
+        self.take_tech(tech)
+    }
+
+    /// Asserts that the player is allowed to research `tech`: Nekro Virus can't research, and
+    /// faction technologies can only be researched by their own faction.
+    pub fn assert_can_research(&self, tech: &Technology) -> anyhow::Result<()> {
         ensure!(
             self.faction != Faction::NekroVirus,
             "Nekro Virus cannot research techs"
         );
-        self.take_tech(tech)
+        ensure!(
+            match tech.info().origin {
+                TechOrigin::Base => true,
+                TechOrigin::Faction(faction) => faction == self.faction,
+            },
+            "{tech:?} is another faction's technology"
+        );
+        Ok(())
     }
 
     /// Returns true if the player currently has the technology.

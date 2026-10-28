@@ -1684,20 +1684,13 @@ fn try_update_game_state(
                 technologies.len() <= 2,
                 "The Book of Latvinia researches at most 2 technologies"
             );
-            let faction = game_state
+            let researcher = game_state
                 .players
                 .get(&player)
-                .context("Player doesn't exist")?
-                .faction;
+                .context("Player doesn't exist")?;
             for tech in &technologies {
                 game_state.assert_enabled(tech)?;
-                ensure!(
-                    match tech.info().origin {
-                        TechOrigin::Base => true,
-                        TechOrigin::Faction(origin) => origin == faction,
-                    },
-                    "{tech:?} is another faction's technology"
-                );
+                researcher.assert_can_research(tech)?;
                 ensure!(
                     tech.info().requirements.is_empty(),
                     "{tech:?} has prerequisites"

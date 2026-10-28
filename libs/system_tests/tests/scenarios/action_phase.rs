@@ -225,6 +225,16 @@ pub fn action_strategic_technology() -> TestGame {
         .expect_rejected(
             primary(
                 "Alice",
+                Primary {
+                    first_tech: Some(Technology::SpacialConduitCylinder),
+                    second_tech: None,
+                },
+            ),
+            "another faction's technology",
+        )
+        .expect_rejected(
+            primary(
+                "Alice",
                 StrategicPrimaryAction::Politics {
                     new_speaker: p("Bob"),
                 },
