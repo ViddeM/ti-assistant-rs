@@ -168,6 +168,7 @@ pub enum Technology {
     L4Disruptors,
     TemporalCommandSuite,
     IIHQModernization,
+    ExecutiveOrder,
     SalvageOperations,
     InheritanceSystems,
     EResSiphons,
@@ -175,6 +176,7 @@ pub enum Technology {
     NullificationField,
     CoreImpulse,
     AgencySupplyNetwork,
+    AgencySupplyNetworkOmega,
     QuantumDatahubNode,
     MirrorComputing,
     SubatomicSplicer,
@@ -263,6 +265,8 @@ impl Component for Technology {
         MagmusReactor -> MagmusReactorOmega,
         WormholeGenerator -> WormholeGeneratorOmega,
         YinSpinner -> YinSpinnerOmega,
+        IIHQModernization -> ExecutiveOrder,
+        AgencySupplyNetwork -> AgencySupplyNetworkOmega,
     }
 
     fn expansion(&self) -> Expansion {
@@ -987,6 +991,16 @@ impl Technology {
                     "You are neighbors with all players that have units or control planets in or adjacent to the Mecatol Rex system."
                 ],
             ),
+            Technology::ExecutiveOrder => t!(
+                "Executive Order",
+                TechType::Category(TechCategory::Cybernetic),
+                TechOrigin::Faction(Faction::CouncilKeleres),
+                tr!([(TechCategory::Cybernetic, 1)]),
+                Expansion::ThundersEdge,
+                &[
+                    "ACTION: Exhaust this card and draw the top or bottom card of the agenda deck. Players immediately vote on this agenda as if you were the speaker; you can spend trade goods and resources on this agenda as if they were votes."
+                ],
+            ),
             Technology::SalvageOperations => t!(
                 "Salvage Operations",
                 TechType::Category(TechCategory::Cybernetic),
@@ -1055,6 +1069,16 @@ impl Technology {
                 Expansion::CodexIII,
                 &[
                     "Whenever you resolve one of your PRODUCTION abilities, you may resolve an additional one of your PRODUCTION abilities in any system; the additional use does not trigger this ability."
+                ],
+            ),
+            Technology::AgencySupplyNetworkOmega => t!(
+                "Agency Supply Network Ω",
+                TechType::Category(TechCategory::Cybernetic),
+                TechOrigin::Faction(Faction::CouncilKeleres),
+                tr!([(TechCategory::Cybernetic, 2)]),
+                Expansion::ThundersEdge,
+                &[
+                    "Once per action, when you resolve a unit's PRODUCTION ability, you may resolve another of your unit's PRODUCTION abilities in any system."
                 ],
             ),
             Technology::QuantumDatahubNode => t!(

@@ -35,7 +35,7 @@ Paths below are relative to `libs/game_data/src/components/` unless stated other
 | 5 | 🟠 | **Styx has 3 resources; it should have 4** (4/0 on 4 separate wiki pages). **✅ Fixed** | `planet.rs:968` | ✔ |
 | 6 | 🟠 | **14 Thunder's Edge action cards are missing** (20 cards in total; see §2). **✅ Fixed**, including the Ω versions of 8 Codex I cards. | `action_card.rs:15-112` | ✔ |
 | 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. **✅ Fixed** for the two techs. The three objectives are left open on purpose: the handlers call `assert_expansion`, so retagging would stop stored base-only games that used one of them from replaying. | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
-| 8 | 🟠 | **Keleres hasn't been updated for Thunder's Edge.** The I.I.H.Q. Modernization *tech* stays enabled alongside the new I.I.H.Q. *breakthrough*. The replacement tech Executive Order is missing, Agency Supply Network has the Codex III text, and Custodia Vigilia should be 2/2 under Thunder's Edge. | `tech.rs:1026-1105`, `planet.rs:786-796` | |
+| 8 | 🟠 | **Keleres hasn't been updated for Thunder's Edge.** The I.I.H.Q. Modernization *tech* stays enabled alongside the new I.I.H.Q. *breakthrough*. The replacement tech Executive Order is missing, Agency Supply Network has the Codex III text, and Custodia Vigilia should be 2/2 under Thunder's Edge. The techs are done: Executive Order and Agency Supply Network Ω replace the Codex III techs under Thunder's Edge (§7). | `tech.rs:1026-1105`, `planet.rs:786-796` | |
 | 9 | 🟠 | **None of Thunder's Edge's updated leader cards exist:** Naalu agent, Xxcha hero, all three Yin leaders, two Keleres heroes, and the Jol-Nar commander rename. `Leader::is_enabled_in` only knows about the Codex III swaps. **✅ Fixed.** All 8 exist, tagged Thunder's Edge, and replace the older versions through the `replacements!` chains in `leaders.rs`. The Keleres heroes also need Codex III, like the faction. A stored Thunder's Edge game that played Z'eu Ω or Dannel of the Tenth Ω as an action won't replay any more (`LeaderActionBegin` asserts the leader is enabled). | `components/leaders.rs:86-115` | ✔ |
 | 10 | 🟠 | **Plane Splitter needs 2 cybernetic prerequisites; the code has 1.** **✅ Fixed** | `tech.rs:1231` | ✔ |
 
@@ -182,18 +182,18 @@ With the three fixes the split becomes 20 Base / 20 PoK secrets (the code curren
 ### Missing
 | Item | Sev | Wiki | Notes |
 |---|---|---|---|
-| Executive Order (Keleres, Thunder's Edge) | 🟠 | Cybernetic, prerequisite C: "ACTION: Exhaust this card and draw the top or bottom card of the agenda deck. Players immediately vote on this agenda as if you were the speaker; you can spend trade goods and resources on this agenda as if they were votes." | Thunder's Edge replaced the I.I.H.Q. Modernization tech with this |
+| Executive Order (Keleres, Thunder's Edge) | 🟠 | Cybernetic, prerequisite C: "ACTION: Exhaust this card and draw the top or bottom card of the agenda deck. Players immediately vote on this agenda as if you were the speaker; you can spend trade goods and resources on this agenda as if they were votes." | Thunder's Edge replaced the I.I.H.Q. Modernization tech with this. **✅ Fixed** |
 | 4X41C "Helios" V2 (Last Bastion space dock upgrade) | 🟠 | prerequisites CC | Thunder's Edge faction unit upgrade |
 | Linkship II (Ral Nel destroyer upgrade) | 🟠 | prerequisites WW | Thunder's Edge faction unit upgrade |
 | Exile II (Crimson Rebellion destroyer upgrade) | 🟠 | prerequisites WW | Thunder's Edge faction unit upgrade |
-| Agency Supply Network (Thunder's Edge version) | 🟡 | "Once per action, when you resolve a unit's PRODUCTION ability, you may resolve another of your unit's PRODUCTION abilities in any system." | Only the Codex III text exists |
+| Agency Supply Network (Thunder's Edge version) | 🟡 | "Once per action, when you resolve a unit's PRODUCTION ability, you may resolve another of your unit's PRODUCTION abilities in any system." | Only the Codex III text exists. **✅ Fixed** (Agency Supply Network Ω) |
 | Valefar Assimilator X / Y (Nekro) | ⚪ | faction techs with no prerequisites | Probably left out on purpose. They matter for Liberation of Ordinian, where they get replaced |
 | Obsidian sides of Neural Parasite / Plane Splitter | ⚪ | flipped text, "cannot be researched" | `tech.rs:1216-1237` (informational) |
 
 ### Should be disabled when Thunder's Edge is on
 | Item | Sev | Notes |
 |---|---|---|
-| I.I.H.Q. Modernization (tech) | 🟠 | It's always enabled, so Keleres gets both the tech and the breakthrough with the same name. `is_enabled_in` needs a Thunder's Edge swap list (remove I.I.H.Q. tech, add Executive Order and Agency Supply Network Ω) like the Codex I and IV lists |
+| I.I.H.Q. Modernization (tech) | 🟠 | It's always enabled, so Keleres gets both the tech and the breakthrough with the same name. `is_enabled_in` needs a Thunder's Edge swap list (remove I.I.H.Q. tech, add Executive Order and Agency Supply Network Ω) like the Codex I and IV lists. **✅ Fixed:** Executive Order replaces it under Thunder's Edge |
 
 ### Wrong values
 | Item | Sev | Field | Code | Wiki | Location |
@@ -221,7 +221,7 @@ With the three fixes the split becomes 20 Base / 20 PoK secrets (the code curren
 ### Codex replacement logic (`Technology::is_enabled_in`)
 - **Codex I swaps:** The 5 Codex I swaps (Magen, X-89, Magmus, Wormhole Generator, Yin Spinner) are correct.
 - **Codex IV / 4.5 ΩΩ swaps:** The ΩΩ swaps (Magen, X-89) are correct. Strictly these came with "Codex 4.5" (13 June 2025), but tying them to `codex_4` is fine.
-- **Thunder's Edge swaps:** There are none, but the Keleres changes above need them.
+- **Thunder's Edge swaps:** I.I.H.Q. Modernization → Executive Order and Agency Supply Network → Agency Supply Network Ω. Like the Keleres faction, both need Codex III.
 - **Design question:** The Thunder's Edge box includes "74 cards from the Twilight Codices". Should enabling Thunder's Edge imply the Codex content (or at least default the codex toggles to on)? See `roadmap_analysis.md`.
 
 ### Verified OK
