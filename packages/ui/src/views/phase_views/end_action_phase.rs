@@ -7,6 +7,7 @@ use ti_helper_game_data::{
     common::player_id::PlayerId,
     components::{
         action_card::ActionCard,
+        planet::Planet,
         system::{System, SystemId},
     },
     state::{
@@ -51,6 +52,11 @@ pub fn EndActionPhaseView() -> Element {
         gc.game_state()
             .passed_players
             .contains(&current_player_id())
+    });
+    let owns_thunders_edge = use_memo(move || {
+        gc.game_state().players[&current_player_id()]
+            .planets
+            .contains_key(&Planet::ThundersEdge)
     });
     let expedition = use_memo(move || gc.game_state().te_expedition.clone());
     let thunders_edge_progress = use_memo(move || match gc.game_state().action_progress.as_ref() {
@@ -98,6 +104,18 @@ pub fn EndActionPhaseView() -> Element {
                                     })
                             },
                             "Take another turn"
+                        }
+                        if owns_thunders_edge() {
+                            Button {
+                                disabled: has_passed() || completion_required(),
+                                onclick: move |_| {
+                                    event
+                                        .send_event(Event::TakeAnotherTurn {
+                                            player: current_player_id(),
+                                        })
+                                },
+                                "Jupiter Brain: take 1 more action"
+                            }
                         }
                         Button {
                             disabled: completion_required(),

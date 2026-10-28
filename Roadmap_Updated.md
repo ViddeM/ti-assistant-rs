@@ -300,7 +300,7 @@
  - 🚱 Space stations (planet cards ✅, can't be elected in agendas ❌) `[TE-G]`
  - ✅ New anomaly (entropic scar, data only)
  - ❌ New legendary planet abilities
-   - ❌ Thunder's Edge: gain breakthrough on gain + "Jupiter Brain" button reusing Take Another Turn `[TE-C2]`
+   - ✅ Thunder's Edge: gain breakthrough on gain + "Jupiter Brain" button reusing Take Another Turn `[TE-C2]`
    - ✅ Styx (1 extra point as long as you hold the planet) `[TE-C1]`
    - 👺 Avernus (Action, nothing to track)
    - ❌ Faunus (gain control of a planet when you pass) `[TE-C3]`
