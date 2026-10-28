@@ -633,6 +633,9 @@ impl GameState {
     }
 
     /// Give `relic` to `owner`, or to nobody, taking it from whoever had it.
+    ///
+    /// Shard of the Throne's point follows the relic, and gaining The Quantumcore unlocks the new
+    /// owner's breakthrough.
     pub fn set_relic_owner(&mut self, relic: Relic, owner: Option<PlayerId>) -> anyhow::Result<()> {
         if let Some(p) = owner.as_ref() {
             ensure!(self.players.contains_key(p), "Player doesn't exist '{p}'");
@@ -646,8 +649,10 @@ impl GameState {
             }
         }
 
-        if relic == Relic::ShardOfTheThrone {
-            self.score.shard_of_the_throne = owner;
+        match (&relic, owner) {
+            (Relic::ShardOfTheThrone, owner) => self.score.shard_of_the_throne = owner,
+            (Relic::TheQuantumcore, Some(owner)) => self.gain_breakthrough(&owner)?,
+            _ => {}
         }
 
         Ok(())

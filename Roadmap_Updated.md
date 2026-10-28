@@ -285,7 +285,7 @@
    - 👺 N'orr Supremacy (research from the tech page)
    - ❌ Show breakthrough description + synergy `[TE-A2]`
  - ✅ New relic cards (data)
-   - ❌ The Quantumcore (gain breakthrough when gained) `[TE-D1]`
+   - ✅ The Quantumcore (gain breakthrough when gained) `[TE-D1]`
    - ❌ The Silver Flame (roll: +1 VP or lose home system / can't score publics) `[TE-D2]`
    - ❌ The Triad (badge only, relic fragments aren't tracked) `[TE-D3]`
    - ✅ Non-action "gain relic" event (Fracture planets, Vaults, Cultural Exchange …) `[E4]`

@@ -48,7 +48,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 |---|---|
 | TE expansion toggle, milty import of TE tiles and factions | ✅ |
 | TE expedition (commit at end of turn, passing, completion/placement, admin page) | ✅ (`state/expedition.rs`, `thunders_edge.rs` scenarios) |
-| Breakthrough assignment (auto-unlock on first expedition slot or with the Thunder's Edge planet, admin dropdown) | ✅. Only the I.I.H.Q. and Stellar Genesis on-gain effects are applied |
+| Breakthrough assignment (auto-unlock on first expedition slot, with the Thunder's Edge planet or with The Quantumcore, admin dropdown) | ✅. Only the I.I.H.Q. and Stellar Genesis on-gain effects are applied |
 | Firmament → Obsidian flip (Puppets of the Blade, planets, The Sowing/Reaping) | ✅ |
 | TE factions, planets, space stations (as planet cards), leaders, relics (data) | ✅ (data bugs: see mismatches) |
 | TE leader actions Kan Kip Rel, Ahk Ravin, Sharsiss, Sharsiss Hollow | ✅ (as "no-data" actions) |
@@ -124,7 +124,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| D1 **The Quantumcore**: "When you gain this card, gain your breakthrough" | Track | `GainRelicAction` and E4 call E2. "Synergy for all types" is info only. | P1 / S |
+| D1 **The Quantumcore**: "When you gain this card, gain your breakthrough" | Track | `GainRelicAction` and E4 call E2. "Synergy for all types" is info only. ✅ `GameState::set_relic_owner` calls E2 when The Quantumcore gets an owner, so both `GainRelicAction` and `SetRelicOwner` unlock the breakthrough. Losing the relic doesn't remove it. | P1 / S |
 | D2 **The Silver Flame**: ACTION, roll; a 10 gives +1 VP, otherwise purge your home system and you can't score public objectives; the Fracture enters play | Track | `RelicAction::SilverFlame { rolled_ten: bool }`. True → `score.silver_flame = Some(player)` (+1 VP, score row). False → remove the home planets from the player and add them to the destroyed-planets list (renders on the map like the Stellar Converter); add the player to `cannot_score_public_objectives`, which `ScorePublicObjective`, `ScoreExtraPublicObjective` and the Imperial primary check. Both outcomes → B2. "Can be exchanged in a transaction" → E4. | P2 / M |
 | D3 **The Triad**: a planet-like card worth 3 + the number of fragment types you own | Info / Assist | Fragments aren't tracked. Show a "The Triad (3+X)" badge in the player's resources (`players_sidebar/parts/player_resources.rs`) without adding it to the totals. | P3 / S |
 | D4 Dynamis Core / Nano-Forge TE wording | Data | mismatches §5 | P2 / S |
@@ -449,7 +449,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 2. **Core TE effects (P1/P2).**
    - ✅ E2/E3/E4 helpers.
    - ✅ A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C2 Jupiter Brain.
-   - D1 Quantumcore, CIV-1 Book of Latvinia.
+   - ✅ D1 Quantumcore.
+   - CIV-1 Book of Latvinia.
    - ✅ C1 Styx.
 3. **Galactic event framework plus the cheap tracked events (P1).**
    - Stellar Atomics, Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Civilized Society.
