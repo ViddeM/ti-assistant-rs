@@ -81,30 +81,32 @@ pub struct BreakthroughInfo {
     pub name: String,
     pub description: String,
     pub faction: Faction,
+    pub expansion: Expansion,
     pub synergy: Option<(TechCategory, TechCategory)>,
     pub kind: BreakthroughKind,
 }
 
 macro_rules! info {
-    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident, synergies: $synergies:expr, kind: $kind:ident) => {
+    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident, expansion: $expansion:ident, synergies: $synergies:expr, kind: $kind:ident) => {
         BreakthroughInfo {
             breakthrough: Breakthrough::$breakthrough,
             name: $name.to_string(),
             faction: Faction::$faction,
+            expansion: Expansion::$expansion,
             description: include_str!(concat!("description/", stringify!($breakthrough)))
                 .to_string(),
             synergy: $synergies,
             kind: BreakthroughKind::$kind
         }
     };
-    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident, syn_a: $synergy_a:ident, syn_b: $synergy_b:ident, kind: $kind:ident) => {
-        info! { tag: $breakthrough, name: $name, faction: $faction, synergies: Some((TechCategory::$synergy_a, TechCategory::$synergy_b)), kind: $kind }
+    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident, expansion: $expansion:ident, syn_a: $synergy_a:ident, syn_b: $synergy_b:ident, kind: $kind:ident) => {
+        info! { tag: $breakthrough, name: $name, faction: $faction, expansion: $expansion, synergies: Some((TechCategory::$synergy_a, TechCategory::$synergy_b)), kind: $kind }
     };
-    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident, syn_a: $synergy_a:ident, syn_b: $synergy_b:ident) => {
-        info! { tag: $breakthrough, name: $name, faction: $faction, syn_a: $synergy_a, syn_b: $synergy_b, kind: Other }
+    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident, expansion: $expansion:ident, syn_a: $synergy_a:ident, syn_b: $synergy_b:ident) => {
+        info! { tag: $breakthrough, name: $name, faction: $faction, expansion: $expansion, syn_a: $synergy_a, syn_b: $synergy_b, kind: Other }
     };
-    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident) => {
-        info! { tag: $breakthrough, name: $name, faction: $faction, synergies: None, kind: Other }
+    (tag: $breakthrough:ident, name: $name:expr, faction: $faction:ident, expansion: $expansion:ident) => {
+        info! { tag: $breakthrough, name: $name, faction: $faction, expansion: $expansion, synergies: None, kind: Other }
     };
 }
 
@@ -116,6 +118,7 @@ impl Breakthrough {
                 tag: Psychospore,
                 name: "Psychospore",
                 faction: Arborec,
+                expansion: ThundersEdge,
                 syn_a: Warfare,
                 syn_b: Biotic,
                 kind: Action
@@ -124,6 +127,7 @@ impl Breakthrough {
                 tag: WingTransfer,
                 name: "Wing Transfer",
                 faction: ArgentFlight,
+                expansion: ThundersEdge,
                 syn_a: Propulsion,
                 syn_b: Cybernetic
             },
@@ -131,6 +135,7 @@ impl Breakthrough {
                 tag: GravleashManeuvers,
                 name: "Gravleash Maneuvers",
                 faction: BaronyOfLetnev,
+                expansion: ThundersEdge,
                 syn_a: Propulsion,
                 syn_b: Warfare
             },
@@ -138,6 +143,7 @@ impl Breakthrough {
                 tag: DeorbitBarrage,
                 name: "Deorbit Barrage",
                 faction: ClanOfSaar,
+                expansion: ThundersEdge,
                 syn_a: Propulsion,
                 syn_b: Warfare
             },
@@ -145,6 +151,7 @@ impl Breakthrough {
                 tag: IIHQModernization,
                 name: "I.I.H.Q. Modernization",
                 faction: CouncilKeleres,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -152,6 +159,7 @@ impl Breakthrough {
                 tag: ResonanceGenerator,
                 name: "Resonance Generator",
                 faction: CrimsonRebellion,
+                expansion: ThundersEdge,
                 syn_a: Propulsion,
                 syn_b: Warfare,
                 kind: Action
@@ -160,6 +168,7 @@ impl Breakthrough {
                 tag: VisionariaSelect,
                 name: "Visionaria Select",
                 faction: DeepwroughtScholarate,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic,
                 kind: Action
@@ -168,6 +177,7 @@ impl Breakthrough {
                 tag: StellarGenesis,
                 name: "Stellar Genesis",
                 faction: EmbersOfMuaat,
+                expansion: ThundersEdge,
                 syn_a: Warfare,
                 syn_b: Cybernetic
             },
@@ -175,6 +185,7 @@ impl Breakthrough {
                 tag: AutoFactories,
                 name: "Auto-Factories",
                 faction: EmiratesOfHacan,
+                expansion: ThundersEdge,
                 syn_a: Warfare,
                 syn_b: Cybernetic
             },
@@ -182,6 +193,7 @@ impl Breakthrough {
                 tag: VoidTether,
                 name: "Void Tether",
                 faction: Empyrean,
+                expansion: ThundersEdge,
                 syn_a: Biotic,
                 syn_b: Propulsion
             },
@@ -189,6 +201,7 @@ impl Breakthrough {
                 tag: BellumGloriosum,
                 name: "Bellum Gloriosum",
                 faction: FederationOfSol,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -196,6 +209,7 @@ impl Breakthrough {
                 tag: TheSowing,
                 name: "The Sowing",
                 faction: FirmamentObsidian,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -203,6 +217,7 @@ impl Breakthrough {
                 tag: TheReaping,
                 name: "The Reaping",
                 faction: FirmamentObsidian,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -210,6 +225,7 @@ impl Breakthrough {
                 tag: ParticleSynthesis,
                 name: "Particle Synthesis",
                 faction: GhostsOfCreuss,
+                expansion: ThundersEdge,
                 syn_a: Propulsion,
                 syn_b: Cybernetic
             },
@@ -217,6 +233,7 @@ impl Breakthrough {
                 tag: FealtyUplink,
                 name: "Fealty Uplink",
                 faction: L1Z1XMindnet,
+                expansion: ThundersEdge,
                 syn_a: Warfare,
                 syn_b: Biotic
             },
@@ -224,6 +241,7 @@ impl Breakthrough {
                 tag: TheIcon,
                 name: "The Icon",
                 faction: LastBastion,
+                expansion: ThundersEdge,
                 syn_a: Warfare,
                 syn_b: Cybernetic
             },
@@ -231,6 +249,7 @@ impl Breakthrough {
                 tag: VaultsOfTheHeir,
                 name: "Vaults of the Heir",
                 faction: MahactGeneSorcerers,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic,
                 kind: Action
@@ -239,6 +258,7 @@ impl Breakthrough {
                 tag: TheTablesGrace,
                 name: "The Table's Grace",
                 faction: MentakCoalition,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -246,6 +266,7 @@ impl Breakthrough {
                 tag: Corsair,
                 name: "Corsair",
                 faction: MentakCoalition,
+                expansion: ThundersEdge,
                 syn_a: Biotic,
                 syn_b: Cybernetic
             },
@@ -253,6 +274,7 @@ impl Breakthrough {
                 tag: Mindsieve,
                 name: "Mindsieve",
                 faction: NaaluCollective,
+                expansion: ThundersEdge,
                 syn_a: Warfare,
                 syn_b: Biotic
             },
@@ -260,6 +282,7 @@ impl Breakthrough {
                 tag: AbsoluteSynergy,
                 name: "Absolute Synergy",
                 faction: NaazRokhaAlliance,
+                expansion: ThundersEdge,
                 syn_a: Biotic,
                 syn_b: Propulsion
             },
@@ -267,18 +290,21 @@ impl Breakthrough {
                 tag: EidolonMaximum,
                 name: "Eidolon Maximum",
                 faction: NaazRokhaAlliance,
+                expansion: ThundersEdge,
                 syn_a: Biotic,
                 syn_b: Propulsion
             },
             Breakthrough::ValefarAssimilatorZ => info! {
                 tag: ValefarAssimilatorZ,
                 name: "Valefar Assimilator Z",
-                faction: NekroVirus
+                faction: NekroVirus,
+                expansion: ThundersEdge
             },
             Breakthrough::ThundersParadox => info! {
                 tag: ThundersParadox,
                 name: "Thunder's Paradox",
                 faction: Nomad,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -286,6 +312,7 @@ impl Breakthrough {
                 tag: DataSkimmer,
                 name: "Data Skimmer",
                 faction: RalNelConsortium,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -293,6 +320,7 @@ impl Breakthrough {
                 tag: NorrSupremacy,
                 name: "Norr Supremacy",
                 faction: SardakkNorr,
+                expansion: ThundersEdge,
                 syn_a: Propulsion,
                 syn_b: Warfare
             },
@@ -300,6 +328,7 @@ impl Breakthrough {
                 tag: SlumberstateComputing,
                 name: "Slumberstate Computing",
                 faction: TitansOfUl,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -307,6 +336,7 @@ impl Breakthrough {
                 tag: SpecializedCompounds,
                 name: "Specialized Compounds",
                 faction: UniversitiesOfJolNar,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -314,6 +344,7 @@ impl Breakthrough {
                 tag: AlRaithIxIanovar,
                 name: "Al'Raith Ix Ianovar",
                 faction: VuilRaithCabal,
+                expansion: ThundersEdge,
                 syn_a: Warfare,
                 syn_b: Biotic
             },
@@ -321,6 +352,7 @@ impl Breakthrough {
                 tag: Imperator,
                 name: "Imperator",
                 faction: Winnu,
+                expansion: ThundersEdge,
                 syn_a: Propulsion,
                 syn_b: Warfare
             },
@@ -328,6 +360,7 @@ impl Breakthrough {
                 tag: ArchonsGift,
                 name: "Archon's Gift",
                 faction: XxchaKingdom,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -335,6 +368,7 @@ impl Breakthrough {
                 tag: YinAscendant,
                 name: "Yin Ascendant",
                 faction: YinBrotherhood,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -342,6 +376,7 @@ impl Breakthrough {
                 tag: DeepgloomExecutable,
                 name: "Deepgloom Executable",
                 faction: YssarilTribes,
+                expansion: ThundersEdge,
                 syn_a: Cybernetic,
                 syn_b: Biotic
             },
@@ -351,6 +386,6 @@ impl Breakthrough {
 
 impl Component for Breakthrough {
     fn expansion(&self) -> Expansion {
-        Expansion::ThundersEdge
+        self.info().expansion
     }
 }
