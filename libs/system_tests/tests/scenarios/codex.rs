@@ -91,6 +91,10 @@ pub fn codex_iv_book_of_latvinia_research() -> TestGame {
             "at most 2 technologies",
         )
         .expect_rejected(
+            research("Alice", &[Technology::QuantumDatahubNode]),
+            "another faction's technology",
+        )
+        .expect_rejected(
             research("Alice", &[Technology::GravityDrive]),
             "has prerequisites",
         )
