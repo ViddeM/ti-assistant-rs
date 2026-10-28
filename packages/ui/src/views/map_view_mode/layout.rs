@@ -10,7 +10,7 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         system::{System, SystemId, systems},
     },
-    state::game_state::GameState,
+    state::game_state::{GameState, PlanetLocation},
 };
 
 use crate::components::ti_token::TiToken;
@@ -40,6 +40,7 @@ const ATTACHMENT_OFFSETS: [(f32, f32); 5] = [
 const ATTACHMENT_TOKEN_SIZE: (f32, f32) = (512.0 * 0.06, 512.0 * 0.06);
 
 const MIRAGE_TOKEN_SIZE: (f32, f32) = (498.0 * 0.3, 448.0 * 0.3);
+const THUNDERS_EDGE_TOKEN_SIZE: (f32, f32) = (308.0 * 0.6, 320.0 * 0.6);
 const DESTROYED_PLANET_TOKEN_SIZE: (f32, f32) = (512.0 * 0.2, 512.0 * 0.2);
 
 /// A fully laid out map. All coordinates are in SVG space (x right, y down) with the origin at the center of the galaxy.
@@ -168,6 +169,18 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
             .push(Planet::Mirage);
     }
 
+    let thunders_edge_system = match game_state.planet_location(&Planet::ThundersEdge) {
+        PlanetLocation::Token(Some(system)) => Some(system),
+        _ => None,
+    };
+
+    if let Some(system) = thunders_edge_system.as_ref() {
+        system_planets
+            .entry(system.clone())
+            .or_default()
+            .push(Planet::ThundersEdge);
+    }
+
     let mut destroyed_planets_in_system: HashMap<SystemId, Vec<Planet>> = HashMap::new();
     for planet in game_state
         .map_data
@@ -207,6 +220,20 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
             y,
             rotation_degrees: rotation * ROTATION_STEP_DEGREES,
         });
+
+        if thunders_edge_system.as_ref() == Some(&tile.system) {
+            let (x, y) = to_svg(tile_with_offset_to_visual_pos(
+                tile_pos,
+                planet_offset(&Planet::ThundersEdge),
+            ));
+            tokens.push(TokenLayout {
+                kind: TiToken::ThundersEdge,
+                x,
+                y,
+                width: THUNDERS_EDGE_TOKEN_SIZE.0,
+                height: THUNDERS_EDGE_TOKEN_SIZE.1,
+            });
+        }
 
         for planet in system_planets.get(&tile.system).into_iter().flatten() {
             let Some(owner) = planet_owner.get(planet) else {

@@ -186,7 +186,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| J1 Show Thunder's Edge where it was placed | Info | In `map_view_mode/layout.rs`, add a token for `te_expedition.completed.placed_in` (same approach as the Mirage token, plus a new `TiToken`) and an owner marker. | P2 / S |
+| J1 Show Thunder's Edge where it was placed | Info | ✅ `build_layout` draws `TiToken::ThundersEdge` and its owner label in the system from `GameState::planet_location`. | P2 / S |
 | J2 Destroyed and purged planets (Silver Flame, Conventions of War Abandoned) | Info | They already render through `stellar_converter_destroyed_planets` + `TiToken::DestroyedPlanet`. Generalise the field name (keep a serde alias). | P2 / S |
 | J3 Fracture tiles, Avernus token, breaches, coexistence | 👺 | Positions aren't tracked. | — |
 

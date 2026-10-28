@@ -25,6 +25,7 @@ const TERRAFORM: Asset = asset!("/assets/icons/tokens/webp/terraform_token.webp"
 const NANO_FORGE: Asset = asset!("/assets/icons/tokens/webp/nano_forge_token.webp");
 const MIRAGE: Asset = asset!("/assets/icons/tokens/webp/mirage_token.webp");
 const DESTROYED_PLANET: Asset = asset!("/assets/icons/tokens/webp/destroyed_planet_token.webp");
+const THUNDERS_EDGE: Asset = asset!("/assets/icons/tokens/webp/thunders_edge_token.webp");
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TiToken {
@@ -48,6 +49,7 @@ pub enum TiToken {
     NanoForge,
     Mirage,
     DestroyedPlanet,
+    ThundersEdge,
 }
 
 impl TiToken {
@@ -73,6 +75,7 @@ impl TiToken {
             TiToken::NanoForge => NANO_FORGE,
             TiToken::Mirage => MIRAGE,
             TiToken::DestroyedPlanet => DESTROYED_PLANET,
+            TiToken::ThundersEdge => THUNDERS_EDGE,
         }
     }
 }
