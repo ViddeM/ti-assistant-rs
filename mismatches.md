@@ -341,6 +341,8 @@ These aren't data-vs-wiki mismatches, but they came up while checking:
 | 🟡 | Heroes are never marked as purged, so a used hero stays in the playable leader list | `state/game_state.rs:649-678` ✔ |
 | 🟡 | Tech prerequisites are never validated anywhere. This is fine and keeps things simple, but it means breakthrough synergy needs no logic at all; see the action plan | — |
 | 🟡 | The comment `// TODO: Handle Council Keleres` in `get_starting_planets` is stale (setup handles it) | `common/faction.rs:176` |
+| 🔴 | `SetPlanetOwner` moved Shard of the Throne along with a legendary planet but left `score.shard_of_the_throne` alone, so the VP stayed with the old holder. Giving the planet to nobody deleted the relic. **✅ Fixed.** Tactical takes and `SetPlanetOwner` share `GameState::set_planet_owner`, and the Shard stays put when the planet goes to nobody | `state/game_state.rs:588` ✔ |
+| 🟠 | Shard of the Throne only follows legendary planets. The card also passes it on when another player gains control of a planet in the holder's home system | `state/game_state.rs:588` ✔ |
 
 ---
 

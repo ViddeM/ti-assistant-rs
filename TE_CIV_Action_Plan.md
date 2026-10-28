@@ -442,7 +442,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 ## 7. Suggested order of work
 
 1. **Bugs and data (P1, all S).**
-   - mismatches §1 items 1–5 (Fracture tiles, agenda trait checks, Firmament planets, token planets, Styx).
+   - ✅ mismatches §1 items 1–5 (Fracture tiles, agenda trait checks, Firmament planets, token planets, Styx).
    - ✅ TE-H1 strategy card images and the H2 hint.
    - ✅ TE-E-1 leader updates, TE-F1 Keleres.
    - ✅ The 14 action cards (data only) and the Ω wording.

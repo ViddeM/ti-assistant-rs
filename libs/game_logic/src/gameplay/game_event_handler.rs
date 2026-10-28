@@ -412,10 +412,7 @@ fn try_update_game_state(
             };
             game_state.assert_enabled(&planet)?;
 
-            ensure!(
-                game_state.action_progress.is_some(),
-                "Must have action progress to perform take planet action."
-            );
+            let previous_owner = game_state.set_planet_owner(planet.clone(), Some(player))?;
 
             let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
             else {
@@ -425,56 +422,8 @@ fn try_update_game_state(
                 );
             };
 
-            let Some(current_player_id) = &game_state.current_player else {
-                bail!("no current player");
-            };
-
-            let (current_owner, attachments) = game_state
-                .players
-                .iter_mut()
-                .find_map(|(id, player)| {
-                    if let Some(attachments) = player.planets.remove(&planet) {
-                        return Some((Some(id.clone()), attachments));
-                    }
-                    None
-                })
-                .unwrap_or((None, BTreeSet::new()));
-
-            let shard_of_the_throne = if let Some(current_owner) = current_owner.as_ref() {
-                let Some(p) = game_state.players.get_mut(current_owner) else {
-                    bail!("Player doesn't exist {current_owner:?} (THIS IS A BUG!)");
-                };
-
-                let legendary_attachment = attachments.iter().any(|a| a.info().set_legendary);
-                if planet.info().is_legendary || legendary_attachment {
-                    p.relics.remove(&Relic::ShardOfTheThrone)
-                } else {
-                    false
-                }
-            } else {
-                false
-            };
-
-            let Some(current_player) = game_state.players.get_mut(current_player_id) else {
-                bail!(
-                    "invalid game state, expected current player (id: {current_player_id:?}) to be in the players map"
-                )
-            };
-
-            if shard_of_the_throne {
-                current_player.relics.insert(Relic::ShardOfTheThrone);
-                game_state.score.shard_of_the_throne = Some(current_player_id.clone());
-            }
-
-            current_player.planets.insert(planet.clone(), attachments);
-
-            // Give the current player Custodians if he is the first to take Mecatol Rex
-            if planet.is_mecatol_rex() && game_state.score.custodians.is_none() {
-                game_state.score.custodians = Some(current_player_id.clone());
-            }
-
             tactical.activated_system = planet_system;
-            tactical.taken_planets.insert(planet, current_owner);
+            tactical.taken_planets.insert(planet, previous_owner);
         }
         Event::TacticalActionAttachPlanetAttachment {
             player,
@@ -1788,46 +1737,7 @@ fn try_update_game_state(
         Event::SetPlanetOwner { player, planet } => {
             game_state.assert_enabled(&planet)?;
 
-            if let Some(p) = &player {
-                ensure!(game_state.players.contains_key(p), "Player does not exist");
-            }
-
-            // Remove the planet from the current owner (if any)
-            let (sott, attachments) = game_state
-                .players
-                .values_mut()
-                .find_map(|player| {
-                    if let Some(attachments) = player.planets.remove(&planet) {
-                        let sott = if planet.info().is_legendary
-                            || attachments.iter().any(|a| a.info().set_legendary)
-                        {
-                            player.relics.remove(&Relic::ShardOfTheThrone)
-                        } else {
-                            false
-                        };
-
-                        return Some((sott, attachments));
-                    }
-                    None
-                })
-                .unwrap_or((false, BTreeSet::new()));
-
-            if let Some(p) = &player {
-                // Give the planet to its new owner.
-                let Some(player) = game_state.players.get_mut(p) else {
-                    bail!("Player does not exist? This is a bug!")
-                };
-
-                if sott {
-                    player.relics.insert(Relic::ShardOfTheThrone);
-                }
-
-                if planet.is_mecatol_rex() && game_state.score.custodians.is_none() {
-                    game_state.score.custodians = Some(p.clone())
-                }
-
-                player.planets.insert(planet, attachments);
-            }
+            game_state.set_planet_owner(planet, player)?;
         }
         Event::AddPlanetAttachment {
             player,

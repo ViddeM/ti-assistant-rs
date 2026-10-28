@@ -581,6 +581,50 @@ impl GameState {
         }
     }
 
+    /// Give `planet` and its attachments to `owner`, or to nobody, returning the previous owner.
+    ///
+    /// Shard of the Throne follows a legendary planet to its new owner, and the first player to
+    /// control Mecatol Rex gains the custodians token.
+    pub fn set_planet_owner(
+        &mut self,
+        planet: Planet,
+        owner: Option<PlayerId>,
+    ) -> anyhow::Result<Option<PlayerId>> {
+        let (previous_owner, attachments) = self
+            .players
+            .iter_mut()
+            .find_map(|(id, player)| {
+                (player.planets.remove(&planet)).map(|attachments| (Some(id.clone()), attachments))
+            })
+            .unwrap_or_default();
+
+        let Some(owner) = owner else {
+            return Ok(previous_owner);
+        };
+
+        let legendary =
+            planet.info().is_legendary || attachments.iter().any(|a| a.info().set_legendary);
+        let moves_shard = legendary
+            && (previous_owner.as_ref())
+                .and_then(|previous| self.players.get_mut(previous))
+                .is_some_and(|previous| previous.relics.remove(&Relic::ShardOfTheThrone));
+
+        let player = self
+            .players
+            .get_mut(&owner)
+            .context("Player does not exist")?;
+        if moves_shard {
+            player.relics.insert(Relic::ShardOfTheThrone);
+            self.score.shard_of_the_throne = Some(owner.clone());
+        }
+        if planet.is_mecatol_rex() && self.score.custodians.is_none() {
+            self.score.custodians = Some(owner.clone());
+        }
+        player.planets.insert(planet, attachments);
+
+        Ok(previous_owner)
+    }
+
     /// Whether the Firmament has flipped to The Obsidian.
     fn obsidian_in_play(&self) -> bool {
         self.players
