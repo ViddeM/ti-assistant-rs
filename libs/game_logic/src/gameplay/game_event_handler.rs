@@ -134,7 +134,7 @@ fn try_update_game_state(
         }
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;
-            game_state.assert_expansion(&player.faction.expansion())?;
+            game_state.assert_enabled(&player.faction)?;
             ensure!(
                 game_state.map_data.milty_information.is_none(),
                 "Game was imported from milty, can't add more players!"
@@ -316,12 +316,12 @@ fn try_update_game_state(
                 first_objective.info().kind == ObjectiveKind::StageI,
                 "Invalid starting objective"
             );
-            game_state.assert_expansion(&first_objective.info().expansion)?;
+            game_state.assert_enabled(&first_objective)?;
             ensure!(
                 second_objective.info().kind == ObjectiveKind::StageI,
                 "Invalid starting objective"
             );
-            game_state.assert_expansion(&second_objective.info().expansion)?;
+            game_state.assert_enabled(&second_objective)?;
 
             let score = game_state.score.borrow_mut();
             score
@@ -1259,7 +1259,7 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::Status)?;
 
             if let Some(obj) = &objective {
-                game_state.assert_expansion(&obj.info().expansion)?;
+                game_state.assert_enabled(obj)?;
             }
 
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
@@ -1288,7 +1288,7 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::Status)?;
 
             if let Some(obj) = &objective {
-                game_state.assert_expansion(&obj.info().expansion)?;
+                game_state.assert_enabled(&Objective::from(*obj))?;
             }
 
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
@@ -1335,7 +1335,7 @@ fn try_update_game_state(
                 "Objective has already been revealed!"
             );
 
-            game_state.assert_expansion(&pub_obj.info().expansion)?;
+            game_state.assert_enabled(&pub_obj)?;
 
             let Some(status_phase_state) = game_state.status_phase_state.as_mut() else {
                 bail!("Status phase state not set!")
@@ -1427,7 +1427,7 @@ fn try_update_game_state(
         } => {
             game_state.assert_phase(Phase::Status)?;
             game_state.assert_enabled(&Relic::Neuraloop)?;
-            game_state.assert_expansion(&replacement.info().expansion)?;
+            game_state.assert_enabled(&replacement)?;
 
             let Some(p) = game_state.players.get(&player) else {
                 bail!("Player doesn't exist");
@@ -1645,7 +1645,7 @@ fn try_update_game_state(
             *imperial = imperial.saturating_add(value);
         }
         Event::ScoreExtraPublicObjective { player, objective } => {
-            game_state.assert_expansion(&objective.info().expansion)?;
+            game_state.assert_enabled(&objective)?;
 
             let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
                 bail!("can't score an unrevealed public objective");
@@ -1656,7 +1656,7 @@ fn try_update_game_state(
             }
         }
         Event::ScoreExtraSecretObjective { player, objective } => {
-            game_state.assert_expansion(&objective.info().expansion)?;
+            game_state.assert_enabled(&Objective::from(objective))?;
 
             for scored in game_state.score.secret_objectives.values() {
                 if scored.contains(&objective) {
@@ -1691,7 +1691,7 @@ fn try_update_game_state(
                 !game_state.score.revealed_objectives.contains_key(&pub_obj),
                 "Objective has already been revealed!"
             );
-            game_state.assert_expansion(&pub_obj.info().expansion)?;
+            game_state.assert_enabled(&pub_obj)?;
 
             game_state
                 .score

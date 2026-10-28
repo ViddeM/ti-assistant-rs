@@ -239,7 +239,7 @@ fn creation_rules() {
         .expect_rejected(add("Carol", Faction::FederationOfSol), "same faction")
         .expect_rejected(
             add("Carol", Faction::ArgentFlight),
-            "Expansion is not enabled",
+            "is not available with the enabled expansions",
         )
         .expect_rejected(
             Event::TakeStrategyCard {
