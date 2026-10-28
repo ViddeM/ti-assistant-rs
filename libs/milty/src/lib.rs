@@ -7,6 +7,7 @@ use std::collections::{HashMap, HashSet};
 
 use milty_response::MiltyPlayerResponse;
 use ti_helper_game_data::common::{
+    component::Component,
     faction::Faction,
     game_settings::Expansions,
     map::HexMap,

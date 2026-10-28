@@ -61,9 +61,8 @@ pub enum Faction {
     FirmamentObsidian,
 }
 
-impl Faction {
-    /// Returns which expansion the faction belongs to.
-    pub fn expansion(&self) -> Expansion {
+impl Component for Faction {
+    fn expansion(&self) -> Expansion {
         match self {
             Faction::Arborec => Expansion::Base,
             Faction::BaronyOfLetnev => Expansion::Base,
@@ -97,7 +96,9 @@ impl Faction {
             Faction::FirmamentObsidian => Expansion::ThundersEdge,
         }
     }
+}
 
+impl Faction {
     /// Returns the name of the faction in 'pretty' format.
     pub fn name(&self) -> String {
         String::from(match self {

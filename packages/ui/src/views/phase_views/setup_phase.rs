@@ -3,7 +3,7 @@ use std::sync::Arc;
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
-    common::{expansions::Expansion, faction::Faction, player_id::PlayerId},
+    common::{component::Component, expansions::Expansion, faction::Faction, player_id::PlayerId},
     components::objectives::{Objective, ObjectiveKind},
     state::player::Player,
 };

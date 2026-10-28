@@ -5,7 +5,7 @@ pub mod secret;
 
 use std::{cmp::Ordering, fmt::Display, str::FromStr};
 
-use crate::common::expansions::Expansion;
+use crate::common::{component::Component, expansions::Expansion};
 use serde::{Deserialize, Serialize};
 
 use self::{public::PublicObjective, secret::SecretObjective};
@@ -104,6 +104,12 @@ impl Objective {
             Objective::Public(o) => o.info(),
             Objective::Secret(o) => o.info(),
         }
+    }
+}
+
+impl Component for Objective {
+    fn expansion(&self) -> Expansion {
+        self.info().expansion
     }
 }
 

@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    common::{expansions::Expansion, faction::Faction},
+    common::{component::Component, expansions::Expansion, faction::Faction},
     error::GameDataError,
 };
 
@@ -97,6 +97,12 @@ impl System {
             .filter(|(_, s)| s.wormholes.is_empty())
             .map(|(id, _)| id)
             .collect::<HashSet<_>>()
+    }
+}
+
+impl Component for System {
+    fn expansion(&self) -> Expansion {
+        self.expansion
     }
 }
 

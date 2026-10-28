@@ -3,7 +3,11 @@ use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::{
-    common::faction::Faction::{self},
+    common::{
+        component::Component,
+        expansions::Expansion,
+        faction::Faction::{self},
+    },
     components::tech::TechCategory,
 };
 
@@ -342,5 +346,11 @@ impl Breakthrough {
                 syn_b: Biotic
             },
         }
+    }
+}
+
+impl Component for Breakthrough {
+    fn expansion(&self) -> Expansion {
+        Expansion::ThundersEdge
     }
 }
