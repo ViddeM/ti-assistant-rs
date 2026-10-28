@@ -4,9 +4,9 @@ use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
 use crate::common::{
+    component::{Component, replacements},
     expansions::Expansion,
     faction::Faction,
-    versions::{Versioned, replacements},
 };
 
 /// What category the tech belongs to.
@@ -256,7 +256,7 @@ macro_rules! tr {
     };
 }
 
-impl Versioned for Technology {
+impl Component for Technology {
     replacements! {
         MagenDefenceGrid -> MagenDefenceGridOmega -> MagenDefenceGridOmegaOmega,
         X89BacterialWeapon -> X89BacterialWeaponOmega -> X89BacterialWeaponOmegaOmega,

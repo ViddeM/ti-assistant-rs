@@ -18,8 +18,8 @@ use ti_helper_game_data::{
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::{
-        expansions::Expansion, faction::Faction, game_settings::GameSettings,
-        milty_data::MiltyPlayer, player_id::PlayerId, versions::Versioned,
+        component::Component, expansions::Expansion, faction::Faction, game_settings::GameSettings,
+        milty_data::MiltyPlayer, player_id::PlayerId,
     },
     components::{
         action_card::{ActionCard, ActionCardPlay},

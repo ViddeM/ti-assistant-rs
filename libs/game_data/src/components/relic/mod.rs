@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::{expansions::Expansion, versions::Versioned};
+use crate::common::{component::Component, expansions::Expansion};
 
 #[derive(
     Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
@@ -39,7 +39,7 @@ pub enum Relic {
     Neuraloop,
 }
 
-impl Versioned for Relic {
+impl Component for Relic {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
     fn expansion(&self) -> Expansion {

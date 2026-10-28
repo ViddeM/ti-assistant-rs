@@ -6,9 +6,9 @@ use strum::{Display, EnumString};
 use strum_macros::{EnumDiscriminants, EnumIter};
 
 use crate::common::{
+    component::{Component, replacements},
     expansions::Expansion,
     player_id::PlayerId,
-    versions::{Versioned, replacements},
 };
 
 use super::{objectives::secret::SecretObjective, planet::Planet, strategy_card::StrategyCard};
@@ -684,7 +684,7 @@ impl Agenda {
     }
 }
 
-impl Versioned for Agenda {
+impl Component for Agenda {
     replacements! {
         RepresentativeGovernmentTI4 -> RepresentativeGovernmentPOK,
     }

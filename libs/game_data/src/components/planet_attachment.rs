@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::{expansions::Expansion, versions::Versioned};
+use crate::common::{component::Component, expansions::Expansion};
 
 use super::{
     planet::{PlanetInfo, PlanetTrait},
@@ -312,7 +312,7 @@ impl PlanetAttachment {
     }
 }
 
-impl Versioned for PlanetAttachment {
+impl Component for PlanetAttachment {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
     fn expansion(&self) -> Expansion {

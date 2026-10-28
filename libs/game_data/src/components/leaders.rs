@@ -11,9 +11,9 @@ use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
 use crate::common::{
+    component::{Component, replacements},
     expansions::Expansion,
     faction::Faction,
-    versions::{Versioned, replacements},
 };
 
 /// A leader, i.e. an agent, commander, or hero.
@@ -62,7 +62,7 @@ pub enum LeaderAbilityKind {
     Other,
 }
 
-impl Versioned for Leader {
+impl Component for Leader {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
     replacements! {

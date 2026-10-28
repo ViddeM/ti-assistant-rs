@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::{expansions::Expansion, versions::Versioned};
+use crate::common::{component::Component, expansions::Expansion};
 
 /// A frontier card.
 #[derive(
@@ -27,7 +27,7 @@ pub enum FrontierCard {
     MinorEntropicField,
 }
 
-impl Versioned for FrontierCard {
+impl Component for FrontierCard {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
 
     fn expansion(&self) -> Expansion {

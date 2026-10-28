@@ -13,8 +13,8 @@ use crate::{
         StrategicPrimaryAction, StrategicSecondaryAction, StrategicSecondaryProgress,
     },
     common::{
-        expansions::Expansion, faction::Faction, game_settings::GameSettings, map::HexMap,
-        player_id::PlayerId, versions::Versioned,
+        component::Component, expansions::Expansion, faction::Faction, game_settings::GameSettings,
+        map::HexMap, player_id::PlayerId,
     },
     components::{
         action_card::ActionCard,
@@ -590,7 +590,7 @@ impl GameState {
 
     /// Asserts that the provided component is available with the enabled expansions, i.e. that
     /// its expansion is enabled and that it hasn't been removed or replaced by a newer version.
-    pub fn assert_enabled<T: Versioned + Debug>(&self, component: &T) -> anyhow::Result<()> {
+    pub fn assert_enabled<T: Component + Debug>(&self, component: &T) -> anyhow::Result<()> {
         if !component.is_enabled_in(&self.game_settings.expansions) {
             bail!("{component:?} is not available with the enabled expansions");
         }

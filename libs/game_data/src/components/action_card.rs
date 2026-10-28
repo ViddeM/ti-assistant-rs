@@ -3,8 +3,8 @@ use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::common::{
+    component::{Component, replacements},
     expansions::Expansion,
-    versions::{Versioned, replacements},
 };
 
 use super::phase::Phase;
@@ -229,7 +229,7 @@ macro_rules! ai {
     };
 }
 
-impl Versioned for ActionCard {
+impl Component for ActionCard {
     replacements! {
         Blitz -> BlitzOmega,
         Counterstroke -> CounterstrokeOmega,

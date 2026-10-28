@@ -3,9 +3,9 @@ use strum::{EnumString, IntoEnumIterator};
 use strum_macros::{Display, EnumIter};
 
 use crate::common::{
+    component::{Component, replacements},
     expansions::Expansion,
     game_settings::Expansions,
-    versions::{Versioned, replacements},
 };
 
 /// A strategy card.
@@ -120,7 +120,7 @@ impl StrategyCardVersion {
     }
 }
 
-impl Versioned for StrategyCardVersion {
+impl Component for StrategyCardVersion {
     replacements! {
         Diplomacy -> DiplomacyOmega,
         Construction -> ConstructionOmega -> ConstructionOmegaOmega,

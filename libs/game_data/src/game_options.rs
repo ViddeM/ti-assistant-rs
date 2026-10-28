@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
 use crate::{
-    common::{color::Color, faction::Faction, game_settings::Expansions, versions::Versioned},
+    common::{color::Color, component::Component, faction::Faction, game_settings::Expansions},
     components::{
         action_card::ActionCard,
         agenda::Agenda,

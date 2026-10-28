@@ -3,8 +3,8 @@ use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
 use crate::common::{
+    component::{Component, replacements},
     expansions::Expansion,
-    versions::{Versioned, replacements},
 };
 
 use super::{
@@ -1099,7 +1099,7 @@ impl Planet {
     }
 }
 
-impl Versioned for Planet {
+impl Component for Planet {
     replacements! {
         MecatolRex -> MecatolRexOmega,
     }

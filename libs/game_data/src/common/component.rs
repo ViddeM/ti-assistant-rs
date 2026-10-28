@@ -1,7 +1,7 @@
 use super::{expansions::Expansion, game_settings::Expansions};
 
-/// A kind of component whose printed versions replace each other as expansions are added.
-pub trait Versioned: PartialEq + Sized + 'static {
+/// A game component that comes with an expansion, which later expansions can replace or remove.
+pub trait Component: PartialEq + Sized + 'static {
     /// An expansion every component of this kind needs on top of its own.
     const REQUIRES: Expansion = Expansion::Base;
     /// The versions of each component that newer versions replace, written with `replacements!`.
@@ -9,7 +9,7 @@ pub trait Versioned: PartialEq + Sized + 'static {
     /// Components that an expansion removes without a replacement.
     const REMOVED: &'static [(Self, Expansion)] = &[];
 
-    /// The expansion that introduced this version.
+    /// The expansion that introduced this component.
     fn expansion(&self) -> Expansion;
 
     /// Whether this version is in play with the provided expansions.
@@ -52,7 +52,7 @@ impl<T: 'static> Chain<T> {
     }
 }
 
-impl<T: Versioned> Chain<T> {
+impl<T: Component> Chain<T> {
     /// The first version of the component.
     pub fn oldest(&self) -> &T {
         &self.0[0]
@@ -83,8 +83,8 @@ macro_rules! replacements {
     ($(
         $first:ident $(($($first_args:tt)*))? $(-> $next:ident $(($($next_args:tt)*))?)+
     ),* $(,)?) => {
-        const REPLACEMENTS: &'static [$crate::common::versions::Chain<Self>] = &[$(
-            $crate::common::versions::Chain::new(&[
+        const REPLACEMENTS: &'static [$crate::common::component::Chain<Self>] = &[$(
+            $crate::common::component::Chain::new(&[
                 Self::$first $(($($first_args)*))? $(, Self::$next $(($($next_args)*))?)+
             ])
         ),*];
@@ -115,7 +115,7 @@ mod tests {
         })
     }
 
-    fn check_versions<T: Versioned + Debug>() {
+    fn check_versions<T: Component + Debug>() {
         for (i, chain) in T::REPLACEMENTS.iter().enumerate() {
             let versions: Vec<&T> = chain.newest_first().collect();
             for (j, version) in versions.iter().enumerate() {
