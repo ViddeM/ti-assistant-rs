@@ -1,11 +1,12 @@
 use dioxus::prelude::*;
 
 use crate::views::score_view_mode::{
-    reveal_objective_form::RevealObjectiveForm, score_table_view::ScoreTableView,
-    secret_objectives_view::SecretObjectivesView,
+    relic_owners_view::RelicOwnersView, reveal_objective_form::RevealObjectiveForm,
+    score_table_view::ScoreTableView, secret_objectives_view::SecretObjectivesView,
     support_for_the_throne_view::SupportForTheThroneView,
 };
 
+pub mod relic_owners_view;
 pub mod reveal_objective_form;
 pub mod score_table_view;
 pub mod secret_objectives_view;
@@ -23,6 +24,7 @@ pub fn ScoreViewMode() -> Element {
             RevealObjectiveForm {}
             SecretObjectivesView {}
             SupportForTheThroneView {}
+            RelicOwnersView {}
         }
     }
 }

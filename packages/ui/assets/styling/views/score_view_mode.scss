@@ -245,6 +245,22 @@ $extra-color: hsl(120, 70%, 40%);
   }
 }
 
+.relic-owners-table {
+  width: 100%;
+
+  & tr {
+    td:nth-child(1) {
+      width: 35px;
+    }
+
+    td:nth-child(3) {
+      > * {
+        width: 100%;
+      }
+    }
+  }
+}
+
 .inc-dec-button {
   border: none;
   background-color: inherit;
