@@ -4,6 +4,7 @@ use ti_helper_game_data::{actions::event::Event, components::relic::Relic};
 use crate::{
     components::{dropdown::PlayerDropdown, info_button::InfoButton},
     data::{event_context::EventContext, game_context::GameContext, info_context::Info},
+    views::book_of_latvinia_research::BookOfLatviniaResearch,
 };
 
 #[component]
@@ -33,6 +34,7 @@ pub fn RelicOwnersView() -> Element {
                         }
                     }
                 }
+                BookOfLatviniaResearch {}
             }
         }
     }

@@ -266,7 +266,7 @@
  - ✅ Relics
    - ✅ Circlet of the Void (the effects are not tracked)
    - ✅ Neuraloop (status phase only, not objectives revealed outside of it) `[CIV-2]`
-   - ✅ Book of Latvinia (the techs gained with it are added manually) `[CIV-1]`
+   - ✅ Book of Latvinia (research prompt for the 2 techs when gained) `[CIV-1]`
  - ✅ Action cards: Codex IV has none
  - ❌ Galactic events: Minor Factions, Total War, Age of Commerce, Age of Exploration (see "Galactic Events") `[GE]`
  - ❌ Liberation of Ordinian scenario `[LO]`

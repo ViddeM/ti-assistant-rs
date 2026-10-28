@@ -53,7 +53,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 | TE factions, planets, space stations (as planet cards), leaders, relics (data) | ✅ (data bugs: see mismatches) |
 | TE leader actions Kan Kip Rel, Ahk Ravin, Sharsiss, Sharsiss Hollow | ✅ (as "no-data" actions) |
 | CIV toggle, ΩΩ techs (Magen Defense Grid, X-89) | ✅ |
-| CIV relics: Circlet of the Void (no effect), Neuraloop (status phase), Book of Latvinia (VP or speaker) | ✅ (`codex.rs` scenarios) |
+| CIV relics: Circlet of the Void (no effect), Neuraloop (status phase), Book of Latvinia (research up to 2 techs when gained, VP or speaker) | ✅ (`codex.rs` scenarios) |
 | Galactic events (4 CIV + 16 TE = 20) | ❌ nothing |
 | Liberation of Ordinian | ❌ nothing |
 | TE action cards (14 new, Ω versions of 8 Codex I cards) and the tracked effects of Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String. Codex IV has no action cards | ✅ (`thunders_edge_action_cards`, `thunders_edge_overrule_and_strategize`, `thunders_edge_crisis_and_puppets_on_a_string` scenarios) |
@@ -204,7 +204,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| CIV-1 Book of Latvinia: "When you gain this card, research up to 2 technologies that have no prerequisites" | Assist | After `GainRelicAction`/E4 for this relic, prompt with a tech picker filtered to `requirements.is_empty()`, sending `AddTechToPlayer` ×0–2. Removes the "techs are added manually" caveat. | P2 / S |
+| CIV-1 Book of Latvinia: "When you gain this card, research up to 2 technologies that have no prerequisites" | Assist | After `GainRelicAction`/E4 for this relic, prompt with a tech picker filtered to `requirements.is_empty()`, sending `AddTechToPlayer` ×0–2. Removes the "techs are added manually" caveat. ✅ `set_relic_owner` records the new owner in `GameState::book_of_latvinia_research`, and `ResearchBookOfLatviniaTechs` researches 0–2 techs with no prerequisites and clears it (purging the Book clears it too). The prompt is shown in the end-of-turn view and on the Relic Owners card. | P2 / S |
 | CIV-2 Neuraloop outside the status phase | Assist | `PlayNeuraloop` only works right after the status phase reveal. Also allow it after `RevealExtraPublicObjective` (Incentive Program, Classified Document Leaks, admin reveals). | P3 / S |
 | CIV-3 Circlet of the Void action | Info | "Explore a frontier token" could hand over to the frontier-card flow (Enigmatic Device and Mirage are tracked). Optional. | P3 / S |
 | CIV-4 Codex 4.5 ΩΩ techs | ✅ | Tied to `codex_4`. Fine. | — |
@@ -450,7 +450,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ E2/E3/E4 helpers.
    - ✅ A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C2 Jupiter Brain.
    - ✅ D1 Quantumcore.
-   - CIV-1 Book of Latvinia.
+   - ✅ CIV-1 Book of Latvinia.
    - ✅ C1 Styx.
 3. **Galactic event framework plus the cheap tracked events (P1).**
    - Stellar Atomics, Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Civilized Society.
