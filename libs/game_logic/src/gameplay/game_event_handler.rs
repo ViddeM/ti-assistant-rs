@@ -2014,6 +2014,9 @@ fn try_update_game_state(
             breakthrough,
         } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            if let Some(b) = &breakthrough {
+                game_state.assert_enabled(b)?;
+            }
             let player = game_state
                 .players
                 .get_mut(&player)
