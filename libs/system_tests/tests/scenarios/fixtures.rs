@@ -1,7 +1,11 @@
 //! Shared starting points for scenarios.
 
 use ti_helper_game_data::common::milty_data::MiltyData;
-use ti_helper_system_tests::{TestGameBuilder, milty::milty_data, prelude::*};
+use ti_helper_system_tests::{
+    TestGameBuilder,
+    milty::{EVERY_THUNDERS_EDGE_TILE_MAP, milty_data, milty_data_on_map},
+    prelude::*,
+};
 
 /// Alice (Sol), Bob (Hacan) and Carol (Xxcha), Alice is speaker.
 pub fn three_players() -> TestGameBuilder {
@@ -55,4 +59,19 @@ pub fn five_player_draft() -> MiltyData {
         ("Dee", Faction::DeepwroughtScholarate, 3),
         ("Eve", Faction::FirmamentObsidian, 4),
     ])
+}
+
+/// A milty draft on [EVERY_THUNDERS_EDGE_TILE_MAP] for Ann (Firmament), Ben (Deepwrought),
+/// Cid (Crimson Rebellion), Dee (Ral Nel) and Eve (Last Bastion), Ann is speaker.
+pub fn every_thunders_edge_tile_draft() -> MiltyData {
+    milty_data_on_map(
+        EVERY_THUNDERS_EDGE_TILE_MAP,
+        &[
+            ("Ann", Faction::FirmamentObsidian, 0),
+            ("Ben", Faction::DeepwroughtScholarate, 1),
+            ("Cid", Faction::CrimsonRebellion, 2),
+            ("Dee", Faction::RalNelConsortium, 3),
+            ("Eve", Faction::LastBastion, 4),
+        ],
+    )
 }

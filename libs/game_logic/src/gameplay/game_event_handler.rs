@@ -87,9 +87,11 @@ fn try_update_game_state(
                 max_points,
                 expansions: milty_data.expansions.clone(),
             };
+            let mut hex_map = milty_data.hex_map;
+            hex_map.place_crimson_rebellion_home_system();
             game_state.map_data = MapData {
                 milty_information: Some(MiltyInformation {
-                    hex_map: milty_data.hex_map,
+                    hex_map,
                     mirage_system: None,
                 }),
                 stellar_converter_destroyed_planets: vec![],

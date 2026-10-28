@@ -13,9 +13,9 @@ use ti_helper_game_data::{
 };
 use ti_helper_system_tests::prelude::*;
 
-use ti_helper_system_tests::milty::{EVERY_THUNDERS_EDGE_TILE_MAP, milty_data_on_map};
-
-use crate::fixtures::{action_phase, five_player_draft, three_players};
+use crate::fixtures::{
+    action_phase, every_thunders_edge_tile_draft, five_player_draft, three_players,
+};
 
 scenarios![
     thunders_edge_commit_and_complete,
@@ -634,21 +634,35 @@ fn the_obsidian_flips_the_map_tile() {
     assert!(systems(&g).contains(&"96B".to_string()));
 }
 
+/// Imports from before the Crimson Rebellion home system was placed have only its gate.
+#[test]
+fn imported_crimson_rebellion_gate_gets_its_home_system() {
+    let mut draft = every_thunders_edge_tile_draft();
+    draft.hex_map.tiles.retain(|tile| tile.system != "118");
+
+    let g = TestGame::builder().milty(draft).create();
+
+    let home_systems: Vec<HexPosition> = g
+        .state()
+        .map_data
+        .milty_information
+        .as_ref()
+        .unwrap()
+        .hex_map
+        .tiles
+        .iter()
+        .filter(|tile| tile.system == "118")
+        .map(|tile| tile.position.clone())
+        .collect();
+    assert_eq!(home_systems, vec![HexPosition::OutsideGalaxy]);
+}
+
 /// Every Thunder's Edge system tile is on the map, each of their planets has an owner and
 /// Thunder's Edge is placed in the entropic scar 114.
 pub fn thunders_edge_map_tiles() -> TestGame {
     let players = ["Ann", "Ben", "Cid", "Dee", "Eve"];
     let mut g = TestGame::builder()
-        .milty(milty_data_on_map(
-            EVERY_THUNDERS_EDGE_TILE_MAP,
-            &[
-                ("Ann", Faction::FirmamentObsidian, 0),
-                ("Ben", Faction::DeepwroughtScholarate, 1),
-                ("Cid", Faction::CrimsonRebellion, 2),
-                ("Dee", Faction::RalNelConsortium, 3),
-                ("Eve", Faction::LastBastion, 4),
-            ],
-        ))
+        .milty(every_thunders_edge_tile_draft())
         .create();
     g.finish_creation().auto_setup().start_game();
 

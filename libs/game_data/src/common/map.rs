@@ -30,7 +30,7 @@ impl HexMap {
     const WORMHOLE_NEXUS_TILE_ID: &'static str = "82";
     const CREUSS_WORMHILE_ID: u32 = 17;
     const CREUSS_HOME_SYSTEM: &'static str = "51";
-    const CRIMSON_REBELLION_GATE_ID: u32 = 94;
+    const CRIMSON_REBELLION_GATE: &'static str = "94";
     const CRIMSON_REBELLION_HOME_SYSTEM: &'static str = "118";
 
     /// The system ID for the mecatol rex system.
@@ -122,25 +122,25 @@ impl HexMap {
             });
         }
 
-        if map.contains(&MiltySystemId::Standard {
-            number: Self::CRIMSON_REBELLION_GATE_ID,
-            variant: None,
-        }) {
-            let crimson_rebellion_home_system =
-                systems.get(Self::CRIMSON_REBELLION_HOME_SYSTEM).ok_or(
-                    HexMapError::SystemDoesntExist("Crimson Rebellion homesystem"),
-                )?;
+        let mut hex_map = HexMap {
+            tiles,
+            ring_count: ring,
+        };
+        hex_map.place_crimson_rebellion_home_system();
+        Ok(hex_map)
+    }
 
-            tiles.push(Tile {
-                system: crimson_rebellion_home_system.id.clone(),
+    /// Places the Crimson Rebellion home system outside the galaxy if its gate is on the map.
+    pub fn place_crimson_rebellion_home_system(&mut self) {
+        let has_system = |id: &str| self.tiles.iter().any(|tile| tile.system == id);
+        if has_system(Self::CRIMSON_REBELLION_GATE)
+            && !has_system(Self::CRIMSON_REBELLION_HOME_SYSTEM)
+        {
+            self.tiles.push(Tile {
+                system: Self::CRIMSON_REBELLION_HOME_SYSTEM.to_string(),
                 position: HexPosition::OutsideGalaxy,
             });
         }
-
-        Ok(HexMap {
-            tiles,
-            ring_count: ring,
-        })
     }
 }
 
@@ -328,5 +328,46 @@ mod test {
 
         assert!(crimson_rebellion_home_is_outside("94 26 27 28 29 30"));
         assert!(!crimson_rebellion_home_is_outside("93 26 27 28 29 30"));
+    }
+
+    fn crimson_rebellion_home_systems(hex_map: &HexMap) -> Vec<&HexPosition> {
+        hex_map
+            .tiles
+            .iter()
+            .filter(|tile| tile.system == "118")
+            .map(|tile| &tile.position)
+            .collect()
+    }
+
+    #[test]
+    fn crimson_rebellion_home_system_is_added_to_maps_without_it() {
+        let mut hex_map = HexMap::from_milty_string("94 26 27 28 29 30", true).expect("to parse");
+        hex_map.tiles.retain(|tile| tile.system != "118");
+
+        hex_map.place_crimson_rebellion_home_system();
+
+        assert_eq!(
+            crimson_rebellion_home_systems(&hex_map),
+            vec![&HexPosition::OutsideGalaxy]
+        );
+    }
+
+    #[test]
+    fn crimson_rebellion_home_system_is_not_added_twice() {
+        let mut hex_map = HexMap::from_milty_string("94 26 27 28 29 30", true).expect("to parse");
+
+        hex_map.place_crimson_rebellion_home_system();
+
+        assert_eq!(
+            crimson_rebellion_home_systems(&hex_map),
+            vec![&HexPosition::OutsideGalaxy]
+        );
+    }
+
+    #[test]
+    fn crimson_rebellion_systems_exist() {
+        let systems = systems();
+        assert!(systems.contains_key(HexMap::CRIMSON_REBELLION_GATE));
+        assert!(systems.contains_key(HexMap::CRIMSON_REBELLION_HOME_SYSTEM));
     }
 }
