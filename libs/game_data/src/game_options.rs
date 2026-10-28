@@ -76,7 +76,7 @@ impl GameOptions {
             min_players: MIN_PLAYER_COUNT,
             max_players: expansions.max_number_of_players(),
             factions: Faction::iter()
-                .filter(|f| expansions.is_enabled(&f.expansion()))
+                .filter(|f| f.is_enabled_in(expansions))
                 .map(|faction| FactionResponse {
                     faction,
                     name: faction.name(),
@@ -85,7 +85,7 @@ impl GameOptions {
             colors: Color::iter().collect(),
             systems: systems()
                 .into_iter()
-                .filter(|(_, s)| expansions.is_enabled(&s.expansion))
+                .filter(|(_, s)| s.is_enabled_in(expansions))
                 .collect(),
             planet_infos: Planet::iter()
                 .filter(|planet| planet.is_enabled_in(expansions))
@@ -98,7 +98,7 @@ impl GameOptions {
             objectives: PublicObjective::iter()
                 .map(Objective::from)
                 .chain(SecretObjective::iter().map(Objective::from))
-                .filter(|o| expansions.is_enabled(&o.info().expansion))
+                .filter(|o| o.is_enabled_in(expansions))
                 .collect(),
             technologies: Technology::iter()
                 .filter(|tech| tech.is_enabled_in(expansions))

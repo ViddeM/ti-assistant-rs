@@ -102,7 +102,7 @@ impl MiltyImport for MiltyData {
         };
 
         for player in players.values() {
-            if !expansions.is_enabled(&player.faction.expansion()) {
+            if !player.faction.is_enabled_in(&expansions) {
                 return Err(MiltyError::FactionsExpansionNotEnabled {
                     faction: player.faction,
                     expansion: player.faction.expansion(),
