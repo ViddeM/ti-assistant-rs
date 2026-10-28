@@ -75,14 +75,7 @@ impl Component for Leader {
     }
 
     fn expansion(&self) -> Expansion {
-        match self {
-            Leader::Agent(Agent::ZeuCxIII | Agent::BrotherMilorCxIII)
-            | Leader::Commander(Commander::MabanCxIII | Commander::BrotherOmarCxIII)
-            | Leader::Hero(Hero::XxekirGromCxIII | Hero::DannelOfTheTenthCxIII) => {
-                Expansion::CodexIII
-            }
-            _ => self.info().faction().expansion(),
-        }
+        self.info().expansion()
     }
 }
 
@@ -121,6 +114,15 @@ impl LeaderInfo {
             LeaderInfo::Agent(l) => l.faction,
             LeaderInfo::Commander(l) => l.faction,
             LeaderInfo::Hero(l) => l.faction,
+        }
+    }
+
+    /// Get the [Expansion] that this [Leader] comes with.
+    pub fn expansion(&self) -> Expansion {
+        match self {
+            LeaderInfo::Agent(l) => l.expansion,
+            LeaderInfo::Commander(l) => l.expansion,
+            LeaderInfo::Hero(l) => l.expansion,
         }
     }
 

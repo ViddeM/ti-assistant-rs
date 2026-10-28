@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::EnumIter;
 
-use crate::common::faction::Faction;
+use crate::common::{expansions::Expansion, faction::Faction};
 
 use super::LeaderAbilityKind;
 
@@ -13,6 +13,9 @@ pub struct HeroInfo {
 
     /// Faction that this hero belongs to.
     pub faction: Faction,
+
+    /// Expansion that this hero comes with.
+    pub expansion: Expansion,
 
     /// Name of the hero.
     pub name: String,
@@ -72,10 +75,11 @@ pub enum Hero {
 }
 
 macro_rules! info {
-    (tag: $tag:ident, name: $name:expr, ability: $ability:expr, faction: $faction:ident, kind: $kind:ident,) => {
+    (tag: $tag:ident, name: $name:expr, ability: $ability:expr, faction: $faction:ident, expansion: $expansion:ident, kind: $kind:ident,) => {
         HeroInfo {
             tag: Hero::$tag,
             faction: Faction::$faction,
+            expansion: Expansion::$expansion,
             name: $name.to_string(),
             ability: $ability.to_string(),
             description: include_str!(concat!("description/", stringify!($tag))).to_string(),
@@ -93,6 +97,7 @@ impl Hero {
                 name: "Letani Miasmiala",
                 ability: "Ultrasonic Emitter",
                 faction: Arborec,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::MirikAunSissiri => info! {
@@ -100,6 +105,7 @@ impl Hero {
                 name: "Mirik Aun Sissiri",
                 ability: "Helix Protocol",
                 faction: ArgentFlight,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::DarktalonTreilla => info! {
@@ -107,6 +113,7 @@ impl Hero {
                 name: "Darktalon Treilla",
                 ability: "Dark Matter Affinity",
                 faction: BaronyOfLetnev,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::GurnoAggero => info! {
@@ -114,6 +121,7 @@ impl Hero {
                 name: "Gurno Aggero",
                 ability: "Armageddon Relay",
                 faction: ClanOfSaar,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::AdjudicatorBaal => info! {
@@ -121,6 +129,7 @@ impl Hero {
                 name: "Adjudicator Ba'al",
                 ability: "Nova Seed",
                 faction: EmbersOfMuaat,
+                expansion: ProphecyOfKings,
                 kind: Other,
             },
             Hero::HarrughGefhara => info! {
@@ -128,6 +137,7 @@ impl Hero {
                 name: "Harrugh Gefhara",
                 ability: "Galactic Securities Net",
                 faction: EmiratesOfHacan,
+                expansion: ProphecyOfKings,
                 kind: Other,
             },
             Hero::ConservatorProcyon => info! {
@@ -135,6 +145,7 @@ impl Hero {
                 name: "Conservator Procyon",
                 ability: "Multiverse Shift",
                 faction: Empyrean,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::JaceX4thAirLegion => info! {
@@ -142,6 +153,7 @@ impl Hero {
                 name: "Jace X. 4th Air Legion",
                 ability: "Helio Command Array",
                 faction: FederationOfSol,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::RiftwalkerMeian => info! {
@@ -149,6 +161,7 @@ impl Hero {
                 name: "Riftwalker Meian",
                 ability: "Singularity Reactor",
                 faction: GhostsOfCreuss,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::TheHelmsman => info! {
@@ -156,6 +169,7 @@ impl Hero {
                 name: "The Helmsman",
                 ability: "Dark Space Navigation",
                 faction: L1Z1XMindnet,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::AiroShirAur => info! {
@@ -163,6 +177,7 @@ impl Hero {
                 name: "Airo Shir Aur",
                 ability: "Benediction",
                 faction: MahactGeneSorcerers,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::IpswitchLooseCannon => info! {
@@ -170,6 +185,7 @@ impl Hero {
                 name: "Ipswitch, Loose Cannon",
                 ability: "Sleeper Cell",
                 faction: MentakCoalition,
+                expansion: ProphecyOfKings,
                 kind: Other,
             },
             Hero::TheOracle => info! {
@@ -177,6 +193,7 @@ impl Hero {
                 name: "The Oracle",
                 ability: "C-Radium Geometry",
                 faction: NaaluCollective,
+                expansion: ProphecyOfKings,
                 kind: Other,
             },
             Hero::HeshAndPrit => info! {
@@ -184,6 +201,7 @@ impl Hero {
                 name: "Hesh and Prit",
                 ability: "Perfect Synthesis",
                 faction: NaazRokhaAlliance,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::UnitDsgnFlayesh => info! {
@@ -191,6 +209,7 @@ impl Hero {
                 name: "UNIT.DSGN.FLAYESH",
                 ability: "Polymorphic Algorithm",
                 faction: NekroVirus,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::ShvalHarbinger => info! {
@@ -198,6 +217,7 @@ impl Hero {
                 name: "Sh'val, Harbinger",
                 ability: "Tekklar Conditioning",
                 faction: SardakkNorr,
+                expansion: ProphecyOfKings,
                 kind: Other,
             },
             Hero::UlTheProgenitor => info! {
@@ -205,6 +225,7 @@ impl Hero {
                 name: "Ul the Progenitor",
                 ability: "Geoform",
                 faction: TitansOfUl,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::RinTheMastersLegacy => info! {
@@ -212,6 +233,7 @@ impl Hero {
                 name: "Rin, the Master's Legacy",
                 ability: "Genetic Memory",
                 faction: UniversitiesOfJolNar,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::ItFeedsOnCarrion => info! {
@@ -219,6 +241,7 @@ impl Hero {
                 name: "It Feeds on Carrion",
                 ability: "Dimensional Anchor",
                 faction: VuilRaithCabal,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             // TODO: Implement
@@ -227,6 +250,7 @@ impl Hero {
                 name: "Mathis Mathinus",
                 ability: "Imperial Seal",
                 faction: Winnu,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::XxekirGrom => info! {
@@ -234,6 +258,7 @@ impl Hero {
                 name: "Xxekir Grom",
                 ability: "Political Data Nexus",
                 faction: XxchaKingdom,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::XxekirGromCxIII => info! {
@@ -241,6 +266,7 @@ impl Hero {
                 name: "Xxekir Grom Ω",
                 ability: "Political Data Nexus Ω",
                 faction: XxchaKingdom,
+                expansion: CodexIII,
                 kind: Other,
             },
             Hero::DannelOfTheTenth => info! {
@@ -248,6 +274,7 @@ impl Hero {
                 name: "Dannel of the Tenth",
                 ability: "Spinner Overdrive",
                 faction: YinBrotherhood,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::DannelOfTheTenthCxIII => info! {
@@ -255,6 +282,7 @@ impl Hero {
                 name: "Dannel of the Tenth Ω",
                 ability: "Spinner Overdrive Ω",
                 faction: YinBrotherhood,
+                expansion: CodexIII,
                 kind: Action,
             },
             Hero::KyverBladeAndKey => info! {
@@ -262,6 +290,7 @@ impl Hero {
                 name: "Kyver, Blade and Key",
                 ability: "Guild of Spies",
                 faction: YssarilTribes,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::AhkSylSiven => info! {
@@ -269,6 +298,7 @@ impl Hero {
                 name: "Ahk-Syl Siven",
                 ability: "Probability Matrix",
                 faction: Nomad,
+                expansion: ProphecyOfKings,
                 kind: Action,
             },
             Hero::KuuasiAunJalatai => info! {
@@ -276,6 +306,7 @@ impl Hero {
                 name: "Kuuasi Aun Jalatai",
                 ability: "Overwing Zeta",
                 faction: CouncilKeleres,
+                expansion: CodexIII,
                 kind: Other,
             },
             Hero::OdlynnMyrr => info! {
@@ -283,6 +314,7 @@ impl Hero {
                 name: "Odlynn Myrr",
                 ability: "Operation Archon",
                 faction: CouncilKeleres,
+                expansion: CodexIII,
                 kind: Other,
             },
             Hero::HarkaLeeds => info! {
@@ -290,6 +322,7 @@ impl Hero {
                 name: "Harka Leeds",
                 ability: "Erwan's Covenant",
                 faction: CouncilKeleres,
+                expansion: CodexIII,
                 kind: Action,
             },
             Hero::DirectorNel => info! {
@@ -297,6 +330,7 @@ impl Hero {
                 name: "Director Nel",
                 ability: "Signal Intrusion",
                 faction: RalNelConsortium,
+                expansion: ThundersEdge,
                 kind: Other,
             },
             Hero::TaZernTE => info! {
@@ -304,6 +338,7 @@ impl Hero {
                 name: "Ta Zern",
                 ability: "Wave Function Collapse",
                 faction: DeepwroughtScholarate,
+                expansion: ThundersEdge,
                 kind: Action,
             },
             Hero::HomesickPhantom => info! {
@@ -311,6 +346,7 @@ impl Hero {
                 name: "Homesick Phantom",
                 ability: "Fragment Reality",
                 faction: CrimsonRebellion,
+                expansion: ThundersEdge,
                 kind: Other,
             },
             Hero::Sharsiss => info! {
@@ -318,6 +354,7 @@ impl Hero {
                 name: "Sharsiss",
                 ability: "The Blade Beckons",
                 faction: FirmamentObsidian,
+                expansion: ThundersEdge,
                 kind: Action,
             },
             Hero::SharsissHollow => info! {
@@ -325,6 +362,7 @@ impl Hero {
                 name: "Sharsiss Hollow",
                 ability: "Teh Blade Revealed",
                 faction: FirmamentObsidian,
+                expansion: ThundersEdge,
                 kind: Action,
             },
             Hero::LyraKeen => info! {
@@ -332,6 +370,7 @@ impl Hero {
                 name: "Lyra Keen",
                 ability: "Entity 4X41A Apollo",
                 faction: LastBastion,
+                expansion: ThundersEdge,
                 kind: Other,
             },
         }
