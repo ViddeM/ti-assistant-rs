@@ -136,9 +136,9 @@ pub struct GameState {
     /// and Styx) aren't on the board.
     pub fracture_in_play: bool,
 
-    /// The players who gained their breakthrough while the Fracture wasn't in play and haven't
-    /// rolled for it yet.
-    pub fracture_rolls: BTreeSet<PlayerId>,
+    /// The player (if any) who gained their breakthrough while the Fracture wasn't in play, and
+    /// must roll for it before anything else can happen.
+    pub fracture_roll: Option<PlayerId>,
 
     /// The player (if any) that gained the Book of Latvinia and may still research up to 2
     /// technologies with no prerequisites.
@@ -698,7 +698,9 @@ impl GameState {
             Breakthrough::StellarGenesis => {
                 self.set_planet_owner(Planet::Avernus, Some(player.clone()))?;
             }
-            Breakthrough::AlRaithIxIanovar => self.fracture_enters_play(),
+            Breakthrough::AlRaithIxIanovar => {
+                self.fracture_in_play = true;
+            }
             _ => {}
         }
         self.roll_for_the_fracture(player);
@@ -708,14 +710,8 @@ impl GameState {
     /// Have `player` roll for the Fracture, unless it's already in play.
     pub fn roll_for_the_fracture(&mut self, player: &PlayerId) {
         if !self.fracture_in_play {
-            self.fracture_rolls.insert(player.clone());
+            self.fracture_roll = Some(player.clone());
         }
-    }
-
-    /// Put the Fracture in play, after which nobody rolls for it.
-    pub fn fracture_enters_play(&mut self) {
-        self.fracture_in_play = true;
-        self.fracture_rolls.clear();
     }
 
     /// Whether the Firmament has flipped to The Obsidian.

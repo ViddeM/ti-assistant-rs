@@ -17,5 +17,7 @@ source: libs/system_tests/src/check.rs
   13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
   14 CompleteStrategyPhase                    r1 Action             Alice
   15 GainRelicAction(Alice)                   r1 EndActionTurn      Alice
-  16 EndTurn(Alice)                           r1 Action             Bob
-  17 SetRelicOwner(Bob)                       r1 Action             Bob
+  16 RollForTheFracture(Alice)                r1 EndActionTurn      Alice
+  17 EndTurn(Alice)                           r1 Action             Bob
+  18 SetRelicOwner(Bob)                       r1 Action             Bob
+  19 RollForTheFracture(Bob)                  r1 Action             Bob

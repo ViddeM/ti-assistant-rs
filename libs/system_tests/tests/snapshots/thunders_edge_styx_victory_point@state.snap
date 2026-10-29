@@ -119,5 +119,5 @@ teExpedition:
   completed: ~
   progress: {}
 fractureInPlay: true
-fractureRolls: []
+fractureRoll: ~
 bookOfLatviniaResearch: ~

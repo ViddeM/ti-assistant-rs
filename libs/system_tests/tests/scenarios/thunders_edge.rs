@@ -47,6 +47,13 @@ fn complete(player: &str, won_by: &str, placed_in: SystemId) -> Event {
     }
 }
 
+fn roll(player: &str, entered_play: bool) -> Event {
+    Event::RollForTheFracture {
+        player: p(player),
+        entered_play,
+    }
+}
+
 /// Players claim slots at the end of their turns, the final claimer places Thunder's Edge.
 pub fn thunders_edge_commit_and_complete() -> TestGame {
     let mut g = action_phase(three_players().thunders_edge());
@@ -55,6 +62,7 @@ pub fn thunders_edge_commit_and_complete() -> TestGame {
         .tactical()
         .commit()
         .commit_to_expedition(TEExpeditionSlot::Resources)
+        .apply(roll("Alice", false))
         .expect_rejected(
             Event::CommitToThundersEdgeExpedition {
                 player: p("Alice"),
@@ -82,6 +90,7 @@ pub fn thunders_edge_commit_and_complete() -> TestGame {
         .tactical()
         .commit()
         .commit_to_expedition(TEExpeditionSlot::ActionCards)
+        .apply(roll("Bob", false))
         .end_turn();
     g.turn("Carol").tactical().commit().end_turn();
     g.turn("Alice")
@@ -113,6 +122,7 @@ pub fn thunders_edge_commit_and_complete() -> TestGame {
             "not waiting to be placed",
         )
         .commit_to_expedition(TEExpeditionSlot::TechSpecialityPlanet)
+        .apply(roll("Carol", false))
         .expect_rejected(
             Event::CommitToThundersEdgeExpedition {
                 player: p("Carol"),
@@ -179,6 +189,7 @@ pub fn thunders_edge_passing() -> TestGame {
         .pass_and_stay()
         .expect_rejected(Event::TakeAnotherTurn { player: p("Alice") }, "has passed")
         .commit_to_expedition(TEExpeditionSlot::Resources)
+        .apply(roll("Alice", false))
         .end_turn();
     assert!(g.state().passed_players.contains(&p("Alice")));
 
@@ -245,7 +256,7 @@ pub fn thunders_edge_admin_flow() -> TestGame {
     );
     assert!(g.state().players[&p("Alice")].breakthrough.is_none());
     assert!(g.state().players[&p("Bob")].breakthrough.is_none());
-    assert!(g.state().fracture_rolls.is_empty());
+    assert_eq!(g.state().fracture_roll, None);
     g
 }
 
@@ -268,6 +279,9 @@ fn thunders_edge_progress_survives_json() {
         .commit()
         .commit_to_expedition(TEExpeditionSlot::Resources);
     assert!(g.state().action_progress.is_some());
+    assert_eq!(g.state().fracture_roll, Some(p("Alice")));
+    assert_round_trips(&g);
+    g.apply(roll("Alice", false));
     assert_round_trips(&g);
     g.current().end_turn();
 
@@ -285,7 +299,8 @@ fn thunders_edge_progress_survives_json() {
     g.turn("Bob")
         .tactical()
         .commit()
-        .commit_to_expedition(TEExpeditionSlot::TradeGoods);
+        .commit_to_expedition(TEExpeditionSlot::TradeGoods)
+        .apply(roll("Bob", false));
     assert!(g.state().action_progress.is_some());
     assert_round_trips(&g);
 }
@@ -313,7 +328,8 @@ pub fn firmament_becomes_obsidian() -> TestGame {
     g.apply(Event::SetBreakthrough {
         player: p("Alice"),
         breakthrough: Some(Breakthrough::TheSowing),
-    });
+    })
+    .apply(roll("Alice", false));
 
     g.expect_rejected(
         Event::PuppetsOfTheBlade { player: p("Bob") },
@@ -457,9 +473,9 @@ pub fn thunders_edge_styx_victory_point() -> TestGame {
 }
 
 /// The Fracture planets aren't on the board until the Fracture enters play. A player who gains
-/// their breakthrough while it isn't in play rolls for it, and it enters play on a 1 or 10. It
-/// can also be put in play from the admin page, and the Cabal's Al'Raith Ix Ianovar puts it in
-/// play.
+/// their breakthrough while it isn't in play must roll for it before anything else happens, and
+/// it enters play on a 1 or 10. It can also be put in play from the admin page, and the Cabal's
+/// Al'Raith Ix Ianovar puts it in play.
 pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
     let mut g = TestGame::builder()
         .player("Alice", Faction::FederationOfSol)
@@ -481,22 +497,23 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
         ("Dave", StrategyCard::Imperial),
     ]);
     let in_play = |g: &TestGame| g.state().fracture_in_play;
-    let rolls = |g: &TestGame| g.state().fracture_rolls.clone();
-    let roll = |player: &str, entered_play| Event::RollForTheFracture {
-        player: p(player),
-        entered_play,
-    };
+    let fracture_roll = |g: &TestGame| g.state().fracture_roll.clone();
+    let roll_first = "Alice must roll for the Fracture first";
 
-    g.turn("Alice")
+    let alice = g
+        .turn("Alice")
         .tactical()
         .expect_rejected(take("Alice", Planet::Cocytus), "isn't on the board")
         .commit()
-        .commit_to_expedition(TEExpeditionSlot::Resources)
+        .commit_to_expedition(TEExpeditionSlot::Resources);
+    assert_eq!(fracture_roll(&alice), Some(p("Alice")));
+    alice
+        .expect_rejected(Event::EndTurn { player: p("Alice") }, roll_first)
+        .expect_rejected(Event::SetFractureInPlay { in_play: true }, roll_first)
+        .expect_rejected(roll("Bob", true), "Bob has no roll for the Fracture")
+        .apply(roll("Alice", false))
         .end_turn();
-    assert_eq!(rolls(&g), [p("Alice")].into());
-    g.expect_rejected(roll("Bob", true), "Bob has no roll for the Fracture");
-    g.apply(roll("Alice", false));
-    assert!(rolls(&g).is_empty());
+    assert_eq!(fracture_roll(&g), None);
     assert!(!in_play(&g));
 
     g.expect_rejected(
@@ -508,11 +525,11 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
     g.apply(Event::SetFractureInPlay { in_play: false });
     assert!(!in_play(&g));
 
-    g.turn("Bob").gain_relic(Relic::TheQuantumcore).end_turn();
-    assert_eq!(rolls(&g), [p("Bob")].into());
-    g.apply(roll("Bob", true));
+    let bob = g.turn("Bob").gain_relic(Relic::TheQuantumcore);
+    assert_eq!(fracture_roll(&bob), Some(p("Bob")));
+    bob.apply(roll("Bob", true)).end_turn();
     assert!(in_play(&g));
-    assert!(rolls(&g).is_empty());
+    assert_eq!(fracture_roll(&g), None);
 
     g.turn("Carol")
         .action_card(
@@ -523,7 +540,7 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
         )
         .end_turn();
     assert!(g.player("Carol").breakthrough.is_some());
-    assert!(rolls(&g).is_empty());
+    assert_eq!(fracture_roll(&g), None);
 
     g.apply(Event::SetFractureInPlay { in_play: false });
     g.apply(Event::SetBreakthrough {
@@ -531,7 +548,7 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
         breakthrough: Some(Breakthrough::AlRaithIxIanovar),
     });
     assert!(in_play(&g));
-    assert!(rolls(&g).is_empty());
+    assert_eq!(fracture_roll(&g), None);
 
     g.turn("Dave")
         .tactical()
@@ -540,45 +557,6 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
         .end_turn();
     assert!(g.player("Dave").planets.contains_key(&Planet::Cocytus));
     g
-}
-
-/// Once the Fracture enters play, however that happens, nobody rolls for it anymore.
-#[test]
-fn the_fracture_entering_play_clears_every_roll() {
-    let enters_play = [
-        Event::RollForTheFracture {
-            player: p("Alice"),
-            entered_play: true,
-        },
-        Event::SetFractureInPlay { in_play: true },
-        Event::SetBreakthrough {
-            player: p("Carol"),
-            breakthrough: Some(Breakthrough::AlRaithIxIanovar),
-        },
-    ];
-    for event in enters_play {
-        let mut g = action_phase(
-            TestGame::builder()
-                .player("Alice", Faction::FederationOfSol)
-                .player("Bob", Faction::EmiratesOfHacan)
-                .player("Carol", Faction::VuilRaithCabal)
-                .pok()
-                .thunders_edge(),
-        );
-        g.apply(Event::SetBreakthrough {
-            player: p("Alice"),
-            breakthrough: Some(Breakthrough::BellumGloriosum),
-        })
-        .apply(Event::SetBreakthrough {
-            player: p("Bob"),
-            breakthrough: Some(Breakthrough::AutoFactories),
-        });
-        assert_eq!(g.state().fracture_rolls, [p("Alice"), p("Bob")].into());
-
-        g.apply(event);
-        assert!(g.state().fracture_in_play);
-        assert!(g.state().fracture_rolls.is_empty());
-    }
 }
 
 /// Gaining a breakthrough applies its on-gain effects: I.I.H.Q. Modernization gives the Keleres
@@ -598,6 +576,7 @@ pub fn thunders_edge_breakthrough_planets() -> TestGame {
         .tactical()
         .commit()
         .commit_to_expedition(TEExpeditionSlot::Resources)
+        .apply(roll("Alice", false))
         .end_turn();
     assert_eq!(
         g.player("Alice").breakthrough,
@@ -612,7 +591,8 @@ pub fn thunders_edge_breakthrough_planets() -> TestGame {
     g.apply(Event::SetBreakthrough {
         player: p("Bob"),
         breakthrough: Some(Breakthrough::StellarGenesis),
-    });
+    })
+    .apply(roll("Bob", false));
     assert!(g.player("Bob").planets.contains_key(&Planet::Avernus));
     g.turn("Bob").tactical().commit().end_turn();
 
@@ -640,7 +620,10 @@ pub fn thunders_edge_breakthrough_planets() -> TestGame {
 pub fn thunders_edge_quantumcore() -> TestGame {
     let mut g = action_phase(three_players().pok().codex().thunders_edge());
 
-    g.turn("Alice").gain_relic(Relic::TheQuantumcore).end_turn();
+    g.turn("Alice")
+        .gain_relic(Relic::TheQuantumcore)
+        .apply(roll("Alice", false))
+        .end_turn();
     assert_eq!(
         g.player("Alice").breakthrough,
         Some(Breakthrough::BellumGloriosum)
@@ -649,7 +632,8 @@ pub fn thunders_edge_quantumcore() -> TestGame {
     g.apply(Event::SetRelicOwner {
         relic: Relic::TheQuantumcore,
         player: Some(p("Bob")),
-    });
+    })
+    .apply(roll("Bob", false));
     assert!(!g.player("Alice").relics.contains(&Relic::TheQuantumcore));
     assert_eq!(
         g.player("Alice").breakthrough,
@@ -662,22 +646,34 @@ pub fn thunders_edge_quantumcore() -> TestGame {
     g
 }
 
-/// The Crimson Rebellion starts with its breakthrough unlocked, so it rolls for the Fracture.
+/// The Crimson Rebellion starts with its breakthrough unlocked, so it rolls for the Fracture
+/// before the strategy phase can begin.
 #[test]
 fn the_crimson_rebellion_starts_with_its_breakthrough() {
-    let g = action_phase(
-        TestGame::builder()
-            .player("Alice", Faction::CrimsonRebellion)
-            .player("Bob", Faction::EmiratesOfHacan)
-            .player("Carol", Faction::XxchaKingdom)
-            .thunders_edge(),
-    );
+    let mut g = TestGame::builder()
+        .player("Alice", Faction::CrimsonRebellion)
+        .player("Bob", Faction::EmiratesOfHacan)
+        .player("Carol", Faction::XxchaKingdom)
+        .thunders_edge()
+        .start();
     assert_eq!(
         g.player("Alice").breakthrough,
         Some(Breakthrough::ResonanceGenerator)
     );
     assert_eq!(g.player("Bob").breakthrough, None);
-    assert_eq!(g.state().fracture_rolls, [p("Alice")].into());
+    assert_eq!(g.state().fracture_roll, Some(p("Alice")));
+
+    let take_leadership = Event::TakeStrategyCard {
+        player: p("Alice"),
+        card: StrategyCard::Leadership,
+    };
+    g.expect_rejected(
+        take_leadership.clone(),
+        "Alice must roll for the Fracture first",
+    );
+    g.apply(roll("Alice", false));
+    assert_eq!(g.state().fracture_roll, None);
+    g.apply(take_leadership);
 }
 
 /// Only the planets on the shown side of the Firmament / The Obsidian home system tile are on
@@ -831,7 +827,10 @@ pub fn thunders_edge_map_tiles() -> TestGame {
     let mut g = TestGame::builder()
         .milty(every_thunders_edge_tile_draft())
         .create();
-    g.finish_creation().auto_setup().start_game();
+    g.finish_creation()
+        .auto_setup()
+        .start_game()
+        .apply(roll("Cid", false));
 
     let systems = systems();
     let tiles = g
@@ -916,6 +915,7 @@ pub fn thunders_edge_action_cards() -> TestGame {
         .action_card(ActionCard::FighterConscriptionOmega, None)
         .take_another_turn()
         .action_card(ActionCard::Brilliance, Some(brilliance(Some("Bob"))))
+        .apply(roll("Bob", false))
         .end_turn();
     assert_eq!(
         g.player("Bob").breakthrough,

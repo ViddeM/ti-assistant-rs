@@ -32,13 +32,6 @@
   }
 }
 
-.game-main-column {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .phase-container {
   width: 100%;
   @media (min-width: $width-medium) {

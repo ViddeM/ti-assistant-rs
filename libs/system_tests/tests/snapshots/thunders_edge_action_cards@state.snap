@@ -107,7 +107,7 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 660
+    secs: 720
     nanos: 0
   Bob:
     secs: 300
@@ -115,12 +115,11 @@ playersPlayTime:
   Carol:
     secs: 300
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:28:00Z"
+currentTurnStartTime: "2025-01-01T12:29:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
 fractureInPlay: false
-fractureRolls:
-  - Bob
+fractureRoll: ~
 bookOfLatviniaResearch: ~

@@ -125,13 +125,13 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 420
+    secs: 480
     nanos: 0
   Bob:
     secs: 420
     nanos: 0
   Carol:
-    secs: 360
+    secs: 300
     nanos: 0
   Dave:
     secs: 480
@@ -143,5 +143,5 @@ teExpedition:
   progress:
     Resources: Alice
 fractureInPlay: true
-fractureRolls: []
+fractureRoll: ~
 bookOfLatviniaResearch: ~

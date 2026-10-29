@@ -15,9 +15,7 @@ use crate::{
         dropdown::{PlayerDropdown, SystemDropdown},
     },
     data::{event_context::EventContext, game_context::GameContext},
-    views::{
-        fracture_rolls::FractureRolls, thunders_edge_view_mode::expedition_token::ExpeditionToken,
-    },
+    views::thunders_edge_view_mode::expedition_token::ExpeditionToken,
 };
 
 mod breakthrough;
@@ -181,6 +179,7 @@ fn Fracture() -> Element {
     let event = use_context::<EventContext>();
 
     let in_play = use_memo(move || gc.game_state().fracture_in_play);
+    let roll_pending = use_memo(move || gc.game_state().fracture_roll.is_some());
 
     rsx! {
         div { class: "card column margin-top",
@@ -194,6 +193,7 @@ fn Fracture() -> Element {
             }
             Button {
                 class: "margin-top",
+                disabled: roll_pending(),
                 onclick: move |_| {
                     event
                         .send_event(Event::SetFractureInPlay {
@@ -206,7 +206,6 @@ fn Fracture() -> Element {
                     "Put in play"
                 }
             }
-            FractureRolls {}
         }
     }
 }

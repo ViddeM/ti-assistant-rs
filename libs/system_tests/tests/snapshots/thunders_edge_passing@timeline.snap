@@ -31,14 +31,15 @@ source: libs/system_tests/src/check.rs
   27 TakeAnotherTurn(Alice)                   r1 Action             Alice
   28 PassAction(Alice)                        r1 EndActionTurn      Alice
   29 CommitToThundersEdgeExpedition(Alice)    r1 EndActionTurn      Alice
-  30 EndTurn(Alice)                           r1 Action             Bob
-  31 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
-  32 StrategicActionCommit                    r1 EndActionTurn      Bob
-  33 EndTurn(Bob)                             r1 Action             Carol
-  34 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
-  35 StrategicActionCommit                    r1 EndActionTurn      Carol
-  36 EndTurn(Carol)                           r1 Action             Bob
-  37 PassAction(Bob)                          r1 EndActionTurn      Bob
-  38 EndTurn(Bob)                             r1 Action             Carol
-  39 PassAction(Carol)                        r1 EndActionTurn      Carol
-  40 EndTurn(Carol)                           r1 Status             Carol
+  30 RollForTheFracture(Alice)                r1 EndActionTurn      Alice
+  31 EndTurn(Alice)                           r1 Action             Bob
+  32 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  33 StrategicActionCommit                    r1 EndActionTurn      Bob
+  34 EndTurn(Bob)                             r1 Action             Carol
+  35 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  36 StrategicActionCommit                    r1 EndActionTurn      Carol
+  37 EndTurn(Carol)                           r1 Action             Bob
+  38 PassAction(Bob)                          r1 EndActionTurn      Bob
+  39 EndTurn(Bob)                             r1 Action             Carol
+  40 PassAction(Carol)                        r1 EndActionTurn      Carol
+  41 EndTurn(Carol)                           r1 Status             Carol

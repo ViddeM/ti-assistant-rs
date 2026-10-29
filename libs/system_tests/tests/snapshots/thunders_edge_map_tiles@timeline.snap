@@ -10,35 +10,36 @@ source: libs/system_tests/src/check.rs
    6 SetupPlayerTechs(Eve)                    r0 Setup              -
    7 RevealInitialObjectives                  r0 Setup              -
    8 StartGame                                r1 Strategy           Ann        order=[Ann Ben Cid Dee Eve]
-   9 SetPlanetOwner(Ann)                      r1 Strategy           Ann        custodians=Ann Ann=1
-  10 SetPlanetOwner(Ben)                      r1 Strategy           Ann
-  11 SetPlanetOwner(Cid)                      r1 Strategy           Ann
-  12 SetPlanetOwner(Dee)                      r1 Strategy           Ann
-  13 SetPlanetOwner(Eve)                      r1 Strategy           Ann
-  14 SetPlanetOwner(Ann)                      r1 Strategy           Ann
-  15 SetPlanetOwner(Ben)                      r1 Strategy           Ann
-  16 SetPlanetOwner(Cid)                      r1 Strategy           Ann
-  17 SetPlanetOwner(Dee)                      r1 Strategy           Ann
-  18 SetPlanetOwner(Eve)                      r1 Strategy           Ann
-  19 SetPlanetOwner(Ann)                      r1 Strategy           Ann
-  20 SetPlanetOwner(Ben)                      r1 Strategy           Ann
-  21 SetPlanetOwner(Cid)                      r1 Strategy           Ann
-  22 SetPlanetOwner(Dee)                      r1 Strategy           Ann
-  23 SetPlanetOwner(Eve)                      r1 Strategy           Ann
-  24 SetPlanetOwner(Ann)                      r1 Strategy           Ann
-  25 SetPlanetOwner(Ben)                      r1 Strategy           Ann
-  26 SetPlanetOwner(Cid)                      r1 Strategy           Ann
-  27 SetPlanetOwner(Dee)                      r1 Strategy           Ann
-  28 SetPlanetOwner(Eve)                      r1 Strategy           Ann
-  29 SetPlanetOwner(Ann)                      r1 Strategy           Ann
-  30 SetPlanetOwner(Ben)                      r1 Strategy           Ann
-  31 SetPlanetOwner(Cid)                      r1 Strategy           Ann
-  32 SetPlanetOwner(Dee)                      r1 Strategy           Ann
-  33 SetPlanetOwner(Eve)                      r1 Strategy           Ann
-  34 SetPlanetOwner(Ann)                      r1 Strategy           Ann
-  35 SetPlanetOwner(Ben)                      r1 Strategy           Ann
-  36 SetPlanetOwner(Cid)                      r1 Strategy           Ann
-  37 SetPlanetOwner(Dee)                      r1 Strategy           Ann
-  38 SetPlanetOwner(Eve)                      r1 Strategy           Ann
-  39 SetPlanetOwner(Ann)                      r1 Strategy           Ann        Ann=2
-  40 SetThundersEdgeCompletion                r1 Strategy           Ann
+   9 RollForTheFracture(Cid)                  r1 Strategy           Ann
+  10 SetPlanetOwner(Ann)                      r1 Strategy           Ann        custodians=Ann Ann=1
+  11 SetPlanetOwner(Ben)                      r1 Strategy           Ann
+  12 SetPlanetOwner(Cid)                      r1 Strategy           Ann
+  13 SetPlanetOwner(Dee)                      r1 Strategy           Ann
+  14 SetPlanetOwner(Eve)                      r1 Strategy           Ann
+  15 SetPlanetOwner(Ann)                      r1 Strategy           Ann
+  16 SetPlanetOwner(Ben)                      r1 Strategy           Ann
+  17 SetPlanetOwner(Cid)                      r1 Strategy           Ann
+  18 SetPlanetOwner(Dee)                      r1 Strategy           Ann
+  19 SetPlanetOwner(Eve)                      r1 Strategy           Ann
+  20 SetPlanetOwner(Ann)                      r1 Strategy           Ann
+  21 SetPlanetOwner(Ben)                      r1 Strategy           Ann
+  22 SetPlanetOwner(Cid)                      r1 Strategy           Ann
+  23 SetPlanetOwner(Dee)                      r1 Strategy           Ann
+  24 SetPlanetOwner(Eve)                      r1 Strategy           Ann
+  25 SetPlanetOwner(Ann)                      r1 Strategy           Ann
+  26 SetPlanetOwner(Ben)                      r1 Strategy           Ann
+  27 SetPlanetOwner(Cid)                      r1 Strategy           Ann
+  28 SetPlanetOwner(Dee)                      r1 Strategy           Ann
+  29 SetPlanetOwner(Eve)                      r1 Strategy           Ann
+  30 SetPlanetOwner(Ann)                      r1 Strategy           Ann
+  31 SetPlanetOwner(Ben)                      r1 Strategy           Ann
+  32 SetPlanetOwner(Cid)                      r1 Strategy           Ann
+  33 SetPlanetOwner(Dee)                      r1 Strategy           Ann
+  34 SetPlanetOwner(Eve)                      r1 Strategy           Ann
+  35 SetPlanetOwner(Ann)                      r1 Strategy           Ann
+  36 SetPlanetOwner(Ben)                      r1 Strategy           Ann
+  37 SetPlanetOwner(Cid)                      r1 Strategy           Ann
+  38 SetPlanetOwner(Dee)                      r1 Strategy           Ann
+  39 SetPlanetOwner(Eve)                      r1 Strategy           Ann
+  40 SetPlanetOwner(Ann)                      r1 Strategy           Ann        Ann=2
+  41 SetThundersEdgeCompletion                r1 Strategy           Ann

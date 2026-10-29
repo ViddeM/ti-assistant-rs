@@ -68,6 +68,13 @@ fn try_update_game_state(
     event: Event,
     timestamp: DateTime<Utc>,
 ) -> Result<(), GameError> {
+    if let Some(roller) = &game_state.fracture_roll {
+        ensure!(
+            matches!(event, Event::RollForTheFracture { .. }),
+            "{roller} must roll for the Fracture first"
+        );
+    }
+
     match event {
         Event::SetSettings { settings } => {
             game_state.assert_phase(Phase::Creation)?;
@@ -2086,24 +2093,20 @@ fn try_update_game_state(
                 "No change provided in event"
             );
 
-            if in_play {
-                game_state.fracture_enters_play();
-            } else {
-                game_state.fracture_in_play = false;
-            }
+            game_state.fracture_in_play = in_play;
         }
         Event::RollForTheFracture {
             player,
             entered_play,
         } => {
             ensure!(
-                game_state.fracture_rolls.contains(&player),
+                game_state.fracture_roll.as_ref() == Some(&player),
                 "{player} has no roll for the Fracture"
             );
 
-            game_state.fracture_rolls.remove(&player);
+            game_state.fracture_roll = None;
             if entered_play {
-                game_state.fracture_enters_play();
+                game_state.fracture_in_play = true;
             }
         }
     }

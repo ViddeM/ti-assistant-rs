@@ -156,6 +156,7 @@ When the game changes:
   - Rejected events don't move the clock, and undo doesn't rewind it.
   - The game rejects timestamps that go backwards.
   - To test time tracking, use `.clock_step(TimeDelta::zero())` and call `g.advance(..)` explicitly (see `time.rs`).
+- **The roll for the Fracture**: a player who gains their breakthrough while the Fracture isn't in play blocks the game, and every other event is rejected until they answer with `RollForTheFracture`. The Thunder's Edge scenarios apply `roll(..)` right after each gain, also in the middle of a turn, and after `StartGame` when the Crimson Rebellion is in the game.
 - **Failures point at the scenario line**, because the helpers are `#[track_caller]`. When an event is rejected unexpectedly, the panic shows its index, the error, and the phase, round, current player and turn order.
 - **Playing a scenario in the UI**: an ignored test writes every scenario into the DB at `DATABASE_URL`.
   - Each game id is derived from the scenario name, so seeding again resets the games, and renaming a scenario gives it a new game.

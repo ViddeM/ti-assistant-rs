@@ -23,10 +23,11 @@ source: libs/system_tests/src/check.rs
   19 TakeAnotherTurn(Alice)                   r1 Action             Alice
   20 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
   21 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
-  22 EndTurn(Alice)                           r1 Action             Bob
-  23 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob
-  24 ActionCardActionCommit(Bob)              r1 EndActionTurn      Bob
-  25 EndTurn(Bob)                             r1 Action             Carol
-  26 ActionCardActionBegin(Carol)             r1 ActionCardAction   Carol
-  27 ActionCardActionCommit(Carol)            r1 EndActionTurn      Carol
-  28 EndTurn(Carol)                           r1 Action             Alice
+  22 RollForTheFracture(Bob)                  r1 EndActionTurn      Alice
+  23 EndTurn(Alice)                           r1 Action             Bob
+  24 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob
+  25 ActionCardActionCommit(Bob)              r1 EndActionTurn      Bob
+  26 EndTurn(Bob)                             r1 Action             Carol
+  27 ActionCardActionBegin(Carol)             r1 ActionCardAction   Carol
+  28 ActionCardActionCommit(Carol)            r1 EndActionTurn      Carol
+  29 EndTurn(Carol)                           r1 Action             Alice
