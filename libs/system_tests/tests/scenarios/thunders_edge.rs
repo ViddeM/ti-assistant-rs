@@ -657,6 +657,39 @@ fn imported_crimson_rebellion_gate_gets_its_home_system() {
     assert_eq!(home_systems, vec![HexPosition::OutsideGalaxy]);
 }
 
+/// Imports from before the Fracture was placed don't have it.
+#[test]
+fn imported_thunders_edge_map_gets_the_fracture() {
+    let mut draft = every_thunders_edge_tile_draft();
+    draft
+        .hex_map
+        .tiles
+        .retain(|tile| !["125", "126", "127"].contains(&tile.system.as_str()));
+
+    let g = TestGame::builder().milty(draft).create();
+
+    let fracture: Vec<(SystemId, HexPosition)> = g
+        .state()
+        .map_data
+        .milty_information
+        .as_ref()
+        .unwrap()
+        .hex_map
+        .tiles
+        .iter()
+        .filter(|tile| ["125", "126", "127"].contains(&tile.system.as_str()))
+        .map(|tile| (tile.system.clone(), tile.position.clone()))
+        .collect();
+    assert_eq!(
+        fracture,
+        vec![
+            ("125".to_string(), HexPosition::OutsideGalaxy),
+            ("126".to_string(), HexPosition::OutsideGalaxy),
+            ("127".to_string(), HexPosition::OutsideGalaxy),
+        ]
+    );
+}
+
 /// Every Thunder's Edge system tile is on the map, each of their planets has an owner and
 /// Thunder's Edge is placed in the entropic scar 114.
 pub fn thunders_edge_map_tiles() -> TestGame {

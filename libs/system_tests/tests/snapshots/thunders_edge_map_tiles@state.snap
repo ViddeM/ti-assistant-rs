@@ -136,29 +136,11 @@ mapData:
               ring: 3
               position: 0
               rotation: 0
-        - system: "125"
-          position:
-            Pos:
-              ring: 3
-              position: 1
-              rotation: 0
-        - system: "126"
-          position:
-            Pos:
-              ring: 3
-              position: 2
-              rotation: 0
         - system: "95"
           position:
             Pos:
               ring: 3
               position: 3
-              rotation: 0
-        - system: "127"
-          position:
-            Pos:
-              ring: 3
-              position: 4
               rotation: 0
         - system: "113"
           position:
@@ -193,6 +175,12 @@ mapData:
         - system: "82"
           position: OutsideGalaxy
         - system: "118"
+          position: OutsideGalaxy
+        - system: "125"
+          position: OutsideGalaxy
+        - system: "126"
+          position: OutsideGalaxy
+        - system: "127"
           position: OutsideGalaxy
       ring_count: 4
     mirageSystem: ~

@@ -32,6 +32,7 @@ impl HexMap {
     const CREUSS_HOME_SYSTEM: &'static str = "51";
     const CRIMSON_REBELLION_GATE: &'static str = "94";
     const CRIMSON_REBELLION_HOME_SYSTEM: &'static str = "118";
+    const THE_FRACTURE: [&'static str; 3] = ["125", "126", "127"];
 
     /// The system ID for the mecatol rex system.
     const MECATOL_REX_ID: u32 = 18;
@@ -127,6 +128,9 @@ impl HexMap {
             ring_count: ring,
         };
         hex_map.place_crimson_rebellion_home_system();
+        if use_te_tiles {
+            hex_map.place_the_fracture();
+        }
         Ok(hex_map)
     }
 
@@ -140,6 +144,18 @@ impl HexMap {
                 system: Self::CRIMSON_REBELLION_HOME_SYSTEM.to_string(),
                 position: HexPosition::OutsideGalaxy,
             });
+        }
+    }
+
+    /// Places the tiles of the Fracture that aren't on the map outside the galaxy.
+    pub fn place_the_fracture(&mut self) {
+        for system in Self::THE_FRACTURE {
+            if !self.tiles.iter().any(|tile| tile.system == system) {
+                self.tiles.push(Tile {
+                    system: system.to_string(),
+                    position: HexPosition::OutsideGalaxy,
+                });
+            }
         }
     }
 
@@ -337,7 +353,7 @@ struct HyperLaneTile {
 
 #[cfg(test)]
 mod test {
-    use crate::components::system::systems;
+    use crate::components::system::{AnomalyType, SystemType, systems};
 
     use super::{HexMap, HexPosition, MiltySystemId};
 
@@ -456,5 +472,74 @@ mod test {
         let systems = systems();
         assert!(systems.contains_key(HexMap::CRIMSON_REBELLION_GATE));
         assert!(systems.contains_key(HexMap::CRIMSON_REBELLION_HOME_SYSTEM));
+    }
+
+    fn fracture_tiles(hex_map: &HexMap) -> Vec<(&str, &HexPosition)> {
+        hex_map
+            .tiles
+            .iter()
+            .filter(|tile| HexMap::THE_FRACTURE.contains(&tile.system.as_str()))
+            .map(|tile| (tile.system.as_str(), &tile.position))
+            .collect()
+    }
+
+    #[test]
+    fn the_fracture_is_outside_the_galaxy_with_thunders_edge() {
+        let hex_map = HexMap::from_milty_string("26 27 28 29 30 31", true).expect("to parse");
+
+        assert_eq!(
+            fracture_tiles(&hex_map),
+            vec![
+                ("125", &HexPosition::OutsideGalaxy),
+                ("126", &HexPosition::OutsideGalaxy),
+                ("127", &HexPosition::OutsideGalaxy),
+            ]
+        );
+    }
+
+    #[test]
+    fn the_fracture_is_not_on_the_map_without_thunders_edge() {
+        let hex_map = HexMap::from_milty_string("26 27 28 29 30 31", false).expect("to parse");
+
+        assert_eq!(fracture_tiles(&hex_map), vec![]);
+    }
+
+    #[test]
+    fn missing_fracture_tiles_are_added() {
+        let mut hex_map = HexMap::from_milty_string("26 27 28 29 30 31", true).expect("to parse");
+        hex_map.tiles.retain(|tile| tile.system != "126");
+
+        hex_map.place_the_fracture();
+
+        assert_eq!(
+            fracture_tiles(&hex_map),
+            vec![
+                ("125", &HexPosition::OutsideGalaxy),
+                ("127", &HexPosition::OutsideGalaxy),
+                ("126", &HexPosition::OutsideGalaxy),
+            ]
+        );
+    }
+
+    #[test]
+    fn the_fracture_is_not_added_twice() {
+        let mut hex_map = HexMap::from_milty_string("26 27 28 29 30 31", true).expect("to parse");
+        let before = hex_map.clone();
+
+        hex_map.place_the_fracture();
+
+        assert_eq!(hex_map, before);
+    }
+
+    #[test]
+    fn the_fracture_systems_exist() {
+        let systems = systems();
+        for system in HexMap::THE_FRACTURE {
+            assert_eq!(
+                systems.get(system).map(|system| &system.system_type),
+                Some(&SystemType::Anomaly(vec![AnomalyType::TheFracture])),
+                "{system}"
+            );
+        }
     }
 }

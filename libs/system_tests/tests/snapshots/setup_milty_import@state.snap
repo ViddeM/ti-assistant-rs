@@ -228,6 +228,12 @@ mapData:
               rotation: 0
         - system: "82"
           position: OutsideGalaxy
+        - system: "125"
+          position: OutsideGalaxy
+        - system: "126"
+          position: OutsideGalaxy
+        - system: "127"
+          position: OutsideGalaxy
       ring_count: 4
     mirageSystem: "65"
   stellarConverterDestroyedPlanets: []
