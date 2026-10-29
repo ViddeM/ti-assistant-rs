@@ -139,9 +139,9 @@ pub fn planet_offset(planet: &Planet) -> (f32, f32) {
         Planet::OluzStation => (0.05, -0.19),
         Planet::TheWatchtower => (0.07, -0.22),
         Planet::AhkCreuxx => (0.0, 0.11),
-        Planet::Cocytus => (-0.22, -0.18),
-        Planet::Lethe => (0.17, -0.04),
-        Planet::Phlegethon => (0.27, -0.29),
-        Planet::Styx => (0.0, 0.19),
+        Planet::Cocytus => (-0.02, -0.03),
+        Planet::Lethe => (-0.08, 0.19),
+        Planet::Phlegethon => (0.10, -0.19),
+        Planet::Styx => (0.0, 0.04),
     }
 }

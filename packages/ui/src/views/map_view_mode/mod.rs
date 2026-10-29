@@ -4,7 +4,7 @@ use ti_helper_game_data::components::phase::Phase;
 use crate::{
     data::game_context::GameContext,
     views::map_view_mode::{
-        layout::{Bounds, MapLayout, TILE_HEIGHT, TILE_WIDTH, build_layout},
+        layout::{Bounds, MapLayout, build_layout},
         tile_images::get_tile_image,
     },
 };
@@ -200,10 +200,10 @@ fn MapContents(layout: ReadSignal<MapLayout>) -> Element {
                 if let Some(image) = get_tile_image(&tile.system_id) {
                     image {
                         href: image,
-                        x: -TILE_WIDTH / 2.0,
-                        y: -TILE_HEIGHT / 2.0,
-                        width: TILE_WIDTH,
-                        height: TILE_HEIGHT,
+                        x: tile.image.min_x,
+                        y: tile.image.min_y,
+                        width: tile.image.width(),
+                        height: tile.image.height(),
                     }
                 } else {
                     polygon { class: "map-missing-tile", points: TILE_POINTS }

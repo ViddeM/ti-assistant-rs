@@ -272,7 +272,7 @@ Verified OK:
 | Item | Sev | Issue | Location |
 |---|---|---|---|
 | Tiles 125, 126, 127 | 🔴 | All contain Industrex. They should be 125: Cocytus + egress; 126: Lethe + Phlegethon + egress; 127: empty / Styx / empty. **✅ Fixed** (planets only; egress not modelled) | `:801-818` ✔ |
-| Fracture structure | 🟡 | The Fracture is 7 systems on 3 tiles; the code models 3 single systems with no egress | `:801-818` |
+| Fracture structure | 🟡 | The Fracture is 7 systems on 3 tiles; the code models 3 single systems with no egress. The map now draws the 7 hexes above the board (125 \| 127 \| 126 in one row with 3 players, along the board's top edges with 4 or more); the data still has 3 systems | `:801-818` |
 | Hyperlanes 119A–124B | 🟠 | missing (12 tile sides). **✅ Fixed.** | after `:800` |
 | Tile 56 (Empyrean home), tile 92 (Last Bastion home) | 🟡 | also nebulae, but `SystemType` can't be both a home system and an anomaly | `:452-457`, `:623-629` |
 | Tile 82 (Wormhole Nexus) | 🟡 | the inactive side (82A, γ only) isn't modelled | `:598-604` |

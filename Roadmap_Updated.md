@@ -141,7 +141,8 @@
  - ✅ Thunder's Edge planet positions on their tiles
  - ✅ Thunder's Edge planet where it was placed `[TE-J1]`
  - ✅ Hyperlane tiles 119A–124B (TE) in the system data
- - 👺 Fracture tiles / ingress tokens / Avernus token / coexistence
+ - ✅ The Fracture above the board, at full size
+ - 👺 Ingress tokens / Avernus token / coexistence
 
 ### Agenda Phase
 

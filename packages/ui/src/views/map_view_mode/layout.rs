@@ -15,13 +15,16 @@ use ti_helper_game_data::{
 
 use crate::components::ti_token::TiToken;
 
-use super::{outside_galaxy::place_tiles, planet_offset::planet_offset};
+use super::{
+    outside_galaxy::{place_tiles, tile_cells},
+    planet_offset::planet_offset,
+};
 
 pub const TILE_WIDTH: f32 = 364.0;
 pub const TILE_HEIGHT: f32 = 317.0;
 
-const TILE_THREE_QUARTER_WIDTH: f32 = TILE_WIDTH * 0.75;
-const TILE_HALF_HEIGHT: f32 = TILE_HEIGHT * 0.5;
+pub(super) const TILE_THREE_QUARTER_WIDTH: f32 = TILE_WIDTH * 0.75;
+pub(super) const TILE_HALF_HEIGHT: f32 = TILE_HEIGHT * 0.5;
 
 /// Offset of the owner label relative to the planet position (fraction of tile size).
 const OWNER_LABEL_OFFSET: (f32, f32) = (0.0, 0.08);
@@ -56,6 +59,8 @@ pub struct TileLayout {
     pub x: f32,
     pub y: f32,
     pub rotation_degrees: f32,
+    /// Where the tile image goes, relative to (x, y).
+    pub image: Bounds,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -86,6 +91,25 @@ pub struct Bounds {
 }
 
 impl Bounds {
+    /// The rectangle that contains the hexes centered on `cells`.
+    fn around_cells(cells: &[(f32, f32)]) -> Self {
+        let mut bounds = Bounds {
+            min_x: f32::MAX,
+            min_y: f32::MAX,
+            max_x: f32::MIN,
+            max_y: f32::MIN,
+        };
+
+        for (x, y) in cells {
+            bounds.min_x = bounds.min_x.min(x - TILE_WIDTH / 2.0);
+            bounds.max_x = bounds.max_x.max(x + TILE_WIDTH / 2.0);
+            bounds.min_y = bounds.min_y.min(y - TILE_HEIGHT / 2.0);
+            bounds.max_y = bounds.max_y.max(y + TILE_HEIGHT / 2.0);
+        }
+
+        bounds
+    }
+
     pub fn width(&self) -> f32 {
         self.max_x - self.min_x
     }
@@ -112,10 +136,10 @@ impl MapLayout {
         };
 
         for tile in self.tiles.iter() {
-            bounds.min_x = bounds.min_x.min(tile.x - TILE_WIDTH / 2.0);
-            bounds.max_x = bounds.max_x.max(tile.x + TILE_WIDTH / 2.0);
-            bounds.min_y = bounds.min_y.min(tile.y - TILE_HEIGHT / 2.0);
-            bounds.max_y = bounds.max_y.max(tile.y + TILE_HEIGHT / 2.0);
+            bounds.min_x = bounds.min_x.min(tile.x + tile.image.min_x);
+            bounds.max_x = bounds.max_x.max(tile.x + tile.image.max_x);
+            bounds.min_y = bounds.min_y.min(tile.y + tile.image.min_y);
+            bounds.max_y = bounds.max_y.max(tile.y + tile.image.max_y);
         }
 
         if self.tiles.is_empty() {
@@ -201,7 +225,11 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     let mut outer_ring = 0;
 
     let hex_map = &milty_information.hex_map;
-    for (tile, (center, rotation_degrees)) in hex_map.tiles.iter().zip(place_tiles(hex_map)) {
+    for (tile, (center, rotation_degrees)) in hex_map
+        .tiles
+        .iter()
+        .zip(place_tiles(hex_map, game_state.players.len()))
+    {
         if let HexPosition::Pos(coord) = &tile.position {
             occupied_slots.insert((coord.ring, coord.position));
             outer_ring = outer_ring.max(coord.ring);
@@ -212,6 +240,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
             x: center.0,
             y: center.1,
             rotation_degrees,
+            image: Bounds::around_cells(tile_cells(&tile.system)),
         });
 
         if thunders_edge_system.as_ref() == Some(&tile.system) {
