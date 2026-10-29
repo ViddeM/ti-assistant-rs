@@ -10,6 +10,7 @@ use crate::{
 };
 
 mod layout;
+mod outside_galaxy;
 mod planet_offset;
 mod tile_images;
 

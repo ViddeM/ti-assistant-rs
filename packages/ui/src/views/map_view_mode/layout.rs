@@ -15,16 +15,13 @@ use ti_helper_game_data::{
 
 use crate::components::ti_token::TiToken;
 
-use super::planet_offset::planet_offset;
+use super::{outside_galaxy::place_tiles, planet_offset::planet_offset};
 
 pub const TILE_WIDTH: f32 = 364.0;
 pub const TILE_HEIGHT: f32 = 317.0;
 
 const TILE_THREE_QUARTER_WIDTH: f32 = TILE_WIDTH * 0.75;
 const TILE_HALF_HEIGHT: f32 = TILE_HEIGHT * 0.5;
-
-/// How much each step of rotation rotates a tile (clockwise).
-const ROTATION_STEP_DEGREES: f32 = 60.0;
 
 /// Offset of the owner label relative to the planet position (fraction of tile size).
 const OWNER_LABEL_OFFSET: (f32, f32) = (0.0, 0.08);
@@ -204,31 +201,21 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     let mut outer_ring = 0;
 
     let hex_map = &milty_information.hex_map;
-    let mut outside_galaxy_count = 0;
-    for tile in hex_map.tiles.iter() {
-        let (tile_pos, rotation) = match hex_map.outside_galaxy_coordinate(tile) {
-            Some(coord) => (get_tile_position(&coord), 0.0),
-            None => get_tile_pos_and_rotation(&tile.position, &mut outside_galaxy_count),
-        };
-
+    for (tile, (center, rotation_degrees)) in hex_map.tiles.iter().zip(place_tiles(hex_map)) {
         if let HexPosition::Pos(coord) = &tile.position {
             occupied_slots.insert((coord.ring, coord.position));
             outer_ring = outer_ring.max(coord.ring);
         }
 
-        let (x, y) = to_svg(tile_pos_to_visual_pos(tile_pos));
         tiles.push(TileLayout {
             system_id: tile.system.clone(),
-            x,
-            y,
-            rotation_degrees: rotation * ROTATION_STEP_DEGREES,
+            x: center.0,
+            y: center.1,
+            rotation_degrees,
         });
 
         if thunders_edge_system.as_ref() == Some(&tile.system) {
-            let (x, y) = to_svg(tile_with_offset_to_visual_pos(
-                tile_pos,
-                planet_offset(&Planet::ThundersEdge),
-            ));
+            let (x, y) = on_tile(center, planet_offset(&Planet::ThundersEdge));
             tokens.push(TokenLayout {
                 kind: TiToken::ThundersEdge,
                 x,
@@ -243,13 +230,13 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
                 continue;
             };
             let offset = planet_offset(planet);
-            let (x, y) = to_svg(tile_with_offset_to_visual_pos(
-                tile_pos,
+            let (x, y) = on_tile(
+                center,
                 (
                     offset.0 + OWNER_LABEL_OFFSET.0,
                     offset.1 + OWNER_LABEL_OFFSET.1,
                 ),
-            ));
+            );
             owners.push(OwnerLabel {
                 planet: planet.clone(),
                 x,
@@ -261,13 +248,13 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
             if let Some(attachments) = planet_attachments.get(planet) {
                 for (attachment_index, attachment) in attachments.iter().enumerate() {
                     let offset = planet_offset(planet);
-                    let (x, y) = to_svg(tile_with_offset_to_visual_pos(
-                        tile_pos,
+                    let (x, y) = on_tile(
+                        center,
                         (
                             offset.0 + ATTACHMENT_OFFSETS[attachment_index].0,
                             offset.1 + ATTACHMENT_OFFSETS[attachment_index].1,
                         ),
-                    ));
+                    );
                     tokens.push(TokenLayout {
                         kind: TiToken::from(attachment),
                         x,
@@ -280,10 +267,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         }
 
         if milty_information.mirage_system.as_ref() == Some(&tile.system) {
-            let (x, y) = to_svg(tile_with_offset_to_visual_pos(
-                tile_pos,
-                planet_offset(&Planet::Mirage),
-            ));
+            let (x, y) = on_tile(center, planet_offset(&Planet::Mirage));
             tokens.push(TokenLayout {
                 kind: TiToken::Mirage,
                 x,
@@ -298,10 +282,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
             .into_iter()
             .flatten()
         {
-            let (x, y) = to_svg(tile_with_offset_to_visual_pos(
-                tile_pos,
-                planet_offset(planet),
-            ));
+            let (x, y) = on_tile(center, planet_offset(planet));
             tokens.push(TokenLayout {
                 kind: TiToken::DestroyedPlanet,
                 x,
@@ -333,27 +314,19 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
 }
 
 /// The layout math is done with y pointing up, SVG has y pointing down.
-fn to_svg((x, y): (f32, f32)) -> (f32, f32) {
+pub(super) fn to_svg((x, y): (f32, f32)) -> (f32, f32) {
     (x, -y)
 }
 
-fn get_tile_pos_and_rotation(
-    position: &HexPosition,
-    outside_galaxy_count: &mut i32,
-) -> ((f32, f32), f32) {
-    match position {
-        HexPosition::OutsideGalaxy => {
-            let pos = (-5.5, -2.0 + 4.0 * (*outside_galaxy_count as f32));
-
-            *outside_galaxy_count += 1;
-
-            (pos, 0.0)
-        }
-        HexPosition::Pos(coord) => (get_tile_position(coord), coord.rotation as f32),
-    }
+/// The position (SVG space) of an `offset` (fraction of the tile size, y up) on the tile centered on `center`.
+fn on_tile(center: (f32, f32), offset: (f32, f32)) -> (f32, f32) {
+    (
+        center.0 + offset.0 * TILE_WIDTH,
+        center.1 - offset.1 * TILE_HEIGHT,
+    )
 }
 
-fn tile_pos_to_visual_pos(tile_pos: (f32, f32)) -> (f32, f32) {
+pub(super) fn tile_pos_to_visual_pos(tile_pos: (f32, f32)) -> (f32, f32) {
     (
         tile_pos.0 * TILE_THREE_QUARTER_WIDTH,
         tile_pos.1 * TILE_HEIGHT + (TILE_HEIGHT / 2.0)
@@ -365,13 +338,8 @@ fn tile_pos_to_visual_pos(tile_pos: (f32, f32)) -> (f32, f32) {
     )
 }
 
-fn tile_with_offset_to_visual_pos(tile_pos: (f32, f32), offset: (f32, f32)) -> (f32, f32) {
-    let (x, y) = tile_pos_to_visual_pos(tile_pos);
-    (x + offset.0 * TILE_WIDTH, y + offset.1 * TILE_HEIGHT)
-}
-
 /// Returns the position of the tile in the (hex) grid, with the center tile at (0, 0) and y pointing up.
-fn get_tile_position(coord: &Coordinate) -> (f32, f32) {
+pub(super) fn get_tile_position(coord: &Coordinate) -> (f32, f32) {
     if coord.ring == 0 {
         return (0.0, 0.0);
     }
