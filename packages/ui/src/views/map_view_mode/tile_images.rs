@@ -129,6 +129,8 @@ const TILE_115: Asset = asset!("/assets/images/map/tiles/webp/115.webp");
 const TILE_116: Asset = asset!("/assets/images/map/tiles/webp/116.webp");
 const TILE_117: Asset = asset!("/assets/images/map/tiles/webp/117.webp");
 const TILE_118: Asset = asset!("/assets/images/map/tiles/webp/118.webp");
+const TILE_119A: Asset = asset!("/assets/images/map/tiles/webp/119A.webp");
+const TILE_119B: Asset = asset!("/assets/images/map/tiles/webp/119B.webp");
 const TILE_125: Asset = asset!("/assets/images/map/tiles/webp/125.webp");
 const TILE_126: Asset = asset!("/assets/images/map/tiles/webp/126.webp");
 const TILE_127: Asset = asset!("/assets/images/map/tiles/webp/127.webp");
@@ -265,6 +267,8 @@ pub fn get_tile_image(system_id: &str) -> Option<Asset> {
         "116" => Some(TILE_116),
         "117" => Some(TILE_117),
         "118" => Some(TILE_118),
+        "119A" => Some(TILE_119A),
+        "119B" => Some(TILE_119B),
         "125" => Some(TILE_125),
         "126" => Some(TILE_126),
         "127" => Some(TILE_127),

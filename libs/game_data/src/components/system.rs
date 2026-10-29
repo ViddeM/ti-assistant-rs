@@ -804,6 +804,18 @@ pub fn systems() -> HashMap<SystemId, System> {
             vec![WormHoleType::Epsilon],
             Expansion::ThundersEdge
         ),
+        s!("119A", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("119B", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("120A", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("120B", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("121A", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("121B", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("122A", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("122B", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("123A", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("123B", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("124A", SystemType::Hyperlane, Expansion::ThundersEdge),
+        s!("124B", SystemType::Hyperlane, Expansion::ThundersEdge),
         s!(
             "125",
             SystemType::Anomaly(vec![AnomalyType::TheFracture]),
