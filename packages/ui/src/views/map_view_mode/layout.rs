@@ -203,10 +203,13 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     let mut occupied_slots = HashSet::new();
     let mut outer_ring = 0;
 
+    let hex_map = &milty_information.hex_map;
     let mut outside_galaxy_count = 0;
-    for tile in milty_information.hex_map.tiles.iter() {
-        let (tile_pos, rotation) =
-            get_tile_pos_and_rotation(&tile.position, &mut outside_galaxy_count);
+    for tile in hex_map.tiles.iter() {
+        let (tile_pos, rotation) = match hex_map.outside_galaxy_coordinate(tile) {
+            Some(coord) => (get_tile_position(&coord), 0.0),
+            None => get_tile_pos_and_rotation(&tile.position, &mut outside_galaxy_count),
+        };
 
         if let HexPosition::Pos(coord) = &tile.position {
             occupied_slots.insert((coord.ring, coord.position));

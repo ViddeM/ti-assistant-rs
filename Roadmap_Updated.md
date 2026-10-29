@@ -137,7 +137,7 @@
  - ❌ System destruction (supernova bois)
  - ✅ Planet destruction (Stellar Converter relic)
  - ✅ Mirage
- - ✅ Crimson Rebellion home system off the board
+ - ✅ Crimson Rebellion home system off the board, next to its gate
  - ✅ Thunder's Edge planet positions on their tiles
  - ✅ Thunder's Edge planet where it was placed `[TE-J1]`
  - ✅ Hyperlane tiles 119A–124B (TE) in the system data

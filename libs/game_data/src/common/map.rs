@@ -142,6 +142,31 @@ impl HexMap {
             });
         }
     }
+
+    /// The coordinate just outside the galaxy where a tile that is outside the galaxy belongs, if it
+    /// belongs next to a tile in the galaxy (the Crimson Rebellion home system next to its gate).
+    pub fn outside_galaxy_coordinate(&self, tile: &Tile) -> Option<Coordinate> {
+        if tile.position != HexPosition::OutsideGalaxy
+            || tile.system != Self::CRIMSON_REBELLION_HOME_SYSTEM
+        {
+            return None;
+        }
+
+        let galaxy = self.tiles.iter().filter_map(|tile| match &tile.position {
+            HexPosition::Pos(coord) => Some((&tile.system, coord)),
+            HexPosition::OutsideGalaxy => None,
+        });
+        let outer_ring = galaxy.clone().map(|(_, coord)| coord.ring).max()?;
+        let (_, gate) = galaxy
+            .clone()
+            .find(|(system, _)| *system == Self::CRIMSON_REBELLION_GATE)?;
+
+        let mut coord = gate.outward_neighbor();
+        while coord.ring <= outer_ring {
+            coord = coord.outward_neighbor();
+        }
+        Some(coord)
+    }
 }
 
 /// A tile in play.
@@ -171,6 +196,22 @@ pub struct Coordinate {
     pub position: u32,
     /// How rotated the tile is.
     pub rotation: u32,
+}
+
+impl Coordinate {
+    /// An unrotated neighbor in the next ring out.
+    fn outward_neighbor(&self) -> Coordinate {
+        let ring = self.ring + 1;
+        let position = match self.ring {
+            0 => 0,
+            r => (self.position * ring + r / 2) / r,
+        };
+        Coordinate {
+            ring,
+            position,
+            rotation: 0,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -362,6 +403,52 @@ mod test {
             crimson_rebellion_home_systems(&hex_map),
             vec![&HexPosition::OutsideGalaxy]
         );
+    }
+
+    #[test]
+    fn crimson_rebellion_home_system_is_next_to_its_gate() {
+        let home_system_coordinate = |milty_string: &str| {
+            let hex_map = HexMap::from_milty_string(milty_string, true).expect("to parse");
+            let home_system = hex_map
+                .tiles
+                .iter()
+                .find(|tile| tile.system == "118")
+                .expect("to have the home system");
+            hex_map
+                .outside_galaxy_coordinate(home_system)
+                .map(|coord| (coord.ring, coord.position))
+        };
+
+        assert_eq!(
+            home_system_coordinate("26 27 28 29 30 31 32 33 34 35 94 36 37 38 39 40 41 42"),
+            Some((3, 6))
+        );
+        assert_eq!(
+            home_system_coordinate("26 27 28 29 30 31 32 33 34 94 35 36 37 38 39 40 41 42"),
+            Some((3, 5))
+        );
+        assert_eq!(
+            home_system_coordinate("26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 94"),
+            Some((3, 17))
+        );
+        assert_eq!(
+            home_system_coordinate("26 27 94 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43"),
+            Some((3, 6))
+        );
+    }
+
+    #[test]
+    fn only_the_crimson_rebellion_home_system_has_an_outside_galaxy_coordinate() {
+        let hex_map = HexMap::from_milty_string("94 26 27 28 29 30", true).expect("to parse");
+
+        let systems_with_coordinates = hex_map
+            .tiles
+            .iter()
+            .filter(|tile| hex_map.outside_galaxy_coordinate(tile).is_some())
+            .map(|tile| tile.system.as_str())
+            .collect::<Vec<_>>();
+
+        assert_eq!(systems_with_coordinates, vec!["118"]);
     }
 
     #[test]
