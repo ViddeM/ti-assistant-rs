@@ -26,7 +26,7 @@ players:
       - AntimassDeflectors
       - NeuralMotivator
     relics: []
-    breakthrough: BellumGloriosum
+    breakthrough: ~
     factionState: None
   Bob:
     name: Bob
@@ -41,7 +41,7 @@ players:
       - AntimassDeflectors
       - SarweenTools
     relics: []
-    breakthrough: AutoFactories
+    breakthrough: ~
     factionState: None
   Carol:
     name: Carol

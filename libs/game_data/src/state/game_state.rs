@@ -588,9 +588,8 @@ impl GameState {
 
     /// Give `planet` and its attachments to `owner`, or to nobody, returning the previous owner.
     ///
-    /// Shard of the Throne follows a legendary planet to its new owner, the first player to
-    /// control Mecatol Rex gains the custodians token, and gaining Thunder's Edge unlocks the new
-    /// owner's breakthrough.
+    /// Shard of the Throne follows a legendary planet to its new owner, and the first player to
+    /// control Mecatol Rex gains the custodians token.
     pub fn set_planet_owner(
         &mut self,
         planet: Planet,
@@ -626,12 +625,7 @@ impl GameState {
         if planet.is_mecatol_rex() && self.score.custodians.is_none() {
             self.score.custodians = Some(owner.clone());
         }
-        let gains_breakthrough = planet == Planet::ThundersEdge;
         player.planets.insert(planet, attachments);
-
-        if gains_breakthrough {
-            self.gain_breakthrough(&owner)?;
-        }
 
         Ok(previous_owner)
     }

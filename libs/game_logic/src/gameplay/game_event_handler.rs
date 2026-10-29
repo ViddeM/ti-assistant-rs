@@ -417,7 +417,11 @@ fn try_update_game_state(
             };
             game_state.assert_enabled(&planet)?;
 
-            let previous_owner = game_state.set_planet_owner(planet.clone(), Some(player))?;
+            let previous_owner =
+                game_state.set_planet_owner(planet.clone(), Some(player.clone()))?;
+            if planet == Planet::ThundersEdge {
+                game_state.gain_breakthrough(&player)?;
+            }
 
             let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
             else {
@@ -1923,9 +1927,7 @@ fn try_update_game_state(
             );
 
             if let Some(p) = player {
-                te.progress.insert(slot, p.clone());
-
-                game_state.gain_breakthrough(&p)?;
+                te.progress.insert(slot, p);
             } else {
                 te.progress.remove(&slot);
             }
@@ -2024,7 +2026,8 @@ fn try_update_game_state(
                 won_by: won_by.clone(),
                 placed_in,
             });
-            game_state.set_planet_owner(Planet::ThundersEdge, Some(won_by))?;
+            game_state.set_planet_owner(Planet::ThundersEdge, Some(won_by.clone()))?;
+            game_state.gain_breakthrough(&won_by)?;
             game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(
                 ThundersEdgeProgress::Committed { slot },
             ));

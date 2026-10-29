@@ -277,7 +277,7 @@ players:
     technologies:
       - SarweenTools
     relics: []
-    breakthrough: TheIcon
+    breakthrough: ~
     factionState: None
 speaker: Ann
 tableOrder:

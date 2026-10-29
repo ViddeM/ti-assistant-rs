@@ -191,7 +191,8 @@ pub fn thunders_edge_passing() -> TestGame {
     g
 }
 
-/// Filling and completing the expedition from the admin page doesn't involve the players.
+/// Filling and completing the expedition from the admin page doesn't involve the players, and
+/// gives no breakthroughs.
 pub fn thunders_edge_admin_flow() -> TestGame {
     let mut g = action_phase(three_players().thunders_edge());
     for slot in [
@@ -241,7 +242,8 @@ pub fn thunders_edge_admin_flow() -> TestGame {
             .planets
             .contains_key(&Planet::ThundersEdge)
     );
-    assert!(g.state().players[&p("Bob")].breakthrough.is_some());
+    assert!(g.state().players[&p("Alice")].breakthrough.is_none());
+    assert!(g.state().players[&p("Bob")].breakthrough.is_none());
     g
 }
 
