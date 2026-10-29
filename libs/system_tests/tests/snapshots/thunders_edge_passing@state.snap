@@ -130,4 +130,6 @@ teExpedition:
   progress:
     Resources: Alice
 fractureInPlay: false
+fractureRolls:
+  - Alice
 bookOfLatviniaResearch: ~

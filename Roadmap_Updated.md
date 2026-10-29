@@ -276,7 +276,7 @@
 
 ### Thunder's Edge
  - 🚱 Breakthroughs for each faction (assigning them works, only some of the effects below are handled)
-   - 🚱 Gain breakthrough helper: ✅ on-gain effects, ❌ "roll for the Fracture" prompt `[E2, TE-B3]`
+   - ✅ Gain breakthrough helper: ✅ on-gain effects, ✅ "roll for the Fracture" prompt `[E2, TE-B3]`
    - ❌ Generic breakthrough actions (just a button in the UI) `[TE-A3]`
    - ✅ Crimson Rebellion starts with its breakthrough `[TE-A1]`
    - ✅ I.I.H.Q. Modernization (gain Custodia Vigilia planet) `[TE-A4]`

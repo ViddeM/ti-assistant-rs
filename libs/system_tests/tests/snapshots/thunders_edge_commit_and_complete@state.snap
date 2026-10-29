@@ -128,4 +128,8 @@ teExpedition:
     TechSpecialityPlanet: Carol
     TradeGoods: Alice
 fractureInPlay: false
+fractureRolls:
+  - Alice
+  - Bob
+  - Carol
 bookOfLatviniaResearch: ~

@@ -286,7 +286,7 @@ Verified OK:
 | Item | Sev | Issue | Location |
 |---|---|---|---|
 | Firmament / Obsidian | 🔴 | Starts with 4 planets (see top issue 3) | `:175-186` ✔ |
-| Crimson Rebellion | 🟠 | Should **start with its breakthrough unlocked** (and roll for the Fracture during setup); the code starts every faction at `breakthrough: None`. **✅ Fixed** (the Fracture roll is action plan TE-B3) | `state/player.rs` (`NewPlayer::setup`) ✔ |
+| Crimson Rebellion | 🟠 | Should **start with its breakthrough unlocked** (and roll for the Fracture during setup); the code starts every faction at `breakthrough: None`. **✅ Fixed**, and it rolls for the Fracture when the game starts (action plan TE-B3) | `state/player.rs` (`NewPlayer::setup`) ✔ |
 | Deepwrought Scholarate | ⚪ | Starting-tech choices ignore prerequisites; the card says "research technology twice" | `:333-341` |
 | Nekro Virus | ⚪ | Valefar Assimilator X/Y not modelled (see §7) | `:211` |
 | Council Keleres | — | Starts with no planets; they're chosen in setup through `SetupTheTribunii`, so this is by design (the TODO at `:176` is stale) | |

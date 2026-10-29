@@ -125,4 +125,5 @@ teExpedition:
     placed_in: "114"
   progress: {}
 fractureInPlay: true
+fractureRolls: []
 bookOfLatviniaResearch: ~

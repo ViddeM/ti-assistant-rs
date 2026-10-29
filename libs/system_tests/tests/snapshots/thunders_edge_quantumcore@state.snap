@@ -121,4 +121,7 @@ teExpedition:
   completed: ~
   progress: {}
 fractureInPlay: false
+fractureRolls:
+  - Alice
+  - Bob
 bookOfLatviniaResearch: ~

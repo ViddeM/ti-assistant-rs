@@ -365,6 +365,14 @@ fn try_update_game_state(
                 )
             );
 
+            let with_breakthrough = (game_state.players.iter())
+                .filter(|(_, player)| player.breakthrough.is_some())
+                .map(|(id, _)| id.clone())
+                .collect::<Vec<_>>();
+            for player in with_breakthrough {
+                game_state.roll_for_the_fracture(&player);
+            }
+
             game_state.change_phase(Phase::Strategy, timestamp)?;
         }
         Event::TakeStrategyCard { player, card } => {
@@ -2078,7 +2086,25 @@ fn try_update_game_state(
                 "No change provided in event"
             );
 
-            game_state.fracture_in_play = in_play;
+            if in_play {
+                game_state.fracture_enters_play();
+            } else {
+                game_state.fracture_in_play = false;
+            }
+        }
+        Event::RollForTheFracture {
+            player,
+            entered_play,
+        } => {
+            ensure!(
+                game_state.fracture_rolls.contains(&player),
+                "{player} has no roll for the Fracture"
+            );
+
+            game_state.fracture_rolls.remove(&player);
+            if entered_play {
+                game_state.fracture_enters_play();
+            }
         }
     }
 

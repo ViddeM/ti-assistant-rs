@@ -15,7 +15,9 @@ use crate::{
         dropdown::{PlayerDropdown, SystemDropdown},
     },
     data::{event_context::EventContext, game_context::GameContext},
-    views::thunders_edge_view_mode::expedition_token::ExpeditionToken,
+    views::{
+        fracture_rolls::FractureRolls, thunders_edge_view_mode::expedition_token::ExpeditionToken,
+    },
 };
 
 mod breakthrough;
@@ -204,6 +206,7 @@ fn Fracture() -> Element {
                     "Put in play"
                 }
             }
+            FractureRolls {}
         }
     }
 }

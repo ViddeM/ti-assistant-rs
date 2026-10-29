@@ -341,4 +341,6 @@ teExpedition:
     placed_in: "114"
   progress: {}
 fractureInPlay: false
+fractureRolls:
+  - Cid
 bookOfLatviniaResearch: ~

@@ -245,6 +245,7 @@ pub fn thunders_edge_admin_flow() -> TestGame {
     );
     assert!(g.state().players[&p("Alice")].breakthrough.is_none());
     assert!(g.state().players[&p("Bob")].breakthrough.is_none());
+    assert!(g.state().fracture_rolls.is_empty());
     g
 }
 
@@ -455,8 +456,10 @@ pub fn thunders_edge_styx_victory_point() -> TestGame {
     g
 }
 
-/// The Fracture planets aren't on the board until the Fracture enters play: from the admin page,
-/// or when the Cabal gains Al'Raith Ix Ianovar.
+/// The Fracture planets aren't on the board until the Fracture enters play. A player who gains
+/// their breakthrough while it isn't in play rolls for it, and it enters play on a 1 or 10. It
+/// can also be put in play from the admin page, and the Cabal's Al'Raith Ix Ianovar puts it in
+/// play.
 pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
     let mut g = TestGame::builder()
         .player("Alice", Faction::FederationOfSol)
@@ -478,12 +481,23 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
         ("Dave", StrategyCard::Imperial),
     ]);
     let in_play = |g: &TestGame| g.state().fracture_in_play;
+    let rolls = |g: &TestGame| g.state().fracture_rolls.clone();
+    let roll = |player: &str, entered_play| Event::RollForTheFracture {
+        player: p(player),
+        entered_play,
+    };
 
     g.turn("Alice")
         .tactical()
         .expect_rejected(take("Alice", Planet::Cocytus), "isn't on the board")
         .commit()
+        .commit_to_expedition(TEExpeditionSlot::Resources)
         .end_turn();
+    assert_eq!(rolls(&g), [p("Alice")].into());
+    g.expect_rejected(roll("Bob", true), "Bob has no roll for the Fracture");
+    g.apply(roll("Alice", false));
+    assert!(rolls(&g).is_empty());
+    assert!(!in_play(&g));
 
     g.expect_rejected(
         Event::SetFractureInPlay { in_play: false },
@@ -494,19 +508,77 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
     g.apply(Event::SetFractureInPlay { in_play: false });
     assert!(!in_play(&g));
 
+    g.turn("Bob").gain_relic(Relic::TheQuantumcore).end_turn();
+    assert_eq!(rolls(&g), [p("Bob")].into());
+    g.apply(roll("Bob", true));
+    assert!(in_play(&g));
+    assert!(rolls(&g).is_empty());
+
+    g.turn("Carol")
+        .action_card(
+            ActionCard::Brilliance,
+            Some(ActionCardAction::Brilliance {
+                player: Some(p("Carol")),
+            }),
+        )
+        .end_turn();
+    assert!(g.player("Carol").breakthrough.is_some());
+    assert!(rolls(&g).is_empty());
+
+    g.apply(Event::SetFractureInPlay { in_play: false });
     g.apply(Event::SetBreakthrough {
         player: p("Dave"),
         breakthrough: Some(Breakthrough::AlRaithIxIanovar),
     });
     assert!(in_play(&g));
+    assert!(rolls(&g).is_empty());
 
-    g.turn("Bob")
+    g.turn("Dave")
         .tactical()
         .take(Planet::Cocytus)
         .commit()
         .end_turn();
-    assert!(g.player("Bob").planets.contains_key(&Planet::Cocytus));
+    assert!(g.player("Dave").planets.contains_key(&Planet::Cocytus));
     g
+}
+
+/// Once the Fracture enters play, however that happens, nobody rolls for it anymore.
+#[test]
+fn the_fracture_entering_play_clears_every_roll() {
+    let enters_play = [
+        Event::RollForTheFracture {
+            player: p("Alice"),
+            entered_play: true,
+        },
+        Event::SetFractureInPlay { in_play: true },
+        Event::SetBreakthrough {
+            player: p("Carol"),
+            breakthrough: Some(Breakthrough::AlRaithIxIanovar),
+        },
+    ];
+    for event in enters_play {
+        let mut g = action_phase(
+            TestGame::builder()
+                .player("Alice", Faction::FederationOfSol)
+                .player("Bob", Faction::EmiratesOfHacan)
+                .player("Carol", Faction::VuilRaithCabal)
+                .pok()
+                .thunders_edge(),
+        );
+        g.apply(Event::SetBreakthrough {
+            player: p("Alice"),
+            breakthrough: Some(Breakthrough::BellumGloriosum),
+        })
+        .apply(Event::SetBreakthrough {
+            player: p("Bob"),
+            breakthrough: Some(Breakthrough::AutoFactories),
+        });
+        assert_eq!(g.state().fracture_rolls, [p("Alice"), p("Bob")].into());
+
+        g.apply(event);
+        assert!(g.state().fracture_in_play);
+        assert!(g.state().fracture_rolls.is_empty());
+    }
 }
 
 /// Gaining a breakthrough applies its on-gain effects: I.I.H.Q. Modernization gives the Keleres
@@ -590,7 +662,7 @@ pub fn thunders_edge_quantumcore() -> TestGame {
     g
 }
 
-/// The Crimson Rebellion starts with its breakthrough unlocked.
+/// The Crimson Rebellion starts with its breakthrough unlocked, so it rolls for the Fracture.
 #[test]
 fn the_crimson_rebellion_starts_with_its_breakthrough() {
     let g = action_phase(
@@ -605,6 +677,7 @@ fn the_crimson_rebellion_starts_with_its_breakthrough() {
         Some(Breakthrough::ResonanceGenerator)
     );
     assert_eq!(g.player("Bob").breakthrough, None);
+    assert_eq!(g.state().fracture_rolls, [p("Alice")].into());
 }
 
 /// Only the planets on the shown side of the Firmament / The Obsidian home system tile are on

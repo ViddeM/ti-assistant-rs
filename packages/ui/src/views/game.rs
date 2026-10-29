@@ -21,10 +21,10 @@ use crate::{
         player_view::PlayerViewContext, view_mode::ViewMode,
     },
     views::{
-        info_box::InfoBox, laws_view_mode::LawsViewMode, map_view_mode::MapViewMode,
-        phase_view::PhaseView, planet_view_mode::PlanetViewMode, players_sidebar::PlayersSidebar,
-        score_view_mode::ScoreViewMode, tech_view_mode::TechViewMode,
-        thunders_edge_view_mode::ThundersEdgeViewMode,
+        fracture_rolls::FractureRolls, info_box::InfoBox, laws_view_mode::LawsViewMode,
+        map_view_mode::MapViewMode, phase_view::PhaseView, planet_view_mode::PlanetViewMode,
+        players_sidebar::PlayersSidebar, score_view_mode::ScoreViewMode,
+        tech_view_mode::TechViewMode, thunders_edge_view_mode::ThundersEdgeViewMode,
     },
 };
 
@@ -193,7 +193,10 @@ fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
         ViewMode::Game => rsx! {
             div { class: "game-page-container",
                 {sidebar}
-                div { class: "phase-container", PhaseView {} }
+                div { class: "game-main-column",
+                    FractureRolls {}
+                    div { class: "phase-container", PhaseView {} }
+                }
             }
         },
         ViewMode::Score => rsx! {

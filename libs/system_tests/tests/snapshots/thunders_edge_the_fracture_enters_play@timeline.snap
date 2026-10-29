@@ -21,11 +21,20 @@ source: libs/system_tests/src/check.rs
   17 CompleteStrategyPhase                    r1 Action             Alice
   18 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
   19 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
-  20 EndTurn(Alice)                           r1 Action             Bob
-  21 SetFractureInPlay                        r1 Action             Bob
-  22 SetFractureInPlay                        r1 Action             Bob
-  23 SetBreakthrough(Dave)                    r1 Action             Bob
-  24 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
-  25 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob
-  26 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
-  27 EndTurn(Bob)                             r1 Action             Carol
+  20 CommitToThundersEdgeExpedition(Alice)    r1 EndActionTurn      Alice
+  21 EndTurn(Alice)                           r1 Action             Bob
+  22 RollForTheFracture(Alice)                r1 Action             Bob
+  23 SetFractureInPlay                        r1 Action             Bob
+  24 SetFractureInPlay                        r1 Action             Bob
+  25 GainRelicAction(Bob)                     r1 EndActionTurn      Bob
+  26 EndTurn(Bob)                             r1 Action             Carol
+  27 RollForTheFracture(Bob)                  r1 Action             Carol
+  28 ActionCardActionBegin(Carol)             r1 ActionCardAction   Carol
+  29 ActionCardActionCommit(Carol)            r1 EndActionTurn      Carol
+  30 EndTurn(Carol)                           r1 Action             Dave
+  31 SetFractureInPlay                        r1 Action             Dave
+  32 SetBreakthrough(Dave)                    r1 Action             Dave
+  33 TacticalActionBegin(Dave)                r1 TacticalAction     Dave
+  34 TacticalActionTakePlanet(Dave)           r1 TacticalAction     Dave
+  35 TacticalActionCommit(Dave)               r1 EndActionTurn      Dave
+  36 EndTurn(Dave)                            r1 Action             Alice

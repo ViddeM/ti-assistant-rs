@@ -135,4 +135,5 @@ teExpedition:
     TechSpecialityPlanet: Alice
     TradeGoods: Alice
 fractureInPlay: false
+fractureRolls: []
 bookOfLatviniaResearch: ~

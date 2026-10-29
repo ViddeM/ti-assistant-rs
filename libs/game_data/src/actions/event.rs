@@ -522,6 +522,15 @@ pub enum Event {
         in_play: bool,
     },
 
+    /// The result of the roll for the Fracture by a player who gained their breakthrough while it
+    /// wasn't in play.
+    RollForTheFracture {
+        /// The player who rolled.
+        player: PlayerId,
+        /// Whether they rolled a 1 or 10, so the Fracture entered play.
+        entered_play: bool,
+    },
+
     /// Set a breakthrough for a player.
     SetBreakthrough {
         /// The player for whom the breakthrough is being set.
