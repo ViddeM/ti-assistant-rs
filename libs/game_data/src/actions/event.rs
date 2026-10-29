@@ -516,6 +516,12 @@ pub enum Event {
         new_completion: Option<TECompletion>,
     },
 
+    /// Put the Fracture in or out of play (admin).
+    SetFractureInPlay {
+        /// Whether the Fracture is in play.
+        in_play: bool,
+    },
+
     /// Set a breakthrough for a player.
     SetBreakthrough {
         /// The player for whom the breakthrough is being set.

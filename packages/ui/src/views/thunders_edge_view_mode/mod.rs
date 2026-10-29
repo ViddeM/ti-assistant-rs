@@ -36,6 +36,7 @@ pub fn ThundersEdgeViewMode() -> Element {
         if let Some(thunders_edge) = thunders_edge() {
             Expedition { progress: thunders_edge.progress.clone() }
             Completed { completed: thunders_edge.completed.clone() }
+            Fracture {}
             Breakthroughs {}
         } else {
             div { class: "card te-error-card",
@@ -167,6 +168,41 @@ fn Completed(completed: ReadSignal<Option<TECompletion>>) -> Element {
                         });
                 },
                 "Remove"
+            }
+        }
+    }
+}
+
+#[component]
+fn Fracture() -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let in_play = use_memo(move || gc.game_state().fracture_in_play);
+
+    rsx! {
+        div { class: "card column margin-top",
+            h3 { "The Fracture" }
+            p {
+                if in_play() {
+                    "The Fracture is in play."
+                } else {
+                    "The Fracture isn't in play."
+                }
+            }
+            Button {
+                class: "margin-top",
+                onclick: move |_| {
+                    event
+                        .send_event(Event::SetFractureInPlay {
+                            in_play: !in_play(),
+                        });
+                },
+                if in_play() {
+                    "Remove from play"
+                } else {
+                    "Put in play"
+                }
             }
         }
     }

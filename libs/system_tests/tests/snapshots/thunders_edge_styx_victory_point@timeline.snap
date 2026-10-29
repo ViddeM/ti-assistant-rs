@@ -16,12 +16,13 @@ source: libs/system_tests/src/check.rs
   12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
   13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
   14 CompleteStrategyPhase                    r1 Action             Alice
-  15 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
-  16 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice      Alice=1
-  17 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
-  18 EndTurn(Alice)                           r1 Action             Bob
-  19 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
-  20 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob        Alice=0 Bob=1
-  21 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
-  22 EndTurn(Bob)                             r1 Action             Carol
-  23 SetPlanetOwner                           r1 Action             Carol      Bob=0
+  15 SetFractureInPlay                        r1 Action             Alice
+  16 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  17 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice      Alice=1
+  18 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  19 EndTurn(Alice)                           r1 Action             Bob
+  20 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  21 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob        Alice=0 Bob=1
+  22 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  23 EndTurn(Bob)                             r1 Action             Carol
+  24 SetPlanetOwner                           r1 Action             Carol      Bob=0

@@ -132,6 +132,10 @@ pub struct GameState {
     /// The current expedition for Thunder's edge or None if thunder's edge is not in play.
     pub te_expedition: Option<TEExpedition>,
 
+    /// Whether the Fracture has entered play. Until then its planets (Cocytus, Lethe, Phlegethon
+    /// and Styx) aren't on the board.
+    pub fracture_in_play: bool,
+
     /// The player (if any) that gained the Book of Latvinia and may still research up to 2
     /// technologies with no prerequisites.
     pub book_of_latvinia_research: Option<PlayerId>,
@@ -146,8 +150,8 @@ pub enum PlanetLocation {
     /// The planet is a token on the board, in the given system if that is tracked.
     Token(Option<SystemId>),
     /// The planet hasn't been spawned (Mirage, Avernus, Thunder's Edge), only exists as a card
-    /// (Custodia Vigilia) or is on the hidden side of the Firmament / The Obsidian home system
-    /// tile.
+    /// (Custodia Vigilia), is on the hidden side of the Firmament / The Obsidian home system tile
+    /// or is in the Fracture before it's in play.
     NotOnBoard,
 }
 
@@ -556,9 +560,15 @@ impl GameState {
     /// Planets without a system tile are only on the board once they have been placed. Where
     /// Mirage and Avernus are isn't tracked, Thunder's Edge is where the expedition placed it and
     /// Custodia Vigilia only exists as a card. Only the planets on the shown side of the
-    /// Firmament / The Obsidian home system tile are on the board.
+    /// Firmament / The Obsidian home system tile are on the board. The Fracture planets are only
+    /// on the board once the Fracture is in play.
     pub fn planet_location(&self, planet: &Planet) -> PlanetLocation {
         match planet {
+            Planet::Cocytus | Planet::Lethe | Planet::Phlegethon | Planet::Styx
+                if !self.fracture_in_play =>
+            {
+                PlanetLocation::NotOnBoard
+            }
             // Only one side of the Firmament / The Obsidian home system tile (96A / 96B) is on
             // the board.
             Planet::Cronos | Planet::Tallin if self.obsidian_in_play() => {
@@ -683,6 +693,9 @@ impl GameState {
             }
             Breakthrough::StellarGenesis => {
                 self.set_planet_owner(Planet::Avernus, Some(player.clone()))?;
+            }
+            Breakthrough::AlRaithIxIanovar => {
+                self.fracture_in_play = true;
             }
             _ => {}
         }

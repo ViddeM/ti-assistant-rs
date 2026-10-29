@@ -283,7 +283,7 @@
    - ✅ Stellar Genesis (gain Avernus planet) `[TE-A5]`
    - ❌ Vaults of the Heir (Action: purge tech to gain relic) `[TE-A6]`
    - ❌ Visionaria Select (other players research, you gain the same techs) `[TE-A7]`
-   - ❌ Al'Raith Ix Ianovar (the Fracture enters play) `[TE-A8]`
+   - ✅ Al'Raith Ix Ianovar (the Fracture enters play) `[TE-A8]`
    - 👺 Resonance Generator, Void Tether (breaches / adjacency; generic action button only)
    - 👺 N'orr Supremacy (research from the tech page)
    - ❌ Show breakthrough description + synergy `[TE-A2]`
@@ -308,9 +308,9 @@
    - 👺 Avernus (Action, nothing to track)
    - ❌ Faunus (gain control of a planet when you pass) `[TE-C3]`
    - 👺 Mecatol Rex Ω, Ordinian, Emelpar, Garbozia, Industrex, Tempesta (text only)
- - ❌ The Fracture
+ - 🚱 The Fracture
    - ❌ Fix Fracture tile data (Known bugs)
-   - ❌ "Fracture in play" flag + relic prompt when taking Fracture planets `[TE-B]`
+   - 🚱 "Fracture in play" flag + relic prompt when taking Fracture planets: ✅ flag, ❌ relic prompt `[TE-B]`
  - ✅ Updated codex content: ΩΩ techs ✅ (Codex IV), Ω action cards ✅, ΩΩ leaders ✅
  - ✅ Updated strategy cards: Construction ΩΩ, Warfare Ω (image ✅, secondary hint ✅) `[TE-H]`
  - ✅ New action cards (14 unique / 20 cards) + Ω versions of 8 Codex I cards, which replace the old ones when TE is enabled

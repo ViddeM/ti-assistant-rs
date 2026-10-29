@@ -24,6 +24,7 @@ scenarios![
     firmament_becomes_obsidian,
     thunders_edge_take_planets_without_tile,
     thunders_edge_styx_victory_point,
+    thunders_edge_the_fracture_enters_play,
     thunders_edge_breakthrough_planets,
     thunders_edge_action_cards,
     thunders_edge_overrule_and_strategize,
@@ -365,10 +366,10 @@ fn activated_system(g: &TestGame) -> Option<SystemId> {
     activated_system.clone()
 }
 
-/// The Fracture planets are in their own systems. Planets without a system tile can be taken
-/// once they are on the board: Thunder's Edge where the expedition placed it, and Avernus once
-/// someone controls it. Custodia Vigilia only exists as a card. Taking Thunder's Edge unlocks
-/// the breakthrough.
+/// The Fracture planets are in their own systems, once the Fracture is in play. Planets without a
+/// system tile can be taken once they are on the board: Thunder's Edge where the expedition
+/// placed it, and Avernus once someone controls it. Custodia Vigilia only exists as a card.
+/// Taking Thunder's Edge unlocks the breakthrough.
 pub fn thunders_edge_take_planets_without_tile() -> TestGame {
     let mut g = action_phase(three_players().thunders_edge());
     let system = a_valid_system();
@@ -382,6 +383,8 @@ pub fn thunders_edge_take_planets_without_tile() -> TestGame {
             take("Alice", Planet::CustodiaVigiliaOmega),
             "isn't on the board",
         )
+        .expect_rejected(take("Alice", Planet::Lethe), "isn't on the board")
+        .apply(Event::SetFractureInPlay { in_play: true })
         .take(Planet::Lethe)
         .take(Planet::Phlegethon);
     assert_eq!(activated_system(&alice), Some("126".to_string()));
@@ -428,6 +431,8 @@ pub fn thunders_edge_styx_victory_point() -> TestGame {
     let points = |g: &TestGame| [g.points("Alice"), g.points("Bob")];
     assert_eq!(points(&g), [0, 0]);
 
+    g.apply(Event::SetFractureInPlay { in_play: true });
+
     g.turn("Alice")
         .tactical()
         .take(Planet::Styx)
@@ -447,6 +452,60 @@ pub fn thunders_edge_styx_victory_point() -> TestGame {
         planet: Planet::Styx,
     });
     assert_eq!(points(&g), [0, 0]);
+    g
+}
+
+/// The Fracture planets aren't on the board until the Fracture enters play: from the admin page,
+/// or when the Cabal gains Al'Raith Ix Ianovar.
+pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
+    let mut g = TestGame::builder()
+        .player("Alice", Faction::FederationOfSol)
+        .player("Bob", Faction::EmiratesOfHacan)
+        .player("Carol", Faction::XxchaKingdom)
+        .player("Dave", Faction::VuilRaithCabal)
+        .pok()
+        .codex()
+        .thunders_edge()
+        .start();
+    g.strategy_phase(&[
+        ("Alice", StrategyCard::Leadership),
+        ("Bob", StrategyCard::Diplomacy),
+        ("Carol", StrategyCard::Politics),
+        ("Dave", StrategyCard::Construction),
+        ("Alice", StrategyCard::Trade),
+        ("Bob", StrategyCard::Warfare),
+        ("Carol", StrategyCard::Technology),
+        ("Dave", StrategyCard::Imperial),
+    ]);
+    let in_play = |g: &TestGame| g.state().fracture_in_play;
+
+    g.turn("Alice")
+        .tactical()
+        .expect_rejected(take("Alice", Planet::Cocytus), "isn't on the board")
+        .commit()
+        .end_turn();
+
+    g.expect_rejected(
+        Event::SetFractureInPlay { in_play: false },
+        "No change provided",
+    );
+    g.apply(Event::SetFractureInPlay { in_play: true });
+    assert!(in_play(&g));
+    g.apply(Event::SetFractureInPlay { in_play: false });
+    assert!(!in_play(&g));
+
+    g.apply(Event::SetBreakthrough {
+        player: p("Dave"),
+        breakthrough: Some(Breakthrough::AlRaithIxIanovar),
+    });
+    assert!(in_play(&g));
+
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Cocytus)
+        .commit()
+        .end_turn();
+    assert!(g.player("Bob").planets.contains_key(&Planet::Cocytus));
     g
 }
 

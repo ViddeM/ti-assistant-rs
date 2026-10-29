@@ -122,4 +122,5 @@ playersPlayTime:
 currentTurnStartTime: "2025-01-01T12:45:00Z"
 naaluTelepathy: Alice
 teExpedition: ~
+fractureInPlay: false
 bookOfLatviniaResearch: ~

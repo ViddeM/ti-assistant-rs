@@ -386,6 +386,13 @@ impl<'g> Tactical<'g> {
         self
     }
 
+    /// Apply a raw event in the middle of the action.
+    #[track_caller]
+    pub fn apply(self, event: Event) -> Self {
+        self.turn.game.apply(event);
+        self
+    }
+
     /// Apply an event that must be rejected, see [TestGame::expect_rejected].
     #[track_caller]
     pub fn expect_rejected(self, event: Event, contains: &str) -> Self {

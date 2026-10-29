@@ -2071,6 +2071,15 @@ fn try_update_game_state(
                     .set_planet_owner(Planet::ThundersEdge, new_completion.map(|c| c.won_by))?;
             }
         }
+        Event::SetFractureInPlay { in_play } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            ensure!(
+                game_state.fracture_in_play != in_play,
+                "No change provided in event"
+            );
+
+            game_state.fracture_in_play = in_play;
+        }
     }
 
     // TODO: maybe not recalculate this all the time?

@@ -121,4 +121,5 @@ playersPlayTime:
 currentTurnStartTime: "2025-01-01T13:00:00Z"
 naaluTelepathy: ~
 teExpedition: ~
+fractureInPlay: false
 bookOfLatviniaResearch: ~

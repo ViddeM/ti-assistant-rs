@@ -17,17 +17,18 @@ source: libs/system_tests/src/check.rs
   13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
   14 CompleteStrategyPhase                    r1 Action             Alice
   15 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
-  16 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  16 SetFractureInPlay                        r1 TacticalAction     Alice
   17 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
-  18 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
-  19 EndTurn(Alice)                           r1 Action             Bob
-  20 SetThundersEdgeCompletion                r1 Action             Bob
-  21 SetPlanetOwner(Alice)                    r1 Action             Bob
-  22 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
-  23 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob
-  24 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
-  25 EndTurn(Bob)                             r1 Action             Carol
-  26 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
-  27 TacticalActionTakePlanet(Carol)          r1 TacticalAction     Carol
-  28 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
-  29 EndTurn(Carol)                           r1 Action             Alice
+  18 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  19 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  20 EndTurn(Alice)                           r1 Action             Bob
+  21 SetThundersEdgeCompletion                r1 Action             Bob
+  22 SetPlanetOwner(Alice)                    r1 Action             Bob
+  23 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  24 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob
+  25 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  26 EndTurn(Bob)                             r1 Action             Carol
+  27 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
+  28 TacticalActionTakePlanet(Carol)          r1 TacticalAction     Carol
+  29 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
+  30 EndTurn(Carol)                           r1 Action             Alice

@@ -340,4 +340,5 @@ teExpedition:
     won_by: Eve
     placed_in: "114"
   progress: {}
+fractureInPlay: false
 bookOfLatviniaResearch: ~

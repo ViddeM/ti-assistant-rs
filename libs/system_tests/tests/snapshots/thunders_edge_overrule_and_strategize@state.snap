@@ -123,4 +123,5 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+fractureInPlay: false
 bookOfLatviniaResearch: ~

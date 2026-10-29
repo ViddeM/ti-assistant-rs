@@ -120,4 +120,5 @@ teExpedition:
   completed: ~
   progress:
     Resources: Alice
+fractureInPlay: false
 bookOfLatviniaResearch: ~
