@@ -139,6 +139,7 @@ fn KeleresTechChoice(player_id: PlayerId) -> Element {
             .get_starting_tech_options(&gc.game_state())
             .expect("Council keleres to have starting tech options");
         techs.sort();
+        techs.dedup();
         techs
     });
 
