@@ -54,7 +54,9 @@ pub fn MainMenu<R: PartialEq + Clone + 'static + Routable>(
                 class: "game-id-input-content",
                 onsubmit: move |e: FormEvent| {
                     e.prevent_default();
-                    nav.push(join_game(game_id()));
+                    if game_id().len() == 8 {
+                        nav.push(join_game(game_id()));
+                    }
                 },
                 div { class: "source-code-pro-font game-id-container",
                     input {
