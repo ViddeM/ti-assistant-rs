@@ -114,6 +114,7 @@ fn CleanNewGameView(
         div { class: "create-game-row",
             input {
                 r#type: "checkbox",
+                id: "pok_cb",
                 name: "pok_cb",
                 onchange: move |_| pok.toggle(),
             }
@@ -123,6 +124,7 @@ fn CleanNewGameView(
         div { class: "create-game-row",
             input {
                 r#type: "checkbox",
+                id: "pok_codI_cb",
                 name: "pok_codI_cb",
                 onchange: move |_| codexI.toggle(),
             }
@@ -132,6 +134,7 @@ fn CleanNewGameView(
         div { class: "create-game-row",
             input {
                 r#type: "checkbox",
+                id: "pok_codII_cb",
                 name: "pok_codII_cb",
                 onchange: move |_| codexII.toggle(),
             }
@@ -141,6 +144,7 @@ fn CleanNewGameView(
         div { class: "create-game-row",
             input {
                 r#type: "checkbox",
+                id: "pok_codIII_cb",
                 name: "pok_codIII_cb",
                 onchange: move |_| codexIII.toggle(),
             }
@@ -150,6 +154,7 @@ fn CleanNewGameView(
         div { class: "create-game-row",
             input {
                 r#type: "checkbox",
+                id: "pok_codIV_cb",
                 name: "pok_codIV_cb",
                 onchange: move |_| codexIV.toggle(),
             }
@@ -159,6 +164,7 @@ fn CleanNewGameView(
         div { class: "create-game-row",
             input {
                 r#type: "checkbox",
+                id: "te_cb",
                 name: "te_cb",
                 onchange: move |_| te.toggle(),
             }
