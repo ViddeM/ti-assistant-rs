@@ -42,6 +42,7 @@
  - ✅ Planets
    - ✅ Resource Tracking
    - ✅ Planet attachments (PoK)
+ - ✅ Relics view (give relics to players or take them away) `[E4]`
  - ❌ Score
    - ✅ Objectives (Stage I and II)
    - ✅ Custodians (Mecatol Rex)
@@ -87,7 +88,7 @@
  - ❌ Leaders
    - ✅ Play ACTION leaders
    - ❌ Track purged heroes (used heroes stay playable) `[E6]`
-   - ❌ Leader actions with data (Ta Zern, Xxekir Grom, Ul, Rin, …) `[E6]`
+   - ❌ Leader actions with data (Ta Zern, Xxekir Grom, Ul, Rin, Hesh and Prit, …; Hesh and Prit's relic goes through the Relics view) `[E6]`
  - ✅ Strategy cards (speaker handling etc)
    - ✅ Always display the correct variant (`StrategyCard::version`) `[TE-H]`
  - ✅ Real names for things
@@ -291,7 +292,7 @@
    - ✅ The Quantumcore (gain breakthrough when gained) `[TE-D1]`
    - ❌ The Silver Flame (roll: +1 VP or lose home system / can't score publics) `[TE-D2]`
    - ❌ The Triad (badge only, relic fragments aren't tracked) `[TE-D3]`
-   - 🚱 Non-action "gain relic" event (Fracture planets, Vaults, Cultural Exchange …) (helper only) `[E4]`
+   - ✅ Non-action "gain relic" event (Fracture planets, Vaults, Cultural Exchange …) (the Relics view) `[E4]`
  - 🚱 New factions (missing unit upgrades; ✅ Firmament planet bug, ✅ Plane Splitter prereqs)
    - ❌ Firmament "Plots within Plots" (no VP for scoring others' secrets, plots enable Puppets of the Blade) `[TE-F2]`
    - ❌ Deepwrought Radical Advancement tech swap (optional) `[TE-F3]`

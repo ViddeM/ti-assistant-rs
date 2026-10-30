@@ -1694,6 +1694,10 @@ fn try_update_game_state(
 
             game_state.score.book_of_latvinia = player;
         }
+        Event::SetRelicOwner { relic, player } => {
+            game_state.assert_enabled(&relic)?;
+            game_state.set_relic_owner(relic, player)?;
+        }
         Event::ResearchBookOfLatviniaTechs {
             player,
             technologies,

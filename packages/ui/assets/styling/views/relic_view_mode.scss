@@ -1,0 +1,79 @@
+@import "../vars.scss";
+
+.relic-view-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > :first-child {
+    margin-bottom: $margin-large;
+  }
+}
+
+.player-relic-cards-container {
+  width: 100%;
+  max-width: 1400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (min-width: 700px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-around;
+  }
+}
+
+.player-relics-table-container {
+  padding: $padding;
+  padding-top: 0;
+  margin: $margin-large;
+}
+
+.player-relics-table {
+  width: 320px;
+  border-collapse: collapse;
+
+  & td:nth-child(1) {
+    width: 35px;
+  }
+}
+
+.player-name-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.relic-row {
+  > td {
+    border-top: 2px solid black;
+  }
+}
+
+.remove-relic-button {
+  border: none;
+  background-color: inherit;
+  color: black;
+  height: 16px;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  :hover {
+    color: #500000;
+  }
+}
+
+.give-relic-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: $margin-large 0;
+  > * {
+    margin-bottom: $margin-large;
+  }
+}

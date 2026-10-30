@@ -54,6 +54,7 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
         }
     });
 
+    let relics_enabled = use_memo(move || !gc.game_options().relics.is_empty());
     let te_enabled = use_memo(move || gc.game_state().game_settings.expansions.thunders_edge);
 
     rsx! {
@@ -66,6 +67,9 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
                 ViewModeButton { view_mode: ViewMode::Score, current: view_mode }
                 ViewModeButton { view_mode: ViewMode::Techs, current: view_mode }
                 ViewModeButton { view_mode: ViewMode::Planets, current: view_mode }
+                if relics_enabled() {
+                    ViewModeButton { view_mode: ViewMode::Relics, current: view_mode }
+                }
                 ViewModeButton { view_mode: ViewMode::Laws, current: view_mode }
                 ViewModeButton { view_mode: ViewMode::Map, current: view_mode }
             }
