@@ -35,6 +35,11 @@
   @media (min-width: $width-medium) {
     max-width: 35rem;
   }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
 }
 
 @keyframes info-modal-bg-appear {
