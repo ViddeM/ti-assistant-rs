@@ -12,6 +12,7 @@ scenarios![
     agenda_elect_law_and_secret_objective,
     agenda_override_outside_agenda_phase,
     agenda_elect_planet_with_trait,
+    agenda_minister_of_antiques,
 ];
 
 fn vote(player: &str, outcome: AgendaElect, votes: u16) -> Event {
@@ -327,5 +328,65 @@ pub fn agenda_elect_planet_with_trait() -> TestGame {
         g.state().laws.get(&Agenda::ResearchTeamCybernetic),
         Some(&wellon)
     );
+    g
+}
+
+/// The player elected for Minister of Antiques gains 1 relic, or none if there is none left,
+/// before anything else can happen. This also holds when the agenda is resolved outside the agenda
+/// phase.
+pub fn agenda_minister_of_antiques() -> TestGame {
+    let mut g = agenda_phase(three_players().pok());
+    let gain = |player: &str, relic: Option<Relic>| Event::GainMinisterOfAntiquesRelic {
+        player: p(player),
+        relic,
+    };
+    g.apply(Event::SetRelicOwner {
+        relic: Relic::StellarConverter,
+        player: Some(p("Carol")),
+    });
+
+    g.agenda(Agenda::MinisterOfAntiques)
+        .vote_all(elect("Bob"), 1)
+        .resolve_expected();
+    assert_eq!(g.state().minister_of_antiques_relic, Some(p("Bob")));
+
+    g.expect_rejected(
+        Event::RevealAgenda {
+            agenda: Agenda::ConventionsOfWar,
+        },
+        "Bob must gain their Minister of Antiques relic first",
+    )
+    .expect_rejected(
+        gain("Alice", Some(Relic::TheCodex)),
+        "Alice has no Minister of Antiques relic",
+    )
+    .expect_rejected(
+        gain("Bob", Some(Relic::StellarConverter)),
+        "already owned by another player",
+    )
+    .apply(gain("Bob", Some(Relic::TheCodex)));
+    assert!(g.player("Bob").relics.contains(&Relic::TheCodex));
+    assert_eq!(g.state().minister_of_antiques_relic, None);
+
+    g.agenda(Agenda::ConventionsOfWar)
+        .vote_all(FOR, 1)
+        .resolve_expected();
+    g.complete_agenda_phase().strategy_phase(SIMPLE_PICKS);
+
+    let carol_relics = g.player("Carol").relics.clone();
+    g.apply(Event::AddAgendaBegin {
+        agenda: Agenda::MinisterOfAntiques,
+    })
+    .apply(Event::AddAgendaResolve {
+        elected_outcome: elect("Carol"),
+    });
+    assert_eq!(g.state().minister_of_antiques_relic, Some(p("Carol")));
+    g.expect_rejected(
+        Event::TacticalActionBegin { player: p("Alice") },
+        "Carol must gain their Minister of Antiques relic first",
+    )
+    .apply(gain("Carol", None));
+    assert_eq!(g.state().minister_of_antiques_relic, None);
+    assert_eq!(g.player("Carol").relics, carol_relics);
     g
 }

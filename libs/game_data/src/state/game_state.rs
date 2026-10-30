@@ -143,6 +143,10 @@ pub struct GameState {
     /// The player (if any) that gained the Book of Latvinia and may still research up to 2
     /// technologies with no prerequisites.
     pub book_of_latvinia_research: Option<PlayerId>,
+
+    /// The player (if any) elected for Minister of Antiques, who must gain their relic before
+    /// anything else can happen.
+    pub minister_of_antiques_relic: Option<PlayerId>,
 }
 
 /// Where a planet is on the board, see [GameState::planet_location].
@@ -904,6 +908,12 @@ impl GameState {
             }
 
             self.score.add_agenda_record(&agenda_record);
+
+            if let (Agenda::MinisterOfAntiques, AgendaElect::Player(player)) =
+                (&vote.agenda, outcome)
+            {
+                self.minister_of_antiques_relic = Some(player.clone());
+            }
 
             // TODO: resolve any other vote effects such as VPs or techs
         } else {

@@ -74,6 +74,12 @@ fn try_update_game_state(
             "{roller} must roll for the Fracture first"
         );
     }
+    if let Some(player) = &game_state.minister_of_antiques_relic {
+        ensure!(
+            matches!(event, Event::GainMinisterOfAntiquesRelic { .. }),
+            "{player} must gain their Minister of Antiques relic first"
+        );
+    }
 
     match event {
         Event::SetSettings { settings } => {
@@ -2110,6 +2116,26 @@ fn try_update_game_state(
             if entered_play {
                 game_state.fracture_in_play = true;
             }
+        }
+        Event::GainMinisterOfAntiquesRelic { player, relic } => {
+            ensure!(
+                game_state.minister_of_antiques_relic.as_ref() == Some(&player),
+                "{player} has no Minister of Antiques relic to gain"
+            );
+
+            if let Some(relic) = relic {
+                game_state.assert_enabled(&relic)?;
+                ensure!(
+                    !game_state
+                        .players
+                        .values()
+                        .any(|p| p.relics.contains(&relic)),
+                    "Relic {relic:?} is already owned by another player."
+                );
+
+                game_state.set_relic_owner(relic, Some(player))?;
+            }
+            game_state.minister_of_antiques_relic = None;
         }
     }
 

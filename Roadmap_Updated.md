@@ -241,6 +241,7 @@
  - ✅ 20 new action cards
  - ✅ 13 agendas removed
  - ✅ 13 new agendas
+   - ✅ Minister of Antiques (the elected player gains a relic)
  - ✅ Updated construction strat card (wording only, image switches)
  - ❌ Legendary planet ability texts (Primor, Hope's End, Mallice, Mirage) `[TE-C7]`
 

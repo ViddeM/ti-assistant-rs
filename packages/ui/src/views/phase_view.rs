@@ -9,7 +9,8 @@ use crate::{
             action_card::ActionCardView, action_phase::ActionPhaseView,
             agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
             end_action_phase::EndActionPhaseView, fracture_roll::FractureRoll,
-            relic_card::RelicCardView, relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
+            minister_of_antiques::MinisterOfAntiques, relic_card::RelicCardView,
+            relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
             status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
             strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
         },
@@ -23,6 +24,12 @@ pub fn PhaseView() -> Element {
     if let Some(player_id) = gc.game_state().fracture_roll.clone() {
         return rsx! {
             FractureRoll { player_id }
+        };
+    }
+
+    if let Some(player_id) = gc.game_state().minister_of_antiques_relic.clone() {
+        return rsx! {
+            MinisterOfAntiques { player_id }
         };
     }
 

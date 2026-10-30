@@ -1,0 +1,72 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   8 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+   9 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  10 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  11 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  14 CompleteStrategyPhase                    r1 Action             Alice
+  15 SetCustodians(Alice)                     r1 Action             Alice      custodians=Alice Alice=1
+  16 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  17 StrategicActionCommit                    r1 EndActionTurn      Alice
+  18 EndTurn(Alice)                           r1 Action             Bob
+  19 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  20 StrategicActionCommit                    r1 EndActionTurn      Bob
+  21 EndTurn(Bob)                             r1 Action             Carol
+  22 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  23 StrategicActionPrimary(Carol)            r1 StrategicAction    Carol
+  24 StrategicActionCommit                    r1 EndActionTurn      Carol
+  25 EndTurn(Carol)                           r1 Action             Alice
+  26 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  27 StrategicActionCommit                    r1 EndActionTurn      Alice
+  28 EndTurn(Alice)                           r1 Action             Bob
+  29 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  30 StrategicActionCommit                    r1 EndActionTurn      Bob
+  31 EndTurn(Bob)                             r1 Action             Carol
+  32 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  33 StrategicActionCommit                    r1 EndActionTurn      Carol
+  34 EndTurn(Carol)                           r1 Action             Alice
+  35 PassAction(Alice)                        r1 Action             Bob
+  36 PassAction(Bob)                          r1 Action             Carol
+  37 PassAction(Carol)                        r1 Status             Carol
+  38 ScorePublicObjective(Alice)              r1 Status             Carol
+  39 ScorePublicObjective(Bob)                r1 Status             Carol
+  40 ScorePublicObjective(Carol)              r1 Status             Carol
+  41 ScoreSecretObjective(Alice)              r1 Status             Carol
+  42 ScoreSecretObjective(Bob)                r1 Status             Carol
+  43 ScoreSecretObjective(Carol)              r1 Status             Carol
+  44 RevealPublicObjective                    r1 Status             Carol
+  45 CompleteStatusPhase                      r1 Agenda             Bob        order=[Bob Carol Alice]
+  46 SetRelicOwner(Carol)                     r1 Agenda             Bob
+  47 RevealAgenda                             r1 Agenda             Bob
+  48 CastAgendaVote(Bob)                      r1 Agenda             Bob
+  49 CastAgendaVote(Carol)                    r1 Agenda             Bob
+  50 CastAgendaVote(Alice)                    r1 Agenda             Bob
+  51 ResolveAgenda                            r1 Agenda             Bob
+  52 GainMinisterOfAntiquesRelic(Bob)         r1 Agenda             Bob
+  53 RevealAgenda                             r1 Agenda             Bob
+  54 CastAgendaVote(Bob)                      r1 Agenda             Bob
+  55 CastAgendaVote(Carol)                    r1 Agenda             Bob
+  56 CastAgendaVote(Alice)                    r1 Agenda             Bob
+  57 ResolveAgenda                            r1 Agenda             Bob
+  58 CompleteAgendaPhase                      r2 Strategy           Alice      order=[Alice Bob Carol]
+  59 TakeStrategyCard(Alice)                  r2 Strategy           Bob
+  60 TakeStrategyCard(Bob)                    r2 Strategy           Carol
+  61 TakeStrategyCard(Carol)                  r2 Strategy           Alice
+  62 TakeStrategyCard(Alice)                  r2 Strategy           Bob
+  63 TakeStrategyCard(Bob)                    r2 Strategy           Carol
+  64 TakeStrategyCard(Carol)                  r2 Strategy           Alice
+  65 CompleteStrategyPhase                    r2 Action             Alice
+  66 AddAgendaBegin                           r2 Action             Alice
+  67 AddAgendaResolve                         r2 Action             Alice
+  68 GainMinisterOfAntiquesRelic(Carol)       r2 Action             Alice

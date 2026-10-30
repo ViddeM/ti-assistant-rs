@@ -531,6 +531,14 @@ pub enum Event {
         entered_play: bool,
     },
 
+    /// The relic gained by the player elected for Minister of Antiques.
+    GainMinisterOfAntiquesRelic {
+        /// The elected player.
+        player: PlayerId,
+        /// The relic they gained, or None if there was no relic to gain.
+        relic: Option<Relic>,
+    },
+
     /// Set a breakthrough for a player.
     SetBreakthrough {
         /// The player for whom the breakthrough is being set.
