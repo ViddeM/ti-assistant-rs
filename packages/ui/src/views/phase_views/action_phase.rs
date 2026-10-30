@@ -98,7 +98,6 @@ pub fn ActionPhaseView() -> Element {
                     }
                     div { class: "actions-container",
                         Button {
-                            class: "action-button",
                             disabled: !playable_strategy_cards().is_empty() || has_passed(),
                             onclick: move |_| {
                                 event
@@ -111,7 +110,6 @@ pub fn ActionPhaseView() -> Element {
                         {playable_strategy_cards().into_iter().map(|card| rsx! {
                             Button {
                                 key: "{card}",
-                                class: "action-button",
                                 onclick: move |_| {
                                     event
                                         .send_event(Event::StrategicActionBegin {
@@ -123,7 +121,6 @@ pub fn ActionPhaseView() -> Element {
                             }
                         })}
                         Button {
-                            class: "action-button",
                             onclick: move |_| {
                                 event
                                     .send_event(Event::TacticalActionBegin {
@@ -133,7 +130,6 @@ pub fn ActionPhaseView() -> Element {
                             "Tactical"
                         }
                         Button {
-                            class: "action-button",
                             disabled: is_component(),
                             onclick: move |_| { is_component.set(true) },
                             "Component"
