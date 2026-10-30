@@ -20,6 +20,7 @@
   position: relative;
   width: min(100%, 35rem);
   max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto;
   padding: 2rem;
   background: black;
