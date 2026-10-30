@@ -12,32 +12,38 @@
 }
 
 .view-mode-button-group {
-  display: flex;
-  flex-direction: row;
-  overflow-x: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $margin;
   width: 100%;
-  justify-content: center;
 
-  & > button {
-    border-radius: 0;
-    flex-shrink: 0;
+  @media (min-width: $width-small) {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0;
 
-    &:not(:first-child) {
-      border-left-width: 0;
-    }
+    & > button {
+      border-radius: 0;
+      flex-shrink: 0;
 
-    &:first-child {
-      border-top-left-radius: $border-radius;
-      border-bottom-left-radius: $border-radius;
-    }
+      &:not(:first-child) {
+        border-left-width: 0;
+      }
 
-    &:last-child {
-      border-top-right-radius: $border-radius;
-      border-bottom-right-radius: $border-radius;
-    }
+      &:first-child {
+        border-top-left-radius: $border-radius;
+        border-bottom-left-radius: $border-radius;
+      }
 
-    &:disabled:not(:last-child) {
-      border-right: 1px solid white;
+      &:last-child {
+        border-top-right-radius: $border-radius;
+        border-bottom-right-radius: $border-radius;
+      }
+
+      &:disabled:not(:last-child) {
+        border-right: 1px solid white;
+      }
     }
   }
 }
