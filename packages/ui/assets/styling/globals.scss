@@ -49,6 +49,11 @@ fieldset {
   padding: $padding-large;
 }
 
+input,
+textarea {
+  font-size: 16px;
+}
+
 .card {
   background: linear-gradient(160deg, #464c5e 0%, #383838 100%);
   border: 1px solid rgba(255, 255, 255, 0.08);
