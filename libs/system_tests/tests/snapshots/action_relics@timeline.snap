@@ -38,3 +38,16 @@ source: libs/system_tests/src/check.rs
   34 RelicActionBegin(Alice)                  r1 RelicAction        Alice
   35 RelicActionCommit(Alice)                 r1 EndActionTurn      Alice
   36 EndTurn(Alice)                           r1 Action             Bob
+  37 GainRelicAction(Bob)                     r1 EndActionTurn      Bob
+  38 EndTurn(Bob)                             r1 Action             Carol
+  39 GainRelicAction(Carol)                   r1 EndActionTurn      Carol
+  40 EndTurn(Carol)                           r1 Action             Alice
+  41 StrategicActionBegin(Alice)              r1 StrategicAction    Alice
+  42 StrategicActionCommit                    r1 EndActionTurn      Alice
+  43 EndTurn(Alice)                           r1 Action             Bob
+  44 RelicActionBegin(Bob)                    r1 RelicAction        Bob
+  45 RelicActionCommit(Bob)                   r1 EndActionTurn      Bob
+  46 EndTurn(Bob)                             r1 Action             Carol
+  47 RelicActionBegin(Carol)                  r1 RelicAction        Carol
+  48 RelicActionCommit(Carol)                 r1 EndActionTurn      Carol
+  49 EndTurn(Carol)                           r1 Action             Alice

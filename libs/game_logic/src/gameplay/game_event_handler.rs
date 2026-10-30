@@ -1111,12 +1111,14 @@ fn try_update_game_state(
                 game_state.book_of_latvinia_research = None;
             }
 
-            game_state
-                .players
-                .get_mut(&player)
-                .ok_or_else(|| anyhow::anyhow!("Player no longer exists? (This is a bug)"))?
-                .relics
-                .remove(&progress.relic);
+            if !progress.relic.is_exhausted_when_played() {
+                game_state
+                    .players
+                    .get_mut(&player)
+                    .ok_or_else(|| anyhow::anyhow!("Player no longer exists? (This is a bug)"))?
+                    .relics
+                    .remove(&progress.relic);
+            }
 
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;

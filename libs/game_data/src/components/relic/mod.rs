@@ -165,4 +165,9 @@ impl Relic {
             Relic::Neuraloop => ri!(Neuraloop, "Neuraloop", CodexIV),
         }
     }
+
+    /// Whether playing this relic exhausts it, so that its owner keeps it.
+    pub fn is_exhausted_when_played(&self) -> bool {
+        matches!(self, Relic::JrXs4550 | Relic::CircletOfTheVoid)
+    }
 }

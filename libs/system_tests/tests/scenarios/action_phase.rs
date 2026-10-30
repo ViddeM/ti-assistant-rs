@@ -662,7 +662,8 @@ pub fn action_frontier_cards() -> TestGame {
     g
 }
 
-/// Gaining and using relics, and Shard of the Throne moving with legendary planets.
+/// Gaining and using relics (purged, or exhausted and kept), and Shard of the Throne moving with
+/// legendary planets.
 pub fn action_relics() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     let set_owner = |player: &str, planet: Planet| Event::SetPlanetOwner {
@@ -755,5 +756,18 @@ pub fn action_relics() -> TestGame {
         .apply(commit("Alice", nano_forge(Planet::Centauri)))
         .end_turn();
     assert!(g.player("Alice").planets[&Planet::Centauri].contains(&PlanetAttachment::NanoForge));
+
+    // JR-XS455-O and Circlet of the Void are exhausted, not purged, when played.
+    g.turn("Bob").gain_relic(Relic::JrXs4550).end_turn();
+    g.turn("Carol")
+        .gain_relic(Relic::CircletOfTheVoid)
+        .end_turn();
+    g.turn("Alice").play_card(StrategyCard::Leadership);
+    g.turn("Bob").relic(Relic::JrXs4550, None).end_turn();
+    g.turn("Carol")
+        .relic(Relic::CircletOfTheVoid, None)
+        .end_turn();
+    assert!(g.player("Bob").relics.contains(&Relic::JrXs4550));
+    assert!(g.player("Carol").relics.contains(&Relic::CircletOfTheVoid));
     g
 }

@@ -152,6 +152,7 @@ With the three fixes the split becomes 20 Base / 20 PoK secrets (the code curren
 | Nano-Forge | 🟡 | (Codex II text) | adds "This action cannot be performed once attached." | `relic/description/NanoForge` |
 | JR-XS455-O | ⚪ | "JR-XS455-0" (zero) | Codex page has the letter "O"; Relics and Exploration pages have a zero (the wiki contradicts itself) | `relic/mod.rs:140` |
 | The Crown of Emphidia | ⚪ | the word "CrownSymbol" left in the text (from copying a wiki image link) | crown icon | `relic/description/TheCrownOfEmphidia` |
+| JR-XS455-O, Circlet of the Void | 🟠 | taken from the owner when played (`RelicActionCommit`) | exhausted, not purged, so the owner keeps them. **✅ Fixed.** `Relic::is_exhausted_when_played` keeps them. Exhaust state isn't tracked, so players police once per round (like Jupiter Brain) | `game_event_handler.rs:1114` ✔ |
 
 ### Verified OK
 - **All 23 relics:** All present with the right names and expansion tags (10 PoK, 3 Codex II, 3 Codex IV, 7 Thunder's Edge).
