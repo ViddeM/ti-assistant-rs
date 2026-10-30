@@ -78,7 +78,7 @@ pub fn NewGame<R: PartialEq + Clone + 'static + Routable>(
                         p { "{winning_score}" }
                     }
 
-                    div { class: "view-mode-button-group margin-bottom",
+                    div { class: "create-game-mode-button-group margin-bottom",
                         Button {
                             disabled: mode.read().eq(&CreateGameMode::New),
                             onclick: move |_| *mode.write() = CreateGameMode::New,
