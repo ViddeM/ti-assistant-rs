@@ -19,7 +19,23 @@ source: libs/system_tests/src/check.rs
   15 GainRelicAction(Alice)                   r1 EndActionTurn      Alice
   16 ResearchBookOfLatviniaTechs(Alice)       r1 EndActionTurn      Alice
   17 EndTurn(Alice)                           r1 Action             Bob
-  18 SetRelicOwner(Bob)                       r1 Action             Bob
-  19 ResearchBookOfLatviniaTechs(Bob)         r1 Action             Bob
-  20 SetRelicOwner(Carol)                     r1 Action             Bob
-  21 SetRelicOwner                            r1 Action             Bob
+  18 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  19 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  20 EndTurn(Bob)                             r1 Action             Carol
+  21 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
+  22 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
+  23 EndTurn(Carol)                           r1 Action             Alice
+  24 RelicActionBegin(Alice)                  r1 RelicAction        Alice
+  25 RelicActionCommit(Alice)                 r1 EndActionTurn      Alice
+  26 EndTurn(Alice)                           r1 Action             Bob
+  27 GainRelicAction(Bob)                     r1 EndActionTurn      Bob
+  28 ResearchBookOfLatviniaTechs(Bob)         r1 EndActionTurn      Bob
+  29 TakeAnotherTurn(Bob)                     r1 Action             Bob
+  30 RelicActionBegin(Bob)                    r1 RelicAction        Bob
+  31 RelicActionCommit(Bob)                   r1 EndActionTurn      Bob        speaker=Bob
+  32 EndTurn(Bob)                             r1 Action             Carol
+  33 GainRelicAction(Carol)                   r1 EndActionTurn      Carol
+  34 TakeAnotherTurn(Carol)                   r1 Action             Carol
+  35 RelicActionBegin(Carol)                  r1 RelicAction        Carol
+  36 RelicActionCommit(Carol)                 r1 EndActionTurn      Carol      speaker=Carol
+  37 EndTurn(Carol)                           r1 Action             Alice

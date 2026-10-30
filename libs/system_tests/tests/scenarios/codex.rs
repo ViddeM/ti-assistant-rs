@@ -64,8 +64,8 @@ pub fn codex_iv_book_of_latvinia() -> TestGame {
     g
 }
 
-/// Gaining the Book of Latvinia, as an action or by hand, lets the new owner research up to 2
-/// technologies with no prerequisites, or skip it.
+/// Gaining the Book of Latvinia lets the new owner research up to 2 technologies with no
+/// prerequisites, or skip it, and purging it clears the research.
 pub fn codex_iv_book_of_latvinia_research() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     let research = |player: &str, technologies: &[Technology]| Event::ResearchBookOfLatviniaTechs {
@@ -117,24 +117,29 @@ pub fn codex_iv_book_of_latvinia_research() -> TestGame {
             .is_superset(&[Technology::SarweenTools, Technology::PlasmaScoring].into())
     );
 
-    let bob_techs = g.player("Bob").technologies.clone();
-    g.apply(Event::SetRelicOwner {
-        relic: Relic::BookOfLatvinia,
-        player: Some(p("Bob")),
-    });
-    assert_eq!(g.state().book_of_latvinia_research, Some(p("Bob")));
-    g.apply(research("Bob", &[]));
-    assert_eq!(g.state().book_of_latvinia_research, None);
-    assert_eq!(g.player("Bob").technologies, bob_techs);
+    g.turn("Bob").tactical().commit().end_turn();
+    g.turn("Carol").tactical().commit().end_turn();
 
-    g.apply(Event::SetRelicOwner {
-        relic: Relic::BookOfLatvinia,
-        player: Some(p("Carol")),
-    })
-    .apply(Event::SetRelicOwner {
-        relic: Relic::BookOfLatvinia,
-        player: None,
-    });
+    g.turn("Alice")
+        .relic(Relic::BookOfLatvinia, None)
+        .end_turn();
+
+    let bob_techs = g.player("Bob").technologies.clone();
+    let bob = g.turn("Bob").gain_relic(Relic::BookOfLatvinia);
+    assert_eq!(bob.state().book_of_latvinia_research, Some(p("Bob")));
+    let bob = bob.apply(research("Bob", &[]));
+    assert_eq!(bob.state().book_of_latvinia_research, None);
+    assert_eq!(bob.player("Bob").technologies, bob_techs);
+    bob.take_another_turn()
+        .relic(Relic::BookOfLatvinia, None)
+        .end_turn();
+
+    let carol = g.turn("Carol").gain_relic(Relic::BookOfLatvinia);
+    assert_eq!(carol.state().book_of_latvinia_research, Some(p("Carol")));
+    carol
+        .take_another_turn()
+        .relic(Relic::BookOfLatvinia, None)
+        .end_turn();
     assert_eq!(g.state().book_of_latvinia_research, None);
     g
 }

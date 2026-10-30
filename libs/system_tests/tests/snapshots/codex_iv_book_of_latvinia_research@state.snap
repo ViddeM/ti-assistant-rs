@@ -56,7 +56,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
-speaker: Alice
+speaker: Carol
 tableOrder:
   - Alice
   - Bob
@@ -72,7 +72,7 @@ strategyCardHolders:
   Construction: Alice
   Trade: Bob
   Warfare: Carol
-currentPlayer: Bob
+currentPlayer: Alice
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -108,15 +108,15 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 360
+    secs: 540
     nanos: 0
   Bob:
-    secs: 120
+    secs: 660
     nanos: 0
   Carol:
-    secs: 120
+    secs: 600
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:17:00Z"
+currentTurnStartTime: "2025-01-01T12:37:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false

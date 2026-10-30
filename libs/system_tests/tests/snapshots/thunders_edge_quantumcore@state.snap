@@ -25,7 +25,8 @@ players:
     technologies:
       - AntimassDeflectors
       - NeuralMotivator
-    relics: []
+    relics:
+      - TheQuantumcore
     breakthrough: BellumGloriosum
     factionState: None
   Bob:
@@ -39,9 +40,8 @@ players:
     technologies:
       - AntimassDeflectors
       - SarweenTools
-    relics:
-      - TheQuantumcore
-    breakthrough: AutoFactories
+    relics: []
+    breakthrough: ~
     factionState: None
   Carol:
     name: Carol

@@ -615,8 +615,7 @@ pub fn thunders_edge_breakthrough_planets() -> TestGame {
     g
 }
 
-/// Gaining The Quantumcore, as an action or by hand, unlocks the new owner's breakthrough. The
-/// previous owner keeps theirs.
+/// Gaining The Quantumcore as an action unlocks the player's breakthrough.
 pub fn thunders_edge_quantumcore() -> TestGame {
     let mut g = action_phase(three_players().pok().codex().thunders_edge());
 
@@ -627,21 +626,6 @@ pub fn thunders_edge_quantumcore() -> TestGame {
     assert_eq!(
         g.player("Alice").breakthrough,
         Some(Breakthrough::BellumGloriosum)
-    );
-
-    g.apply(Event::SetRelicOwner {
-        relic: Relic::TheQuantumcore,
-        player: Some(p("Bob")),
-    })
-    .apply(roll("Bob", false));
-    assert!(!g.player("Alice").relics.contains(&Relic::TheQuantumcore));
-    assert_eq!(
-        g.player("Alice").breakthrough,
-        Some(Breakthrough::BellumGloriosum)
-    );
-    assert_eq!(
-        g.player("Bob").breakthrough,
-        Some(Breakthrough::AutoFactories)
     );
     g
 }

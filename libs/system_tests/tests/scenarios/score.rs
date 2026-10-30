@@ -2,13 +2,9 @@
 
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{SIMPLE_PICKS, three_players};
+use crate::fixtures::three_players;
 
-scenarios![
-    score_manual_adjustments,
-    score_manual_planets_and_techs,
-    score_manual_relics,
-];
+scenarios![score_manual_adjustments, score_manual_planets_and_techs];
 
 /// Every source of points, adjusted by hand.
 pub fn score_manual_adjustments() -> TestGame {
@@ -219,46 +215,6 @@ pub fn score_manual_planets_and_techs() -> TestGame {
             .cloned()
             .collect::<Vec<_>>(),
         [Technology::GravityDrive]
-    );
-    g
-}
-
-/// Giving relics to players, or taking them away, outside of an action.
-pub fn score_manual_relics() -> TestGame {
-    let mut g = three_players().pok().start();
-    let set_owner = |relic: Relic, player: Option<&str>| Event::SetRelicOwner {
-        relic,
-        player: player.map(p),
-    };
-
-    g.apply(set_owner(Relic::StellarConverter, Some("Alice")))
-        .apply(set_owner(Relic::StellarConverter, Some("Bob")));
-    assert!(!g.player("Alice").relics.contains(&Relic::StellarConverter));
-    assert!(g.player("Bob").relics.contains(&Relic::StellarConverter));
-
-    g.apply(set_owner(Relic::ShardOfTheThrone, Some("Carol")));
-    assert_eq!(g.points("Carol"), 1);
-    assert_eq!(g.state().score.shard_of_the_throne, Some(p("Carol")));
-    g.apply(set_owner(Relic::ShardOfTheThrone, None));
-    assert_eq!(g.points("Carol"), 0);
-    assert!(!g.player("Carol").relics.contains(&Relic::ShardOfTheThrone));
-
-    g.expect_rejected(
-        set_owner(Relic::TheCodex, Some("Nobody")),
-        "Player doesn't exist",
-    )
-    .expect_rejected(
-        set_owner(Relic::Neuraloop, Some("Alice")),
-        "is not available with the enabled expansions",
-    );
-
-    g.strategy_phase(SIMPLE_PICKS);
-    g.turn("Alice").expect_rejected(
-        Event::GainRelicAction {
-            player: p("Alice"),
-            relic: Relic::StellarConverter,
-        },
-        "already owned by another player",
     );
     g
 }

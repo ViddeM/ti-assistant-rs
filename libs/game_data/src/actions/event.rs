@@ -451,14 +451,6 @@ pub enum Event {
         player: Option<PlayerId>,
     },
 
-    /// Give / remove a relic to/from a player.
-    SetRelicOwner {
-        /// The relic to give or remove.
-        relic: Relic,
-        /// The player that should receive it, or None if no one should have it.
-        player: Option<PlayerId>,
-    },
-
     /// Research up to 2 technologies with no prerequisites after gaining the Book of Latvinia,
     /// no technologies skips the research.
     ResearchBookOfLatviniaTechs {
