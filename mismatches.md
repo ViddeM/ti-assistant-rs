@@ -343,7 +343,7 @@ These aren't data-vs-wiki mismatches, but they came up while checking:
 | 🟡 | Tech prerequisites are never validated anywhere. This is fine and keeps things simple, but it means breakthrough synergy needs no logic at all; see the action plan | — |
 | 🟡 | The comment `// TODO: Handle Council Keleres` in `get_starting_planets` is stale (setup handles it) | `common/faction.rs:176` |
 | 🔴 | `SetPlanetOwner` moved Shard of the Throne along with a legendary planet but left `score.shard_of_the_throne` alone, so the VP stayed with the old holder. Giving the planet to nobody deleted the relic. **✅ Fixed.** Tactical takes and `SetPlanetOwner` share `GameState::set_planet_owner`, and the Shard stays put when the planet goes to nobody | `state/game_state.rs:588` ✔ |
-| 🟠 | Shard of the Throne only follows legendary planets. The card also passes it on when another player gains control of a planet in the holder's home system | `state/game_state.rs:588` ✔ |
+| 🟠 | Shard of the Throne only follows legendary planets. The card also passes it on when another player gains control of a planet in the holder's home system. **✅ Fixed.** `set_planet_owner` also moves it with a planet in the previous owner's home system (`Planet::is_in_home_system_of`). Limitation: Keleres' chosen home system isn't stored (`SetupTheTribunii` only inserts the planets), so their home planets don't move it | `state/game_state.rs:626` ✔ |
 | 🟠 | When an admin changed the Thunder's Edge winner (`SetThundersEdgeCompletion`) after another player had taken the planet in a tactical action, that player and the new winner both owned it. **✅ Fixed.** The planet moves through `set_planet_owner` | `game_event_handler.rs:2019` ✔ |
 
 ---

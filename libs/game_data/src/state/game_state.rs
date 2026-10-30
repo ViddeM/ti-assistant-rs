@@ -602,8 +602,8 @@ impl GameState {
 
     /// Give `planet` and its attachments to `owner`, or to nobody, returning the previous owner.
     ///
-    /// Shard of the Throne follows a legendary planet to its new owner, and the first player to
-    /// control Mecatol Rex gains the custodians token.
+    /// Shard of the Throne follows a legendary planet, or a planet in its holder's home system, to
+    /// its new owner, and the first player to control Mecatol Rex gains the custodians token.
     pub fn set_planet_owner(
         &mut self,
         planet: Planet,
@@ -623,10 +623,12 @@ impl GameState {
 
         let legendary =
             planet.info().is_legendary || attachments.iter().any(|a| a.info().set_legendary);
-        let moves_shard = legendary
-            && (previous_owner.as_ref())
-                .and_then(|previous| self.players.get_mut(previous))
-                .is_some_and(|previous| previous.relics.remove(&Relic::ShardOfTheThrone));
+        let moves_shard = (previous_owner.as_ref())
+            .and_then(|previous| self.players.get_mut(previous))
+            .is_some_and(|previous| {
+                (legendary || planet.is_in_home_system_of(previous.faction))
+                    && previous.relics.remove(&Relic::ShardOfTheThrone)
+            });
 
         let player = self
             .players

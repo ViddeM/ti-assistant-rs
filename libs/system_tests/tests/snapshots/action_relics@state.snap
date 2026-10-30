@@ -28,7 +28,8 @@ players:
     technologies:
       - AntimassDeflectors
       - NeuralMotivator
-    relics: []
+    relics:
+      - ShardOfTheThrone
     breakthrough: ~
     factionState: None
   Bob:
@@ -45,7 +46,6 @@ players:
       - SarweenTools
     relics:
       - JrXs4550
-      - ShardOfTheThrone
     breakthrough: ~
     factionState: None
   Carol:
@@ -77,7 +77,7 @@ strategyCardHolders:
   Construction: Alice
   Trade: Bob
   Warfare: Carol
-currentPlayer: Alice
+currentPlayer: Carol
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -87,15 +87,15 @@ actionProgress: ~
 score:
   maxPoints: 10
   playerPoints:
-    Alice: 0
-    Bob: 1
+    Alice: 1
+    Bob: 0
     Carol: 0
   revealedObjectives:
     CornerTheMarket: []
     DevelopWeaponry: []
   secretObjectives: {}
   supportForTheThrone: {}
-  shardOfTheThrone: Bob
+  shardOfTheThrone: Alice
   crownOfEmphidia: ~
   bookOfLatvinia: ~
   extraPoints: {}
@@ -115,15 +115,15 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 960
+    secs: 1200
     nanos: 0
   Bob:
-    secs: 840
+    secs: 1080
     nanos: 0
   Carol:
     secs: 720
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:49:00Z"
+currentTurnStartTime: "2025-01-01T12:57:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false

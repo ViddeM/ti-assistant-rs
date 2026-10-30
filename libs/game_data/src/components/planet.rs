@@ -5,6 +5,7 @@ use strum_macros::EnumIter;
 use crate::common::{
     component::{Component, replacements},
     expansions::Expansion,
+    faction::Faction,
 };
 
 use super::{
@@ -1096,6 +1097,14 @@ impl Planet {
     pub fn is_in_home_system(&self) -> bool {
         systems().values().any(|system| {
             matches!(system.system_type, SystemType::HomeSystem(..))
+                && system.planets.contains(self)
+        })
+    }
+
+    /// Whether the planet is in the home system of `faction`.
+    pub fn is_in_home_system_of(&self, faction: Faction) -> bool {
+        systems().values().any(|system| {
+            matches!(system.system_type, SystemType::HomeSystem(f) if f == faction)
                 && system.planets.contains(self)
         })
     }

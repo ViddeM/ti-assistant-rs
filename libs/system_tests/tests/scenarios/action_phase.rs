@@ -663,7 +663,7 @@ pub fn action_frontier_cards() -> TestGame {
 }
 
 /// Gaining and using relics (purged, or exhausted and kept), and Shard of the Throne moving with
-/// legendary planets.
+/// legendary planets and the holder's home planets.
 pub fn action_relics() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     let set_owner = |player: &str, planet: Planet| Event::SetPlanetOwner {
@@ -769,5 +769,23 @@ pub fn action_relics() -> TestGame {
         .end_turn();
     assert!(g.player("Bob").relics.contains(&Relic::JrXs4550));
     assert!(g.player("Carol").relics.contains(&Relic::CircletOfTheVoid));
+
+    // Taking a planet in the holder's home system also takes the Shard of the Throne.
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::Arretze)
+        .commit()
+        .end_turn();
+    assert_eq!(g.state().score.shard_of_the_throne, Some(p("Alice")));
+    assert_eq!((g.points("Alice"), g.points("Bob")), (1, 0));
+
+    // Arretze isn't in Alice's home system, so Bob taking it back leaves the Shard with her.
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Arretze)
+        .commit()
+        .end_turn();
+    assert!(g.player("Alice").relics.contains(&Relic::ShardOfTheThrone));
+    assert_eq!(g.state().score.shard_of_the_throne, Some(p("Alice")));
     g
 }

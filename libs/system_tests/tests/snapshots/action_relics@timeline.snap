@@ -51,3 +51,11 @@ source: libs/system_tests/src/check.rs
   47 RelicActionBegin(Carol)                  r1 RelicAction        Carol
   48 RelicActionCommit(Carol)                 r1 EndActionTurn      Carol
   49 EndTurn(Carol)                           r1 Action             Alice
+  50 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  51 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice      Alice=1 Bob=0
+  52 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  53 EndTurn(Alice)                           r1 Action             Bob
+  54 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  55 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob
+  56 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  57 EndTurn(Bob)                             r1 Action             Carol
