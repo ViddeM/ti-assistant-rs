@@ -251,6 +251,8 @@ $extra-color: hsl(120, 70%, 40%);
   font-size: 1.2rem;
   padding: 0;
   margin: 0;
+  min-width: 0;
+  width: 100%;
 
   &:disabled {
     background-color: inherit;
