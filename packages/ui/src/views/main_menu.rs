@@ -54,23 +54,27 @@ pub fn MainMenu<R: PartialEq + Clone + 'static + Routable>(
                 class: "game-id-input-content",
                 onsubmit: move |e: FormEvent| {
                     e.prevent_default();
-                    if game_id().len() == 8 {
-                        nav.push(join_game(game_id()));
+                    if let Some(code) = full_game_code(&game_id()) {
+                        nav.push(join_game(code));
                     }
                 },
                 div { class: "source-code-pro-font game-id-container",
                     input {
                         value: "{game_id()}",
                         maxlength: 8,
+                        autocapitalize: "none",
+                        autocorrect: "off",
+                        autocomplete: "off",
+                        spellcheck: false,
                         oninput: move |evt| game_id.set(evt.value()),
                     }
                 }
             }
 
             {
-                if game_id().len() == 8 {
+                if let Some(code) = full_game_code(&game_id()) {
                     rsx! {
-                        Link { to: join_game(game_id()), class: "main-menu-link",
+                        Link { to: join_game(code), class: "main-menu-link",
                             h2 { "JOIN GAME" }
                         }
                     }
@@ -82,4 +86,9 @@ pub fn MainMenu<R: PartialEq + Clone + 'static + Routable>(
             }
         }
     }
+}
+
+fn full_game_code(input: &str) -> Option<String> {
+    let code = input.trim().to_ascii_lowercase();
+    (code.len() == 8 && code.chars().all(|c| c.is_ascii_hexdigit())).then_some(code)
 }
