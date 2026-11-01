@@ -44,4 +44,4 @@ EXPOSE 8080
 
 WORKDIR /usr/local/app
 RUN ls -lah /usr/local/app
-ENTRYPOINT [ "/usr/local/app/web" ]
+ENTRYPOINT [ "/usr/local/app/server" ]
