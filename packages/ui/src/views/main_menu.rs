@@ -61,12 +61,8 @@ pub fn MainMenu<R: PartialEq + Clone + 'static + Routable>(
                 div { class: "source-code-pro-font game-id-container",
                     input {
                         value: "{game_id()}",
-                        oninput: move |evt| {
-                            let value = evt.value();
-                            let prev = game_id();
-                            let value = if value.chars().count() > 8 { prev } else { value };
-                            game_id.set(value);
-                        },
+                        maxlength: 8,
+                        oninput: move |evt| game_id.set(evt.value()),
                     }
                 }
             }
