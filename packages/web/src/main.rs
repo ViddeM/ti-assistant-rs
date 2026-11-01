@@ -4,7 +4,7 @@ use game::Game;
 use main_menu::MainMenu;
 use new_game::NewGame;
 use source_code_button::SourceCodeLinkButton;
-use ui::Setup;
+use ui::{Setup, components::spinner::Spinner};
 
 mod game;
 mod main_menu;
@@ -44,6 +44,9 @@ fn main() {
 
 #[component]
 fn App() -> Element {
+    let mut started = use_signal(|| false);
+    use_effect(move || started.set(true));
+
     rsx! {
         // Global app resources
         document::Link { rel: "icon", href: FAVICON }
@@ -53,6 +56,10 @@ fn App() -> Element {
         Setup {}
 
         Router::<Route> {}
+
+        if !started() {
+            div { class: "app-loading", Spinner {} }
+        }
     }
 }
 
