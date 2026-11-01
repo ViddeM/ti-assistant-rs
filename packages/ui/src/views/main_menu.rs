@@ -60,19 +60,12 @@ pub fn MainMenu<R: PartialEq + Clone + 'static + Routable>(
                 },
                 div { class: "source-code-pro-font game-id-container",
                     input {
-                        id: "game-id-input",
                         value: "{game_id()}",
                         maxlength: 8,
                         autocapitalize: "none",
                         autocorrect: "off",
                         autocomplete: "off",
                         spellcheck: false,
-                        onmounted: move |_| async move {
-                            let typed = document::eval("return document.getElementById('game-id-input').value");
-                            if let Ok(typed) = typed.join::<String>().await {
-                                game_id.set(typed);
-                            }
-                        },
                         oninput: move |evt| game_id.set(evt.value()),
                     }
                 }
