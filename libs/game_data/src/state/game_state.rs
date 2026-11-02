@@ -22,7 +22,7 @@ use crate::{
         breakthrough::Breakthrough,
         frontier_card::FrontierCard,
         leaders::{Leader, LeaderAbilityKind},
-        objectives::Objective,
+        objectives::{Objective, secret::SecretObjective},
         phase::Phase,
         planet::Planet,
         planet_attachment::PlanetAttachment,
@@ -815,6 +815,38 @@ impl GameState {
         self.round >= FIRST_STAGE_TWO_ROUND
     }
 
+    /// Returns true if the objective used to be a public objective but no longer is: a secret
+    /// objective made public by Classified Document Leaks, once the law has been discarded. The
+    /// players who scored it keep their points.
+    pub fn is_former_public_objective(&self, objective: &Objective) -> bool {
+        let Objective::Secret(secret) = objective else {
+            return false;
+        };
+
+        let leak = AgendaElect::SecretObjective(*secret);
+        let leaked = self.agenda_vote_history.iter().any(|record| {
+            record.vote.agenda == Agenda::ClassifiedDocumentLeaks
+                && record.outcome.as_ref() == Some(&leak)
+        });
+        leaked && self.laws.get(&Agenda::ClassifiedDocumentLeaks) != Some(&leak)
+    }
+
+    /// Move a scored secret objective to the public objectives, scored by the player who owned it.
+    fn leak_secret_objective(&mut self, secret: SecretObjective) -> anyhow::Result<()> {
+        let Some((owner, secrets)) = (self.score.secret_objectives.iter_mut())
+            .find(|(_, secrets)| secrets.contains(&secret))
+        else {
+            bail!("{secret:?} hasn't been scored by any player");
+        };
+
+        secrets.remove(&secret);
+        let owner = owner.clone();
+        self.score
+            .revealed_objectives
+            .insert(Objective::Secret(secret), BTreeSet::from([owner]));
+        Ok(())
+    }
+
     /// Returns true if the player has performed any required initialization for their faction.
     pub fn player_initialization_finished(&self, player_id: &PlayerId) -> anyhow::Result<bool> {
         let Some(player) = self.players.get(player_id) else {
@@ -893,6 +925,12 @@ impl GameState {
         };
 
         if let Some(outcome) = outcome.as_ref() {
+            if let (Agenda::ClassifiedDocumentLeaks, AgendaElect::SecretObjective(secret)) =
+                (&vote.agenda, outcome)
+            {
+                self.leak_secret_objective(*secret)?;
+            }
+
             if vote.kind == AgendaKind::Law
                 && outcome != &AgendaElect::ForOrAgainst(ForOrAgainst::Against)
             {

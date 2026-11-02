@@ -1,0 +1,205 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 2
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    codex4: false
+    thundersEdge: false
+phase: Agenda
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+    factionState: None
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Bob
+  - Carol
+  - Alice
+strategyCardHolders: {}
+currentPlayer: Bob
+spentStrategyCards: []
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 1
+    Bob: 1
+    Carol: 1
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ErectAMonument: []
+    ExpandBorders: []
+    DestroyTheirGreatestShip:
+      - Bob
+      - Carol
+  secretObjectives:
+    Bob: []
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: Alice
+agenda:
+  round: Round1
+  vote: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: ClassifiedDocumentLeaks
+      kind: Law
+      elect: SecretObjective
+      candidates:
+        - electKind: SecretObjective
+          value: DestroyTheirGreatestShip
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+        Bob:
+          votes: 1
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+        Carol:
+          votes: 1
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+      expectedOutcome:
+        electKind: SecretObjective
+        value: DestroyTheirGreatestShip
+    outcome:
+      electKind: SecretObjective
+      value: DestroyTheirGreatestShip
+  - round: 1
+    vote:
+      agenda: ConventionsOfWar
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+laws: {}
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: DestroyTheirGreatestShip
+  scoredSecretObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  revealedObjective: ErectAMonument
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 1260
+    nanos: 0
+  Bob:
+    secs: 1800
+    nanos: 0
+  Carol:
+    secs: 1200
+    nanos: 0
+currentTurnStartTime: "2025-01-01T13:34:00Z"
+naaluTelepathy: ~
+teExpedition: ~
+fractureInPlay: false
+fractureRoll: ~
+bookOfLatviniaResearch: ~
+ministerOfAntiquesRelic: ~

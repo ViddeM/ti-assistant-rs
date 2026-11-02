@@ -79,6 +79,7 @@ fn PlayerSecretView(player_id: PlayerId) -> Element {
             })
             .filter(|&o| !taken_secret_objectives().contains(o))
             .map(|&o| Objective::Secret(o))
+            .filter(|o| !gc.game_state().score.revealed_objectives.contains_key(o))
             .collect::<Vec<_>>();
         objectives.sort();
         objectives

@@ -184,13 +184,14 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
     });
 
     let available_pubs = use_memo(move || {
-        let mut objs = gc
-            .game_state()
+        let state = gc.game_state();
+        let mut objs = state
             .score
             .revealed_objectives
             .iter()
             .filter(|(_, ps)| !ps.contains(&player()))
             .map(|(o, _)| *o)
+            .filter(|o| !state.is_former_public_objective(o))
             .collect::<Vec<_>>();
         objs.sort();
         objs

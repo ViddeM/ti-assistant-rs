@@ -10,6 +10,7 @@ scenarios![
     agenda_mutiny_and_seed_for,
     agenda_mutiny_and_seed_against,
     agenda_elect_law_and_secret_objective,
+    agenda_classified_document_leaks,
     agenda_override_outside_agenda_phase,
     agenda_elect_planet_with_trait,
     agenda_minister_of_antiques,
@@ -205,6 +206,66 @@ pub fn agenda_elect_law_and_secret_objective() -> TestGame {
     g.agenda(Agenda::JudicialAbolishment)
         .vote_all(AgendaElect::Law(Agenda::ConventionsOfWar), 1)
         .resolve_expected();
+    g
+}
+
+/// Classified Document Leaks makes the elected secret objective public. Once the law is
+/// discarded, nobody else can score it, but the players who scored it keep their points.
+pub fn agenda_classified_document_leaks() -> TestGame {
+    let leaked = SecretObjective::DestroyTheirGreatestShip;
+    let mut g = agenda_phase(three_players());
+    g.apply(Event::ScoreExtraSecretObjective {
+        player: p("Bob"),
+        objective: leaked,
+    });
+    g.agenda(Agenda::ClassifiedDocumentLeaks)
+        .vote_all(AgendaElect::SecretObjective(leaked), 1)
+        .resolve_expected();
+
+    let scorers = &g.state().score.revealed_objectives[&leaked.into()];
+    assert_eq!(scorers.iter().map(|p| &**p).collect::<Vec<_>>(), ["Bob"]);
+    assert!(
+        !g.state().score.secret_objectives[&p("Bob")].contains(&leaked),
+        "the leaked secret is no longer one of Bob's secret objectives"
+    );
+    assert_eq!(g.points("Bob"), 1);
+
+    g.expect_rejected(
+        Event::ScoreExtraPublicObjective {
+            player: p("Bob"),
+            objective: leaked.into(),
+        },
+        "twice",
+    )
+    .expect_rejected(
+        Event::ScoreExtraSecretObjective {
+            player: p("Alice"),
+            objective: leaked,
+        },
+        "revealed as a public objective",
+    );
+    g.agenda(Agenda::ConventionsOfWar)
+        .vote_all(AGAINST, 1)
+        .resolve(Some(AGAINST));
+    g.complete_agenda_phase()
+        .strategy_phase(SIMPLE_PICKS)
+        .play_out_action_phase()
+        .status_phase()
+        .public("Carol", leaked)
+        .reveal(PublicObjective::ErectAMonument)
+        .complete();
+
+    g.apply(Event::RepealLaw {
+        law: Agenda::ClassifiedDocumentLeaks,
+    })
+    .expect_rejected(
+        Event::ScoreExtraPublicObjective {
+            player: p("Alice"),
+            objective: leaked.into(),
+        },
+        "no longer a public objective",
+    );
+    assert_eq!([g.points("Bob"), g.points("Carol")], [1, 1]);
     g
 }
 

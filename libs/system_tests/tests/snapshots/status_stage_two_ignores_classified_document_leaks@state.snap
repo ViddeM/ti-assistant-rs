@@ -82,9 +82,10 @@ score:
     ExpandBorders: []
     NegotiateTradeRoutes: []
     CentralizeGalacticTrade: []
+    DestroyTheirGreatestShip:
+      - Bob
   secretObjectives:
-    Bob:
-      - DestroyTheirGreatestShip
+    Bob: []
   supportForTheThrone: {}
   shardOfTheThrone: ~
   crownOfEmphidia: ~

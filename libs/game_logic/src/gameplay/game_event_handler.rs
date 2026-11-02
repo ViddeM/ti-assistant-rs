@@ -1245,6 +1245,11 @@ fn try_update_game_state(
                 .insert(player.clone(), objective);
 
             if let Some(obj) = objective {
+                ensure!(
+                    !game_state.is_former_public_objective(&obj),
+                    "{} is no longer a public objective",
+                    obj.info().name
+                );
                 let Some(scorers) = game_state.score.revealed_objectives.get_mut(&obj) else {
                     bail!("can't score an unrevealed public objective");
                 };
@@ -1614,6 +1619,11 @@ fn try_update_game_state(
         Event::ScoreExtraPublicObjective { player, objective } => {
             game_state.assert_enabled(&objective)?;
 
+            ensure!(
+                !game_state.is_former_public_objective(&objective),
+                "{} is no longer a public objective",
+                objective.info().name
+            );
             let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {
                 bail!("can't score an unrevealed public objective");
             };
@@ -1630,6 +1640,14 @@ fn try_update_game_state(
                     bail!("secred objective has already been scored");
                 }
             }
+
+            ensure!(
+                !game_state
+                    .score
+                    .revealed_objectives
+                    .contains_key(&Objective::Secret(objective)),
+                "secret objective has been revealed as a public objective"
+            );
 
             game_state
                 .score

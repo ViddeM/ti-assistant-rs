@@ -55,7 +55,7 @@
    - ❌ Agendas
      - ✅ Mutiny (multiple players, add or remove VPs)
      - ❌ Incentive Program (draws a new objective). Manual: reveal the drawn objective in Score → Reveal Objectives. It doesn't change when stage II starts
-     - ❌ Classified Document Leaks (make a secret objective public). Not tracked: the elected secret isn't made public. It doesn't change when stage II starts
+     - ✅ Classified Document Leaks (make a secret objective public). The elected secret becomes a public objective; once the law is discarded nobody else can score it. It doesn't change when stage II starts
      - ✅ Seed of an Empire (1 VP to player(s) with most/least victory points)
      - ✅ (LAW) Political Censure (player gains 1 VP and can't play action cards)
      - ✅ Holy Planet of Ixth
