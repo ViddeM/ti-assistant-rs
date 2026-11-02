@@ -12,8 +12,6 @@ use ti_helper_game_data::{
     },
 };
 
-use crate::components::complexity::Complexity;
-
 #[derive(Clone, Copy)]
 pub struct InfoContext {
     info: Signal<Option<Info>>,
@@ -88,6 +86,23 @@ impl Info {
         }
     }
 
+    pub fn complexity(&self) -> Option<u8> {
+        match self {
+            Info::Agenda(..) => None,
+            Info::Leader(..) => None,
+            Info::Objective(..) => None,
+            Info::Strategy(..) => None,
+            Info::Tech(..) => None,
+            Info::Relic(..) => None,
+            Info::GalacticEvent(galactic_event) => Some(galactic_event.info().complexity),
+            Info::Custom {
+                title: _,
+                subtitle: _,
+                description: _,
+            } => None,
+        }
+    }
+
     pub fn description(&self, expansions: &Expansions) -> InfoDescription {
         match self {
             Info::Agenda(agenda) => InfoDescription::Description(agenda.info().description),
@@ -110,7 +125,6 @@ impl Info {
             Info::GalacticEvent(galactic_event) => {
                 let info = galactic_event.info();
                 InfoDescription::Custom(rsx! {
-                    Complexity { complexity: info.complexity }
                     p { class: "galactic-event-description", "{info.description.trim()}" }
                 })
             }

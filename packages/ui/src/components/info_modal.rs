@@ -1,6 +1,9 @@
 use dioxus::prelude::*;
 
-use crate::data::{game_context::GameContext, info_context::InfoContext};
+use crate::{
+    components::complexity::Complexity,
+    data::{game_context::GameContext, info_context::InfoContext},
+};
 
 const INFO_MODAL_SCSS: Asset = asset!("/assets/styling/components/info_modal.scss");
 
@@ -29,7 +32,12 @@ pub fn InfoModal() -> Element {
             div { class: "info-modal", onclick: |e| e.stop_propagation(),
                 h1 { "{i.title()}" }
                 hr {}
-                h2 { "{i.subtitle()}" }
+                h2 {
+                    "{i.subtitle()}"
+                    if let Some(complexity) = i.complexity() {
+                        Complexity { complexity }
+                    }
+                }
                 {i.description(&expansions()).to_element()}
             }
         }
