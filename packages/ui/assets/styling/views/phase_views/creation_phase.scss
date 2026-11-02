@@ -83,21 +83,33 @@
   align-items: center;
 }
 
-.galactic-event-list {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.galactic-event-row {
+.chosen-galactic-event {
   display: flex;
   flex-direction: row;
   align-items: center;
   margin: $margin 0;
+}
 
-  label {
-    margin-left: $margin;
+.remove-galactic-event-button {
+  border: none;
+  background-color: inherit;
+  color: $primary-text-color;
+  height: 16px;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-left: $margin;
+
+  :hover {
+    color: #500000;
   }
+}
+
+.add-galactic-event {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $margin-large;
+  margin-top: $margin;
 }
 
 .galactic-event-complexity {

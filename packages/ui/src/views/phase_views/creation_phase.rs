@@ -1,15 +1,21 @@
 use std::collections::{BTreeMap, HashSet};
 
 use dioxus::prelude::*;
+use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaTrash};
 use ti_helper_game_data::{
     actions::event::Event,
     common::{color::Color, faction::Faction, player_id::PlayerId},
+    components::galactic_event::GalacticEvent,
     game_options::FactionResponse,
     state::player::{NewPlayer, Player},
 };
 
 use crate::{
-    components::{button::Button, dropdown::FactionDropdown, faction_icon::FactionIcon},
+    components::{
+        button::Button,
+        dropdown::{FactionDropdown, GalacticEventDropdown},
+        faction_icon::FactionIcon,
+    },
     data::{event_context::EventContext, game_context::GameContext},
 };
 
@@ -193,33 +199,77 @@ fn AddPlayer() -> Element {
 fn GalacticEvents() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let options = gc.game_options();
-    let state = gc.game_state();
+
+    let mut selected = use_signal(|| None::<GalacticEvent>);
+
+    let chosen = use_memo(move || {
+        let mut chosen = gc
+            .game_state()
+            .galactic_events
+            .iter()
+            .copied()
+            .collect::<Vec<_>>();
+        chosen.sort_by_key(|e| e.info().name);
+        chosen
+    });
+
+    let available = use_memo(move || {
+        let chosen = &gc.game_state().galactic_events;
+        let mut available = gc
+            .game_options()
+            .galactic_events
+            .iter()
+            .filter(|e| !chosen.contains(e))
+            .copied()
+            .collect::<Vec<_>>();
+        available.sort_by_key(|e| e.info().name);
+        available
+    });
+
+    use_effect(move || {
+        if let Some(e) = selected()
+            && !available().contains(&e)
+        {
+            selected.set(None);
+        }
+    });
 
     rsx! {
         div { class: "galactic-events",
             h2 { "Galactic Events" }
-            div { class: "galactic-event-list",
-                for galactic_event in options.galactic_events.iter().copied() {
-                    div { key: "{galactic_event}", class: "galactic-event-row",
-                        input {
-                            r#type: "checkbox",
-                            id: "galactic_event_{galactic_event}",
-                            checked: state.galactic_events.contains(&galactic_event),
-                            onchange: move |_| {
-                                let mut events = gc.game_state().galactic_events.clone();
-                                if !events.remove(&galactic_event) {
-                                    events.insert(galactic_event);
-                                }
-                                event.send_event(Event::SetGalacticEvents { events });
-                            },
-                        }
-                        label { r#for: "galactic_event_{galactic_event}",
-                            "{galactic_event.info().name}"
-                            span { class: "galactic-event-complexity",
-                                "Complexity {galactic_event.info().complexity}"
-                            }
-                        }
+            for galactic_event in chosen().iter().copied() {
+                div { key: "{galactic_event}", class: "chosen-galactic-event",
+                    "{galactic_event.info().name}"
+                    span { class: "galactic-event-complexity",
+                        "Complexity {galactic_event.info().complexity}"
+                    }
+                    Button {
+                        class: "remove-galactic-event-button",
+                        onclick: move |_| {
+                            let mut events = gc.game_state().galactic_events.clone();
+                            events.remove(&galactic_event);
+                            event.send_event(Event::SetGalacticEvents { events });
+                        },
+                        Icon { class: "inline-icon", icon: FaTrash }
+                    }
+                }
+            }
+            if !available().is_empty() {
+                div { class: "add-galactic-event",
+                    GalacticEventDropdown {
+                        value: selected,
+                        options: available(),
+                        on_select: move |e| selected.set(e),
+                    }
+                    Button {
+                        disabled: selected().is_none(),
+                        onclick: move |_| {
+                            let mut events = gc.game_state().galactic_events.clone();
+                            events.insert(selected().expect("Galactic event to be selected"));
+                            event.send_event(Event::SetGalacticEvents { events });
+                            selected.set(None);
+                        },
+                        "Add"
                     }
                 }
             }

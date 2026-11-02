@@ -11,6 +11,7 @@ use ti_helper_game_data::{
         agenda::{Agenda, AgendaElect},
         breakthrough::Breakthrough,
         frontier_card::FrontierCard,
+        galactic_event::GalacticEvent,
         objectives::Objective,
         planet::Planet,
         planet_attachment::PlanetAttachment,
@@ -247,6 +248,49 @@ pub fn RelicDropdown(
                     .map(|r| {
                         rsx! {
                             option { key: "{r}", value: "{r}", "{r.info().name}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[component]
+pub fn GalacticEventDropdown(
+    value: ReadSignal<Option<GalacticEvent>>,
+    options: Vec<GalacticEvent>,
+    on_select: EventHandler<Option<GalacticEvent>>,
+    disabled: Option<bool>,
+) -> Element {
+    let current_value =
+        use_memo(move || value().as_ref().map(|e| e.to_string()).unwrap_or_default());
+
+    let oninput = move |event: FormEvent| {
+        let new_value = event.value();
+        if new_value.is_empty() {
+            on_select(None);
+        } else {
+            let galactic_event =
+                GalacticEvent::from_str(&new_value).expect("Unexpected galactic event");
+            on_select(Some(galactic_event));
+        }
+    };
+
+    rsx! {
+        Dropdown {
+            value: current_value,
+            disabled: disabled.unwrap_or(false),
+            oninput,
+            option { value: "", "--Select Galactic Event--" }
+            {
+                options
+                    .iter()
+                    .map(|e| {
+                        let info = e.info();
+                        rsx! {
+                            option { key: "{e}", value: "{e}",
+                                "{info.name} (Complexity {info.complexity})"
+                            }
                         }
                     })
             }
