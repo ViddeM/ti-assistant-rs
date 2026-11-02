@@ -1,7 +1,7 @@
 ---
 source: libs/system_tests/src/check.rs
 ---
-round: 2
+round: 5
 gameSettings:
   maxPoints: 10
   expansions:
@@ -105,7 +105,6 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: CentralizeGalacticTrade
-  expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
   Alice: []
   Bob: []
@@ -113,15 +112,15 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 780
+    secs: 2400
     nanos: 0
   Bob:
-    secs: 540
+    secs: 2160
     nanos: 0
   Carol:
-    secs: 600
+    secs: 2400
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:47:00Z"
+currentTurnStartTime: "2025-01-01T14:35:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false

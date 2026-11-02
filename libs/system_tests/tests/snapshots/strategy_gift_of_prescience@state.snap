@@ -103,7 +103,6 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: ErectAMonument
-  expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
   Alice: []
   Bob: []

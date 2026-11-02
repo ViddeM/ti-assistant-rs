@@ -198,11 +198,7 @@ pub fn agenda_elect_law_and_secret_objective() -> TestGame {
         .resolve_expected();
     g.complete_agenda_phase();
 
-    // Classified Document Leaks delays stage II objectives by one.
     g.strategy_phase(SIMPLE_PICKS).play_out_action_phase();
-    let status = g.state().status_phase_state.as_ref().unwrap();
-    assert_eq!(status.expected_objectives_before_stage_two, 6);
-
     g.status_phase()
         .reveal(PublicObjective::ErectAMonument)
         .complete();

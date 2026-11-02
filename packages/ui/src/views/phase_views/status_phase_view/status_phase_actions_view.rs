@@ -85,9 +85,7 @@ pub fn StatusPhaseActionsView() -> Element {
             .map(|(id, _)| id.clone())
     });
 
-    let reveal_stage_two = use_memo(move || {
-        revealed_objectives().len() >= state().expected_objectives_before_stage_two
-    });
+    let reveal_stage_two = use_memo(move || gc.game_state().status_phase_reveals_stage_two());
     let stage = use_memo(move || if reveal_stage_two() { "II" } else { "I" });
 
     let selectable_objectives = use_memo(move || {

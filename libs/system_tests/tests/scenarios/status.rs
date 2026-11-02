@@ -2,11 +2,14 @@
 
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{action_phase, three_players};
+use crate::fixtures::{SIMPLE_PICKS, action_phase, agenda_phase, three_players};
 
 scenarios![
     status_scoring_and_reveal,
     status_stage_two_unlock,
+    status_stage_two_ignores_incentive_program_for,
+    status_stage_two_ignores_incentive_program_against,
+    status_stage_two_ignores_classified_document_leaks,
     status_relics_phase_maw_and_crown,
 ];
 
@@ -78,17 +81,22 @@ pub fn status_scoring_and_reveal() -> TestGame {
     g
 }
 
-/// Stage II objectives are revealed once five objectives are out.
+/// Stage II objectives are revealed from the status phase of round 4.
 pub fn status_stage_two_unlock() -> TestGame {
-    let mut g = action_phase(three_players());
+    let mut g = three_players().start();
     for objective in [
         PublicObjective::ErectAMonument,
         PublicObjective::ExpandBorders,
         PublicObjective::SwayTheCouncil,
     ] {
-        g.apply(Event::RevealExtraPublicObjective { objective });
+        g.strategy_phase(SIMPLE_PICKS)
+            .play_out_action_phase()
+            .status_phase()
+            .reveal(objective)
+            .complete();
     }
-    g.play_out_action_phase()
+    g.strategy_phase(SIMPLE_PICKS)
+        .play_out_action_phase()
         .expect_rejected(
             Event::RevealPublicObjective {
                 objective: PublicObjective::NegotiateTradeRoutes,
@@ -98,6 +106,103 @@ pub fn status_stage_two_unlock() -> TestGame {
         .status_phase()
         .reveal(PublicObjective::CentralizeGalacticTrade)
         .complete();
+    assert_eq!(g.round(), 5);
+    g
+}
+
+/// Vote down the laws as filler agendas, then play the next round up to its status phase.
+fn reject_laws_to_status_phase(g: &mut TestGame, laws: &[Agenda]) {
+    for &law in laws {
+        g.agenda(law).vote_all(AGAINST, 1).resolve(Some(AGAINST));
+    }
+    g.complete_agenda_phase()
+        .strategy_phase(SIMPLE_PICKS)
+        .play_out_action_phase();
+}
+
+/// Incentive Program reveals an extra objective from the deck, which doesn't change when stage II
+/// starts.
+fn incentive_program(outcome: ForOrAgainst, extra: PublicObjective) -> TestGame {
+    let mut g = agenda_phase(three_players());
+    g.agenda(Agenda::IncentiveProgram)
+        .vote_all(AgendaElect::ForOrAgainst(outcome), 1)
+        .resolve_expected();
+    g.apply(Event::RevealExtraPublicObjective { objective: extra });
+    reject_laws_to_status_phase(&mut g, &[Agenda::ConventionsOfWar]);
+
+    g.status_phase()
+        .reveal(PublicObjective::ErectAMonument)
+        .complete();
+    reject_laws_to_status_phase(
+        &mut g,
+        &[Agenda::FleetRegulations, Agenda::EnforcedTravelBan],
+    );
+
+    g.expect_rejected(
+        Event::RevealPublicObjective {
+            objective: PublicObjective::CentralizeGalacticTrade,
+        },
+        "Haven't finished revealing stage I",
+    )
+    .status_phase()
+    .reveal(PublicObjective::NegotiateTradeRoutes)
+    .complete();
+    g
+}
+
+/// Incentive Program for: the extra stage I objective doesn't bring stage II forward.
+pub fn status_stage_two_ignores_incentive_program_for() -> TestGame {
+    incentive_program(ForOrAgainst::For, PublicObjective::SwayTheCouncil)
+}
+
+/// Incentive Program against: the extra stage II objective doesn't bring stage II forward.
+pub fn status_stage_two_ignores_incentive_program_against() -> TestGame {
+    incentive_program(ForOrAgainst::Against, PublicObjective::FoundAGoldenAge)
+}
+
+/// The secret objective made public by Classified Document Leaks doesn't delay stage II.
+pub fn status_stage_two_ignores_classified_document_leaks() -> TestGame {
+    let mut g = agenda_phase(three_players());
+    g.apply(Event::ScoreExtraSecretObjective {
+        player: p("Bob"),
+        objective: SecretObjective::DestroyTheirGreatestShip,
+    });
+    g.agenda(Agenda::ClassifiedDocumentLeaks)
+        .vote_all(
+            AgendaElect::SecretObjective(SecretObjective::DestroyTheirGreatestShip),
+            1,
+        )
+        .resolve_expected();
+    assert!(
+        g.state()
+            .laws
+            .contains_key(&Agenda::ClassifiedDocumentLeaks)
+    );
+    reject_laws_to_status_phase(&mut g, &[Agenda::ConventionsOfWar]);
+
+    for (objective, laws) in [
+        (
+            PublicObjective::ErectAMonument,
+            [Agenda::FleetRegulations, Agenda::EnforcedTravelBan],
+        ),
+        (
+            PublicObjective::NegotiateTradeRoutes,
+            [Agenda::ExecutiveSanctions, Agenda::HomelandDefenseAct],
+        ),
+    ] {
+        g.status_phase().reveal(objective).complete();
+        reject_laws_to_status_phase(&mut g, &laws);
+    }
+
+    g.expect_rejected(
+        Event::RevealPublicObjective {
+            objective: PublicObjective::SwayTheCouncil,
+        },
+        "Already revealed enough stage I objective",
+    )
+    .status_phase()
+    .reveal(PublicObjective::CentralizeGalacticTrade)
+    .complete();
     g
 }
 

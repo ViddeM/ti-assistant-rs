@@ -107,7 +107,6 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: ExpandBorders
-  expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
   Alice: []
   Bob: []

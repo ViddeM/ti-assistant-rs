@@ -103,8 +103,6 @@ pub fn action_turn_order_and_passing() -> TestGame {
 
     assert_eq!(g.phase(), Phase::Status);
     assert!(g.state().passed_players.is_empty());
-    let status = g.state().status_phase_state.as_ref().unwrap();
-    assert_eq!(status.expected_objectives_before_stage_two, 5);
     g
 }
 

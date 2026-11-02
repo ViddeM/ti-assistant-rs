@@ -461,7 +461,6 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: CentralizeGalacticTrade
-  expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
   Alice: []
   Bob: []

@@ -113,7 +113,6 @@ statusPhaseState:
     Alice: DestroyTheirGreatestShip
   scoredSecretObjectives: {}
   revealedObjective: ~
-  expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
   Alice: []
   Bob: []

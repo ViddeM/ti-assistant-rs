@@ -15,7 +15,7 @@
  - ✅ Thunder's Edge / Avernus can't be taken in a tactical action (no system) `[E1]`; Custodia Vigilia should be granted through I.I.H.Q. instead `[A4]`
  - ✅ Styx resources 3 → 4
  - ❌ Configured victory points ignored (score hard-codes 10) (lowest priority: game end is handled at the table) `[E5]`
- - ❌ Stage II gating wrong with Incentive Program / Classified Document Leaks
+ - ✅ Stage II gating wrong with Incentive Program / Classified Document Leaks
  - ✅ Political Censure score row is labelled "Shard of the Throne"
  - 🚱 Wrong expansion tags: Raise a Fleet, Dictate Policy, Drive the Debate (→ PoK, left open: retagging would break replay of stored base-only games); ✅ I.I.H.Q. Modernization, Agency Supply Network (→ Codex III)
 
@@ -54,8 +54,8 @@
    - ✅ Imperial
    - ❌ Agendas
      - ✅ Mutiny (multiple players, add or remove VPs)
-     - ❌ Incentive Program (draws a new objective). Partial code exists but is wrong (Known bugs)
-     - ❌ Classified Document Leaks (make a secret objective public). Partial code exists but is wrong (Known bugs)
+     - ❌ Incentive Program (draws a new objective). Manual: reveal the drawn objective in Score → Reveal Objectives. It doesn't change when stage II starts
+     - ❌ Classified Document Leaks (make a secret objective public). Not tracked: the elected secret isn't made public. It doesn't change when stage II starts
      - ✅ Seed of an Empire (1 VP to player(s) with most/least victory points)
      - ✅ (LAW) Political Censure (player gains 1 VP and can't play action cards)
      - ✅ Holy Planet of Ixth
@@ -375,4 +375,4 @@
  - ❌ Test play with both this and OG ti-assistant
  - ❌ Go over PoK to see if anything has been missed.
  - 🚱 Go over TE to see if anything has been missed (done in `TE_CIV_Action_Plan.md`)
- - ❌ Missing test scenarios: elect trait planets, take Fracture / Thunder's Edge planets, Incentive Program / Classified Document Leaks stage II gating
+ - ❌ Missing test scenarios: elect trait planets, take Fracture / Thunder's Edge planets

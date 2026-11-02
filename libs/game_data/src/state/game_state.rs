@@ -42,6 +42,10 @@ use super::{
     status::StatusPhaseState,
 };
 
+/// The first round whose status phase reveals a stage II objective. Setup reveals two of the
+/// five stage I objectives and the status phases of rounds 1 to 3 reveal one each.
+const FIRST_STAGE_TWO_ROUND: u32 = 4;
+
 /// A snapshot of the game state.
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -452,9 +456,7 @@ impl GameState {
                     self.phase = Phase::Status;
                     self.current_turn_start_time = None;
 
-                    self.status_phase_state = Some(StatusPhaseState::new(
-                        self.expected_objectives_before_stage_two(),
-                    ))
+                    self.status_phase_state = Some(StatusPhaseState::new())
                 }
                 _ => bail!("wtf"),
             }
@@ -807,20 +809,10 @@ impl GameState {
         Ok(current_player)
     }
 
-    /// Returns the number of cards that is expected to have been revealed before we can start revealing stage II cards.
-    pub fn expected_objectives_before_stage_two(&self) -> usize {
-        let extras = self
-            .laws
-            .keys()
-            .filter(|&&agenda| {
-                matches!(
-                    agenda,
-                    Agenda::IncentiveProgram | Agenda::ClassifiedDocumentLeaks
-                )
-            })
-            .count();
-
-        5 + extras
+    /// Returns true if this round's status phase reveals a stage II objective instead of a stage I
+    /// objective. Extra objectives revealed outside of the status phase don't change it.
+    pub fn status_phase_reveals_stage_two(&self) -> bool {
+        self.round >= FIRST_STAGE_TWO_ROUND
     }
 
     /// Returns true if the player has performed any required initialization for their faction.

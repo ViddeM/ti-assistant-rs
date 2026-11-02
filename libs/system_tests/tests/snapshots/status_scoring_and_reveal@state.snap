@@ -106,7 +106,6 @@ statusPhaseState:
     Bob: BecomeTheGatekeeper
     Carol: ~
   revealedObjective: ExpandBorders
-  expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
   Alice: []
   Bob: []

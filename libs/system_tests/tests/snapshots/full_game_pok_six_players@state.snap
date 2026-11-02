@@ -389,7 +389,6 @@ statusPhaseState:
   scoredPublicObjectives: {}
   scoredSecretObjectives: {}
   revealedObjective: ~
-  expectedObjectivesBeforeStageTwo: 5
 availableLeaders:
   Alice:
     - ZeuCxIII

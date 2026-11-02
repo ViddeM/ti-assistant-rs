@@ -1307,25 +1307,22 @@ fn try_update_game_state(
 
             game_state.assert_enabled(&pub_obj)?;
 
+            let stage_two = game_state.status_phase_reveals_stage_two();
             let Some(status_phase_state) = game_state.status_phase_state.as_mut() else {
                 bail!("Status phase state not set!")
             };
 
-            let num_revealed = game_state.score.revealed_objectives.len();
-            match pub_obj.info().kind {
-                ObjectiveKind::StageI => {
-                    if num_revealed >= status_phase_state.expected_objectives_before_stage_two {
-                        bail!("Already revealed enough stage I objective, expected stage II");
-                    }
+            match (pub_obj.info().kind, stage_two) {
+                (ObjectiveKind::StageI, false) | (ObjectiveKind::StageII, true) => {}
+                (ObjectiveKind::StageI, true) => {
+                    bail!("Already revealed enough stage I objective, expected stage II");
                 }
-                ObjectiveKind::StageII => {
-                    if num_revealed < status_phase_state.expected_objectives_before_stage_two {
-                        bail!(
-                            "Haven't finished revealing stage I obejctives, cannot reveal stage II yet"
-                        )
-                    }
+                (ObjectiveKind::StageII, false) => {
+                    bail!(
+                        "Haven't finished revealing stage I obejctives, cannot reveal stage II yet"
+                    )
                 }
-                ObjectiveKind::Secret { .. } => {
+                (ObjectiveKind::Secret { .. }, _) => {
                     bail!("Cannot reveal secret objective as public objective")
                 }
             }

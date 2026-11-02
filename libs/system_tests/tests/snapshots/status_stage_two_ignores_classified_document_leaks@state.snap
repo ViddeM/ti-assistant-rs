@@ -1,0 +1,356 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 4
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    codex4: false
+    thundersEdge: false
+phase: Agenda
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+    factionState: None
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Bob
+  - Carol
+  - Alice
+strategyCardHolders: {}
+currentPlayer: Bob
+spentStrategyCards: []
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 1
+    Bob: 1
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ErectAMonument: []
+    ExpandBorders: []
+    NegotiateTradeRoutes: []
+    CentralizeGalacticTrade: []
+  secretObjectives:
+    Bob:
+      - DestroyTheirGreatestShip
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: Alice
+agenda:
+  round: Round1
+  vote: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: ClassifiedDocumentLeaks
+      kind: Law
+      elect: SecretObjective
+      candidates:
+        - electKind: SecretObjective
+          value: DestroyTheirGreatestShip
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+        Bob:
+          votes: 1
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+        Carol:
+          votes: 1
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: SecretObjective
+            value: DestroyTheirGreatestShip
+      expectedOutcome:
+        electKind: SecretObjective
+        value: DestroyTheirGreatestShip
+    outcome:
+      electKind: SecretObjective
+      value: DestroyTheirGreatestShip
+  - round: 1
+    vote:
+      agenda: ConventionsOfWar
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+  - round: 2
+    vote:
+      agenda: FleetRegulations
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+  - round: 2
+    vote:
+      agenda: EnforcedTravelBan
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+  - round: 3
+    vote:
+      agenda: ExecutiveSanctions
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+  - round: 3
+    vote:
+      agenda: HomelandDefenseAct
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: Against
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: Against
+    outcome:
+      electKind: ForOrAgainst
+      value: Against
+laws:
+  ClassifiedDocumentLeaks:
+    electKind: SecretObjective
+    value: DestroyTheirGreatestShip
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  scoredSecretObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  revealedObjective: CentralizeGalacticTrade
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 2460
+    nanos: 0
+  Bob:
+    secs: 4200
+    nanos: 0
+  Carol:
+    secs: 2400
+    nanos: 0
+currentTurnStartTime: "2025-01-01T15:10:00Z"
+naaluTelepathy: ~
+teExpedition: ~
+fractureInPlay: false
+fractureRoll: ~
+bookOfLatviniaResearch: ~
+ministerOfAntiquesRelic: ~
