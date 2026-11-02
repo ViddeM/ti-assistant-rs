@@ -1,0 +1,15 @@
+After a ship moves using at least 1 alpha, beta, or gamma wormhole, roll 1 die and consult the following list;
+
+1. Fighter
+2. Destroyer
+3. Cruiser
+4. Dreadnought
+5. Carrier
+6. Flagship
+7. War Sun (if researched)
+
+For each roll of 1-5, replace that ship with the ship before it from your reinforcements, if able.
+
+For each roll of 6-10, replace that ship with the ship after it from your reinforcements, if able.
+
+If there are no ships of that type in your reinforcements, skip that type and replace it with the next available type.

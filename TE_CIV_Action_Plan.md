@@ -219,11 +219,11 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
 
 ### 5.0 Framework (do this once)
 
-1. **Data:** `components/galactic_event.rs`
+1. ✅ **Data:** `components/galactic_event/mod.rs`
    - `enum GalacticEvent` (20 variants).
-   - `info()` returns name, complexity, expansion (`CodexIV` | `ThundersEdge`), `requires_pok` (Minor Factions, Age of Exploration) and a description file in `galactic_event/description/` (same pattern as relics and breakthroughs).
+   - `info()` returns name, complexity, expansion (`CodexIV` | `ThundersEdge`), `also_requires` and a description file in `galactic_event/description/` (same pattern as relics and breakthroughs).
+   - Availability goes through `Component::is_enabled_in`: the CIV events need `codex_4` (the Thunder's Edge reprint doesn't count), the TE events need `thunders_edge`. Age of Exploration's `also_requires` is PoK; Minor Factions is playable without it by ignoring the alliance paragraph.
 2. **Settings:** `GameSettings.galactic_events: BTreeSet<GalacticEvent>` with `#[serde(default)]`.
-   - Availability: the CIV events need `codex_4 || thunders_edge`; the TE events need `thunders_edge`.
    - Validate in `SetSettings`.
 3. **Milty games:** add a creation-phase event `SetGalacticEvents { events }`, because the milty import builds its settings from the draft. It works for both flows.
 4. **New-game UI** (`packages/ui/src/views/new_game.rs` + `packages/api/src/requests/new_game.rs`):

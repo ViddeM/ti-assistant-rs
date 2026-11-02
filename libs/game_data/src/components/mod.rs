@@ -6,6 +6,8 @@ pub mod agenda;
 pub mod breakthrough;
 /// Frontier cards.
 pub mod frontier_card;
+/// Galactic events.
+pub mod galactic_event;
 /// Leader cards, i.e. agents, commanders, and heroes.
 pub mod leaders;
 /// Objectives.

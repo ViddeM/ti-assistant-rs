@@ -1,0 +1,5 @@
+Players do not have to be neighbors to perform transactions with each other.
+
+Players do not have a maximum number of commodities; when they refresh commodities, they gain a number of commodities equal to their commodity value instead.
+
+Players can share non-faction technology with other players as part of a transaction. When sharing technology, the receiving player gains that technology from their own deck; the sharing player does not lose the technology.

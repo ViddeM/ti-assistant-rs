@@ -1,0 +1,7 @@
+Anomalies are adjusted as follows:
+
+Nebulae: The defender applies +3 to each of their ship's combat rolls in the nebulae instead.
+Asteroid Fields: Fighters without a move value do not participate in space combat in asteroid fields.
+Supernovas: Units with PRODUCTION in or adjacent to supernovas have their PRODUCTION values increased by 1.
+Gravity Rifts: You may apply an additional +1 to the MOVE values of any of your ships moving out of gravity rifts; if you do, those ships are removed on a roll of 5 or lower.
+Entropic Scars: Systems that contain entropic scars are adjacent to each other

@@ -12,6 +12,11 @@ pub trait Component: PartialEq + Sized + 'static {
     /// The expansion that introduced this component.
     fn expansion(&self) -> Expansion;
 
+    /// An expansion this component needs on top of its own and [Self::REQUIRES].
+    fn also_requires(&self) -> Expansion {
+        Expansion::Base
+    }
+
     /// Whether this version is in play with the provided expansions.
     fn is_enabled_in(&self, expansions: &Expansions) -> bool {
         if !expansions.is_enabled(&Self::REQUIRES) {
@@ -21,6 +26,10 @@ pub trait Component: PartialEq + Sized + 'static {
 
         if !expansions.is_enabled(&self.expansion()) {
             // The component hasn't been introduced in these expansions.
+            return false;
+        }
+
+        if !expansions.is_enabled(&self.also_requires()) {
             return false;
         }
 

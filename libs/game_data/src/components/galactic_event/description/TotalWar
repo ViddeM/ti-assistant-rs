@@ -1,0 +1,7 @@
+When a player destroys or produces hits that destroy another player's units, they place commodities from the supply equal to the combined cost of the units they destroyed on a planet they control in their own home system (infantry and fighters are worth 1 each).
+
+When a player gains control of a home planet that has commodities, they move those commodities to a planet they control in their own home system.
+
+All players can perform the following action:
+
+ACTION: Discard 10 commodities from planets in your home system to gain 1 victory point.
