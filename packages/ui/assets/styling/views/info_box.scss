@@ -11,6 +11,10 @@
   }
 }
 
+.game-info-galactic-event .info-button {
+  margin: 0 $margin-large;
+}
+
 .view-mode-button-group {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

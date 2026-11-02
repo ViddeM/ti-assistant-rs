@@ -3,13 +3,13 @@ use dioxus_free_icons::{
     Icon,
     icons::fa_solid_icons::{FaPause, FaPlay},
 };
-use ti_helper_game_data::game_id::GameId;
+use ti_helper_game_data::{components::phase::Phase, game_id::GameId};
 
 use crate::{
-    components::button::Button,
+    components::{button::Button, info_button::InfoButton},
     data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-        view_mode::ViewMode,
+        event_context::EventContext, game_context::GameContext, info_context::Info,
+        player_view::PlayerViewContext, view_mode::ViewMode,
     },
 };
 
@@ -31,6 +31,17 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
     });
 
     let round = use_memo(move || gc.game_state().round);
+
+    let galactic_events = use_memo(move || {
+        let mut events = gc
+            .game_state()
+            .galactic_events
+            .iter()
+            .copied()
+            .collect::<Vec<_>>();
+        events.sort_by_key(|e| e.info().name);
+        events
+    });
 
     let play_pause_icon = use_memo(move || {
         if gc.game_state().time_tracking_paused {
@@ -84,6 +95,27 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
             p { "Current player: {current_player}" }
             p { "Currently viewing: {player.display()}" }
             p { "Current phase: {gc.game_state().phase}" }
+            if gc.game_state().phase != Phase::Creation && !galactic_events().is_empty() {
+                p { class: "margin-top",
+                    if galactic_events().len() == 1 {
+                        "Galactic event:"
+                    } else {
+                        "Galactic events:"
+                    }
+                }
+                for galactic_event in galactic_events() {
+                    p {
+                        key: "{galactic_event}",
+                        class: "game-info-galactic-event",
+                        InfoButton {
+                            info: Info::GalacticEvent(galactic_event),
+                            visibility: "hidden",
+                        }
+                        "{galactic_event.info().name}"
+                        InfoButton { info: Info::GalacticEvent(galactic_event) }
+                    }
+                }
+            }
             div {
                 Button {
                     class: "margin-right",

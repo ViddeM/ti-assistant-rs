@@ -229,7 +229,7 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
 4. **Random pick:** a **"Pick random"** button on the Creation screen picker. The randomness lives in the client, so the event stays deterministic.
 5. **In-game display:**
    - ✅ `Info::GalacticEvent` (info modal), opened from the Creation screen.
-   - Add an "Active galactic events" strip in the game header or sidebar.
+   - ✅ From Setup on, the info box lists the chosen events (name + info button) under a "Galactic event(s):" label. Creation keeps its own table.
 6. **Scoring:** event-specific VP rows in `update_player_points` (Total War, Zealous Orthodoxy, Monuments), shown in the score table.
 7. **Tests:** ✅ the builder's `.galactic_events([..])` and the creation tests in `setup.rs`. The per-event scenarios go in `libs/system_tests/tests/scenarios/galactic_events.rs`.
 
