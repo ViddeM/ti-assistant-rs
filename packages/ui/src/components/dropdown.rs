@@ -21,6 +21,8 @@ use ti_helper_game_data::{
     },
 };
 
+use crate::components::complexity::complexity_symbols;
+
 #[derive(PartialEq, Debug, Clone, Props)]
 pub struct DropdownProps {
     value: ReadSignal<String>,
@@ -289,7 +291,7 @@ pub fn GalacticEventDropdown(
                         let info = e.info();
                         rsx! {
                             option { key: "{e}", value: "{e}",
-                                "{info.name} (Complexity {info.complexity})"
+                                "{info.name} {complexity_symbols(info.complexity)}"
                             }
                         }
                     })

@@ -4,6 +4,12 @@ const COMPLEXITY_SCSS: Asset = asset!("/assets/styling/components/complexity.scs
 
 const MAX_COMPLEXITY: u8 = 3;
 
+pub fn complexity_symbols(complexity: u8) -> String {
+    (1..=MAX_COMPLEXITY)
+        .map(|slot| if slot <= complexity { '▰' } else { '▱' })
+        .collect()
+}
+
 #[component]
 pub fn Complexity(complexity: u8) -> Element {
     rsx! {
