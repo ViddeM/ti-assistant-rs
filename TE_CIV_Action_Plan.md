@@ -223,16 +223,15 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
    - `enum GalacticEvent` (20 variants).
    - `info()` returns name, complexity, expansion (`CodexIV` | `ThundersEdge`), `also_requires` and a description file in `galactic_event/description/` (same pattern as relics and breakthroughs).
    - Availability goes through `Component::is_enabled_in`: the CIV events need `codex_4` (the Thunder's Edge reprint doesn't count), the TE events need `thunders_edge`. Age of Exploration's `also_requires` is PoK; Minor Factions is playable without it by ignoring the alliance paragraph.
-2. **Settings:** `GameSettings.galactic_events: BTreeSet<GalacticEvent>` with `#[serde(default)]`.
-   - Validate in `SetSettings`.
-3. **Milty games:** add a creation-phase event `SetGalacticEvents { events }`, because the milty import builds its settings from the draft. It works for both flows.
-4. **New-game UI** (`packages/ui/src/views/new_game.rs` + `packages/api/src/requests/new_game.rs`):
-   - A multi-select with complexity badges and a **"Pick random"** button. The randomness lives in the client, so the event stays deterministic.
+2. ✅ **State:** `GameState::galactic_events: BTreeSet<GalacticEvent>`. A set, because the Codex IV rulebook says advanced players can play with several events at once.
+3. ✅ **Choosing:** the creation-phase event `SetGalacticEvents { events }` replaces the whole set (empty clears it) and checks each event with `assert_enabled`. `SetSettings` and `ImportFromMilty` don't touch it.
+   - The Creation ("Add Players") screen, which both the new-game and milty flows land on, has a checkbox per enabled event with its complexity. It's hidden when no event is enabled.
+4. **Random pick:** a **"Pick random"** button on the Creation screen picker. The randomness lives in the client, so the event stays deterministic.
 5. **In-game display:**
    - Add `Info::GalacticEvent` (info modal).
    - Add an "Active galactic events" strip in the game header or sidebar.
 6. **Scoring:** event-specific VP rows in `update_player_points` (Total War, Zealous Orthodoxy, Monuments), shown in the score table.
-7. **Tests:** `libs/system_tests/tests/scenarios/galactic_events.rs`, with a fixture builder `.galactic_events(&[..])`.
+7. **Tests:** ✅ the builder's `.galactic_events([..])` and the creation tests in `setup.rs`. The per-event scenarios go in `libs/system_tests/tests/scenarios/galactic_events.rs`.
 
 ### 5.1 Overview
 

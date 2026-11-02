@@ -13,6 +13,7 @@ use ti_helper_game_data::{
     },
     components::{
         agenda::{AgendaElect, ForOrAgainst},
+        galactic_event::GalacticEvent,
         objectives::public::PublicObjective,
         phase::Phase,
         tech::{TechOrigin, Technology},
@@ -363,6 +364,7 @@ pub struct TestGameBuilder {
     settings: GameSettings,
     players: Vec<(String, Faction, Option<Color>)>,
     milty: Option<MiltyData>,
+    galactic_events: BTreeSet<GalacticEvent>,
     clock_step: TimeDelta,
     setup: SetupPlan,
 }
@@ -373,6 +375,7 @@ impl Default for TestGameBuilder {
             settings: GameSettings::default(),
             players: vec![],
             milty: None,
+            galactic_events: BTreeSet::new(),
             clock_step: TimeDelta::minutes(1),
             setup: SetupPlan {
                 speaker: None,
@@ -439,6 +442,12 @@ impl TestGameBuilder {
         self
     }
 
+    /// Choose the galactic events to play with (defaults to none).
+    pub fn galactic_events(mut self, events: impl IntoIterator<Item = GalacticEvent>) -> Self {
+        self.galactic_events = events.into_iter().collect();
+        self
+    }
+
     /// Choose the starting speaker (defaults to the first player).
     pub fn speaker(mut self, name: &str) -> Self {
         self.setup.speaker = Some(name.to_string());
@@ -485,28 +494,33 @@ impl TestGameBuilder {
                 max_points: self.settings.max_points,
                 milty_data: Box::new(milty_data),
             });
-            return game;
+        } else {
+            game.apply(Event::SetSettings {
+                settings: self.settings,
+            });
+
+            let mut taken: Vec<Color> = self.players.iter().filter_map(|(_, _, c)| *c).collect();
+            for (name, faction, color) in self.players {
+                let color = color.unwrap_or_else(|| {
+                    let color = Color::iter()
+                        .find(|c| !taken.contains(c))
+                        .expect("ran out of colors");
+                    taken.push(color);
+                    color
+                });
+                game.apply(Event::AddPlayer {
+                    player: NewPlayer {
+                        name,
+                        faction,
+                        color,
+                    },
+                });
+            }
         }
 
-        game.apply(Event::SetSettings {
-            settings: self.settings,
-        });
-
-        let mut taken: Vec<Color> = self.players.iter().filter_map(|(_, _, c)| *c).collect();
-        for (name, faction, color) in self.players {
-            let color = color.unwrap_or_else(|| {
-                let color = Color::iter()
-                    .find(|c| !taken.contains(c))
-                    .expect("ran out of colors");
-                taken.push(color);
-                color
-            });
-            game.apply(Event::AddPlayer {
-                player: NewPlayer {
-                    name,
-                    faction,
-                    color,
-                },
+        if !self.galactic_events.is_empty() {
+            game.apply(Event::SetGalacticEvents {
+                events: self.galactic_events,
             });
         }
         game

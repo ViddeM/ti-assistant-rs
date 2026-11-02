@@ -29,6 +29,7 @@ pub mod prelude {
             action_card::ActionCard,
             agenda::{Agenda, AgendaElect, ForOrAgainst},
             frontier_card::FrontierCard,
+            galactic_event::GalacticEvent,
             leaders::{Agent, Commander, Hero, Leader},
             objectives::{Objective, public::PublicObjective, secret::SecretObjective},
             phase::Phase,

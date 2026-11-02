@@ -21,6 +21,7 @@ use crate::{
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
         breakthrough::Breakthrough,
         frontier_card::FrontierCard,
+        galactic_event::GalacticEvent,
         leaders::{Leader, LeaderAbilityKind},
         objectives::{Objective, secret::SecretObjective},
         phase::Phase,
@@ -55,6 +56,9 @@ pub struct GameState {
 
     /// The settings for the game.
     pub game_settings: GameSettings,
+
+    /// The galactic events in play.
+    pub galactic_events: BTreeSet<GalacticEvent>,
 
     /// The current phase of the game.
     pub phase: Phase,

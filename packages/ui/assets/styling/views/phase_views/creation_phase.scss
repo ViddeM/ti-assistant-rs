@@ -74,6 +74,38 @@
   margin: $margin 0;
 }
 
+.galactic-events {
+  width: 100%;
+  padding-bottom: $padding-large;
+  border-bottom: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.galactic-event-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.galactic-event-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: $margin 0;
+
+  label {
+    margin-left: $margin;
+  }
+}
+
+.galactic-event-complexity {
+  margin-left: $margin-large;
+  color: gray;
+  font-size: $font-size-small;
+}
+
 .start-game-button {
   margin-top: $margin;
 }

@@ -1,5 +1,7 @@
 //! Creating and setting up games.
 
+use std::collections::BTreeSet;
+
 use ti_helper_game_data::state::player::NewPlayer;
 use ti_helper_system_tests::prelude::*;
 
@@ -9,6 +11,7 @@ scenarios![
     setup_base_three_players,
     setup_special_factions,
     setup_milty_import,
+    setup_galactic_events,
 ];
 
 /// The plainest possible game: three base game factions.
@@ -215,6 +218,62 @@ pub fn setup_milty_import() -> TestGame {
     assert_eq!(milty.mirage_system.as_deref(), Some("65"));
     assert!(g.player("Ben").planets.contains_key(&Planet::Mirage));
     g
+}
+
+/// A game imported from milty with galactic events chosen before it starts.
+pub fn setup_galactic_events() -> TestGame {
+    let g = TestGame::builder()
+        .milty(five_player_draft())
+        .galactic_events([GalacticEvent::TotalWar, GalacticEvent::StellarAtomics])
+        .start();
+
+    assert_eq!(
+        g.state().galactic_events,
+        BTreeSet::from([GalacticEvent::TotalWar, GalacticEvent::StellarAtomics])
+    );
+    g
+}
+
+#[test]
+fn galactic_event_rules() {
+    use GalacticEvent::*;
+
+    let builder = TestGame::builder()
+        .player("Alice", Faction::FederationOfSol)
+        .player("Bob", Faction::EmiratesOfHacan)
+        .player("Carol", Faction::XxchaKingdom);
+    let choose = |events: &[GalacticEvent]| Event::SetGalacticEvents {
+        events: events.iter().copied().collect(),
+    };
+
+    builder
+        .clone()
+        .pok()
+        .thunders_edge()
+        .create()
+        .expect_rejected(
+            choose(&[TotalWar]),
+            "is not available with the enabled expansions",
+        );
+
+    let mut g = builder
+        .expansions(Expansions {
+            codex_4: true,
+            ..Default::default()
+        })
+        .create();
+    g.expect_rejected(
+        choose(&[AgeOfExploration]),
+        "is not available with the enabled expansions",
+    )
+    .apply(choose(&[MinorFactions]));
+    assert_eq!(g.state().galactic_events, BTreeSet::from([MinorFactions]));
+
+    g.apply(choose(&[]));
+    assert!(g.state().galactic_events.is_empty());
+
+    g.finish_creation()
+        .expect_rejected(choose(&[MinorFactions]), "expected Creation, was Setup");
 }
 
 #[test]

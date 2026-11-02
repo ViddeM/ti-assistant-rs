@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use serde::{Deserialize, Serialize};
 use strum_macros::IntoStaticStr;
 
@@ -11,6 +13,7 @@ use crate::{
         agenda::{Agenda, AgendaElect},
         breakthrough::Breakthrough,
         frontier_card::FrontierCard,
+        galactic_event::GalacticEvent,
         leaders::Leader,
         objectives::{Objective, public::PublicObjective, secret::SecretObjective},
         planet::Planet,
@@ -41,6 +44,11 @@ pub enum Event {
         max_points: u32,
         /// The data imported from milty.
         milty_data: Box<MiltyData>,
+    },
+    /// Choose the galactic events to play with.
+    SetGalacticEvents {
+        /// The galactic events in play.
+        events: BTreeSet<GalacticEvent>,
     },
     /// Add a new player to the game.
     AddPlayer {

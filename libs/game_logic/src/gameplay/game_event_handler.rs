@@ -150,6 +150,13 @@ fn try_update_game_state(
                 game_state.te_expedition = Some(TEExpedition::default());
             }
         }
+        Event::SetGalacticEvents { events } => {
+            game_state.assert_phase(Phase::Creation)?;
+            for event in &events {
+                game_state.assert_enabled(event)?;
+            }
+            game_state.galactic_events = events;
+        }
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;
             game_state.assert_enabled(&player.faction)?;

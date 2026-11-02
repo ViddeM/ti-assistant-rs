@@ -11,6 +11,7 @@ gameSettings:
     codex3: true
     codex4: true
     thundersEdge: true
+galacticEvents: []
 phase: Action
 mapData:
   miltyInformation:

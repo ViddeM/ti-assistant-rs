@@ -11,6 +11,7 @@ gameSettings:
     codex3: false
     codex4: false
     thundersEdge: false
+galacticEvents: []
 phase: Status
 mapData:
   miltyInformation: ~

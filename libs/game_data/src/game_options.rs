@@ -9,6 +9,7 @@ use crate::{
         action_card::ActionCard,
         agenda::Agenda,
         frontier_card::FrontierCard,
+        galactic_event::GalacticEvent,
         leaders::Leader,
         objectives::{Objective, public::PublicObjective, secret::SecretObjective},
         planet::{Planet, PlanetInfo},
@@ -55,6 +56,8 @@ pub struct GameOptions {
     pub frontier_cards: Vec<FrontierCard>,
     /// What relics exists in the game.
     pub relics: Vec<Relic>,
+    /// What galactic events exist in the game.
+    pub galactic_events: Vec<GalacticEvent>,
 }
 
 impl std::ops::Deref for GameOptions {
@@ -122,6 +125,9 @@ impl GameOptions {
                 .collect(),
             relics: Relic::iter()
                 .filter(|relic| relic.is_enabled_in(expansions))
+                .collect(),
+            galactic_events: GalacticEvent::iter()
+                .filter(|event| event.is_enabled_in(expansions))
                 .collect(),
         }
     }

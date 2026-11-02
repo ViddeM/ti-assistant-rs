@@ -42,6 +42,9 @@ pub fn CreationPhaseView() -> Element {
             if players.len() < gc.game_options().max_players {
                 AddPlayer {}
             }
+            if !gc.game_options().galactic_events.is_empty() {
+                GalacticEvents {}
+            }
             Button {
                 class: "start-game-button",
                 disabled: !allowed_number_of_players,
@@ -181,6 +184,44 @@ fn AddPlayer() -> Element {
                 disabled: new_player_name().is_empty() || new_player_faction().is_none(),
                 onclick: move |_| add_player(),
                 "Add Player"
+            }
+        }
+    }
+}
+
+#[component]
+fn GalacticEvents() -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+    let options = gc.game_options();
+    let state = gc.game_state();
+
+    rsx! {
+        div { class: "galactic-events",
+            h2 { "Galactic Events" }
+            div { class: "galactic-event-list",
+                for galactic_event in options.galactic_events.iter().copied() {
+                    div { key: "{galactic_event}", class: "galactic-event-row",
+                        input {
+                            r#type: "checkbox",
+                            id: "galactic_event_{galactic_event}",
+                            checked: state.galactic_events.contains(&galactic_event),
+                            onchange: move |_| {
+                                let mut events = gc.game_state().galactic_events.clone();
+                                if !events.remove(&galactic_event) {
+                                    events.insert(galactic_event);
+                                }
+                                event.send_event(Event::SetGalacticEvents { events });
+                            },
+                        }
+                        label { r#for: "galactic_event_{galactic_event}",
+                            "{galactic_event.info().name}"
+                            span { class: "galactic-event-complexity",
+                                "Complexity {galactic_event.info().complexity}"
+                            }
+                        }
+                    }
+                }
             }
         }
     }
