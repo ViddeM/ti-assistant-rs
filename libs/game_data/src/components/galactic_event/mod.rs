@@ -2,7 +2,11 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::{component::Component, expansions::Expansion};
+use crate::common::{
+    component::{Component, default_is_enabled_in},
+    expansions::Expansion,
+    game_settings::Expansions,
+};
 
 /// Galactic events, which change the rules of the game.
 #[derive(
@@ -215,8 +219,8 @@ impl Component for GalacticEvent {
         self.info().expansion
     }
 
-    fn also_requires(&self) -> Expansion {
-        self.info().also_requires
+    fn is_enabled_in(&self, expansions: &Expansions) -> bool {
+        expansions.is_enabled(&self.info().also_requires) && default_is_enabled_in(self, expansions)
     }
 }
 
@@ -225,8 +229,6 @@ mod tests {
     use std::collections::HashMap;
 
     use strum::IntoEnumIterator;
-
-    use crate::common::game_settings::Expansions;
 
     use super::*;
 

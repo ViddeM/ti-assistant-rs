@@ -12,43 +12,42 @@ pub trait Component: PartialEq + Sized + 'static {
     /// The expansion that introduced this component.
     fn expansion(&self) -> Expansion;
 
-    /// An expansion this component needs on top of its own and [Self::REQUIRES].
-    fn also_requires(&self) -> Expansion {
-        Expansion::Base
-    }
-
     /// Whether this version is in play with the provided expansions.
     fn is_enabled_in(&self, expansions: &Expansions) -> bool {
-        if !expansions.is_enabled(&Self::REQUIRES) {
-            // The component hasn't been introduced in these expansions.
-            return false;
-        }
-
-        if !expansions.is_enabled(&self.expansion()) {
-            // The component hasn't been introduced in these expansions.
-            return false;
-        }
-
-        if !expansions.is_enabled(&self.also_requires()) {
-            return false;
-        }
-
-        if Self::REMOVED
-            .iter()
-            .filter(|(component, _)| component == self)
-            .any(|(_, expansion)| expansions.is_enabled(expansion))
-        {
-            // The component has been removed in one of the enabled expansions.
-            return false;
-        }
-
-        if let Some(chain) = Self::REPLACEMENTS.iter().find(|chain| chain.contains(self)) {
-            // The component is part of a replacement chain; check that this is the version that is in play given the current expansions.
-            return chain.in_play(expansions) == Some(self);
-        }
-
-        true
+        default_is_enabled_in(self, expansions)
     }
+}
+
+/// The default [Component::is_enabled_in].
+pub(crate) fn default_is_enabled_in<T: Component>(component: &T, expansions: &Expansions) -> bool {
+    if !expansions.is_enabled(&T::REQUIRES) {
+        // The component hasn't been introduced in these expansions.
+        return false;
+    }
+
+    if !expansions.is_enabled(&component.expansion()) {
+        // The component hasn't been introduced in these expansions.
+        return false;
+    }
+
+    if T::REMOVED
+        .iter()
+        .filter(|(removed, _)| removed == component)
+        .any(|(_, expansion)| expansions.is_enabled(expansion))
+    {
+        // The component has been removed in one of the enabled expansions.
+        return false;
+    }
+
+    if let Some(chain) = T::REPLACEMENTS
+        .iter()
+        .find(|chain| chain.contains(component))
+    {
+        // The component is part of a replacement chain; check that this is the version that is in play given the current expansions.
+        return chain.in_play(expansions) == Some(component);
+    }
+
+    true
 }
 
 /// The versions of a component, from the oldest to the newest.
