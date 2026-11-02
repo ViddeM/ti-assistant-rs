@@ -239,19 +239,29 @@ fn GalacticEvents() -> Element {
     rsx! {
         div { class: "galactic-events",
             h2 { "Galactic Events" }
-            for galactic_event in chosen().iter().copied() {
-                div { key: "{galactic_event}", class: "chosen-galactic-event",
-                    "{galactic_event.info().name}"
-                    Complexity { complexity: galactic_event.info().complexity }
-                    InfoButton { info: Info::GalacticEvent(galactic_event) }
-                    Button {
-                        class: "remove-galactic-event-button",
-                        onclick: move |_| {
-                            let mut events = gc.game_state().galactic_events.clone();
-                            events.remove(&galactic_event);
-                            event.send_event(Event::SetGalacticEvents { events });
-                        },
-                        Icon { class: "inline-icon", icon: FaTrash }
+            table { class: "chosen-galactic-events",
+                tbody {
+                    for galactic_event in chosen().iter().copied() {
+                        tr { key: "{galactic_event}",
+                            td { class: "galactic-event-name", "{galactic_event.info().name}" }
+                            td { class: "galactic-event-complexity",
+                                Complexity { complexity: galactic_event.info().complexity }
+                            }
+                            td { class: "galactic-event-info",
+                                InfoButton { info: Info::GalacticEvent(galactic_event) }
+                            }
+                            td { class: "galactic-event-remove",
+                                Button {
+                                    class: "remove-galactic-event-button",
+                                    onclick: move |_| {
+                                        let mut events = gc.game_state().galactic_events.clone();
+                                        events.remove(&galactic_event);
+                                        event.send_event(Event::SetGalacticEvents { events });
+                                    },
+                                    Icon { class: "inline-icon", icon: FaTrash }
+                                }
+                            }
+                        }
                     }
                 }
             }

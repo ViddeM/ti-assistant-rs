@@ -225,7 +225,7 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
    - Availability goes through `is_enabled_in`, which `GalacticEvent` overrides to check `also_requires` before the default `Component` check: the CIV events need `codex_4` (the Thunder's Edge reprint doesn't count), the TE events need `thunders_edge`. Age of Exploration's `also_requires` is PoK; Minor Factions is playable without it by ignoring the alliance paragraph.
 2. ✅ **State:** `GameState::galactic_events: BTreeSet<GalacticEvent>`. A set, because the Codex IV rulebook says advanced players can play with several events at once.
 3. ✅ **Choosing:** the creation-phase event `SetGalacticEvents { events }` replaces the whole set (empty clears it) and checks each event with `assert_enabled`. `SetSettings` and `ImportFromMilty` don't touch it.
-   - The Creation ("Add Players") screen, which both the new-game and milty flows land on, lists the chosen events (each with its complexity bars, an info button and a remove button) above a dropdown of the remaining enabled events and an Add button. It's hidden when no event is enabled.
+   - The Creation ("Add Players") screen, which both the new-game and milty flows land on, lists the chosen events in a table (name, complexity bars, info button, remove button) above a dropdown of the remaining enabled events and an Add button. It's hidden when no event is enabled.
 4. **Random pick:** a **"Pick random"** button on the Creation screen picker. The randomness lives in the client, so the event stays deterministic.
 5. **In-game display:**
    - ✅ `Info::GalacticEvent` (info modal), opened from the Creation screen.

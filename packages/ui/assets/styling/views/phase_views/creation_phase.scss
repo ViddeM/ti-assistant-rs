@@ -83,24 +83,49 @@
   align-items: center;
 }
 
-.chosen-galactic-event {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin: $margin 0;
-}
+.chosen-galactic-events {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
 
-.remove-galactic-event-button {
-  border: none;
-  background-color: inherit;
-  color: $primary-text-color;
-  height: 16px;
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-left: $margin;
+  td {
+    padding: $padding 0;
+    text-align: center;
+    vertical-align: middle;
+  }
 
-  :hover {
-    color: #500000;
+  .galactic-event-name {
+    text-align: left;
+  }
+
+  .galactic-event-complexity {
+    width: 3em;
+  }
+
+  .galactic-event-info {
+    width: 2.5rem;
+  }
+
+  .galactic-event-remove {
+    width: 2rem;
+  }
+
+  .info-button {
+    margin: 0;
+  }
+
+  .remove-galactic-event-button {
+    min-width: 0;
+    border: none;
+    background-color: inherit;
+    color: $primary-text-color;
+    height: 16px;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    :hover {
+      color: #500000;
+    }
   }
 }
 
@@ -110,10 +135,6 @@
   align-items: center;
   gap: $margin-large;
   margin-top: $margin;
-}
-
-.chosen-galactic-event .complexity {
-  margin-left: $margin-large;
 }
 
 .start-game-button {
