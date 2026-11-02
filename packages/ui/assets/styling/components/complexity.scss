@@ -1,0 +1,32 @@
+@import "../vars.scss";
+
+.complexity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  vertical-align: middle;
+}
+
+.complexity-slot {
+  display: inline-block;
+  width: 0.45em;
+  height: 0.9em;
+  transform: skewX(-20deg);
+  border: 1px solid gray;
+  box-sizing: border-box;
+}
+
+.complexity-1 .filled {
+  background-color: $complexity-1-color;
+  border-color: $complexity-1-color;
+}
+
+.complexity-2 .filled {
+  background-color: $complexity-2-color;
+  border-color: $complexity-2-color;
+}
+
+.complexity-3 .filled {
+  background-color: $complexity-3-color;
+  border-color: $complexity-3-color;
+}

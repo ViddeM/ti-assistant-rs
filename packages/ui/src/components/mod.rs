@@ -1,4 +1,5 @@
 pub mod button;
+pub mod complexity;
 pub mod dropdown;
 pub mod faction_button;
 pub mod faction_icon;

@@ -13,6 +13,7 @@ use ti_helper_game_data::{
 use crate::{
     components::{
         button::Button,
+        complexity::Complexity,
         dropdown::{FactionDropdown, GalacticEventDropdown},
         faction_icon::FactionIcon,
     },
@@ -240,9 +241,7 @@ fn GalacticEvents() -> Element {
             for galactic_event in chosen().iter().copied() {
                 div { key: "{galactic_event}", class: "chosen-galactic-event",
                     "{galactic_event.info().name}"
-                    span { class: "galactic-event-complexity",
-                        "Complexity {galactic_event.info().complexity}"
-                    }
+                    Complexity { complexity: galactic_event.info().complexity }
                     Button {
                         class: "remove-galactic-event-button",
                         onclick: move |_| {
