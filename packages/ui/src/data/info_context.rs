@@ -3,6 +3,7 @@ use ti_helper_game_data::{
     common::game_settings::Expansions,
     components::{
         agenda::Agenda,
+        galactic_event::GalacticEvent,
         leaders::Leader,
         objectives::Objective,
         relic::Relic,
@@ -10,6 +11,8 @@ use ti_helper_game_data::{
         tech::Technology,
     },
 };
+
+use crate::components::complexity::Complexity;
 
 #[derive(Clone, Copy)]
 pub struct InfoContext {
@@ -42,6 +45,7 @@ pub enum Info {
     Strategy(StrategyCard),
     Tech(Technology),
     Relic(Relic),
+    GalacticEvent(GalacticEvent),
     Custom {
         title: String,
         subtitle: String,
@@ -58,6 +62,7 @@ impl Info {
             Info::Strategy(strategy_card) => strategy_card.to_string(),
             Info::Tech(technology) => technology.info().name,
             Info::Relic(relic) => relic.info().name,
+            Info::GalacticEvent(galactic_event) => galactic_event.info().name,
             Info::Custom {
                 title,
                 subtitle: _,
@@ -74,6 +79,7 @@ impl Info {
             Info::Strategy(..) => String::new(),
             Info::Tech(technology) => technology.info().tech_type.to_string(),
             Info::Relic(..) => String::new(),
+            Info::GalacticEvent(..) => "Galactic Event".to_string(),
             Info::Custom {
                 title: _,
                 subtitle,
@@ -101,6 +107,13 @@ impl Info {
                 InfoDescription::Description(technology.info().effects.join("\n"))
             }
             Info::Relic(relic) => InfoDescription::Description(relic.info().description),
+            Info::GalacticEvent(galactic_event) => {
+                let info = galactic_event.info();
+                InfoDescription::Custom(rsx! {
+                    Complexity { complexity: info.complexity }
+                    p { class: "galactic-event-description", "{info.description.trim()}" }
+                })
+            }
             Info::Custom {
                 title: _,
                 subtitle: _,

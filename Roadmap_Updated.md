@@ -117,7 +117,7 @@
    - ✅ Relics
    - ✅ Strategy cards (card image)
    - 🍑 Breakthroughs `[TE-A2]`
-   - ❌ Galactic events `[GE]`
+   - ✅ Galactic events `[GE]`
  - ❌ Status phase
    - ✅ Score objectives
    - ✅ Reveal objectives
@@ -338,7 +338,7 @@
  - 👺 Twilight's Fall game mode
 
 ### Galactic Events (Codex IV + Thunder's Edge)
- - 🚱 Framework: ✅ data, choosing the events on the Creation screen (new game and milty); still open: in-game display / info modal, random pick, VP rows `[GE 5.0]`
+ - 🚱 Framework: ✅ data, choosing the events on the Creation screen (new game and milty), info modal; still open: in-game display, random pick, VP rows `[GE 5.0]`
  - Tracked
    - ❌ Stellar Atomics (one-shot action, spent players can't vote)
    - ❌ Age of Fighters (Fighter II for everyone at setup)

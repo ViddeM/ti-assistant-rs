@@ -16,8 +16,9 @@ use crate::{
         complexity::Complexity,
         dropdown::{FactionDropdown, GalacticEventDropdown},
         faction_icon::FactionIcon,
+        info_button::InfoButton,
     },
-    data::{event_context::EventContext, game_context::GameContext},
+    data::{event_context::EventContext, game_context::GameContext, info_context::Info},
 };
 
 const CREATION_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/creation_phase.scss");
@@ -242,6 +243,7 @@ fn GalacticEvents() -> Element {
                 div { key: "{galactic_event}", class: "chosen-galactic-event",
                     "{galactic_event.info().name}"
                     Complexity { complexity: galactic_event.info().complexity }
+                    InfoButton { info: Info::GalacticEvent(galactic_event) }
                     Button {
                         class: "remove-galactic-event-button",
                         onclick: move |_| {
