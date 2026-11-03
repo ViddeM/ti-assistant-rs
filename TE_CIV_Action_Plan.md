@@ -33,7 +33,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 
 **Design guidelines (from the existing code):**
 - **Derive before you store.** For example, Styx VP = "controls Styx", the same way `HolyPlanetOfIxth` is scored in `state/score.rs`.
-- **Stored data needs serde defaults.** New fields in `GameSettings` (stored inside `SetSettings`) and in existing `Event` variants need `#[serde(default)]`, so stored games still deserialize (see `codex_4` in `common/game_settings.rs`). `GameState` and its parts (`Player`, `Score`) are rebuilt from the events, so their fields don't need it.
+- **No compatibility code for stored games.** Don't add `#[serde(default)]`, `#[serde(alias)]` or other code only so that games stored before a change still load. Old games will be handled by a database migration later.
 - **Data on events, not new phases.** Multi-step actions should carry their data on the commit event, like `RelicAction` and `FrontierCardAction` in `actions/event.rs`, rather than adding phases.
 - **Admin escape hatches.** Rare effects can stay manual: manual VPs, `SetPlanetOwner`, `AddTechToPlayer`/`RemoveTechFromPlayer`, `SetBreakthrough`.
 - **Tests.** Every tracked feature gets a scenario in `libs/system_tests/tests/scenarios/` (determinism, replay and undo are checked automatically).
@@ -187,7 +187,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
 | J1 Show Thunder's Edge where it was placed | Info | ✅ `build_layout` draws `TiToken::ThundersEdge` and its owner label in the system from `GameState::planet_location`. | P2 / S |
-| J2 Destroyed and purged planets (Silver Flame, Conventions of War Abandoned) | Info | They already render through `stellar_converter_destroyed_planets` + `TiToken::DestroyedPlanet`. Generalise the field name (keep a serde alias). | P2 / S |
+| J2 Destroyed and purged planets (Silver Flame, Conventions of War Abandoned) | Info | They already render through `stellar_converter_destroyed_planets` + `TiToken::DestroyedPlanet`. Generalise the field name. | P2 / S |
 | J3 Fracture tiles, Avernus token, breaches, coexistence | 👺 | Positions aren't tracked. | — |
 
 ### TE-K Other
@@ -341,7 +341,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 
 ✅ Done as planned below (`galactic_events_zealous_orthodoxy` and `galactic_events_zealous_orthodoxy_initiative` scenarios).
 
-1. Add `Score::galactic_events.zealous_orthodoxy: Option<PlayerId>`, without `serde(default)`: state is rebuilt from events. It has to be stored: `Score.secret_objectives` is a set per player, and the event history isn't in `GameState`. It's a VP, so it belongs in `Score`.
+1. Add `Score::galactic_events.zealous_orthodoxy: Option<PlayerId>`. It has to be stored: `Score.secret_objectives` is a set per player, and the event history isn't in `GameState`. It's a VP, so it belongs in `Score`.
 2. Set it with `GameState::gain_zealous_orthodoxy` while it's unset:
    - `ScoreExtraSecretObjective` (action phase, score view corrections): the player who reaches 2 secrets gains it right away.
    - `ScoreSecretObjective` (status phase): players score in initiative order but the app takes the decisions in click order, so it waits until every player has decided. Then the first player in `turn_order` (initiative order) with 2 or more secrets gains it.
@@ -388,7 +388,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 > BOMBARDMENT hits destroy 3 units. **ACTION (if you own X-89): exhaust it to purge a planet in a system containing your BOMBARDMENT unit, along with its attachments and legendary card.** You're eliminated if all your home planets are purged.
 
 1. **Prerequisite fix (own commit):** destroyed planets can currently be taken again (the TODO near handler ~1078). Reject them in `TacticalActionTakePlanet` and `SetPlanetOwner`, and filter them out of the tactical take, unclaimed and Stellar Converter pickers.
-2. Rename `MapData::stellar_converter_destroyed_planets` to `destroyed_planets`, with a serde alias, so purged planets share the same list and the same map token (TE-J2).
+2. Rename `MapData::stellar_converter_destroyed_planets` to `destroyed_planets`, so purged planets share the same list and the same map token (TE-J2).
 3. Add the `GalacticEventAction::ConventionsOfWarAbandoned { planet }` variant. Besides the shared checks, it checks that the player owns any X-89 version (`X89BacterialWeapon`, `…Omega`, `…OmegaOmega`) and that the planet isn't destroyed yet. Home planets are allowed.
 4. It removes the planet (and its attachments) like the Stellar Converter does, then ends the turn.
 5. Its form in the Galactic Event tab is a planet dropdown.
@@ -516,7 +516,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 
 | Step | Plan | Effort |
 |---|---|---|
-| LO-1 Setting | `GameSettings.scenario: Option<Scenario>` (`#[serde(default)]`), `Scenario::LiberationOfOrdinian`, offered when `codex_4 && prophecy_of_kings`. The new-game form pre-fills the 6 factions and Creuss = Red; `AddPlayer`/`CreationDone` validate 6 players and the faction set. | S |
+| LO-1 Setting | `GameSettings.scenario: Option<Scenario>`, `Scenario::LiberationOfOrdinian`, offered when `codex_4 && prophecy_of_kings`. The new-game form pre-fills the 6 factions and Creuss = Red; `AddPlayer`/`CreationDone` validate 6 players and the faction set. | S |
 | LO-2 Setup automation | At `CreationDone`/`StartGame`: speaker = Nekro (validate `SetupSpeaker` or set it automatically); Nekro gets `Planet::Ordinian` (the "Hyperion VI" legendary already exists from TE data); Naaz-Rokha gets Circlet of the Void and Nomad gets Neuraloop (E4); Nekro techs = Dacxive + the two scenario techs (new `Technology` variants, `Faction(NekroVirus)`, `Expansion::CodexIV`, enabled only in the scenario). | M |
 | LO-3 "Mecatol Rex means Ordinian" | Add `GameState::is_centre_planet(&Planet)` (scenario aware) and use it instead of `Planet::is_mecatol_rex()` wherever rules apply: custodians grant (`game_event_handler.rs:481`; **disabled** in the scenario), Imperial "+1 VP while controlling Mecatol Rex", Stellar Converter exclusion, agenda elect "non-Mecatol" checks. | S |
 | LO-4 Liberate/Control Ordinian objective | Add `PublicObjective::LiberateOrdinian` (Stage I, 1 VP, scored through `ScoreExtraPublicObjective` because it's an action-phase score) and `PublicObjective::ControlOrdinian` (Stage II; VP and timing to be read off the card), both scenario-only. Reveal LiberateOrdinian with the initial objectives; it needs no adjustment to the stage II gating, which comes from the round (`GameState::status_phase_reveals_stage_two`). When the first Stage II is revealed, also reveal ControlOrdinian and reject further scoring of LiberateOrdinian (existing VPs stay). | M |
