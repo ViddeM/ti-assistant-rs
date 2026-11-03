@@ -1089,21 +1089,35 @@ fn try_update_game_state(
             if let Some(data) = data {
                 match data {
                     RelicAction::StellarConverter { planet } => {
-                        ensure!(
-                            !planet.is_mecatol_rex(),
-                            "Cannot use stellar converter on mecatol rex"
-                        );
-                        ensure!(
-                            !matches!(
-                                System::for_planet(&planet)?.system_type,
-                                SystemType::HomeSystem(..)
-                            ),
-                            "Cannot use stellar converter on home system"
-                        );
-                        ensure!(
-                            !planet.info().is_legendary,
-                            "Cannot use stellar converter on legendary planet"
-                        );
+                        if !game_state
+                            .galactic_events
+                            .contains(&GalacticEvent::WildWildGalaxy)
+                        {
+                            ensure!(
+                                !planet.is_mecatol_rex(),
+                                "Cannot use stellar converter on mecatol rex"
+                            );
+                            ensure!(
+                                !matches!(
+                                    System::for_planet(&planet)?.system_type,
+                                    SystemType::HomeSystem(..)
+                                ),
+                                "Cannot use stellar converter on home system"
+                            );
+                            ensure!(
+                                !planet.info().is_legendary,
+                                "Cannot use stellar converter on legendary planet"
+                            );
+                            ensure!(
+                                !game_state
+                                    .players
+                                    .values()
+                                    .filter_map(|p| p.planets.get(&planet))
+                                    .flatten()
+                                    .any(|a| a.info().set_legendary),
+                                "Planet has attachment that makes it legendary and stellar converter cannot be played on legendary planets"
+                            );
+                        }
                         ensure!(
                             !game_state
                                 .map_data
@@ -1112,20 +1126,11 @@ fn try_update_game_state(
                             "Cannot use stellar converter on a planet that has already been destroyed!"
                         );
 
-                        if let Some(player) = game_state.players.values_mut().find_map(|p| {
-                            if p.planets.contains_key(&planet) {
-                                Some(p)
-                            } else {
-                                None
-                            }
-                        }) {
-                            let Some(attachments) = player.planets.get(&planet) else {
-                                bail!("Player no longer has planet? (This is a bug)")
-                            };
-                            ensure!(
-                                !attachments.iter().any(|a| a.info().set_legendary),
-                                "Planet has attachment that makes it legendary and stellar converter cannot be played on legendary planets"
-                            );
+                        if let Some(player) = game_state
+                            .players
+                            .values_mut()
+                            .find(|p| p.planets.contains_key(&planet))
+                        {
                             player.planets.remove(&planet);
                         }
                         game_state

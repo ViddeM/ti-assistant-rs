@@ -267,7 +267,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 4 | Total War | CIV | 3 | Track | ✅ "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
 | 5 | Mercenaries for Hire | TE | 1 | Track | ✅ "Mercenaries for Hire" action that just ends the turn | P1 / S |
 | 6 | Stellar Atomics | TE | 2 | Track | ✅ One-shot action; players who used it can't vote | P1 / S |
-| 7 | Wild, Wild Galaxy | TE | 3 | Assist | The Stellar Converter works on any planet | P2 / S |
+| 7 | Wild, Wild Galaxy | TE | 3 | Assist | ✅ The Stellar Converter works on any planet | P2 / S |
 | 8 | Conventions of War Abandoned | TE | 3 | Track | "X-89: purge planet" action, after the destroyed-planets fix | P2 / S |
 | 9 | Dangerous Wilds | TE | 1 | Track | Free tech when a tactical action takes an unowned hazardous planet | P2 / S |
 | 10 | Hidden Agenda | TE | 2 | Assist | Hide individual votes until everyone has voted (UI only) | P3 / S |
@@ -387,10 +387,12 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 - Recording these players as forced abstentions can't work, because `AddAgendaPlayerVote.outcome` isn't an `Option`.
 - The action card restriction stays info only.
 
-##### 7. Wild, Wild Galaxy (TE, complexity 3): Assist
+##### 7. Wild, Wild Galaxy (TE, complexity 3): Assist ✅
 > Changes to 9 action cards (Direct Hit, Flank Speed, Maneuvering Jets, Morale Boost, Sabotage, Shields Holding, Skilled Retreat, War Machine, Diplomatic Pressure) plus Stellar Converter and Nova Seed working on any planet or system.
 
-- When the event is active, the Stellar Converter handler (`RelicAction::StellarConverter`, handler ~1035) skips its Mecatol, home and legendary checks but keeps "not already destroyed".
+✅ Done as planned below (`galactic_events_wild_wild_galaxy` scenario).
+
+- When the event is active, the Stellar Converter handler (`RelicAction::StellarConverter`, handler ~1091) skips its Mecatol, home, legendary and legendary-attachment checks but keeps "not already destroyed".
 - The `relic_card.rs` picker drops the same filters.
 - The action cards and Nova Seed stay info only.
 
@@ -552,9 +554,9 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics.
+   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics, Wild, Wild Galaxy.
    - The galactic events admin page (§5.0 item 8) (P2).
-   - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
+   - Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**
    - A3/A6/A7 breakthrough actions, C3 Faunus, D2 Silver Flame.

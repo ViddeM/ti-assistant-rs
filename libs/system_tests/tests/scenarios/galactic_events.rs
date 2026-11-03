@@ -14,6 +14,7 @@ scenarios![
     galactic_events_total_war,
     galactic_events_mercenaries_for_hire,
     galactic_events_stellar_atomics,
+    galactic_events_wild_wild_galaxy,
 ];
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
@@ -300,6 +301,63 @@ pub fn galactic_events_stellar_atomics() -> TestGame {
     assert_eq!(
         [g.points("Alice"), g.points("Bob"), g.points("Carol")],
         [1, 1, 1]
+    );
+    g
+}
+
+/// With Wild, Wild Galaxy the Stellar Converter can destroy Mecatol Rex, home planets and
+/// legendary planets, but not a planet that is already destroyed.
+pub fn galactic_events_wild_wild_galaxy() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .pok()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::WildWildGalaxy]),
+    );
+    let give_converter = |player: &str| Event::SetRelicOwner {
+        relic: Relic::StellarConverter,
+        player: Some(p(player)),
+    };
+    let stellar = |planet| Some(RelicAction::StellarConverter { planet });
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Bob")),
+        planet: Planet::Primor,
+    });
+    assert!(g.player("Alice").planets.contains_key(&Planet::Jord));
+
+    g.apply(give_converter("Alice"));
+    g.turn("Alice")
+        .relic(Relic::StellarConverter, stellar(Planet::MecatolRex))
+        .end_turn();
+
+    g.apply(give_converter("Bob"));
+    g.turn("Bob")
+        .relic(Relic::StellarConverter, stellar(Planet::Jord))
+        .end_turn();
+    assert!(!g.player("Alice").planets.contains_key(&Planet::Jord));
+
+    g.apply(give_converter("Carol"));
+    g.turn("Carol")
+        .apply(Event::RelicActionBegin {
+            player: p("Carol"),
+            relic: Relic::StellarConverter,
+        })
+        .expect_rejected(
+            Event::RelicActionCommit {
+                player: p("Carol"),
+                data: stellar(Planet::MecatolRex),
+            },
+            "already been destroyed",
+        )
+        .apply(Event::RelicActionCommit {
+            player: p("Carol"),
+            data: stellar(Planet::Primor),
+        })
+        .end_turn();
+    assert!(!g.player("Bob").planets.contains_key(&Planet::Primor));
+    assert_eq!(
+        g.state().map_data.stellar_converter_destroyed_planets,
+        [Planet::MecatolRex, Planet::Jord, Planet::Primor]
     );
     g
 }

@@ -3,6 +3,7 @@ use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::event::{Event, RelicAction},
     components::{
+        galactic_event::GalacticEvent,
         planet_attachment::PlanetAttachment,
         relic::Relic,
         system::{System, SystemType},
@@ -120,14 +121,21 @@ fn StellarConvertersView() -> Element {
             .collect::<Vec<_>>()
     });
     let available_planets = use_memo(move || {
+        let any_planet = gc
+            .game_state()
+            .galactic_events
+            .contains(&GalacticEvent::WildWildGalaxy);
         let mut planets = gc
             .game_options()
             .planet_infos
             .keys()
-            .filter(|p| !p.is_mecatol_rex())
-            .filter(|p| !p.info().is_legendary)
-            .filter(|&p| !planets_with_legendary_attachments().contains(p))
+            .filter(|p| any_planet || !p.is_mecatol_rex())
+            .filter(|p| any_planet || !p.info().is_legendary)
+            .filter(|&p| any_planet || !planets_with_legendary_attachments().contains(p))
             .filter(|p| {
+                if any_planet {
+                    return true;
+                }
                 let go = gc.game_options().clone();
                 let (_, info) = go
                     .systems
