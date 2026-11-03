@@ -258,7 +258,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | # | Event | Origin | Cx | Verdict | What the app does | P / Effort |
 |---|---|---|---|---|---|---|
 | 1 | Age of Fighters | TE | 3 | Track | ✅ Everyone gains Fighter II at `StartGame` (Naalu: Hybrid Crystal Fighter II) | P1 / S |
-| 2 | Advent of the War Sun | TE | 1 | Track | Everyone except Muaat gains War Sun at `StartGame` | P1 / S |
+| 2 | Advent of the War Sun | TE | 1 | Track | ✅ Everyone except Muaat gains War Sun at `StartGame` | P1 / S |
 | 3 | Zealous Orthodoxy | TE | 1 | Track | The first player to score 2 secrets gains 1 VP | P1 / S |
 | 4 | Total War | CIV | 3 | Track | "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
 | 5 | Mercenaries for Hire | TE | 1 | Track | "Mercenaries for Hire" action that just ends the turn | P1 / S |
@@ -328,8 +328,10 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 - This has to happen at `StartGame`, not earlier: `player_initialization_finished` (`state/game_state.rs:855`) counts techs, and `SetupPlayerTechs` needs an empty tech list.
 - The rest: Info.
 
-##### 2. Advent of the War Sun (TE, complexity 1): Track (setup only)
+##### 2. Advent of the War Sun (TE, complexity 1): Track (setup only) ✅
 > Every player except Muaat gains the **War Sun** unit upgrade; Muaat purges its promissory note, unlocks its commander and places an extra War Sun.
+
+✅ Done as planned below (`galactic_events_advent_of_the_war_sun` scenario).
 
 - The same `StartGame` grant as Age of Fighters: `WarSun` for every player except `EmbersOfMuaat`.
 - Muaat's own effects aren't tracked.
@@ -533,8 +535,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters.
-   - Advent of the War Sun, Zealous Orthodoxy, Total War (with the Galactic Event tab), Mercenaries for Hire, Stellar Atomics (P1).
+   - ✅ Age of Fighters, Advent of the War Sun.
+   - Zealous Orthodoxy, Total War (with the Galactic Event tab), Mercenaries for Hire, Stellar Atomics (P1).
    - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**

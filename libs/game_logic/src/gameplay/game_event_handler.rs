@@ -386,16 +386,22 @@ fn try_update_game_state(
                 )
             );
 
-            if game_state
+            let age_of_fighters = game_state
                 .galactic_events
-                .contains(&GalacticEvent::AgeOfFighters)
-            {
-                for player in game_state.players.values_mut() {
+                .contains(&GalacticEvent::AgeOfFighters);
+            let advent_of_the_war_sun = game_state
+                .galactic_events
+                .contains(&GalacticEvent::AdventOfTheWarSun);
+            for player in game_state.players.values_mut() {
+                if age_of_fighters {
                     let tech = match player.faction {
                         Faction::NaaluCollective => Technology::HybridCrystalFighterII,
                         _ => Technology::FighterII,
                     };
                     player.technologies.insert(tech);
+                }
+                if advent_of_the_war_sun && player.faction != Faction::EmbersOfMuaat {
+                    player.technologies.insert(Technology::WarSun);
                 }
             }
 

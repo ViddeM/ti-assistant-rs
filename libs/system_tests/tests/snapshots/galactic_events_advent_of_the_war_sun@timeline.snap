@@ -1,0 +1,13 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 SetGalacticEvents                        r0 Creation           -
+   5 CreationDone                             r0 Setup              -
+   6 SetupPlayerTechs(Bob)                    r0 Setup              -
+   7 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   8 RevealInitialObjectives                  r0 Setup              -
+   9 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
