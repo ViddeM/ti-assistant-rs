@@ -94,6 +94,8 @@ score:
   imperial: {}
   agendaScores: []
   custodians: Alice
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda:
   round: Round1
   vote: ~

@@ -93,6 +93,8 @@ score:
   imperial: {}
   agendaScores: []
   custodians: Bob
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda: ~
 agendaVoteHistory: []
 laws: {}

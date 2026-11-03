@@ -102,6 +102,8 @@ score:
     Bob: 1
   agendaScores: []
   custodians: Bob
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda: ~
 agendaVoteHistory: []
 laws: {}

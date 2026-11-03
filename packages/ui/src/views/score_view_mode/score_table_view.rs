@@ -5,7 +5,10 @@ use strum::{Display, EnumString};
 use ti_helper_game_data::{
     actions::event::Event,
     common::{faction::Faction, player_id::PlayerId},
-    components::{agenda::Agenda, objectives::ObjectiveKind, planet::Planet, relic::Relic},
+    components::{
+        agenda::Agenda, galactic_event::GalacticEvent, objectives::ObjectiveKind, planet::Planet,
+        relic::Relic,
+    },
     state::{faction_state::FactionState, player::Player, score::ScorableAgenda},
 };
 
@@ -38,6 +41,11 @@ pub fn ScoreTableView() -> Element {
     let player_count = use_memo(move || players.len());
     let custodians = use_memo(move || gc.game_state().score.custodians.clone());
     let thunders_edge = use_memo(move || gc.game_state().game_settings.expansions.thunders_edge);
+    let zealous_orthodoxy = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .contains(&GalacticEvent::ZealousOrthodoxy)
+    });
 
     let revealed_stage_one_objectives = use_memo(move || {
         let mut objectives = gc
@@ -251,6 +259,16 @@ pub fn ScoreTableView() -> Element {
                     LegendaryPlanetPointRows { players: players().into_iter().map(|(p, _)| p).collect::<Vec<_>>() }
                 }
 
+                // Galactic Events
+                if zealous_orthodoxy() {
+                    TableSectionHeader {
+                        player_count: player_count(),
+                        title: "Galactic Events",
+                        styling_prefix: StylingPrefix::GalacticEvent,
+                    }
+                    GalacticEventPointRows { players: players().into_iter().map(|(p, _)| p).collect::<Vec<_>>() }
+                }
+
                 // Support for the Throne
                 TableSectionHeader {
                     player_count: player_count(),
@@ -382,6 +400,7 @@ enum StylingPrefix {
     Agenda,
     Relic,
     LegendaryPlanet,
+    GalacticEvent,
     Custodians,
     Imperial,
     Spftt,
@@ -570,6 +589,46 @@ fn LegendaryPlanetPointRows(
                     .iter()
                     .map(|p| {
                         let score = if styx_owner().as_ref() == Some(p) { 1 } else { 0 };
+                        rsx! {
+                            td { key: "{p}", class: "align-center", "{score}" }
+                        }
+                    })
+            }
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Props)]
+struct GalacticEventPointRowsProps {
+    players: Vec<PlayerId>,
+}
+
+#[component]
+fn GalacticEventPointRows(
+    GalacticEventPointRowsProps { players }: GalacticEventPointRowsProps,
+) -> Element {
+    let gc = use_context::<GameContext>();
+    let zealous_orthodoxy = use_memo(move || {
+        gc.game_state()
+            .score
+            .galactic_events
+            .zealous_orthodoxy
+            .clone()
+    });
+
+    rsx! {
+        SubSectionHeading {
+            player_count: players.len(),
+            top_border: false,
+            name: "Zealous Orthodoxy",
+            info: Info::GalacticEvent(GalacticEvent::ZealousOrthodoxy),
+        }
+        tr {
+            {
+                players
+                    .iter()
+                    .map(|p| {
+                        let score = if zealous_orthodoxy().as_ref() == Some(p) { 1 } else { 0 };
                         rsx! {
                             td { key: "{p}", class: "align-center", "{score}" }
                         }

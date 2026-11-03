@@ -185,6 +185,8 @@ score:
         playersElected:
           - Carol
   custodians: Finn
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda: ~
 agendaVoteHistory:
   - round: 1

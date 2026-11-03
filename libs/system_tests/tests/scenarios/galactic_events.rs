@@ -2,9 +2,13 @@
 
 use ti_helper_system_tests::prelude::*;
 
+use crate::fixtures::{action_phase, three_players};
+
 scenarios![
     galactic_events_age_of_fighters,
     galactic_events_advent_of_the_war_sun,
+    galactic_events_zealous_orthodoxy,
+    galactic_events_zealous_orthodoxy_initiative,
 ];
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
@@ -66,5 +70,91 @@ pub fn galactic_events_advent_of_the_war_sun() -> TestGame {
             .technologies
             .contains(&Technology::NeuralMotivator)
     );
+    g
+}
+
+/// Zealous Orthodoxy gives 1 point to the first player to score 2 secret objectives. Outside the
+/// status phase that's whoever reaches 2 first. The point is kept when a secret is unscored.
+pub fn galactic_events_zealous_orthodoxy() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::ZealousOrthodoxy]),
+    );
+
+    g.apply(Event::ScoreExtraSecretObjective {
+        player: p("Bob"),
+        objective: SecretObjective::BecomeTheGatekeeper,
+    });
+    assert_eq!(g.state().score.galactic_events.zealous_orthodoxy, None);
+
+    g.apply(Event::ScoreExtraSecretObjective {
+        player: p("Bob"),
+        objective: SecretObjective::AdaptNewStrategies,
+    });
+    assert_eq!(
+        g.state().score.galactic_events.zealous_orthodoxy,
+        Some(p("Bob"))
+    );
+    assert_eq!(g.points("Bob"), 3);
+
+    g.apply(Event::ScoreExtraSecretObjective {
+        player: p("Alice"),
+        objective: SecretObjective::MonopolizeProduction,
+    })
+    .apply(Event::ScoreExtraSecretObjective {
+        player: p("Alice"),
+        objective: SecretObjective::ThreatenEnemies,
+    });
+    assert_eq!(
+        g.state().score.galactic_events.zealous_orthodoxy,
+        Some(p("Bob"))
+    );
+    assert_eq!(g.points("Alice"), 2);
+
+    g.apply(Event::UnscoreSecretObjective {
+        player: p("Bob"),
+        objective: SecretObjective::AdaptNewStrategies,
+    });
+    assert_eq!(
+        g.state().score.galactic_events.zealous_orthodoxy,
+        Some(p("Bob"))
+    );
+    assert_eq!(g.points("Bob"), 2);
+    g
+}
+
+/// Players reaching 2 secret objectives in the same status phase are tied by initiative, whatever
+/// order their decisions are entered in. The point is only given once every player has decided.
+pub fn galactic_events_zealous_orthodoxy_initiative() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::ZealousOrthodoxy]),
+    );
+
+    g.apply(Event::ScoreExtraSecretObjective {
+        player: p("Alice"),
+        objective: SecretObjective::AdaptNewStrategies,
+    })
+    .apply(Event::ScoreExtraSecretObjective {
+        player: p("Bob"),
+        objective: SecretObjective::BecomeTheGatekeeper,
+    })
+    .play_out_action_phase()
+    .status_phase()
+    .secret("Bob", SecretObjective::MonopolizeProduction)
+    .secret("Alice", SecretObjective::ThreatenEnemies);
+    assert_eq!(g.state().score.galactic_events.zealous_orthodoxy, None);
+
+    g.status_phase().reveal(PublicObjective::ExpandBorders);
+    assert_eq!(
+        g.state().score.galactic_events.zealous_orthodoxy,
+        Some(p("Alice"))
+    );
+
+    g.status_phase().complete();
+    assert_eq!(g.points("Alice"), 3);
+    assert_eq!(g.points("Bob"), 2);
     g
 }

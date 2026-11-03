@@ -98,6 +98,8 @@ score:
     Bob: 1
   agendaScores: []
   custodians: Alice
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda: ~
 agendaVoteHistory: []
 laws: {}

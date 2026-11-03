@@ -851,6 +851,21 @@ impl GameState {
         Ok(())
     }
 
+    /// Zealous Orthodoxy: the first of `candidates` with 2 scored secret objectives gains its point,
+    /// if the event is in play and nobody has gained it yet.
+    pub fn gain_zealous_orthodoxy(&mut self, candidates: &[PlayerId]) {
+        if !self.galactic_events.contains(&GalacticEvent::ZealousOrthodoxy)
+            || self.score.galactic_events.zealous_orthodoxy.is_some()
+        {
+            return;
+        }
+
+        self.score.galactic_events.zealous_orthodoxy = candidates
+            .iter()
+            .find(|player| self.score.scored_secret_objectives_count(player) >= 2)
+            .cloned();
+    }
+
     /// Returns true if the player has performed any required initialization for their faction.
     pub fn player_initialization_finished(&self, player_id: &PlayerId) -> anyhow::Result<bool> {
         let Some(player) = self.players.get(player_id) else {

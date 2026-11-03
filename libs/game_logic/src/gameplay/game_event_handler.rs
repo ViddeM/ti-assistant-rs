@@ -1304,6 +1304,8 @@ fn try_update_game_state(
             status_state
                 .scored_secret_objectives
                 .insert(player.clone(), objective);
+            let all_decided =
+                status_state.scored_secret_objectives.len() == game_state.players.len();
 
             if let Some(obj) = objective {
                 for scored in game_state.score.secret_objectives.values() {
@@ -1326,6 +1328,11 @@ fn try_update_game_state(
                     .entry(player)
                     .or_default()
                     .insert(obj);
+            }
+
+            if all_decided {
+                let turn_order = game_state.turn_order.clone();
+                game_state.gain_zealous_orthodoxy(&turn_order);
             }
         }
         Event::RevealPublicObjective { objective } => {
@@ -1679,9 +1686,10 @@ fn try_update_game_state(
             game_state
                 .score
                 .secret_objectives
-                .entry(player)
+                .entry(player.clone())
                 .or_default()
                 .insert(objective);
+            game_state.gain_zealous_orthodoxy(&[player]);
         }
         Event::UnscoreObjective { player, objective } => {
             let Some(scorers) = game_state.score.revealed_objectives.get_mut(&objective) else {

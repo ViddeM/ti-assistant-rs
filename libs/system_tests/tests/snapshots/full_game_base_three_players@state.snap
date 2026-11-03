@@ -130,6 +130,8 @@ score:
         playersElected:
           - Bob
   custodians: Bob
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda: ~
 agendaVoteHistory:
   - round: 1

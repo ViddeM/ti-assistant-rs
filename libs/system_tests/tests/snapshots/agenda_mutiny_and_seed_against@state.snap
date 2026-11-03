@@ -99,6 +99,8 @@ score:
           - Alice
           - Carol
   custodians: Alice
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda:
   round: Completed
   vote: ~

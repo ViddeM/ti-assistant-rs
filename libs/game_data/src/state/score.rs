@@ -55,6 +55,9 @@ pub struct Score {
 
     /// The player who took the custodians token from Mecatol Rex.
     pub custodians: Option<PlayerId>,
+
+    /// Points gained from galactic events.
+    pub galactic_events: GalacticEventScore,
 }
 
 impl Score {
@@ -121,6 +124,8 @@ impl Score {
                 .iter()
                 .map(|score| score.get_score_for_player(player_id, player))
                 .sum::<i8>();
+
+            player_points += self.galactic_events.points(player_id);
 
             // TODO: player_points could in theory be negative here, is that allowed or should we reset it to 0 in that case?
 
@@ -253,6 +258,21 @@ impl Score {
         };
 
         self.agenda_scores.remove(index);
+    }
+}
+
+/// Points gained from galactic events, one field per event.
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct GalacticEventScore {
+    /// The player who gained a point from Zealous Orthodoxy.
+    pub zealous_orthodoxy: Option<PlayerId>,
+}
+
+impl GalacticEventScore {
+    /// The points the player has gained from galactic events.
+    pub fn points(&self, player: &PlayerId) -> i8 {
+        i8::from(self.zealous_orthodoxy.as_ref() == Some(player))
     }
 }
 

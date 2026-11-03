@@ -95,6 +95,8 @@ score:
       value:
         planet: Quann
   custodians: Alice
+  galacticEvents:
+    zealousOrthodoxy: ~
 agenda:
   round: Completed
   vote: ~

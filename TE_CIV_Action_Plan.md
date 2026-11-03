@@ -230,7 +230,7 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
 5. **In-game display:**
    - ✅ `Info::GalacticEvent` (info modal), opened from the Creation screen.
    - ✅ From Setup on, the info box lists the chosen events (name + info button) under a "Galactic event(s):" label. Creation keeps its own table.
-6. **Scoring:** event-specific VP rows in `update_player_points` (Total War, Zealous Orthodoxy, Monuments), shown in the score table.
+6. **Scoring:** `Score::galactic_events` (`GalacticEventScore`) holds the event points, one field per event (Zealous Orthodoxy, later Total War), added up in `update_player_points`. Monuments' VP is derived from planet ownership instead. The score table shows them in a "Galactic Events" section.
 7. **Tests:** ✅ the builder's `.galactic_events([..])` and the creation tests in `setup.rs`. The per-event scenarios go in `libs/system_tests/tests/scenarios/galactic_events.rs`.
 
 ### 5.1 Overview
@@ -259,7 +259,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 |---|---|---|---|---|---|---|
 | 1 | Age of Fighters | TE | 3 | Track | ✅ Everyone gains Fighter II at `StartGame` (Naalu: Hybrid Crystal Fighter II) | P1 / S |
 | 2 | Advent of the War Sun | TE | 1 | Track | ✅ Everyone except Muaat gains War Sun at `StartGame` | P1 / S |
-| 3 | Zealous Orthodoxy | TE | 1 | Track | The first player to score 2 secrets gains 1 VP | P1 / S |
+| 3 | Zealous Orthodoxy | TE | 1 | Track | ✅ The first player to score 2 secrets gains 1 VP | P1 / S |
 | 4 | Total War | CIV | 3 | Track | "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
 | 5 | Mercenaries for Hire | TE | 1 | Track | "Mercenaries for Hire" action that just ends the turn | P1 / S |
 | 6 | Stellar Atomics | TE | 2 | Track | One-shot action; players who used it can't vote | P1 / S |
@@ -336,21 +336,25 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 - The same `StartGame` grant as Age of Fighters: `WarSun` for every player except `EmbersOfMuaat`.
 - Muaat's own effects aren't tracked.
 
-##### 3. Zealous Orthodoxy (TE, complexity 1): Track (VP)
+##### 3. Zealous Orthodoxy (TE, complexity 1): Track (VP) ✅
 > **The first player to score 2 secret objectives gains 1 VP.** Their alliance card goes on this card (everyone gains the ability) and their alliance promissory note is purged.
 
-1. Add `Score::zealous_orthodoxy: Option<PlayerId>` (`#[serde(default)]`). It has to be stored: `Score.secret_objectives` is an unordered `BTreeSet`, and the event history isn't in `GameState`. It's a VP, so it belongs in `Score`.
-2. Set it in `ScoreSecretObjective` and `ScoreExtraSecretObjective` when it's unset and the player reaches 2 secrets.
-3. `update_player_points` adds +1. Add a read-only row in `score_table_view.rs`.
+✅ Done as planned below (`galactic_events_zealous_orthodoxy` and `galactic_events_zealous_orthodoxy_initiative` scenarios).
+
+1. Add `Score::galactic_events.zealous_orthodoxy: Option<PlayerId>`, without `serde(default)`: state is rebuilt from events. It has to be stored: `Score.secret_objectives` is a set per player, and the event history isn't in `GameState`. It's a VP, so it belongs in `Score`.
+2. Set it with `GameState::gain_zealous_orthodoxy` while it's unset:
+   - `ScoreExtraSecretObjective` (action phase, score view corrections): the player who reaches 2 secrets gains it right away.
+   - `ScoreSecretObjective` (status phase): players score in initiative order but the app takes the decisions in click order, so it waits until every player has decided. Then the first player in `turn_order` (initiative order) with 2 or more secrets gains it.
+3. `update_player_points` adds +1. A read-only row in a new "Galactic Events" section of `score_table_view.rs`, shown when the event is in play.
 4. Unscoring doesn't clear it; use undo to fix mistakes.
 - The alliance ability stays info only. Firmament plots (F2) don't count as scored secrets.
 
 ##### 4. Total War (CIV, complexity 3): Track (VP only)
 > Destroying units puts commodities on your home planets. **ACTION: discard 10 commodities from your home system → gain 1 VP.**
 
-1. Add `Score::total_war: HashMap<PlayerId, u32>`, the same shape as `imperial`, with a read-only score row.
+1. Add `GalacticEventScore::total_war: HashMap<PlayerId, u32>`, the same shape as `imperial`, with a read-only row in the "Galactic Events" score section.
 2. Build `PlayGalacticEventAction` and the Galactic Event tab (§5.2.2 intro).
-3. `GalacticEventAction::TotalWar` adds +1 to `Score::total_war`. It replaces the separate `TotalWarAction` event of the earlier plan.
+3. `GalacticEventAction::TotalWar` adds +1 to `Score::galactic_events.total_war`. It replaces the separate `TotalWarAction` event of the earlier plan.
 - Commodities aren't tracked, so the 10 commodities aren't checked.
 
 ##### 5. Mercenaries for Hire (TE, complexity 1): Track
@@ -535,8 +539,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters, Advent of the War Sun.
-   - Zealous Orthodoxy, Total War (with the Galactic Event tab), Mercenaries for Hire, Stellar Atomics (P1).
+   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy.
+   - Total War (with the Galactic Event tab), Mercenaries for Hire, Stellar Atomics (P1).
    - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**
