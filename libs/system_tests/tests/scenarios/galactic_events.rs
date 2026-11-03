@@ -9,6 +9,7 @@ scenarios![
     galactic_events_advent_of_the_war_sun,
     galactic_events_zealous_orthodoxy,
     galactic_events_zealous_orthodoxy_initiative,
+    galactic_events_total_war,
 ];
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
@@ -157,4 +158,56 @@ pub fn galactic_events_zealous_orthodoxy_initiative() -> TestGame {
     assert_eq!(g.points("Alice"), 3);
     assert_eq!(g.points("Bob"), 2);
     g
+}
+
+/// The Total War action gives 1 point and ends the turn. It can be played every turn, by every
+/// player.
+pub fn galactic_events_total_war() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .codex()
+            .galactic_events([GalacticEvent::TotalWar]),
+    );
+    let total_war = |player: &str| Event::PlayGalacticEventAction {
+        player: p(player),
+        action: GalacticEventAction::TotalWar,
+    };
+
+    g.expect_rejected(total_war("Bob"), "wrong players turn");
+    let alice = g
+        .turn("Alice")
+        .galactic_event(GalacticEventAction::TotalWar);
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    assert_eq!(alice.points("Alice"), 1);
+    alice
+        .expect_rejected(total_war("Alice"), "expected Action")
+        .end_turn();
+
+    g.turn("Bob")
+        .galactic_event(GalacticEventAction::TotalWar)
+        .end_turn();
+    g.turn("Carol").play_card(StrategyCard::Politics);
+    g.turn("Alice")
+        .galactic_event(GalacticEventAction::TotalWar)
+        .end_turn();
+
+    let total_war = &g.state().score.galactic_events.total_war;
+    assert_eq!(total_war.get(&p("Alice")), Some(&2));
+    assert_eq!(total_war.get(&p("Bob")), Some(&1));
+    assert_eq!(g.points("Alice"), 2);
+    assert_eq!(g.points("Bob"), 1);
+    assert_eq!(g.points("Carol"), 0);
+    g
+}
+
+#[test]
+fn total_war_needs_the_event() {
+    let mut g = action_phase(three_players().codex());
+    g.expect_rejected(
+        Event::PlayGalacticEventAction {
+            player: p("Alice"),
+            action: GalacticEventAction::TotalWar,
+        },
+        "Total War isn't in play",
+    );
 }

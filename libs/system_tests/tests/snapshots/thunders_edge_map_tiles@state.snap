@@ -321,6 +321,7 @@ score:
   custodians: Ann
   galacticEvents:
     zealousOrthodoxy: ~
+    totalWar: {}
 agenda: ~
 agendaVoteHistory: []
 laws: {}

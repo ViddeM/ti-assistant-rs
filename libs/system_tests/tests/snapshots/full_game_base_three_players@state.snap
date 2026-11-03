@@ -132,6 +132,7 @@ score:
   custodians: Bob
   galacticEvents:
     zealousOrthodoxy: ~
+    totalWar: {}
 agenda: ~
 agendaVoteHistory:
   - round: 1

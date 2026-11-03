@@ -11,7 +11,7 @@ use std::ops::{Deref, DerefMut};
 
 use ti_helper_game_data::{
     actions::{
-        event::{ActionCardAction, Event, FrontierCardAction, RelicAction},
+        event::{ActionCardAction, Event, FrontierCardAction, GalacticEventAction, RelicAction},
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::{faction::Faction, player_id::PlayerId},
@@ -288,6 +288,16 @@ impl<'g> Turn<'g> {
         self.game.apply(Event::GainRelicAction {
             player: self.id(),
             relic,
+        });
+        self
+    }
+
+    /// Perform the ACTION of a galactic event in play.
+    #[track_caller]
+    pub fn galactic_event(self, action: GalacticEventAction) -> Self {
+        self.game.apply(Event::PlayGalacticEventAction {
+            player: self.id(),
+            action,
         });
         self
     }

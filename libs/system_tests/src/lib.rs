@@ -21,7 +21,9 @@ pub mod prelude {
     pub use chrono::TimeDelta;
     pub use ti_helper_game_data::{
         actions::{
-            event::{ActionCardAction, Event, FrontierCardAction, RelicAction},
+            event::{
+                ActionCardAction, Event, FrontierCardAction, GalacticEventAction, RelicAction,
+            },
             strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
         },
         common::{color::Color, faction::Faction, game_settings::Expansions},

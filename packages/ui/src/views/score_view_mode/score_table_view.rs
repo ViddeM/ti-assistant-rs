@@ -41,10 +41,11 @@ pub fn ScoreTableView() -> Element {
     let player_count = use_memo(move || players.len());
     let custodians = use_memo(move || gc.game_state().score.custodians.clone());
     let thunders_edge = use_memo(move || gc.game_state().game_settings.expansions.thunders_edge);
-    let zealous_orthodoxy = use_memo(move || {
-        gc.game_state()
-            .galactic_events
-            .contains(&GalacticEvent::ZealousOrthodoxy)
+    let scoring_galactic_events = use_memo(move || {
+        [GalacticEvent::ZealousOrthodoxy, GalacticEvent::TotalWar]
+            .into_iter()
+            .filter(|e| gc.game_state().galactic_events.contains(e))
+            .collect::<Vec<_>>()
     });
 
     let revealed_stage_one_objectives = use_memo(move || {
@@ -260,13 +261,16 @@ pub fn ScoreTableView() -> Element {
                 }
 
                 // Galactic Events
-                if zealous_orthodoxy() {
+                if !scoring_galactic_events().is_empty() {
                     TableSectionHeader {
                         player_count: player_count(),
                         title: "Galactic Events",
                         styling_prefix: StylingPrefix::GalacticEvent,
                     }
-                    GalacticEventPointRows { players: players().into_iter().map(|(p, _)| p).collect::<Vec<_>>() }
+                    GalacticEventPointRows {
+                        players: players().into_iter().map(|(p, _)| p).collect::<Vec<_>>(),
+                        galactic_events: scoring_galactic_events(),
+                    }
                 }
 
                 // Support for the Throne
@@ -601,11 +605,15 @@ fn LegendaryPlanetPointRows(
 #[derive(Debug, Clone, PartialEq, Props)]
 struct GalacticEventPointRowsProps {
     players: Vec<PlayerId>,
+    galactic_events: Vec<GalacticEvent>,
 }
 
 #[component]
 fn GalacticEventPointRows(
-    GalacticEventPointRowsProps { players }: GalacticEventPointRowsProps,
+    GalacticEventPointRowsProps {
+        players,
+        galactic_events,
+    }: GalacticEventPointRowsProps,
 ) -> Element {
     let gc = use_context::<GameContext>();
     let zealous_orthodoxy = use_memo(move || {
@@ -615,24 +623,50 @@ fn GalacticEventPointRows(
             .zealous_orthodoxy
             .clone()
     });
+    let total_war = use_memo(move || gc.game_state().score.galactic_events.total_war.clone());
+
+    let show_zealous_orthodoxy = galactic_events.contains(&GalacticEvent::ZealousOrthodoxy);
+    let show_total_war = galactic_events.contains(&GalacticEvent::TotalWar);
 
     rsx! {
-        SubSectionHeading {
-            player_count: players.len(),
-            top_border: false,
-            name: "Zealous Orthodoxy",
-            info: Info::GalacticEvent(GalacticEvent::ZealousOrthodoxy),
+        if show_zealous_orthodoxy {
+            SubSectionHeading {
+                player_count: players.len(),
+                top_border: false,
+                name: "Zealous Orthodoxy",
+                info: Info::GalacticEvent(GalacticEvent::ZealousOrthodoxy),
+            }
+            tr {
+                {
+                    players
+                        .iter()
+                        .map(|p| {
+                            let score = if zealous_orthodoxy().as_ref() == Some(p) { 1 } else { 0 };
+                            rsx! {
+                                td { key: "{p}", class: "align-center", "{score}" }
+                            }
+                        })
+                }
+            }
         }
-        tr {
-            {
-                players
-                    .iter()
-                    .map(|p| {
-                        let score = if zealous_orthodoxy().as_ref() == Some(p) { 1 } else { 0 };
-                        rsx! {
-                            td { key: "{p}", class: "align-center", "{score}" }
-                        }
-                    })
+        if show_total_war {
+            SubSectionHeading {
+                player_count: players.len(),
+                top_border: show_zealous_orthodoxy,
+                name: "Total War",
+                info: Info::GalacticEvent(GalacticEvent::TotalWar),
+            }
+            tr {
+                {
+                    players
+                        .iter()
+                        .map(|p| {
+                            let score = total_war().get(p).copied().unwrap_or(0);
+                            rsx! {
+                                td { key: "{p}", class: "align-center", "{score}" }
+                            }
+                        })
+                }
             }
         }
     }

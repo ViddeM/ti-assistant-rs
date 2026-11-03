@@ -349,6 +349,7 @@ score:
   custodians: ~
   galacticEvents:
     zealousOrthodoxy: ~
+    totalWar: {}
 agenda: ~
 agendaVoteHistory: []
 laws: {}

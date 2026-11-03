@@ -212,6 +212,14 @@ pub enum Event {
         player: PlayerId,
     },
 
+    /// Perform the ACTION of a galactic event in play.
+    PlayGalacticEventAction {
+        /// The player who performs the action.
+        player: PlayerId,
+        /// Which action it is, and its data.
+        action: GalacticEventAction,
+    },
+
     /// Begin playing a frontier card.
     FrontierCardActionBegin {
         /// The player who plays the card.
@@ -756,5 +764,21 @@ pub fn action_matches_relic(action: &Option<RelicAction>, relic: &Relic) -> bool
         Relic::StellarConverter => matches!(action, Some(RelicAction::StellarConverter { .. })),
         Relic::NanoForge => matches!(action, Some(RelicAction::NanoForge { .. })),
         _ => action.is_none(),
+    }
+}
+
+/// The ACTIONs of the galactic events.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum GalacticEventAction {
+    /// Discard 10 commodities from your home system to gain 1 VP.
+    TotalWar,
+}
+
+impl GalacticEventAction {
+    /// The galactic event this action belongs to.
+    pub fn event(&self) -> GalacticEvent {
+        match self {
+            GalacticEventAction::TotalWar => GalacticEvent::TotalWar,
+        }
     }
 }

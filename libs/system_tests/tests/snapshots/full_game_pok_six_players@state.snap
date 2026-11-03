@@ -187,6 +187,7 @@ score:
   custodians: Finn
   galacticEvents:
     zealousOrthodoxy: ~
+    totalWar: {}
 agenda: ~
 agendaVoteHistory:
   - round: 1

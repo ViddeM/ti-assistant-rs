@@ -2,11 +2,12 @@ use std::sync::Arc;
 
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    actions::event::Event,
+    actions::event::{Event, GalacticEventAction},
     common::player_id::PlayerId,
     components::{
         action_card::{ActionCard, ActionCardPlay},
         frontier_card::FrontierCardType,
+        galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
         relic::RelicPlay,
         strategy_card::StrategyCard,
@@ -17,7 +18,9 @@ use ti_helper_game_data::{
 use crate::{
     components::{
         button::Button,
-        dropdown::{ActionCardDropdown, FrontierCardDropdown, RelicDropdown},
+        dropdown::{
+            ActionCardDropdown, FrontierCardDropdown, GalacticEventDropdown, RelicDropdown,
+        },
         info_button::InfoButton,
     },
     data::{
@@ -149,6 +152,7 @@ pub fn ActionPhaseView() -> Element {
 #[derive(Debug, Clone, PartialEq)]
 enum ComponentMode {
     ActionCard,
+    GalacticEvent,
     PlayRelic,
     GainRelic,
     FrontierCard,
@@ -195,12 +199,26 @@ fn ComponentSelectRow() -> Element {
             == Some(FirmamentSide::Firmament)
     });
 
+    let has_galactic_event_action = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .iter()
+            .any(|e| e.has_action())
+    });
+
     rsx! {
         div { class: "component-select-container",
             Button {
                 disabled: component_mode.read().eq(&ComponentMode::ActionCard),
                 onclick: move |_| component_mode.set(ComponentMode::ActionCard),
                 "Action Card"
+            }
+            if has_galactic_event_action() {
+                Button {
+                    disabled: component_mode.read().eq(&ComponentMode::GalacticEvent),
+                    onclick: move |_| component_mode.set(ComponentMode::GalacticEvent),
+                    "Galactic Event"
+                }
             }
             Button {
                 disabled: component_mode.read().eq(&ComponentMode::GainRelic)
@@ -248,6 +266,9 @@ fn DisplayComponentMode(mode: ReadSignal<ComponentMode>) -> Element {
     match &*mode.read() {
         ComponentMode::ActionCard => rsx! {
             ActionCardSelectView {}
+        },
+        ComponentMode::GalacticEvent => rsx! {
+            GalacticEventActionView {}
         },
         ComponentMode::PlayRelic => rsx! {
             PlayRelicView {}
@@ -479,6 +500,66 @@ fn FrontierCardView() -> Element {
                 }
             }
         }
+    }
+}
+
+#[component]
+fn GalacticEventActionView() -> Element {
+    let gc = use_context::<GameContext>();
+
+    let mut selected = use_signal(|| None);
+
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist in action phase")
+    });
+
+    let events_with_action = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .iter()
+            .filter(|e| e.has_action())
+            .copied()
+            .collect::<Vec<_>>()
+    });
+
+    rsx! {
+        div {
+            fieldset { class: "play-action-card-container",
+                legend { "Play Galactic Event" }
+                GalacticEventDropdown {
+                    value: selected,
+                    options: events_with_action(),
+                    on_select: move |e| selected.set(e),
+                }
+                if let Some(galactic_event) = selected() {
+                    GalacticEventActionForm { player: current_player(), galactic_event }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn GalacticEventActionForm(player: PlayerId, galactic_event: GalacticEvent) -> Element {
+    let event = use_context::<EventContext>();
+
+    match galactic_event {
+        GalacticEvent::TotalWar => rsx! {
+            Button {
+                onclick: move |_| {
+                    event
+                        .send_event(Event::PlayGalacticEventAction {
+                            player: player.clone(),
+                            action: GalacticEventAction::TotalWar,
+                        })
+                },
+                "Play"
+            }
+        },
+        _ => rsx! {},
     }
 }
 

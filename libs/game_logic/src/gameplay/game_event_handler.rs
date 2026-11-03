@@ -12,8 +12,8 @@ use super::{color_assignment::assign_colors, error::GameError};
 use ti_helper_game_data::{
     actions::{
         event::{
-            ActionCardAction, Event, FrontierCardAction, RelicAction, action_matches_action_card,
-            action_matches_frontier_card, action_matches_relic,
+            ActionCardAction, Event, FrontierCardAction, GalacticEventAction, RelicAction,
+            action_matches_action_card, action_matches_frontier_card, action_matches_relic,
         },
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
@@ -886,6 +886,34 @@ fn try_update_game_state(
             }
 
             game_state.update_available_leaders();
+            game_state.phase = Phase::EndActionTurn;
+        }
+        Event::PlayGalacticEventAction { player, action } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Invalid game state, action_progress not None during Action Phase"
+            );
+            let galactic_event = action.event();
+            ensure!(
+                game_state.galactic_events.contains(&galactic_event),
+                "{} isn't in play",
+                galactic_event.info().name
+            );
+
+            match action {
+                GalacticEventAction::TotalWar => {
+                    let points = game_state
+                        .score
+                        .galactic_events
+                        .total_war
+                        .entry(player)
+                        .or_default();
+                    *points = points.saturating_add(1);
+                }
+            }
+
             game_state.phase = Phase::EndActionTurn;
         }
         Event::FrontierCardActionBegin { player, card } => {

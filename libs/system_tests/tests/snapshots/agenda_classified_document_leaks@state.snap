@@ -96,6 +96,7 @@ score:
   custodians: Alice
   galacticEvents:
     zealousOrthodoxy: ~
+    totalWar: {}
 agenda:
   round: Round1
   vote: ~

@@ -230,7 +230,7 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
 5. **In-game display:**
    - ✅ `Info::GalacticEvent` (info modal), opened from the Creation screen.
    - ✅ From Setup on, the info box lists the chosen events (name + info button) under a "Galactic event(s):" label. Creation keeps its own table.
-6. **Scoring:** `Score::galactic_events` (`GalacticEventScore`) holds the event points, one field per event (Zealous Orthodoxy, later Total War), added up in `update_player_points`. Monuments' VP is derived from planet ownership instead. The score table shows them in a "Galactic Events" section.
+6. **Scoring:** `Score::galactic_events` (`GalacticEventScore`) holds the event points, one field per event (Zealous Orthodoxy, Total War), added up in `update_player_points`. Monuments' VP is derived from planet ownership instead. The score table shows them in a "Galactic Events" section.
 7. **Tests:** ✅ the builder's `.galactic_events([..])` and the creation tests in `setup.rs`. The per-event scenarios go in `libs/system_tests/tests/scenarios/galactic_events.rs`.
 
 ### 5.1 Overview
@@ -260,7 +260,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 1 | Age of Fighters | TE | 3 | Track | ✅ Everyone gains Fighter II at `StartGame` (Naalu: Hybrid Crystal Fighter II) | P1 / S |
 | 2 | Advent of the War Sun | TE | 1 | Track | ✅ Everyone except Muaat gains War Sun at `StartGame` | P1 / S |
 | 3 | Zealous Orthodoxy | TE | 1 | Track | ✅ The first player to score 2 secrets gains 1 VP | P1 / S |
-| 4 | Total War | CIV | 3 | Track | "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
+| 4 | Total War | CIV | 3 | Track | ✅ "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
 | 5 | Mercenaries for Hire | TE | 1 | Track | "Mercenaries for Hire" action that just ends the turn | P1 / S |
 | 6 | Stellar Atomics | TE | 2 | Track | One-shot action; players who used it can't vote | P1 / S |
 | 7 | Wild, Wild Galaxy | TE | 3 | Assist | The Stellar Converter works on any planet | P2 / S |
@@ -304,7 +304,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 
 #### 5.2.2 Small implementation
 
-Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War builds both, and the others add a variant and its form.
+Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with only the `TotalWar` variant so far. Each later event adds its variant, its `has_action` entry and its form arm.
 
 - **One event:** `Event::PlayGalacticEventAction { player, action: GalacticEventAction }`, with one variant per event, like `RelicAction`:
   - `TotalWar`
@@ -349,10 +349,12 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 4. Unscoring doesn't clear it; use undo to fix mistakes.
 - The alliance ability stays info only. Firmament plots (F2) don't count as scored secrets.
 
-##### 4. Total War (CIV, complexity 3): Track (VP only)
+##### 4. Total War (CIV, complexity 3): Track (VP only) ✅
 > Destroying units puts commodities on your home planets. **ACTION: discard 10 commodities from your home system → gain 1 VP.**
 
-1. Add `GalacticEventScore::total_war: HashMap<PlayerId, u32>`, the same shape as `imperial`, with a read-only row in the "Galactic Events" score section.
+✅ Done as planned below (`galactic_events_total_war` scenario).
+
+1. Add `GalacticEventScore::total_war: HashMap<PlayerId, i8>`, the same shape as `imperial`, with a read-only row in the "Galactic Events" score section.
 2. Build `PlayGalacticEventAction` and the Galactic Event tab (§5.2.2 intro).
 3. `GalacticEventAction::TotalWar` adds +1 to `Score::galactic_events.total_war`. It replaces the separate `TotalWarAction` event of the earlier plan.
 - Commodities aren't tracked, so the 10 commodities aren't checked.
@@ -539,8 +541,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy.
-   - Total War (with the Galactic Event tab), Mercenaries for Hire, Stellar Atomics (P1).
+   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War.
+   - Mercenaries for Hire, Stellar Atomics (P1).
    - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**

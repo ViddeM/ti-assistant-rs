@@ -267,12 +267,16 @@ impl Score {
 pub struct GalacticEventScore {
     /// The player who gained a point from Zealous Orthodoxy.
     pub zealous_orthodoxy: Option<PlayerId>,
+
+    /// The points each player gained with the Total War action.
+    pub total_war: HashMap<PlayerId, i8>,
 }
 
 impl GalacticEventScore {
     /// The points the player has gained from galactic events.
     pub fn points(&self, player: &PlayerId) -> i8 {
         i8::from(self.zealous_orthodoxy.as_ref() == Some(player))
+            + self.total_war.get(player).copied().unwrap_or(0)
     }
 }
 

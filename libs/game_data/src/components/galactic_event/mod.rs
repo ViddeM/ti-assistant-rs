@@ -212,6 +212,12 @@ impl GalacticEvent {
             },
         }
     }
+
+    /// Whether the app tracks an ACTION of this galactic event, see
+    /// [GalacticEventAction](crate::actions::event::GalacticEventAction).
+    pub fn has_action(&self) -> bool {
+        matches!(self, GalacticEvent::TotalWar)
+    }
 }
 
 impl Component for GalacticEvent {
