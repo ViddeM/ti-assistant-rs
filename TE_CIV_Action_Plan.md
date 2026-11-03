@@ -232,6 +232,10 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
    - ✅ From Setup on, the info box lists the chosen events (name + info button) under a "Galactic event(s):" label. Creation keeps its own table.
 6. **Scoring:** `Score::galactic_events` (`GalacticEventScore`) holds the event points, one field per event (Zealous Orthodoxy, Total War), added up in `update_player_points`. Monuments' VP is derived from planet ownership instead. The score table shows them in a "Galactic Events" section.
 7. **Tests:** ✅ the builder's `.galactic_events([..])` and the creation tests in `setup.rs`. The per-event scenarios go in `libs/system_tests/tests/scenarios/galactic_events.rs`.
+8. **Admin page:** a "Galactic Events" page to fix the tracked state of the events in play without undoing. Like the Thunder's Edge page: a `ViewMode` with its info box button, shown when an event is in play, and one section per event in play that has tracked state:
+   - Stellar Atomics: add or remove players from `GameState::stellar_atomics_used`, e.g. with `SetStellarAtomicsUsed { player, used }` (any phase).
+   - Zealous Orthodoxy and Total War: their score rows are read-only, so set the holder and the points here.
+   - Each later event with tracked state adds its section.
 
 ### 5.1 Overview
 
@@ -548,6 +552,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
    - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics.
+   - The galactic events admin page (§5.0 item 8) (P2).
    - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**
