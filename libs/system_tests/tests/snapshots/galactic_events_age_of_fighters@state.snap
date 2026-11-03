@@ -1,0 +1,112 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: false
+    codex2: false
+    codex3: false
+    codex4: false
+    thundersEdge: true
+galacticEvents:
+  - AgeOfFighters
+phase: Strategy
+mapData:
+  miltyInformation: ~
+  stellarConverterDestroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: NaaluCollective
+    color: Pink
+    planets:
+      Druaa: []
+      Maaluuk: []
+    technologies:
+      - HybridCrystalFighterII
+      - NeuralMotivator
+      - SarweenTools
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Bob:
+    name: Bob
+    faction: Winnu
+    color: Orange
+    planets:
+      Winnu: []
+    technologies:
+      - FighterII
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+  Carol:
+    name: Carol
+    faction: FederationOfSol
+    color: Green
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - FighterII
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders: {}
+currentPlayer: Alice
+spentStrategyCards: []
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime: {}
+currentTurnStartTime: "2025-01-01T12:09:00Z"
+naaluTelepathy: Alice
+teExpedition:
+  completed: ~
+  progress: {}
+fractureInPlay: false
+fractureRoll: ~
+bookOfLatviniaResearch: ~
+ministerOfAntiquesRelic: ~

@@ -25,6 +25,7 @@ use ti_helper_game_data::{
         action_card::{ActionCard, ActionCardPlay},
         agenda::{AgendaElectKind, AgendaKind},
         frontier_card::FrontierCardType,
+        galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
         objectives::{Objective, ObjectiveKind},
         phase::Phase,
@@ -384,6 +385,19 @@ fn try_update_game_state(
                     "All initialization has not yet been completed for players {uninitialized_players:?}"
                 )
             );
+
+            if game_state
+                .galactic_events
+                .contains(&GalacticEvent::AgeOfFighters)
+            {
+                for player in game_state.players.values_mut() {
+                    let tech = match player.faction {
+                        Faction::NaaluCollective => Technology::HybridCrystalFighterII,
+                        _ => Technology::FighterII,
+                    };
+                    player.technologies.insert(tech);
+                }
+            }
 
             let with_breakthrough = (game_state.players.iter())
                 .filter(|(_, player)| player.breakthrough.is_some())

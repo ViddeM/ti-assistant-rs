@@ -9,6 +9,7 @@ mod agenda;
 mod codex;
 mod fixtures;
 mod full_games;
+mod galactic_events;
 mod score;
 #[cfg(feature = "seed-db")]
 mod seed_db;
@@ -31,6 +32,7 @@ pub const ALL_SCENARIOS: &[&[Scenario]] = &[
     score::SCENARIOS,
     thunders_edge::SCENARIOS,
     codex::SCENARIOS,
+    galactic_events::SCENARIOS,
     time::SCENARIOS,
     full_games::SCENARIOS,
 ];
