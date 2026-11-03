@@ -30,7 +30,6 @@ pub struct Expansions {
     pub codex_1: bool,
     pub codex_2: bool,
     pub codex_3: bool,
-    #[serde(default)]
     pub codex_4: bool,
     pub thunders_edge: bool,
 }
@@ -55,26 +54,5 @@ impl Expansions {
             Expansion::ProphecyOfKings => self.prophecy_of_kings,
             Expansion::ThundersEdge => self.thunders_edge,
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn expansions_without_codex_4_deserialize_with_it_disabled() {
-        let json = r#"{
-            "prophecyOfKings": true,
-            "codex1": true,
-            "codex2": true,
-            "codex3": true,
-            "thundersEdge": true
-        }"#;
-
-        let expansions: Expansions = serde_json::from_str(json).unwrap();
-
-        assert!(expansions.codex_3);
-        assert!(!expansions.codex_4);
     }
 }

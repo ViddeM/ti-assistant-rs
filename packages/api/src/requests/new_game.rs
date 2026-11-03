@@ -32,7 +32,6 @@ pub enum GameConfig {
         /// If Codex III should be used.
         cod3: bool,
         /// If Codex IV should be used.
-        #[serde(default)]
         cod4: bool,
         /// If Thunder's Edge is to be used.
         te: bool,
