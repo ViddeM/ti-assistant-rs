@@ -54,7 +54,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 | TE leader actions Kan Kip Rel, Ahk Ravin, Sharsiss, Sharsiss Hollow | ✅ (as "no-data" actions) |
 | CIV toggle, ΩΩ techs (Magen Defense Grid, X-89) | ✅ |
 | CIV relics: Circlet of the Void (no effect), Neuraloop (status phase), Book of Latvinia (research up to 2 techs when gained, VP or speaker) | ✅ (`codex.rs` scenarios) |
-| Galactic events (4 CIV + 16 TE = 20) | Framework ✅ (data, `GameState::galactic_events`, the Creation picker, the info modal and the info box list). No game rule reads them yet: 6 need nothing, 9 need a small implementation and 5 need large changes (§5.1) |
+| Galactic events (4 CIV + 16 TE = 20) | Framework ✅ (data, `GameState::galactic_events`, the Creation picker, the info modal and the info box list). No game rule reads them yet: 4 need nothing, 10 need a small implementation and 6 need large changes (§5.1) |
 | Liberation of Ordinian | ❌ nothing |
 | TE action cards (14 new, Ω versions of 8 Codex I cards) and the tracked effects of Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String. Codex IV has no action cards | ✅ (`thunders_edge_action_cards`, `thunders_edge_overrule_and_strategize`, `thunders_edge_crisis_and_puppets_on_a_string` scenarios) |
 | Breakthrough effects, legendary planet abilities, Fracture, TE strategy cards, TE leader updates | ❌ |
@@ -237,65 +237,57 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
 
 No game rule reads `GameState::galactic_events` yet. The events are grouped by how much the app has to do, and each group is listed in the suggested order of work:
 - **Nothing to implement:** the rule only touches untracked things (units, movement, commodities, trade goods, action cards, alliances, dice). The info modal and the info box already cover it.
-- **Small implementation:** fits an existing flow: a grant at `StartGame`, a check, a score field, or one action event with a button. A few hours and one commit each.
+- **Small implementation:** fits an existing flow: a grant at `StartGame`, a check, a score field, or one action in the Galactic Event tab. A few hours and one commit each.
 - **Large changes:** new setup or status steps, new state that several subsystems read, or changes to existing checks across the handler and the UI. A day or more each.
 
 Implementation goes event by event, one commit per event. Each tracked event gets a scenario in `libs/system_tests/tests/scenarios/galactic_events.rs`, using the builder's `.galactic_events([..])`.
 
 Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `libs/game_data/src/state/`, UI = `packages/ui/src/views/`.
 
-**Nothing to implement (6)**
+**Nothing to implement (4)**
 
 | Event | Origin | Cx | Verdict | Why nothing | P / Effort |
 |---|---|---|---|---|---|
 | Age of Commerce | CIV | 1 | Info | Transactions and commodities aren't tracked; sharing a tech already works in the tech view | — |
-| Age of Exploration | CIV (PoK) | 2 | Info | Fragments aren't tracked; the Dark Energy Tap tile is 👺 | — |
 | Call of the Void | TE | 1 | Info | Command tokens and movement | — |
 | Cosmic Phenomenae | TE | 2 | Info | Anomaly combat and movement | — |
 | Weird Wormholes | TE | 3 | Info | Ship replacement | — |
-| Mercenaries for Hire | TE | 1 | Info | Alliances and trade goods | — |
 
-**Small implementation (9)**
+**Small implementation (10)**
 
 | # | Event | Origin | Cx | Verdict | What the app does | P / Effort |
 |---|---|---|---|---|---|---|
 | 1 | Age of Fighters | TE | 3 | Track | Everyone gains Fighter II at `StartGame` (Naalu: Hybrid Crystal Fighter II) | P1 / S |
 | 2 | Advent of the War Sun | TE | 1 | Track | Everyone except Muaat gains War Sun at `StartGame` | P1 / S |
 | 3 | Zealous Orthodoxy | TE | 1 | Track | The first player to score 2 secrets gains 1 VP | P1 / S |
-| 4 | Total War | CIV | 3 | Track | "Total War: gain 1 VP" action; builds the galactic event buttons | P1 / S |
-| 5 | Stellar Atomics | TE | 2 | Track | One-shot action; players who used it can't vote | P1 / S |
-| 6 | Wild, Wild Galaxy | TE | 3 | Assist | The Stellar Converter works on any planet | P2 / S |
-| 7 | Conventions of War Abandoned | TE | 3 | Track | "X-89: purge planet" action, after the destroyed-planets fix | P2 / S |
-| 8 | Dangerous Wilds | TE | 1 | Track | Free tech when a tactical action takes an unowned hazardous planet | P2 / S |
-| 9 | Hidden Agenda | TE | 2 | Assist | Hide individual votes until everyone has voted (UI only) | P3 / S |
+| 4 | Total War | CIV | 3 | Track | "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
+| 5 | Mercenaries for Hire | TE | 1 | Track | "Mercenaries for Hire" action that just ends the turn | P1 / S |
+| 6 | Stellar Atomics | TE | 2 | Track | One-shot action; players who used it can't vote | P1 / S |
+| 7 | Wild, Wild Galaxy | TE | 3 | Assist | The Stellar Converter works on any planet | P2 / S |
+| 8 | Conventions of War Abandoned | TE | 3 | Track | "X-89: purge planet" action, after the destroyed-planets fix | P2 / S |
+| 9 | Dangerous Wilds | TE | 1 | Track | Free tech when a tactical action takes an unowned hazardous planet | P2 / S |
+| 10 | Hidden Agenda | TE | 2 | Assist | Hide individual votes until everyone has voted (UI only) | P3 / S |
 
-**Large changes (5)**
+**Large changes (6)**
 
 | # | Event | Origin | Cx | Verdict | What the app does | P / Effort |
 |---|---|---|---|---|---|---|
 | 1 | Civilized Society | TE | 2 | Track | All 10 objectives revealed at setup, no status phase reveal, unlimited scoring; the game end rule comes later with E5 | P1 / M |
 | 2 | Cultural Exchange Program | TE | 2 | Track | Players use a drawn faction's leaders (E8); the Firmament gets The Obsidian | P2 / M |
 | 3 | Monuments to the Ages | TE | 2 | Track | Monuments with derived commodities → VP | P2 / M |
-| 4 | Rapid Mobilization | TE | 1 | Track | Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
-| 5 | Minor Factions | CIV (PoK) | 2 | Track | Pick minor factions; their planets gain all 3 traits everywhere traits are read; alliance reminder | P2 / M |
+| 4 | Age of Exploration | CIV (PoK) | 2 | Track | "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
+| 5 | Rapid Mobilization | TE | 1 | Track | Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
+| 6 | Minor Factions | CIV (PoK) | 2 | Track | Pick minor factions; their planets gain all 3 traits everywhere traits are read; alliance reminder | P2 / M |
 
 ### 5.2 Per-event plans
 
 #### 5.2.1 Nothing to implement
-
-Age of Exploration's and Mercenaries for Hire's ACTIONs have no entry in the Component list (`action_phase.rs` `ComponentSelectRow`). Tech and promissory note actions have the same gap today. That gap is cross-cutting and outside this plan.
 
 ##### Age of Commerce (CIV, complexity 1): Info
 > Transactions don't need neighbours; no commodity cap; **non-faction technologies can be shared in transactions** (the receiver gains it, the giver keeps it).
 
 - Transactions and commodities aren't tracked.
 - Sharing a tech means toggling it for the receiver in the tech view (`tech_table.rs` → `AddTechToPlayer`, any phase), which already works. No "share technology" form is needed.
-
-##### Age of Exploration (CIV, complexity 2, needs PoK): Info
-> Relics need only 2 matching fragments; Naaz-Rokha fragments needn't match; ACTION: exhaust Dark Energy Tap to add a random unused tile at the galaxy edge.
-
-- Fragments aren't tracked, and `GainRelicAction` doesn't check them, so nothing needs to change.
-- Placing the Dark Energy Tap tile on a milty map is 👺.
 
 ##### Call of the Void (TE, complexity 1): Info
 > Command tokens and movement bonuses in the Fracture.
@@ -310,14 +302,21 @@ Age of Exploration's and Mercenaries for Hire's ACTIONs have no entry in the Com
 
 - Ship replacement isn't tracked.
 
-##### Mercenaries for Hire (TE, complexity 1): Info
-> A face-up mercenary deck of alliance cards; ACTION: spend 3 trade goods to take the top one.
-
-- Alliances and trade goods aren't tracked.
-
 #### 5.2.2 Small implementation
 
-Total War, Stellar Atomics and Conventions of War Abandoned together make the "galactic event" buttons in the Component list (`action_phase.rs` `ComponentSelectRow`). Build that in Total War and reuse it in the other two.
+Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War builds both, and the others add a variant and its form.
+
+- **One event:** `Event::PlayGalacticEventAction { player, action: GalacticEventAction }`, with one variant per event, like `RelicAction`:
+  - `TotalWar`
+  - `MercenariesForHire`
+  - `StellarAtomics`
+  - `ConventionsOfWarAbandoned { planet }`
+  - `AgeOfExploration { tile }`
+- **Shared checks, done once** (modelled on `PuppetsOfTheBlade`, handler ~841): Action phase, the player's turn, `action_progress.is_none()`, and the variant's event is active. Then the handler applies the variant and goes to `EndActionTurn`.
+- **The Galactic Event tab** in `ComponentSelectRow` (`action_phase.rs`), next to Action Card:
+  - It's shown only when an active event has an ACTION. An event without one, like Age of Fighters, would leave the tab empty.
+  - It has a dropdown of those actions, then the chosen action's form.
+- Tech and promissory note actions still have no entry in the Component list. That gap is cross-cutting and outside this plan.
 
 ##### 1. Age of Fighters (TE, complexity 3): Track (setup only)
 > At setup everyone gains **Fighter II** (Naalu: **Hybrid Crystal Fighter II**). Fighters in the fleet pool get capacity 1; non-fighter ships are purged when destroyed.
@@ -346,15 +345,21 @@ Total War, Stellar Atomics and Conventions of War Abandoned together make the "g
 > Destroying units puts commodities on your home planets. **ACTION: discard 10 commodities from your home system → gain 1 VP.**
 
 1. Add `Score::total_war: HashMap<PlayerId, u32>`, the same shape as `imperial`, with a read-only score row.
-2. Add an event `TotalWarAction { player }` modelled on `PuppetsOfTheBlade` (handler ~841). Checks: Action phase, the player's turn, `action_progress.is_none()`, event active. It adds +1 and goes to `EndActionTurn`.
-3. Add a "Total War" button in `ComponentSelectRow`, shown when the event is active.
+2. Build `PlayGalacticEventAction` and the Galactic Event tab (§5.2.2 intro).
+3. `GalacticEventAction::TotalWar` adds +1 to `Score::total_war`. It replaces the separate `TotalWarAction` event of the earlier plan.
 - Commodities aren't tracked, so the 10 commodities aren't checked.
 
-##### 5. Stellar Atomics (TE, complexity 2): Track
+##### 5. Mercenaries for Hire (TE, complexity 1): Track
+> At the start of the game, the alliance cards of the factions not in play form a face-up mercenary deck. **ACTION: Spend 3 trade goods to gain the top card of the mercenary deck** and place it in your play area. Players can use the abilities of the mercenaries in their play area.
+
+- `GalacticEventAction::MercenariesForHire` has no data and no state. It just ends the turn.
+- The card and the 3 trade goods stay at the table: alliances and trade goods aren't tracked.
+
+##### 6. Stellar Atomics (TE, complexity 2): Track
 > Each player starts with a control token on the card. ACTION: discard it to destroy all ground forces and structures on any non-home planet. **Without a token you can't vote or play action cards in the agenda phase.**
 
 1. Add `GameState::stellar_atomics_used: BTreeSet<PlayerId>`. It can't be derived, and it isn't a score.
-2. Add `StellarAtomicsAction { player }` (same pattern as Total War). It's rejected if the player already used the token. There's no planet field, since units aren't tracked and nothing would read it.
+2. Add the `GalacticEventAction::StellarAtomics` variant. It's rejected if the player has already used the token. There's no planet field, since units aren't tracked and nothing would read it.
 3. Add `GameState::can_vote(&PlayerId) -> bool`: false for Nekro, or for a used token while the event is active. Use it instead of the hard-coded Nekro checks:
    - `CastAgendaVote` (handler ~1544) and `AddAgendaPlayerVote` (~1903);
    - `agenda_actions_view.rs` (~185, ~312), including the `ResolveOutcome` vote count.
@@ -362,24 +367,24 @@ Total War, Stellar Atomics and Conventions of War Abandoned together make the "g
 - Recording these players as forced abstentions can't work, because `AddAgendaPlayerVote.outcome` isn't an `Option`.
 - The action card restriction stays info only.
 
-##### 6. Wild, Wild Galaxy (TE, complexity 3): Assist
+##### 7. Wild, Wild Galaxy (TE, complexity 3): Assist
 > Changes to 9 action cards (Direct Hit, Flank Speed, Maneuvering Jets, Morale Boost, Sabotage, Shields Holding, Skilled Retreat, War Machine, Diplomatic Pressure) plus Stellar Converter and Nova Seed working on any planet or system.
 
 - When the event is active, the Stellar Converter handler (`RelicAction::StellarConverter`, handler ~1035) skips its Mecatol, home and legendary checks but keeps "not already destroyed".
 - The `relic_card.rs` picker drops the same filters.
 - The action cards and Nova Seed stay info only.
 
-##### 7. Conventions of War Abandoned (TE, complexity 3): Track
+##### 8. Conventions of War Abandoned (TE, complexity 3): Track
 > BOMBARDMENT hits destroy 3 units. **ACTION (if you own X-89): exhaust it to purge a planet in a system containing your BOMBARDMENT unit, along with its attachments and legendary card.** You're eliminated if all your home planets are purged.
 
 1. **Prerequisite fix (own commit):** destroyed planets can currently be taken again (the TODO near handler ~1078). Reject them in `TacticalActionTakePlanet` and `SetPlanetOwner`, and filter them out of the tactical take, unclaimed and Stellar Converter pickers.
 2. Rename `MapData::stellar_converter_destroyed_planets` to `destroyed_planets`, with a serde alias, so purged planets share the same list and the same map token (TE-J2).
-3. Add `PurgePlanetAction { player, planet }` (same pattern as Total War). It also checks that the player owns any X-89 version (`X89BacterialWeapon`, `…Omega`, `…OmegaOmega`) and that the planet isn't destroyed yet. Home planets are allowed.
+3. Add the `GalacticEventAction::ConventionsOfWarAbandoned { planet }` variant. Besides the shared checks, it checks that the player owns any X-89 version (`X89BacterialWeapon`, `…Omega`, `…OmegaOmega`) and that the planet isn't destroyed yet. Home planets are allowed.
 4. It removes the planet (and its attachments) like the Stellar Converter does, then ends the turn.
-5. Component button with a planet dropdown.
+5. Its form in the Galactic Event tab is a planet dropdown.
 - Elimination is game end, so skip it.
 
-##### 8. Dangerous Wilds (TE, complexity 1): Track
+##### 9. Dangerous Wilds (TE, complexity 1): Track
 > Neutral infantry on hazardous planets equal to their resources; they replenish each round. **When you gain a hazardous planet from the planet deck, you may research 1 technology, ignoring prerequisites up to that planet's resources.**
 
 1. Follow the tactical attachment pattern (`TacticalActionAttachPlanetAttachment` handler ~497, `TacticalProgress.planet_attachments`, UI `tactical_action.rs` ~126-150).
@@ -387,7 +392,7 @@ Total War, Stellar Atomics and Conventions of War Abandoned together make the "g
 3. Checks: event active, the planet is in `taken_planets` with `None`, it's hazardous, at most once per planet (stored in `TacticalProgress`), `assert_can_research`, the tech isn't owned.
 4. Prerequisites aren't checked. Normal research doesn't check them either, and exhausting a planet's tech specialty could skip more than N, but exhaustion isn't tracked. Show "ignore up to N prerequisites" as a hint.
 
-##### 9. Hidden Agenda (TE, complexity 2): Assist (UI only)
+##### 10. Hidden Agenda (TE, complexity 2): Assist (UI only)
 > Only the speaker talks in the agenda phase; votes are written secretly, the speaker reveals only totals (and who voted for what only when needed). Argent's votes are public.
 
 - While a vote is open, `agenda_actions_view.rs` shows "Voted" instead of "{outcome} - {votes}", except for Argent's votes and the speaker's own player view.
@@ -428,15 +433,45 @@ Total War, Stellar Atomics and Conventions of War Abandoned together make the "g
 4. `update_player_points` gives `commodities / 3` VP to the planet's owner. Add a "Monuments" score row and a planet badge.
 - Trade goods aren't tracked, so the 5 trade goods aren't checked.
 
-##### 4. Rapid Mobilization (TE, complexity 1): Track (setup)
+##### 4. Age of Exploration (CIV, complexity 2, needs PoK): Track
+> Relics require only 2 matching fragments be purged instead of 3. The Naaz-Rokha Alliance's FABRICATION faction ability and BLACK MARKET FORGERY promissory note do not require purged fragments to match.
+>
+> **ACTION: Exhaust DARK ENERGY TAP and choose a non-home edge system that contains your ships to roll 1 die. On a result of 1-4, draw a random unused red tile; on a result of 5-10, draw a random unused blue tile. Place that tile adjacent to the chosen system so that it is touching at least 2 non-home systems.** Place a frontier token in the system if it does not contain any planets.
+
+1. **The action:** `GalacticEventAction::AgeOfExploration { tile: Option<(SystemId, Coordinate)> }`. Besides the shared checks (§5.2.2 intro):
+   - the player owns `DarkEnergyTap`;
+   - `tile` is required when the game has a milty map (`MapData::milty_information.hex_map`), the same way `FrontierCardAction::Mirage` requires its `system` (handler ~955), and must be `None` otherwise;
+   - exhaustion and the roll stay at the table.
+2. **Tile dropdown:** systems from enabled expansions that are red or blue, i.e. `SystemType::Normal` or `Anomaly`, never `HomeSystem` or `Hyperlane`.
+   - They mustn't already be in `hex_map.tiles`.
+   - The special tiles are excluded: Mecatol Rex, the Creuss gate, the Crimson Rebellion gate, the Wormhole Nexus and the Fracture.
+   - The player picks the tile they drew.
+3. **Position: two dropdowns, ring and position in that ring.**
+   - **Explainer** above them: "Ring 0 is Mecatol Rex. Ring N has 6 × N positions, numbered from 0 directly above Mecatol Rex, going clockwise." That's `Coordinate`'s own convention (`common/map.rs`).
+   - **Legal positions only:** empty (a gap inside the galaxy, or a spot just outside it) and touching at least 2 non-home systems.
+     - The ring dropdown lists the rings that have a legal position.
+     - The position dropdown lists that ring's legal positions.
+   - Hyperlanes and home systems don't count towards the 2.
+   - Every legal position touches a non-home edge system. Whether that system holds the player's ships isn't tracked.
+4. **Neighbour helper:** `Coordinate::neighbors()` in `common/map.rs`, using ring/position ↔ axial conversion. There's only the private `outward_neighbor` today, and the ring/position → grid math lives in the UI (`get_tile_position`, `map_view_mode/layout.rs:371`). Test the helper against the map layout's positions.
+5. **Handler:** it checks the same rules and appends `Tile { system, position: HexPosition::Pos(coord) }` (rotation 0) to `hex_map.tiles`.
+6. **Map view:**
+   - The off-board tiles already move out of the way: `place_tiles` (`map_view_mode/outside_galaxy.rs:72`) places every `HexPosition::Pos` tile first, then nudges the Crimson Rebellion home system, the Fracture and the left column away from them. Add a layout test with a tile next to where the Fracture is drawn.
+   - `build_layout`'s `empty_slots` (`layout.rs:325`) draws placeholders for every ring up to the outermost tile, so a tile one ring out would add a whole placeholder ring. Limit it to the imported rings (`HexMap::ring_count`).
+7. **Info only:**
+   - Planet ownership needs no change: `GameState::planet_location` (`state/game_state.rs:579`) already counts any planet with a system tile as on the board.
+   - The frontier token stays at the table, since the map doesn't draw frontier tokens.
+   - The 2-fragment relic rules stay at the table, since fragments aren't tracked and `GainRelicAction` doesn't check them.
+
+##### 5. Rapid Mobilization (TE, complexity 1): Track (setup)
 > After setup the Fracture enters play. Each player: (1) places 1 infantry on, gains and readies each planet adjacent to their home system (or the Creuss Gate / The Sorrow); (2) places a space dock and their flagship + 3 fighters; (3) **gains their breakthrough**; (4) **researches 1 technology** (Nomad: 2).
 
 1. At `StartGame`: set `fracture_in_play` first (so there's no roll), then `gain_breakthrough` for everyone, which applies the I.I.H.Q. and Stellar Genesis effects.
 2. The planets and the research (1 tech, Nomad 2) need a per-player step after the faction setup. `player_initialization_finished` counts total techs, so that check has to change first.
-3. There's no adjacency helper (the milty `HexMap` only has the private `outward_neighbor`), so trust the picker: non-home, unowned, on the board.
+3. In milty games, use Age of Exploration's neighbour helper (`Coordinate::neighbors()`) to offer the planets next to the home system. Without a map, trust the picker: non-home, unowned, on the board.
 - Units aren't tracked.
 
-##### 5. Minor Factions (CIV, complexity 2, needs PoK): Track
+##### 6. Minor Factions (CIV, complexity 2, needs PoK): Track
 > Setup: players get 1 fewer blue tile. Each player is dealt a non-played faction and places its home system in ring 2 with 3 neutral infantry. Controlling every planet in a minor faction system gives you that faction's alliance card. **Planets in minor faction systems have all three traits.**
 
 1. Minor factions are chosen per game, validated as not in play, one per player.
@@ -496,7 +531,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Stellar Atomics (P1).
+   - Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War (with the Galactic Event tab), Mercenaries for Hire, Stellar Atomics (P1).
    - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**
@@ -508,7 +543,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
    - Civilized Society without its game end rule (P1).
-   - Cultural Exchange Program, Monuments to the Ages, Rapid Mobilization, Minor Factions (P2).
+   - Cultural Exchange Program, Monuments to the Ages, Age of Exploration, Rapid Mobilization, Minor Factions (P2).
    - F2 Firmament plots.
 6. **Optional (P3).**
    - ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.
