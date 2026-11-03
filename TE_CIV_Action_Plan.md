@@ -33,7 +33,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 
 **Design guidelines (from the existing code):**
 - **Derive before you store.** For example, Styx VP = "controls Styx", the same way `HolyPlanetOfIxth` is scored in `state/score.rs`.
-- **Optional state needs serde defaults.** New `GameSettings`/`GameState` fields need `#[serde(default)]` so stored games still deserialize (see `codex_4` in `common/game_settings.rs`).
+- **Stored data needs serde defaults.** New fields in `GameSettings` (stored inside `SetSettings`) and in existing `Event` variants need `#[serde(default)]`, so stored games still deserialize (see `codex_4` in `common/game_settings.rs`). `GameState` and its parts (`Player`, `Score`) are rebuilt from the events, so their fields don't need it.
 - **Data on events, not new phases.** Multi-step actions should carry their data on the commit event, like `RelicAction` and `FrontierCardAction` in `actions/event.rs`, rather than adding phases.
 - **Admin escape hatches.** Rare effects can stay manual: manual VPs, `SetPlanetOwner`, `AddTechToPlayer`/`RemoveTechFromPlayer`, `SetBreakthrough`.
 - **Tests.** Every tracked feature gets a scenario in `libs/system_tests/tests/scenarios/` (determinism, replay and undo are checked automatically).
@@ -74,7 +74,7 @@ Several TE, CIV and galactic-event features need the same building blocks. Build
 | E5 | **Victory target and game end** | The configured target is ignored (`state/score.rs:63`), but nothing reads it, and game end is handled at the table. Revisit it with the galactic events (Civilized Society), where it may matter more. | If ever wanted: use `GameSettings::max_points` and show the target. | P3 (lowest) / S |
 | E6 | **Data on leader actions** | `LeaderActionBegin` jumps straight to `EndActionTurn` without data (TODO list at `game_event_handler.rs:851-867`). Ta Zern, and later others, need data. | Add `LeaderAction` data, mirroring `RelicAction` + `action_matches_relic`, and use the existing (unused) `Phase::LeaderAction` + `LeaderActionCommit { data }`. Leaders without data keep the one-click path. Also track **purged heroes** (`purged_leaders: BTreeSet<Leader>`) so used heroes disappear from `available_leaders`. | P2 / M |
 | E7 | **Galactic event framework** | Prerequisite for §5. | See §5.0. | P2 / M |
-| E8 | **A leader-faction override** | Cultural Exchange Program, and Creuss's "Unknown" leaders in Liberation of Ordinian. | `Player::leaders_from: Option<Faction>` (`#[serde(default)]`), read by `update_available_leaders` (`state/game_state.rs:879`). Built with Cultural Exchange Program (§5.2.3). | P2 / S |
+| E8 | **A leader-faction override** | Cultural Exchange Program, and Creuss's "Unknown" leaders in Liberation of Ordinian. | `Player::leaders_from: Option<Faction>`, read by `update_available_leaders` (`state/game_state.rs:879`). Built with Cultural Exchange Program (§5.2.3). | P2 / S |
 
 ---
 
@@ -423,7 +423,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 ##### 2. Cultural Exchange Program (TE, complexity 2): Track
 > At the end of setup, shuffle the reference cards of the factions in play; each player draws one, **takes all of that faction's leaders** for the rest of the game and unlocks that commander. **The Firmament/Obsidian doesn't take part; it starts with The Obsidian relic.**
 
-1. Add `Player::leaders_from: Option<Faction>` (`#[serde(default)]`). This is E8, which doesn't exist yet.
+1. Add `Player::leaders_from: Option<Faction>`. This is E8, which doesn't exist yet.
 2. Setup event `SetupCulturalExchange { player, faction }`. Checks: Setup phase, event active, the faction is in play, neither side is `FirmamentObsidian`, each faction is drawn once. Drawing your own faction is allowed, since the card doesn't forbid it.
 3. When the event is active, `player_initialization_finished` (`state/game_state.rs:855`) requires the draw (except for the Firmament). Add a per-player dropdown in the setup view.
 4. `update_available_leaders` (`state/game_state.rs:879`) uses `leaders_from`. The Yssaril "all agents" rule follows whoever holds Ssruu, which is the drawn faction.
