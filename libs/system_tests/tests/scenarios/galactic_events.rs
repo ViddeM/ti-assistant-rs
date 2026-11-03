@@ -10,6 +10,7 @@ scenarios![
     galactic_events_zealous_orthodoxy,
     galactic_events_zealous_orthodoxy_initiative,
     galactic_events_total_war,
+    galactic_events_mercenaries_for_hire,
 ];
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
@@ -197,6 +198,34 @@ pub fn galactic_events_total_war() -> TestGame {
     assert_eq!(g.points("Alice"), 2);
     assert_eq!(g.points("Bob"), 1);
     assert_eq!(g.points("Carol"), 0);
+    g
+}
+
+/// The Mercenaries for Hire action ends the turn and gives no points. It can be played again on a
+/// later turn.
+pub fn galactic_events_mercenaries_for_hire() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .pok()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::MercenariesForHire]),
+    );
+
+    let alice = g
+        .turn("Alice")
+        .galactic_event(GalacticEventAction::MercenariesForHire);
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice.end_turn();
+
+    g.turn("Bob").play_card(StrategyCard::Diplomacy);
+    g.turn("Carol").play_card(StrategyCard::Politics);
+    g.turn("Alice")
+        .galactic_event(GalacticEventAction::MercenariesForHire)
+        .end_turn();
+
+    for player in ["Alice", "Bob", "Carol"] {
+        assert_eq!(g.points(player), 0);
+    }
     g
 }
 

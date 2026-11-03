@@ -261,7 +261,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 2 | Advent of the War Sun | TE | 1 | Track | ✅ Everyone except Muaat gains War Sun at `StartGame` | P1 / S |
 | 3 | Zealous Orthodoxy | TE | 1 | Track | ✅ The first player to score 2 secrets gains 1 VP | P1 / S |
 | 4 | Total War | CIV | 3 | Track | ✅ "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
-| 5 | Mercenaries for Hire | TE | 1 | Track | "Mercenaries for Hire" action that just ends the turn | P1 / S |
+| 5 | Mercenaries for Hire | TE | 1 | Track | ✅ "Mercenaries for Hire" action that just ends the turn | P1 / S |
 | 6 | Stellar Atomics | TE | 2 | Track | One-shot action; players who used it can't vote | P1 / S |
 | 7 | Wild, Wild Galaxy | TE | 3 | Assist | The Stellar Converter works on any planet | P2 / S |
 | 8 | Conventions of War Abandoned | TE | 3 | Track | "X-89: purge planet" action, after the destroyed-planets fix | P2 / S |
@@ -304,7 +304,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 
 #### 5.2.2 Small implementation
 
-Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with only the `TotalWar` variant so far. Each later event adds its variant, its `has_action` entry and its form arm.
+Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with the `TotalWar` and `MercenariesForHire` variants so far. Each later event adds its variant, its `has_action` entry and its form arm.
 
 - **One event:** `Event::PlayGalacticEventAction { player, action: GalacticEventAction }`, with one variant per event, like `RelicAction`:
   - `TotalWar`
@@ -359,8 +359,10 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 3. `GalacticEventAction::TotalWar` adds +1 to `Score::galactic_events.total_war`. It replaces the separate `TotalWarAction` event of the earlier plan.
 - Commodities aren't tracked, so the 10 commodities aren't checked.
 
-##### 5. Mercenaries for Hire (TE, complexity 1): Track
+##### 5. Mercenaries for Hire (TE, complexity 1): Track ✅
 > At the start of the game, the alliance cards of the factions not in play form a face-up mercenary deck. **ACTION: Spend 3 trade goods to gain the top card of the mercenary deck** and place it in your play area. Players can use the abilities of the mercenaries in their play area.
+
+✅ Done as planned below (`galactic_events_mercenaries_for_hire` scenario).
 
 - `GalacticEventAction::MercenariesForHire` has no data and no state. It just ends the turn.
 - The card and the 3 trade goods stay at the table: alliances and trade goods aren't tracked.
@@ -541,8 +543,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War.
-   - Mercenaries for Hire, Stellar Atomics (P1).
+   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire.
+   - Stellar Atomics (P1).
    - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**

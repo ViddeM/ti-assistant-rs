@@ -546,20 +546,23 @@ fn GalacticEventActionView() -> Element {
 fn GalacticEventActionForm(player: PlayerId, galactic_event: GalacticEvent) -> Element {
     let event = use_context::<EventContext>();
 
-    match galactic_event {
-        GalacticEvent::TotalWar => rsx! {
-            Button {
-                onclick: move |_| {
-                    event
-                        .send_event(Event::PlayGalacticEventAction {
-                            player: player.clone(),
-                            action: GalacticEventAction::TotalWar,
-                        })
-                },
-                "Play"
-            }
-        },
-        _ => rsx! {},
+    let action = match galactic_event {
+        GalacticEvent::TotalWar => GalacticEventAction::TotalWar,
+        GalacticEvent::MercenariesForHire => GalacticEventAction::MercenariesForHire,
+        _ => return rsx! {},
+    };
+
+    rsx! {
+        Button {
+            onclick: move |_| {
+                event
+                    .send_event(Event::PlayGalacticEventAction {
+                        player: player.clone(),
+                        action: action.clone(),
+                    })
+            },
+            "Play"
+        }
     }
 }
 

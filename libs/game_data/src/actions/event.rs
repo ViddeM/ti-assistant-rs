@@ -772,6 +772,8 @@ pub fn action_matches_relic(action: &Option<RelicAction>, relic: &Relic) -> bool
 pub enum GalacticEventAction {
     /// Discard 10 commodities from your home system to gain 1 VP.
     TotalWar,
+    /// Spend 3 trade goods to gain the top card of the mercenary deck.
+    MercenariesForHire,
 }
 
 impl GalacticEventAction {
@@ -779,6 +781,7 @@ impl GalacticEventAction {
     pub fn event(&self) -> GalacticEvent {
         match self {
             GalacticEventAction::TotalWar => GalacticEvent::TotalWar,
+            GalacticEventAction::MercenariesForHire => GalacticEvent::MercenariesForHire,
         }
     }
 }

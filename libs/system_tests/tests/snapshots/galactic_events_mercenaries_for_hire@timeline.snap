@@ -1,0 +1,30 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 SetGalacticEvents                        r0 Creation           -
+   5 CreationDone                             r0 Setup              -
+   6 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   7 RevealInitialObjectives                  r0 Setup              -
+   8 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   9 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  10 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  11 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  12 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  13 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  14 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  15 CompleteStrategyPhase                    r1 Action             Alice
+  16 PlayGalacticEventAction(Alice)           r1 EndActionTurn      Alice
+  17 EndTurn(Alice)                           r1 Action             Bob
+  18 StrategicActionBegin(Bob)                r1 StrategicAction    Bob
+  19 StrategicActionCommit                    r1 EndActionTurn      Bob
+  20 EndTurn(Bob)                             r1 Action             Carol
+  21 StrategicActionBegin(Carol)              r1 StrategicAction    Carol
+  22 StrategicActionPrimary(Carol)            r1 StrategicAction    Carol
+  23 StrategicActionCommit                    r1 EndActionTurn      Carol
+  24 EndTurn(Carol)                           r1 Action             Alice
+  25 PlayGalacticEventAction(Alice)           r1 EndActionTurn      Alice
+  26 EndTurn(Alice)                           r1 Action             Bob

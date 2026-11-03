@@ -912,6 +912,7 @@ fn try_update_game_state(
                         .or_default();
                     *points = points.saturating_add(1);
                 }
+                GalacticEventAction::MercenariesForHire => {}
             }
 
             game_state.phase = Phase::EndActionTurn;
