@@ -218,7 +218,9 @@ impl GalacticEvent {
     pub fn has_action(&self) -> bool {
         matches!(
             self,
-            GalacticEvent::TotalWar | GalacticEvent::MercenariesForHire
+            GalacticEvent::TotalWar
+                | GalacticEvent::MercenariesForHire
+                | GalacticEvent::StellarAtomics
         )
     }
 }

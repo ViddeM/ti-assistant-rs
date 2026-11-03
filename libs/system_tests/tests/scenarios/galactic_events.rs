@@ -1,5 +1,7 @@
 //! Galactic events.
 
+use std::collections::BTreeSet;
+
 use ti_helper_system_tests::prelude::*;
 
 use crate::fixtures::{action_phase, three_players};
@@ -11,6 +13,7 @@ scenarios![
     galactic_events_zealous_orthodoxy_initiative,
     galactic_events_total_war,
     galactic_events_mercenaries_for_hire,
+    galactic_events_stellar_atomics,
 ];
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
@@ -226,6 +229,78 @@ pub fn galactic_events_mercenaries_for_hire() -> TestGame {
     for player in ["Alice", "Bob", "Carol"] {
         assert_eq!(g.points(player), 0);
     }
+    g
+}
+
+/// The Stellar Atomics action ends the turn and can only be played once per player. A player who
+/// has used it can't vote, in the agenda phase or outside it, and the other players' votes are
+/// enough to resolve the agenda.
+pub fn galactic_events_stellar_atomics() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .pok()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::StellarAtomics]),
+    );
+    let stellar_atomics = Event::PlayGalacticEventAction {
+        player: p("Alice"),
+        action: GalacticEventAction::StellarAtomics,
+    };
+
+    let alice = g
+        .turn("Alice")
+        .galactic_event(GalacticEventAction::StellarAtomics);
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice.end_turn();
+    assert_eq!(g.state().stellar_atomics_used, BTreeSet::from([p("Alice")]));
+
+    g.turn("Bob").play_card(StrategyCard::Diplomacy);
+    g.turn("Carol").play_card(StrategyCard::Politics);
+    g.expect_rejected(stellar_atomics, "already used")
+        .apply(Event::AddAgendaBegin {
+            agenda: Agenda::Mutiny,
+        })
+        .expect_rejected(
+            Event::AddAgendaPlayerVote {
+                player: p("Alice"),
+                outcome: FOR,
+                votes: 1,
+            },
+            "Stellar Atomics",
+        )
+        .apply(Event::AddAgendaCancel)
+        .apply(Event::SetCustodians {
+            player: Some(p("Alice")),
+        })
+        .play_out_action_phase()
+        .status_phase()
+        .reveal(PublicObjective::ExpandBorders)
+        .complete();
+    assert_eq!(g.phase(), Phase::Agenda);
+
+    g.agenda(Agenda::Mutiny)
+        .expect_rejected(
+            Event::CastAgendaVote {
+                player: p("Alice"),
+                outcome: Some(FOR),
+                votes: 1,
+            },
+            "Stellar Atomics token used, cannot vote on agendas",
+        )
+        .expect_rejected(
+            Event::CastAgendaVote {
+                player: p("Alice"),
+                outcome: None,
+                votes: 0,
+            },
+            "Stellar Atomics",
+        )
+        .vote_all(FOR, 1)
+        .resolve_expected();
+    assert_eq!(
+        [g.points("Alice"), g.points("Bob"), g.points("Carol")],
+        [1, 1, 1]
+    );
     g
 }
 

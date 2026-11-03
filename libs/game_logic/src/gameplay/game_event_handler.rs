@@ -913,6 +913,13 @@ fn try_update_game_state(
                     *points = points.saturating_add(1);
                 }
                 GalacticEventAction::MercenariesForHire => {}
+                GalacticEventAction::StellarAtomics => {
+                    ensure!(
+                        !game_state.stellar_atomics_used.contains(&player),
+                        "{player} has already used their Stellar Atomics token"
+                    );
+                    game_state.stellar_atomics_used.insert(player);
+                }
             }
 
             game_state.phase = Phase::EndActionTurn;
@@ -1597,15 +1604,13 @@ fn try_update_game_state(
         } => {
             game_state.assert_phase(Phase::Agenda)?;
 
-            ensure!(
-                game_state
-                    .players
-                    .get(&player)
-                    .context("Player doesn't exist?")?
-                    .faction
-                    != Faction::NekroVirus,
-                "Nekro Virus cannot vote on agendas"
-            );
+            game_state
+                .players
+                .get(&player)
+                .context("Player doesn't exist?")?;
+            if let Some(restriction) = game_state.vote_restriction(&player) {
+                bail!(restriction.reason());
+            }
 
             let Some(state) = &mut game_state.agenda else {
                 bail!("agenda state not initialized, this is a bug.");
@@ -1957,15 +1962,13 @@ fn try_update_game_state(
             outcome,
             votes,
         } => {
-            ensure!(
-                game_state
-                    .players
-                    .get(&player)
-                    .context("Player doesn't exist?")?
-                    .faction
-                    != Faction::NekroVirus,
-                "Nekro Virus cannot vote on agendas"
-            );
+            game_state
+                .players
+                .get(&player)
+                .context("Player doesn't exist?")?;
+            if let Some(restriction) = game_state.vote_restriction(&player) {
+                bail!(restriction.reason());
+            }
 
             let Some(agenda_override_state) = game_state.agenda_override_state.as_mut() else {
                 bail!("No agenda override is in progress");

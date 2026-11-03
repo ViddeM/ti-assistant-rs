@@ -774,6 +774,8 @@ pub enum GalacticEventAction {
     TotalWar,
     /// Spend 3 trade goods to gain the top card of the mercenary deck.
     MercenariesForHire,
+    /// Discard your control token to destroy all ground forces and structures on a non-home planet.
+    StellarAtomics,
 }
 
 impl GalacticEventAction {
@@ -782,6 +784,7 @@ impl GalacticEventAction {
         match self {
             GalacticEventAction::TotalWar => GalacticEvent::TotalWar,
             GalacticEventAction::MercenariesForHire => GalacticEvent::MercenariesForHire,
+            GalacticEventAction::StellarAtomics => GalacticEvent::StellarAtomics,
         }
     }
 }

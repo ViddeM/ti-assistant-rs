@@ -134,11 +134,12 @@ fn AddLawForm() -> Element {
             .unwrap_or_default()
     });
     let players_left_to_vote = use_memo(move || {
-        let mut players = gc
-            .game_state()
+        let game_state = gc.game_state();
+        let mut players = game_state
             .players
             .keys()
             .filter(|&p| !players_that_have_voted().contains(p))
+            .filter(|&p| game_state.vote_restriction(p).is_none())
             .cloned()
             .collect::<Vec<_>>();
         players.sort();

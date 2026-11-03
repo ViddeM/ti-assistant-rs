@@ -262,7 +262,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 3 | Zealous Orthodoxy | TE | 1 | Track | ✅ The first player to score 2 secrets gains 1 VP | P1 / S |
 | 4 | Total War | CIV | 3 | Track | ✅ "Total War: gain 1 VP" action; builds the Galactic Event tab | P1 / S |
 | 5 | Mercenaries for Hire | TE | 1 | Track | ✅ "Mercenaries for Hire" action that just ends the turn | P1 / S |
-| 6 | Stellar Atomics | TE | 2 | Track | One-shot action; players who used it can't vote | P1 / S |
+| 6 | Stellar Atomics | TE | 2 | Track | ✅ One-shot action; players who used it can't vote | P1 / S |
 | 7 | Wild, Wild Galaxy | TE | 3 | Assist | The Stellar Converter works on any planet | P2 / S |
 | 8 | Conventions of War Abandoned | TE | 3 | Track | "X-89: purge planet" action, after the destroyed-planets fix | P2 / S |
 | 9 | Dangerous Wilds | TE | 1 | Track | Free tech when a tactical action takes an unowned hazardous planet | P2 / S |
@@ -304,7 +304,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 
 #### 5.2.2 Small implementation
 
-Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with the `TotalWar` and `MercenariesForHire` variants so far. Each later event adds its variant, its `has_action` entry and its form arm.
+Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with the `TotalWar`, `MercenariesForHire` and `StellarAtomics` variants so far. Each later event adds its variant, its `has_action` entry and its form arm.
 
 - **One event:** `Event::PlayGalacticEventAction { player, action: GalacticEventAction }`, with one variant per event, like `RelicAction`:
   - `TotalWar`
@@ -367,15 +367,19 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 - `GalacticEventAction::MercenariesForHire` has no data and no state. It just ends the turn.
 - The card and the 3 trade goods stay at the table: alliances and trade goods aren't tracked.
 
-##### 6. Stellar Atomics (TE, complexity 2): Track
+##### 6. Stellar Atomics (TE, complexity 2): Track ✅
 > Each player starts with a control token on the card. ACTION: discard it to destroy all ground forces and structures on any non-home planet. **Without a token you can't vote or play action cards in the agenda phase.**
+
+✅ Done as planned below (`galactic_events_stellar_atomics` scenario).
 
 1. Add `GameState::stellar_atomics_used: BTreeSet<PlayerId>`. It can't be derived, and it isn't a score.
 2. Add the `GalacticEventAction::StellarAtomics` variant. It's rejected if the player has already used the token. There's no planet field, since units aren't tracked and nothing would read it.
-3. Add `GameState::can_vote(&PlayerId) -> bool`: false for Nekro, or for a used token while the event is active. Use it instead of the hard-coded Nekro checks:
-   - `CastAgendaVote` (handler ~1544) and `AddAgendaPlayerVote` (~1903);
-   - `agenda_actions_view.rs` (~185, ~312), including the `ResolveOutcome` vote count.
-4. The UI says "Cannot vote (Stellar Atomics)".
+3. Add `GameState::vote_restriction(&PlayerId) -> Option<VoteRestriction>`: `NekroVirus` for Nekro, otherwise `StellarAtomics` for a used token. It's infallible (an unknown player gives `None`) and returns the reason, which the handlers and views need. Use it instead of the hard-coded Nekro checks:
+   - `CastAgendaVote` (handler ~1598) and `AddAgendaPlayerVote` (~1958) reject the vote with the reason;
+   - `agenda_actions_view.rs`: the player's vote box shows the reason, and `ResolveOutcome`'s vote count leaves them out;
+   - `laws_view_mode.rs`: the override vote form doesn't offer them;
+   - the system tests' `vote_all` skips them.
+4. `VoteRestriction::reason` gives "Nekro Virus cannot vote on agendas" and "Stellar Atomics token used, cannot vote on agendas". The Galactic Event tab shows "Stellar Atomics token already used" instead of the Play button.
 - Recording these players as forced abstentions can't work, because `AddAgendaPlayerVote.outcome` isn't an `Option`.
 - The action card restriction stays info only.
 
@@ -543,8 +547,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire.
-   - Stellar Atomics (P1).
+   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics.
    - Wild, Wild Galaxy, Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**

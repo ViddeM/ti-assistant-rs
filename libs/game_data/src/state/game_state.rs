@@ -155,6 +155,10 @@ pub struct GameState {
     /// The player (if any) elected for Minister of Antiques, who must gain their relic before
     /// anything else can happen.
     pub minister_of_antiques_relic: Option<PlayerId>,
+
+    /// The players who have discarded their Stellar Atomics token. It can't be derived, since the
+    /// event history isn't in [GameState].
+    pub stellar_atomics_used: BTreeSet<PlayerId>,
 }
 
 /// Where a planet is on the board, see [GameState::planet_location].
@@ -169,6 +173,25 @@ pub enum PlanetLocation {
     /// (Custodia Vigilia), is on the hidden side of the Firmament / The Obsidian home system tile
     /// or is in the Fracture before it's in play.
     NotOnBoard,
+}
+
+/// Why a player can't vote on agendas, see [GameState::vote_restriction].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum VoteRestriction {
+    /// The player is [Faction::NekroVirus].
+    NekroVirus,
+    /// The player has discarded their Stellar Atomics token.
+    StellarAtomics,
+}
+
+impl VoteRestriction {
+    /// The message shown to the players.
+    pub fn reason(&self) -> &'static str {
+        match self {
+            VoteRestriction::NekroVirus => "Nekro Virus cannot vote on agendas",
+            VoteRestriction::StellarAtomics => "Stellar Atomics token used, cannot vote on agendas",
+        }
+    }
 }
 
 /// Information relevant to things that has happened on the gameboard.
@@ -538,6 +561,18 @@ impl GameState {
     /// Returns weather the provided player is the speaker.
     pub fn is_speaker(&self, player: &PlayerId) -> bool {
         self.speaker.as_ref().eq(&Some(player))
+    }
+
+    /// Why the player can't vote on agendas, `None` if they can (or don't exist).
+    pub fn vote_restriction(&self, player: &PlayerId) -> Option<VoteRestriction> {
+        let player_state = self.players.get(player)?;
+        if player_state.faction == Faction::NekroVirus {
+            Some(VoteRestriction::NekroVirus)
+        } else if self.stellar_atomics_used.contains(player) {
+            Some(VoteRestriction::StellarAtomics)
+        } else {
+            None
+        }
     }
 
     /// Asserts that the provided player is the currently active player.

@@ -14,7 +14,7 @@ use ti_helper_game_data::{
         event::{ActionCardAction, Event, FrontierCardAction, GalacticEventAction, RelicAction},
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
-    common::{faction::Faction, player_id::PlayerId},
+    common::player_id::PlayerId,
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect},
@@ -595,7 +595,8 @@ impl<'g> AgendaVote<'g> {
         self
     }
 
-    /// Every player who hasn't voted yet (except Nekro, who can't) casts `votes` for `outcome`.
+    /// Every player who hasn't voted yet casts `votes` for `outcome`, except those with a
+    /// [vote restriction](ti_helper_game_data::state::game_state::GameState::vote_restriction).
     #[track_caller]
     pub fn vote_all(self, outcome: AgendaElect, votes: u16) -> Self {
         let state = self.game.state();
@@ -609,7 +610,7 @@ impl<'g> AgendaVote<'g> {
             .turn_order
             .iter()
             .filter(|player| !voted.contains_key(*player))
-            .filter(|player| state.players[*player].faction != Faction::NekroVirus)
+            .filter(|player| state.vote_restriction(player).is_none())
             .cloned()
             .collect();
         for player in remaining {

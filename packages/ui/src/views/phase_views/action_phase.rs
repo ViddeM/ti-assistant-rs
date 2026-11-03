@@ -544,11 +544,18 @@ fn GalacticEventActionView() -> Element {
 
 #[component]
 fn GalacticEventActionForm(player: PlayerId, galactic_event: GalacticEvent) -> Element {
+    let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
     let action = match galactic_event {
         GalacticEvent::TotalWar => GalacticEventAction::TotalWar,
         GalacticEvent::MercenariesForHire => GalacticEventAction::MercenariesForHire,
+        GalacticEvent::StellarAtomics if gc.game_state().stellar_atomics_used.contains(&player) => {
+            return rsx! {
+                p { "Stellar Atomics token already used" }
+            };
+        }
+        GalacticEvent::StellarAtomics => GalacticEventAction::StellarAtomics,
         _ => return rsx! {},
     };
 

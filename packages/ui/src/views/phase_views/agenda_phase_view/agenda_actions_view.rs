@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
-    common::{faction::Faction, player_id::PlayerId},
+    common::player_id::PlayerId,
     components::agenda::AgendaElect,
     state::agenda::{AgendaRound, AgendaState, VoteState},
 };
@@ -172,19 +172,14 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
     let gc = use_context::<GameContext>();
     let view = use_context::<PlayerViewContext>();
 
-    let player = use_memo(move || {
-        gc.game_state()
-            .players
-            .get(&player_id())
-            .cloned()
-            .expect("Player to exist")
-    });
+    let vote_restriction = use_memo(move || gc.game_state().vote_restriction(&player_id()));
 
     let player_vote = use_memo(move || state().player_votes.get(&player_id()).cloned());
 
-    if player().faction == Faction::NekroVirus {
+    if let Some(restriction) = vote_restriction() {
+        let reason = restriction.reason();
         return rsx! {
-            p { "Nekro Virus cannot vote" }
+            p { "{reason}" }
         };
     }
 
@@ -310,11 +305,12 @@ fn ResolveOutcome(state: ReadSignal<VoteState>) -> Element {
     });
 
     let players_that_can_vote = use_memo(move || {
-        gc.game_state()
+        let game_state = gc.game_state();
+        game_state
             .players
-            .iter()
-            .filter(|(_, player)| player.faction != Faction::NekroVirus)
-            .map(|(p, _)| p.clone())
+            .keys()
+            .filter(|p| game_state.vote_restriction(p).is_none())
+            .cloned()
             .collect::<Vec<_>>()
     });
     let everyone_has_voted =
