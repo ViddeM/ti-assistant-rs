@@ -1,8 +1,14 @@
+use std::collections::BTreeMap;
+
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::{BreakthroughAction, Event},
     common::player_id::PlayerId,
-    components::{breakthrough::Breakthrough, relic::Relic, tech::Technology},
+    components::{
+        breakthrough::Breakthrough,
+        relic::Relic,
+        tech::{TechOrigin, TechType, Technology},
+    },
 };
 
 use crate::{
@@ -39,6 +45,11 @@ fn BreakthroughActionForm(player: PlayerId, breakthrough: Breakthrough) -> Eleme
         Breakthrough::VaultsOfTheHeir => {
             return rsx! {
                 VaultsOfTheHeirForm { player }
+            };
+        }
+        Breakthrough::VisionariaSelect => {
+            return rsx! {
+                VisionariaSelectForm { player }
             };
         }
         _ => return rsx! {},
@@ -105,6 +116,103 @@ fn VaultsOfTheHeirForm(player: PlayerId) -> Element {
                         })
                 },
                 "Play"
+            }
+        }
+    }
+}
+
+#[component]
+fn VisionariaSelectForm(player: PlayerId) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let researched: Signal<BTreeMap<PlayerId, Technology>> = use_signal(BTreeMap::new);
+
+    let other_players = use_memo({
+        let player = player.clone();
+        move || {
+            gc.game_state()
+                .table_order
+                .iter()
+                .filter(|p| **p != player)
+                .cloned()
+                .collect::<Vec<_>>()
+        }
+    });
+
+    rsx! {
+        div { class: "column",
+            for researcher in other_players() {
+                VisionariaSelectPick {
+                    key: "{researcher}",
+                    player: researcher.clone(),
+                    researched,
+                }
+            }
+            Button {
+                class: "margin-top",
+                onclick: move |_| {
+                    event
+                        .send_event(Event::PlayBreakthroughAction {
+                            player: player.clone(),
+                            action: BreakthroughAction::VisionariaSelect {
+                                researched: researched(),
+                            },
+                        })
+                },
+                "Play"
+            }
+        }
+    }
+}
+
+#[component]
+fn VisionariaSelectPick(
+    player: PlayerId,
+    mut researched: Signal<BTreeMap<PlayerId, Technology>>,
+) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let selected = use_memo({
+        let player = player.clone();
+        move || researched.read().get(&player).cloned()
+    });
+
+    let options = use_memo({
+        let player = player.clone();
+        move || {
+            let game_state = gc.game_state();
+            let owner = game_state.players.get(&player);
+            let mut techs = gc
+                .game_options()
+                .technologies
+                .iter()
+                .filter(|t| {
+                    let info = t.info();
+                    info.origin == TechOrigin::Base
+                        && info.tech_type != TechType::UnitUpgrade
+                        && !owner.is_some_and(|p| p.has_tech(t))
+                })
+                .cloned()
+                .collect::<Vec<_>>();
+            techs.sort();
+            techs
+        }
+    });
+
+    rsx! {
+        fieldset {
+            legend { "{player}" }
+            TechDropdown {
+                value: selected,
+                options: options(),
+                on_select: move |tech| {
+                    let mut researched = researched.write();
+                    match tech {
+                        Some(tech) => researched.insert(player.clone(), tech),
+                        None => researched.remove(&player),
+                    };
+                },
             }
         }
     }

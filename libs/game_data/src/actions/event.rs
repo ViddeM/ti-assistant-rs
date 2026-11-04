@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use serde::{Deserialize, Serialize};
 use strum_macros::IntoStaticStr;
@@ -865,6 +865,12 @@ pub enum BreakthroughAction {
         /// The relic that is gained.
         relic: Relic,
     },
+    /// Each other player may pay to research a non-faction, non-unit upgrade technology, which
+    /// you also gain.
+    VisionariaSelect {
+        /// The technology each paying player researches.
+        researched: BTreeMap<PlayerId, Technology>,
+    },
 }
 
 impl BreakthroughAction {
@@ -875,6 +881,7 @@ impl BreakthroughAction {
             BreakthroughAction::DeorbitBarrage => Breakthrough::DeorbitBarrage,
             BreakthroughAction::ResonanceGenerator => Breakthrough::ResonanceGenerator,
             BreakthroughAction::VaultsOfTheHeir { .. } => Breakthrough::VaultsOfTheHeir,
+            BreakthroughAction::VisionariaSelect { .. } => Breakthrough::VisionariaSelect,
         }
     }
 }

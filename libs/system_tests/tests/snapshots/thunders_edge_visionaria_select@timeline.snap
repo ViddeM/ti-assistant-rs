@@ -1,0 +1,35 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetupPlayerTechs(Alice)                  r0 Setup              -
+   6 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   7 RevealInitialObjectives                  r0 Setup              -
+   8 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   9 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  10 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  11 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  12 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  13 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  14 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  15 CompleteStrategyPhase                    r1 Action             Alice
+  16 SetBreakthrough(Alice)                   r1 Action             Alice
+  17 RollForTheFracture(Alice)                r1 Action             Alice
+  18 SetBreakthrough(Bob)                     r1 Action             Alice
+  19 RollForTheFracture(Bob)                  r1 Action             Alice
+  20 SetBreakthrough(Carol)                   r1 Action             Alice
+  21 RollForTheFracture(Carol)                r1 Action             Alice
+  22 PlayBreakthroughAction(Alice)            r1 EndActionTurn      Alice
+  23 EndTurn(Alice)                           r1 Action             Bob
+  24 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  25 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  26 EndTurn(Bob)                             r1 Action             Carol
+  27 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
+  28 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
+  29 EndTurn(Carol)                           r1 Action             Alice
+  30 PlayBreakthroughAction(Alice)            r1 EndActionTurn      Alice
+  31 EndTurn(Alice)                           r1 Action             Bob

@@ -1,5 +1,7 @@
 //! Thunder's Edge: the expedition, The Obsidian, its planets and its action cards.
 
+use std::collections::BTreeMap;
+
 use ti_helper_game_data::{
     common::{expansions::Expansion, map::HexPosition},
     components::{
@@ -33,6 +35,7 @@ scenarios![
     thunders_edge_map_tiles,
     thunders_edge_breakthrough_actions,
     thunders_edge_vaults_of_the_heir,
+    thunders_edge_visionaria_select,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -1260,5 +1263,101 @@ pub fn thunders_edge_vaults_of_the_heir() -> TestGame {
     assert!(alice.relics.contains(&Relic::ShardOfTheThrone));
     assert!(g.player("Bob").relics.contains(&Relic::TheCodex));
     assert_eq!(g.points("Alice"), 1);
+    g
+}
+
+/// Visionaria Select lets each other player who pays research a non-faction, non-unit upgrade
+/// technology, which the Deepwrought player gains as well. Nobody paying just ends the turn.
+pub fn thunders_edge_visionaria_select() -> TestGame {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::DeepwroughtScholarate)
+            .player("Bob", Faction::MahactGeneSorcerers)
+            .player("Carol", Faction::Arborec)
+            .pok()
+            .thunders_edge(),
+    );
+    for (player, breakthrough) in [
+        ("Alice", Breakthrough::VisionariaSelect),
+        ("Bob", Breakthrough::VaultsOfTheHeir),
+        ("Carol", Breakthrough::Psychospore),
+    ] {
+        g.apply(Event::SetBreakthrough {
+            player: p(player),
+            breakthrough: Some(breakthrough),
+        })
+        .apply(roll(player, false));
+    }
+    let visionaria = |researched: &[(&str, Technology)]| Event::PlayBreakthroughAction {
+        player: p("Alice"),
+        action: BreakthroughAction::VisionariaSelect {
+            researched: researched
+                .iter()
+                .map(|(player, tech)| (p(player), tech.clone()))
+                .collect(),
+        },
+    };
+
+    g.expect_rejected(
+        visionaria(&[("Alice", Technology::GravityDrive)]),
+        "Alice can't research with their own Visionaria Select",
+    )
+    .expect_rejected(
+        visionaria(&[
+            ("Bob", Technology::GravityDrive),
+            ("Carol", Technology::CarrierII),
+        ]),
+        "Carrier II is a unit upgrade",
+    )
+    .expect_rejected(
+        visionaria(&[("Bob", Technology::GeneticRecombination)]),
+        "Genetic Recombination is a faction technology",
+    )
+    .expect_rejected(
+        visionaria(&[("Bob", Technology::BioStims)]),
+        "already has tech",
+    );
+    assert!(
+        !g.player("Bob")
+            .technologies
+            .contains(&Technology::GravityDrive)
+    );
+
+    let alice = g
+        .turn("Alice")
+        .breakthrough(BreakthroughAction::VisionariaSelect {
+            researched: BTreeMap::from([
+                (p("Bob"), Technology::GravityDrive),
+                (p("Carol"), Technology::GravityDrive),
+            ]),
+        });
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice.end_turn();
+    for player in ["Alice", "Bob", "Carol"] {
+        assert!(
+            g.player(player)
+                .technologies
+                .contains(&Technology::GravityDrive)
+        );
+    }
+
+    g.turn("Bob").tactical().commit().end_turn();
+    g.turn("Carol").tactical().commit().end_turn();
+    let technologies = |g: &TestGame| {
+        g.state()
+            .players
+            .values()
+            .map(|p| p.technologies.clone())
+            .collect::<Vec<_>>()
+    };
+    let before = technologies(&g);
+    let alice = g
+        .turn("Alice")
+        .breakthrough(BreakthroughAction::VisionariaSelect {
+            researched: BTreeMap::new(),
+        });
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice.end_turn();
+    assert_eq!(technologies(&g), before);
     g
 }

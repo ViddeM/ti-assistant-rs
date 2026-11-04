@@ -92,7 +92,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | A4 I.I.H.Q. Modernization (Keleres) | Track | ✅ Through E2: gain the `CustodiaVigiliaOmega` planet (2/2). ✅ Executive Order replaces the I.I.H.Q. *tech* under TE (F1). Keep the neighbours clause as info. | P1 / S |
 | A5 Stellar Genesis (Muaat) | Track | ✅ Through E2: gain `Avernus` (token planet, see E1), which other players can then take. Moving the token along with war suns is 👺. | P1 / S |
 | A6 Vaults of the Heir (Mahact) | Track | ✅ `BreakthroughAction::VaultsOfTheHeir { purged_tech, relic }` removes the tech and gives the relic through `set_relic_owner`, after the same "relic already owned" check as `GainRelicAction`. The purged tech isn't remembered, so it can be researched again in the app; purged techs come with E-3 Ta Zern. | P2 / S |
-| A7 Visionaria Select (Deepwrought) | Track | `BreakthroughAction::VisionariaSelect { researched: BTreeMap<PlayerId, Technology> }`. Each listed player gains their tech (non-faction, non-unit-upgrade only) and Deepwrought gains every listed tech it doesn't already own. Trade goods and promissory notes stay at the table. | P2 / M |
+| A7 Visionaria Select (Deepwrought) | Track | ✅ `BreakthroughAction::VisionariaSelect { researched: BTreeMap<PlayerId, Technology> }` lists the players who paid. Each researches their tech (non-faction, non-unit-upgrade only) and Deepwrought gains every listed tech it doesn't already own. Trade goods and promissory notes stay at the table. | P2 / M |
 | A8 Al'Raith Ix Ianovar (Cabal) | Track (if TE-B2 is built) | Through E2: set `fracture_in_play = true` (no roll). Ingress token moves are 👺. ✅ `apply_breakthrough_gained` puts the Fracture in play, also through `SetBreakthrough`. | P3 / S |
 | A9 N'orr Supremacy | Info | "Research a unit upgrade after winning a combat" is already possible from the tech page. Nothing to build. | — |
 | A10 Everything else (Void Tether, Wing Transfer, Gravleash, Data Skimmer, Yin Ascendant, The Icon, Corsair/Eidolon/Tables Grace/Absolute Synergy …) | Info / 👺 | Units, movement, action cards, alliances. Covered by A2. | — |
@@ -567,7 +567,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics, Wild, Wild Galaxy, Conventions of War Abandoned, Dangerous Wilds, Hidden Agenda.
    - ✅ The galactic events admin page (§5.0 item 8) (P2).
 4. **TE actions (P2).**
-   - A3/A6/A7 breakthrough actions, C3 Faunus, D2 Silver Flame.
+   - ✅ A3/A6/A7 breakthrough actions.
+   - C3 Faunus, D2 Silver Flame.
    - ✅ TE-B2/B3 Fracture flag and roll prompt, A8 Al'Raith.
    - TE-B4 relic prompt for Fracture planets.
    - E6 leader data → Ta Zern and Director Nel.

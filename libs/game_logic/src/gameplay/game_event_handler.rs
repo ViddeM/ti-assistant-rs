@@ -1041,6 +1041,41 @@ fn try_update_game_state(
                         .remove(&purged_tech);
                     game_state.set_relic_owner(relic, Some(player))?;
                 }
+                BreakthroughAction::VisionariaSelect { researched } => {
+                    for (researcher, tech) in &researched {
+                        ensure!(
+                            researcher != &player,
+                            "{player} can't research with their own Visionaria Select"
+                        );
+                        game_state.assert_enabled(tech)?;
+                        let info = tech.info();
+                        ensure!(
+                            info.origin == TechOrigin::Base,
+                            "{} is a faction technology",
+                            info.name
+                        );
+                        ensure!(
+                            info.tech_type != TechType::UnitUpgrade,
+                            "{} is a unit upgrade",
+                            info.name
+                        );
+                        game_state
+                            .players
+                            .get_mut(researcher)
+                            .with_context(|| format!("Player doesn't exist '{researcher}'"))?
+                            .research_tech(tech.clone())?;
+                    }
+
+                    let deepwrought = game_state
+                        .players
+                        .get_mut(&player)
+                        .context("Player not found")?;
+                    for tech in researched.into_values() {
+                        if !deepwrought.has_tech(&tech) {
+                            deepwrought.take_tech(tech)?;
+                        }
+                    }
+                }
             }
 
             game_state.phase = Phase::EndActionTurn;
