@@ -5,7 +5,7 @@ use dioxus_free_icons::{
     Icon,
     icons::{
         fa_regular_icons::FaTrashCan,
-        fa_solid_icons::{FaArrowTurnUp, FaTrash},
+        fa_solid_icons::{FaArrowTurnUp, FaMonument, FaTrash},
     },
 };
 use ti_helper_game_data::{
@@ -83,15 +83,7 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
     let monuments = use_memo(move || {
         let game_state = gc.game_state();
         (game_state.monuments.keys())
-            .filter_map(|planet| {
-                let commodities = game_state.monument_commodities(planet)?;
-                let unit = if commodities == 1 {
-                    "commodity"
-                } else {
-                    "commodities"
-                };
-                Some((planet.clone(), format!("{commodities} {unit}")))
-            })
+            .filter_map(|planet| Some((planet.clone(), game_state.monument_commodities(planet)?)))
             .collect::<HashMap<_, _>>()
     });
 
@@ -270,11 +262,20 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
                                         class: "rotate90",
                                     }
                                 }
-                                td { class: "align-right attachment-row-text", "Monument" }
+                                td { class: "align-right attachment-row-text",
+                                    Icon {
+                                        icon: FaMonument,
+                                        class: "inline-icon",
+                                        title: "Monument",
+                                    }
+                                }
                                 td {
                                     class: "attachment-row-text align-center",
                                     colspan: 3,
-                                    "{commodities}"
+                                    span { title: "{commodities} commodities",
+                                        "{commodities} "
+                                        TiIcon { icon: TiIconType::TradeGoods }
+                                    }
                                 }
                                 td { class: DELETE_COL_ALIGN,
                                     Button {
