@@ -137,6 +137,17 @@ pub enum Event {
         attachment: PlanetAttachment,
     },
 
+    /// Research a technology for a hazardous planet taken from the planet deck this turn
+    /// (Dangerous Wilds).
+    TacticalActionResearchTechnology {
+        /// Which player researches the technology.
+        player: PlayerId,
+        /// The hazardous planet taken from the planet deck.
+        planet: Planet,
+        /// The technology researched.
+        tech: Technology,
+    },
+
     /// End a tactical action.
     TacticalActionCommit {
         /// The player that has taken the action.

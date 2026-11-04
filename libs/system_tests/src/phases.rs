@@ -26,6 +26,7 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         relic::Relic,
         strategy_card::StrategyCard,
+        tech::Technology,
     },
     state::{expedition::TEExpeditionSlot, game_state::ActionPhaseProgress},
 };
@@ -392,6 +393,21 @@ impl<'g> Tactical<'g> {
                 player,
                 planet,
                 attachment,
+            });
+        self
+    }
+
+    /// Research a technology for a hazardous planet taken from the planet deck this action
+    /// (Dangerous Wilds).
+    #[track_caller]
+    pub fn research(self, planet: Planet, tech: Technology) -> Self {
+        let player = self.turn.id();
+        self.turn
+            .game
+            .apply(Event::TacticalActionResearchTechnology {
+                player,
+                planet,
+                tech,
             });
         self
     }

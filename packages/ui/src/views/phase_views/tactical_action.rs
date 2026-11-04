@@ -1,8 +1,13 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
-    common::player_id::PlayerId,
-    components::{planet::Planet, planet_attachment::PlanetAttachment},
+    common::{faction::Faction, player_id::PlayerId},
+    components::{
+        galactic_event::GalacticEvent,
+        planet::{Planet, PlanetTrait},
+        planet_attachment::PlanetAttachment,
+        tech::Technology,
+    },
     state::game_state::{ActionPhaseProgress, PlanetLocation, TacticalProgress},
 };
 
@@ -14,6 +19,7 @@ use crate::{
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
+    views::select_tech::SelectTechView,
 };
 
 const TACTICAL_ACTION_VIEW: Asset =
@@ -146,6 +152,11 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
                                 }
                             },
                         }
+                        DangerousWildsResearch {
+                            planet: planet.clone(),
+                            previous_owner: previous_owner.clone(),
+                            tech: progress().researched_techs.get(planet).cloned(),
+                        }
                     }
                 }
             }
@@ -204,6 +215,69 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
                     })
             },
             "End Tactical"
+        }
+    }
+}
+
+#[component]
+fn DangerousWildsResearch(
+    planet: ReadSignal<Planet>,
+    previous_owner: ReadSignal<Option<PlayerId>>,
+    tech: ReadSignal<Option<Technology>>,
+) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist in action phase")
+    });
+
+    let current_player_faction = use_memo(move || {
+        gc.game_state()
+            .players
+            .get(&current_player())
+            .map(|p| p.faction)
+            .expect("Current player to exist")
+    });
+
+    let applies = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .contains(&GalacticEvent::DangerousWilds)
+            && previous_owner().is_none()
+            && planet()
+                .info()
+                .planet_traits
+                .contains(&PlanetTrait::Hazardous)
+    });
+
+    let resources = use_memo(move || planet().info().resources);
+
+    rsx! {
+        if applies() {
+            if let Some(tech) = tech() {
+                p { "Dangerous Wilds: researched {tech.info().name}" }
+            } else if current_player_faction() == Faction::NekroVirus {
+                p { "Nekro virus cannot research techs" }
+            } else {
+                p {
+                    "Dangerous Wilds: you may research 1 technology, ignoring up to {resources()} prerequisites"
+                }
+                SelectTechView {
+                    player_id: current_player(),
+                    on_select: move |tech| {
+                        event
+                            .send_event(Event::TacticalActionResearchTechnology {
+                                player: current_player(),
+                                planet: planet(),
+                                tech,
+                            })
+                    },
+                }
+            }
         }
     }
 }

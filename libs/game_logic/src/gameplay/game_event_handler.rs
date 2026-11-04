@@ -29,7 +29,7 @@ use ti_helper_game_data::{
         leaders::LeaderAbilityKind,
         objectives::{Objective, ObjectiveKind},
         phase::Phase,
-        planet::Planet,
+        planet::{Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
         relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
@@ -453,6 +453,7 @@ fn try_update_game_state(
                 activated_system: None,
                 taken_planets: Default::default(),
                 planet_attachments: Default::default(),
+                researched_techs: Default::default(),
             }));
         }
         Event::TacticalActionTakePlanet { player, planet } => {
@@ -546,6 +547,63 @@ fn try_update_game_state(
             tactical
                 .planet_attachments
                 .insert(planet, actual_attachment);
+        }
+        Event::TacticalActionResearchTechnology {
+            player,
+            planet,
+            tech,
+        } => {
+            game_state.assert_phase(Phase::TacticalAction)?;
+            game_state.assert_player_turn(&player)?;
+            game_state.assert_galactic_event(&GalacticEvent::DangerousWilds)?;
+
+            {
+                let Some(ActionPhaseProgress::Tactical(tactical)) = &game_state.action_progress
+                else {
+                    bail!(
+                        "Invalid game state, expected tactical action, got {:?}",
+                        game_state.action_progress
+                    );
+                };
+
+                let Some(taken_from) = tactical.taken_planets.get(&planet) else {
+                    bail!("Can only research for a planet taken this turn")
+                };
+
+                ensure!(
+                    taken_from.is_none(),
+                    "{} was taken from another player, not the planet deck",
+                    planet.info().name
+                );
+
+                ensure!(
+                    planet
+                        .info()
+                        .planet_traits
+                        .contains(&PlanetTrait::Hazardous),
+                    "{} isn't hazardous",
+                    planet.info().name
+                );
+
+                ensure!(
+                    !tactical.researched_techs.contains_key(&planet),
+                    "Player has already researched a technology for {}",
+                    planet.info().name
+                );
+            }
+
+            game_state.assert_enabled(&tech)?;
+            let current_player = game_state.get_current_player()?;
+            current_player.research_tech(tech.clone())?;
+
+            let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
+            else {
+                bail!(
+                    "Invalid game state, was just tactical action, is now {:?}. This is a bug!",
+                    game_state.action_progress
+                );
+            };
+            tactical.researched_techs.insert(planet, tech);
         }
         Event::TacticalActionCommit { player } => {
             game_state.assert_phase(Phase::TacticalAction)?;

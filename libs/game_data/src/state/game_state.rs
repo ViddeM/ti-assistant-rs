@@ -338,6 +338,8 @@ pub struct TacticalProgress {
     /// What planet attachments have been selected for the taken planets.
     /// NOTE: Does not include attachments kept when taken from another player.
     pub planet_attachments: HashMap<Planet, PlanetAttachment>,
+    /// Technologies researched for planets taken this turn (Dangerous Wilds).
+    pub researched_techs: HashMap<Planet, Technology>,
 }
 
 /// The progress of an action card being played.

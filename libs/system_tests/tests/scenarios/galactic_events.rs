@@ -16,6 +16,7 @@ scenarios![
     galactic_events_stellar_atomics,
     galactic_events_wild_wild_galaxy,
     galactic_events_conventions_of_war_abandoned,
+    galactic_events_dangerous_wilds,
     galactic_events_admin,
 ];
 
@@ -408,6 +409,69 @@ pub fn galactic_events_conventions_of_war_abandoned() -> TestGame {
     g
 }
 
+/// With Dangerous Wilds a player who takes a hazardous planet from the planet deck may research 1
+/// technology for it, ignoring prerequisites. It is once per planet, and not for a planet without
+/// the hazardous trait, a planet taken from another player or a technology the player can't
+/// research.
+pub fn galactic_events_dangerous_wilds() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .pok()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::DangerousWilds]),
+    );
+    let research = |player: &str, planet, tech| Event::TacticalActionResearchTechnology {
+        player: p(player),
+        planet,
+        tech,
+    };
+
+    g.turn("Alice")
+        .tactical()
+        .expect_rejected(
+            research("Alice", Planet::Lodor, Technology::SarweenTools),
+            "taken this turn",
+        )
+        .take(Planet::Centauri)
+        .expect_rejected(
+            research("Alice", Planet::Centauri, Technology::SarweenTools),
+            "isn't hazardous",
+        )
+        .take(Planet::Abyz)
+        .research(Planet::Abyz, Technology::FleetLogistics)
+        .expect_rejected(
+            research("Alice", Planet::Abyz, Technology::SarweenTools),
+            "already researched",
+        )
+        .take(Planet::Fria)
+        .expect_rejected(
+            research("Alice", Planet::Fria, Technology::NeuralMotivator),
+            "already has tech",
+        )
+        .expect_rejected(
+            research("Alice", Planet::Fria, Technology::QuantumDatahubNode),
+            "another faction's technology",
+        )
+        .research(Planet::Fria, Technology::SarweenTools)
+        .commit()
+        .end_turn();
+    let alice = &g.player("Alice").technologies;
+    assert!(alice.contains(&Technology::FleetLogistics));
+    assert!(alice.contains(&Technology::SarweenTools));
+
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Abyz)
+        .expect_rejected(
+            research("Bob", Planet::Abyz, Technology::NeuralMotivator),
+            "taken from another player",
+        )
+        .commit()
+        .end_turn();
+    assert!(g.player("Bob").planets.contains_key(&Planet::Abyz));
+    g
+}
+
 /// The admin events fix the tracked state of the galactic events in play, in any phase: a used
 /// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
 /// the Total War points. Each needs an existing player and a change.
@@ -517,4 +581,20 @@ fn total_war_needs_the_event() {
         },
         "Total War isn't in play",
     );
+}
+
+#[test]
+fn dangerous_wilds_needs_the_event() {
+    let mut g = action_phase(three_players().pok().thunders_edge());
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::Abyz)
+        .expect_rejected(
+            Event::TacticalActionResearchTechnology {
+                player: p("Alice"),
+                planet: Planet::Abyz,
+                tech: Technology::SarweenTools,
+            },
+            "Dangerous Wilds isn't in play",
+        );
 }

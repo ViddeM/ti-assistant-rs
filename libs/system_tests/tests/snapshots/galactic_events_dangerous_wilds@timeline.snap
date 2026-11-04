@@ -1,0 +1,31 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 SetGalacticEvents                        r0 Creation           -
+   5 CreationDone                             r0 Setup              -
+   6 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   7 RevealInitialObjectives                  r0 Setup              -
+   8 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   9 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  10 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  11 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  12 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  13 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  14 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  15 CompleteStrategyPhase                    r1 Action             Alice
+  16 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  17 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  18 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  19 TacticalActionResearchTechnology(Alice)  r1 TacticalAction     Alice
+  20 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  21 TacticalActionResearchTechnology(Alice)  r1 TacticalAction     Alice
+  22 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  23 EndTurn(Alice)                           r1 Action             Bob
+  24 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  25 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob
+  26 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  27 EndTurn(Bob)                             r1 Action             Carol
