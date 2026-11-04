@@ -1875,6 +1875,25 @@ fn try_update_game_state(
 
             game_state.set_planet_owner(planet, player)?;
         }
+        Event::SetPlanetDestroyed { planet, destroyed } => {
+            game_state.assert_enabled(&planet)?;
+            let name = planet.info().name;
+            let is_destroyed = game_state.map_data.destroyed_planets.contains(&planet);
+            if destroyed {
+                ensure!(!is_destroyed, "{name} is already destroyed");
+                ensure!(
+                    game_state.planet_location(&planet) != PlanetLocation::NotOnBoard,
+                    "{name} isn't on the board"
+                );
+                game_state.destroy_planet(planet);
+            } else {
+                ensure!(is_destroyed, "{name} isn't destroyed");
+                game_state
+                    .map_data
+                    .destroyed_planets
+                    .retain(|p| p != &planet);
+            }
+        }
         Event::AddPlanetAttachment {
             player,
             planet,

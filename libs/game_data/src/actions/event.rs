@@ -584,6 +584,15 @@ pub enum Event {
         planet: Planet,
     },
 
+    /// Destroy a planet on the board, or restore a destroyed planet (admin). A restored planet is
+    /// unowned and has no attachments.
+    SetPlanetDestroyed {
+        /// The planet to destroy or restore.
+        planet: Planet,
+        /// Whether the planet is destroyed.
+        destroyed: bool,
+    },
+
     /// Add planet attachment to planet.
     AddPlanetAttachment {
         /// The player who owns the planet.

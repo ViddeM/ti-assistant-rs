@@ -1,8 +1,11 @@
 use dioxus::prelude::*;
 
-use crate::views::planet_view_mode::{
-    add_planet_attachment::AddPlanetAttachment, player_planets_grid::PlayerPlanetsGrid,
-    unclaimed_planets_table::UnclaimedPlanetsTable,
+use crate::views::{
+    destroyed_planets::DestroyedPlanets,
+    planet_view_mode::{
+        add_planet_attachment::AddPlanetAttachment, player_planets_grid::PlayerPlanetsGrid,
+        unclaimed_planets_table::UnclaimedPlanetsTable,
+    },
 };
 
 mod add_planet_attachment;
@@ -20,6 +23,7 @@ pub fn PlanetViewMode() -> Element {
             PlayerPlanetsGrid {}
             AddPlanetAttachment {}
             UnclaimedPlanetsTable {}
+            DestroyedPlanets {}
         }
     }
 }

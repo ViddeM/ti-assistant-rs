@@ -2,12 +2,13 @@
 
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{SIMPLE_PICKS, three_players};
+use crate::fixtures::{SIMPLE_PICKS, action_phase, three_players};
 
 scenarios![
     score_manual_adjustments,
     score_manual_planets_and_techs,
     score_manual_relics,
+    score_manual_destroyed_planets,
 ];
 
 /// Every source of points, adjusted by hand.
@@ -260,5 +261,59 @@ pub fn score_manual_relics() -> TestGame {
         },
         "already owned by another player",
     );
+    g
+}
+
+/// Destroying a planet by hand takes it from its owner along with its attachments, and it can't be
+/// given or taken until it's restored. A restored planet is unowned and has no attachments. Only a
+/// planet on the board can be destroyed, and only a destroyed planet can be restored.
+pub fn score_manual_destroyed_planets() -> TestGame {
+    let mut g = action_phase(three_players().pok().thunders_edge());
+    let set_destroyed = |planet, destroyed| Event::SetPlanetDestroyed { planet, destroyed };
+    let give_alice = |planet| Event::SetPlanetOwner {
+        player: Some(p("Alice")),
+        planet,
+    };
+
+    g.apply(give_alice(Planet::Lodor))
+        .apply(Event::AddPlanetAttachment {
+            player: p("Alice"),
+            planet: Planet::Lodor,
+            attachment: PlanetAttachment::Terraform,
+        })
+        .apply(set_destroyed(Planet::Lodor, true));
+    assert!(!g.player("Alice").planets.contains_key(&Planet::Lodor));
+    assert_eq!(g.state().map_data.destroyed_planets, [Planet::Lodor]);
+
+    g.expect_rejected(give_alice(Planet::Lodor), "Lodor has been destroyed")
+        .expect_rejected(
+            set_destroyed(Planet::Lodor, true),
+            "Lodor is already destroyed",
+        );
+    g.turn("Alice")
+        .tactical()
+        .expect_rejected(
+            Event::TacticalActionTakePlanet {
+                player: p("Alice"),
+                planet: Planet::Lodor,
+            },
+            "Lodor isn't on the board",
+        )
+        .commit()
+        .end_turn();
+
+    g.apply(set_destroyed(Planet::Lodor, false));
+    assert!(g.state().map_data.destroyed_planets.is_empty());
+    for player in ["Alice", "Bob", "Carol"] {
+        assert!(!g.player(player).planets.contains_key(&Planet::Lodor));
+    }
+    g.apply(give_alice(Planet::Lodor));
+    assert!(g.player("Alice").planets[&Planet::Lodor].is_empty());
+
+    g.expect_rejected(set_destroyed(Planet::Lodor, false), "Lodor isn't destroyed")
+        .expect_rejected(
+            set_destroyed(Planet::Cocytus, true),
+            "Cocytus isn't on the board",
+        );
     g
 }

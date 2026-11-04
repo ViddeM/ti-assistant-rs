@@ -12,10 +12,7 @@ use ti_helper_game_data::{
         relic::RelicPlay,
         strategy_card::StrategyCard,
     },
-    state::{
-        faction_state::FirmamentSide,
-        game_state::{GameState, PlanetLocation},
-    },
+    state::{faction_state::FirmamentSide, game_state::GameState},
 };
 
 use crate::{
@@ -31,6 +28,7 @@ use crate::{
         event_context::EventContext, game_context::GameContext, info_context::Info,
         player_view::PlayerViewContext,
     },
+    views::destroyed_planets::planets_on_board,
 };
 
 const ACTION_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/action_phase.scss");
@@ -599,17 +597,7 @@ fn ConventionsOfWarAbandonedForm(player: PlayerId) -> Element {
         }
     });
 
-    let planets_on_board = use_memo(move || {
-        let mut planets = gc
-            .game_options()
-            .planet_infos
-            .keys()
-            .filter(|p| gc.game_state().planet_location(p) != PlanetLocation::NotOnBoard)
-            .cloned()
-            .collect::<Vec<_>>();
-        planets.sort();
-        planets
-    });
+    let planets_on_board = use_memo(move || planets_on_board(&gc));
 
     if !has_x89() {
         return rsx! {

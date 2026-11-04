@@ -406,6 +406,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 3. Add the `GalacticEventAction::ConventionsOfWarAbandoned { planet }` variant. Besides the shared checks, it checks that the player owns any X-89 version (`X89BacterialWeapon`, `…Omega`, `…OmegaOmega`) and that the planet isn't destroyed yet. Home planets are allowed.
 4. It removes the planet (and its attachments) like the Stellar Converter does, then ends the turn.
 5. Its form in the Galactic Event tab is a planet dropdown.
+6. ✅ The admin `SetPlanetDestroyed { planet, destroyed }` (any phase) destroys a planet on the board or restores a destroyed one (`score_manual_destroyed_planets` scenario). A restored planet is unowned, has no attachments and can be taken again. Its "Destroyed Planets" section (`views/destroyed_planets.rs`) is on the Planets page.
 - Elimination is game end, so skip it.
 
 ##### 9. Dangerous Wilds (TE, complexity 1): Track

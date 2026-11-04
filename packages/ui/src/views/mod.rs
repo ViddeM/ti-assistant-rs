@@ -1,4 +1,5 @@
 pub mod book_of_latvinia_research;
+pub mod destroyed_planets;
 pub mod frontier_card;
 pub mod game;
 pub mod info_box;
