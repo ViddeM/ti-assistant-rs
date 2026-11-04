@@ -54,7 +54,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 | TE leader actions Kan Kip Rel, Ahk Ravin, Sharsiss, Sharsiss Hollow | ✅ (as "no-data" actions) |
 | CIV toggle, ΩΩ techs (Magen Defense Grid, X-89) | ✅ |
 | CIV relics: Circlet of the Void (no effect), Neuraloop (status phase), Book of Latvinia (research up to 2 techs when gained, VP or speaker) | ✅ (`codex.rs` scenarios) |
-| Galactic events (4 CIV + 16 TE = 20) | Framework ✅ (data, `GameState::galactic_events`, the Creation picker, the info modal and the info box list). 4 need nothing, 9 of the 10 small ones are done and the 6 large ones are left (§5.1) |
+| Galactic events (4 CIV + 16 TE = 20) | Framework ✅ (data, `GameState::galactic_events`, the Creation picker, the info modal and the info box list). 4 need nothing, all 10 small ones are done and the 6 large ones are left (§5.1) |
 | Liberation of Ordinian | ❌ nothing |
 | TE action cards (14 new, Ω versions of 8 Codex I cards) and the tracked effects of Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String. Codex IV has no action cards | ✅ (`thunders_edge_action_cards`, `thunders_edge_overrule_and_strategize`, `thunders_edge_crisis_and_puppets_on_a_string` scenarios) |
 | Breakthrough effects, legendary planet abilities, Fracture, TE strategy cards, TE leader updates | ❌ |
@@ -273,7 +273,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 7 | Wild, Wild Galaxy | TE | 3 | Assist | ✅ The Stellar Converter works on any planet | P2 / S |
 | 8 | Conventions of War Abandoned | TE | 3 | Track | ✅ "X-89: purge planet" action | P2 / S |
 | 9 | Dangerous Wilds | TE | 1 | Track | ✅ Free tech when a tactical action takes an unowned hazardous planet | P2 / S |
-| 10 | Hidden Agenda | TE | 2 | Assist | Hide individual votes until everyone has voted (UI only) | P3 / S |
+| 10 | Hidden Agenda | TE | 2 | Assist | ✅ The speaker enters the votes as they're read out, with a warning (UI only) | P3 / S |
 
 **Large changes (6)**
 
@@ -423,13 +423,14 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 4. Prerequisites aren't checked. Normal research doesn't check them either, and exhausting a planet's tech specialty could skip more than N, but exhaustion isn't tracked. Show "ignore up to N prerequisites" as a hint.
 - Gaining a planet from the deck outside a tactical action (`SetPlanetOwner`, Faunus, Rapid Mobilization) is out of scope.
 
-##### 10. Hidden Agenda (TE, complexity 2): Assist (UI only)
+##### 10. Hidden Agenda (TE, complexity 2): Assist (UI only) ✅
 > Only the speaker talks in the agenda phase; votes are written secretly, the speaker reveals only totals (and who voted for what only when needed). Argent's votes are public.
 
-- While a vote is open, `agenda_actions_view.rs` shows "Voted" instead of "{outcome} - {votes}", except for Argent's votes and the speaker's own player view.
-- `agenda_info_view.rs` shows the outcome totals only once every eligible player has voted.
-- The vote history after resolving stays complete.
-- Caveat: clients still receive the full state, so this is "don't show", not real secrecy (§8 question 4).
+✅ Done as planned below (UI only, no scenario).
+
+- The votes are entered when the speaker reads them out, not when they're cast, so the app doesn't hide them.
+- With the event in play, the speaker's player view can enter every player's vote. Otherwise only the Global view and the first voter's view can.
+- The vote list shows a warning to enter the votes as they're read out.
 
 #### 5.2.3 Large changes
 
@@ -563,9 +564,8 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics, Wild, Wild Galaxy, Conventions of War Abandoned, Dangerous Wilds.
+   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics, Wild, Wild Galaxy, Conventions of War Abandoned, Dangerous Wilds, Hidden Agenda.
    - ✅ The galactic events admin page (§5.0 item 8) (P2).
-   - Hidden Agenda (P3).
 4. **TE actions (P2).**
    - A3/A6/A7 breakthrough actions, C3 Faunus, D2 Silver Flame.
    - ✅ TE-B2/B3 Fracture flag and roll prompt, A8 Al'Raith.
@@ -587,5 +587,5 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 1. Should ticking Thunder's Edge pre-tick Codex I–IV in the new-game form (the TE box contains the codex cards)?
 2. Are we fine with **no exhaust tracking** for legendary planets and breakthroughs (buttons are always offered, players police once-per-round)?
 3. Is Liberation of Ordinian wanted at all, or should it be 👺?
-4. Hidden Agenda: is "UI hides votes" good enough, given that clients receive the full state?
+4. ✅ Hidden Agenda: no hiding needed. The speaker enters the votes as they're read out, so they're public by the time the app has them.
 5. ✅ Cultural Exchange Program: what happens if a player draws their own faction's reference card? It's allowed, since the card doesn't forbid it (§5.2.3).

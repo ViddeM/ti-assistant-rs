@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::agenda::AgendaElect,
+    components::{agenda::AgendaElect, galactic_event::GalacticEvent},
     state::agenda::{AgendaRound, AgendaState, VoteState},
 };
 
@@ -124,6 +124,12 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
 
     let players = use_memo(move || gc.game_state().turn_order.clone());
 
+    let hidden_agenda = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .contains(&GalacticEvent::HiddenAgenda)
+    });
+
     rsx! {
         div {
             h6 { "{agenda()}" }
@@ -137,6 +143,11 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
                 li { "After agenda is revealed" }
                 li {
                     "Vote: "
+                    if hidden_agenda() {
+                        p { class: "warning-text",
+                            "Hidden Agenda: enter the votes when the speaker reads them out, not when they are cast. Everyone can see them here."
+                        }
+                    }
                     for player in players().iter() {
                         PlayerVoteView {
                             key: "{player}",
@@ -176,6 +187,12 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
 
     let player_vote = use_memo(move || state().player_votes.get(&player_id()).cloned());
 
+    let hidden_agenda = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .contains(&GalacticEvent::HiddenAgenda)
+    });
+
     if let Some(restriction) = vote_restriction() {
         let reason = restriction.reason();
         return rsx! {
@@ -186,7 +203,7 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
     if !state().player_votes.contains_key(&player_id()) {
         // Player has not yet voted.
 
-        if !view.is_active() {
+        if !(view.is_active() || (hidden_agenda() && view.is_global_or_speaker())) {
             return rsx! {
                 p { "Has not voted yet" }
             };
