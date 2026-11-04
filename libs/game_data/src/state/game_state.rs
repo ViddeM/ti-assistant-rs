@@ -604,6 +604,16 @@ impl GameState {
         Ok(())
     }
 
+    /// Asserts that the provided galactic event is in play.
+    pub fn assert_galactic_event(&self, event: &GalacticEvent) -> anyhow::Result<()> {
+        ensure!(
+            self.galactic_events.contains(event),
+            "{} isn't in play",
+            event.info().name
+        );
+        Ok(())
+    }
+
     /// Where the planet is on the board.
     ///
     /// Planets without a system tile are only on the board once they have been placed. Where

@@ -3,6 +3,7 @@ pub mod complexity;
 pub mod dropdown;
 pub mod faction_button;
 pub mod faction_icon;
+pub mod inc_dec;
 pub mod info_button;
 pub mod info_modal;
 pub mod spinner;

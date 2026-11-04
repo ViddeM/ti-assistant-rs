@@ -14,7 +14,7 @@ use ti_helper_game_data::{
 
 use crate::{
     components::{
-        button::Button, faction_button::FactionButton, faction_icon::FactionIcon,
+        faction_button::FactionButton, faction_icon::FactionIcon, inc_dec::IncDecView,
         info_button::InfoButton,
     },
     data::{
@@ -965,34 +965,5 @@ fn RelicPointRows() -> Element {
         {crown_of_emphidia_render()}
         {shard_of_the_throne_render()}
         {book_of_latvinia_render()}
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Props)]
-struct IncDecViewProps {
-    points: i8,
-    change_points: EventHandler<i8>,
-}
-
-#[component]
-fn IncDecView(
-    IncDecViewProps {
-        points,
-        change_points,
-    }: IncDecViewProps,
-) -> Element {
-    rsx! {
-        Button {
-            onclick: move |_| change_points(points + 1),
-            class: "inc-dec-button",
-            "^"
-        }
-        p { "{points}" }
-        Button {
-            onclick: move |_| change_points(points - 1),
-            class: "inc-dec-button",
-            disabled: points == 0,
-            "v"
-        }
     }
 }

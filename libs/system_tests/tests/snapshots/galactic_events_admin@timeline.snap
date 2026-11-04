@@ -1,0 +1,24 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 SetGalacticEvents                        r0 Creation           -
+   5 CreationDone                             r0 Setup              -
+   6 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   7 RevealInitialObjectives                  r0 Setup              -
+   8 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+   9 SetStellarAtomicsUsed(Alice)             r1 Strategy           Alice
+  10 AddAgendaBegin                           r1 Strategy           Alice
+  11 SetStellarAtomicsUsed(Alice)             r1 Strategy           Alice
+  12 AddAgendaPlayerVote(Alice)               r1 Strategy           Alice
+  13 AddAgendaCancel                          r1 Strategy           Alice
+  14 SetZealousOrthodoxyOwner(Bob)            r1 Strategy           Alice      Bob=1
+  15 SetZealousOrthodoxyOwner(Carol)          r1 Strategy           Alice      Bob=0 Carol=1
+  16 SetZealousOrthodoxyOwner                 r1 Strategy           Alice      Carol=0
+  17 SetTotalWarPoints(Alice)                 r1 Strategy           Alice      Alice=3
+  18 SetTotalWarPoints(Alice)                 r1 Strategy           Alice      Alice=2
+  19 SetTotalWarPoints(Bob)                   r1 Strategy           Alice      Bob=1
+  20 SetTotalWarPoints(Bob)                   r1 Strategy           Alice      Bob=0

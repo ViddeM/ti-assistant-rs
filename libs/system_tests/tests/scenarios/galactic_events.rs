@@ -16,6 +16,7 @@ scenarios![
     galactic_events_stellar_atomics,
     galactic_events_wild_wild_galaxy,
     galactic_events_conventions_of_war_abandoned,
+    galactic_events_admin,
 ];
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
@@ -405,6 +406,105 @@ pub fn galactic_events_conventions_of_war_abandoned() -> TestGame {
         [Planet::Arretze, Planet::Jord]
     );
     g
+}
+
+/// The admin events fix the tracked state of the galactic events in play, in any phase: a used
+/// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
+/// the Total War points. Each needs an existing player and a change.
+pub fn galactic_events_admin() -> TestGame {
+    let mut g = three_players()
+        .pok()
+        .thunders_edge()
+        .codex()
+        .galactic_events([
+            GalacticEvent::StellarAtomics,
+            GalacticEvent::ZealousOrthodoxy,
+            GalacticEvent::TotalWar,
+            GalacticEvent::ConventionsOfWarAbandoned,
+        ])
+        .start();
+    assert_eq!(g.phase(), Phase::Strategy);
+    let stellar_atomics = |player: &str, used| Event::SetStellarAtomicsUsed {
+        player: p(player),
+        used,
+    };
+    let zealous_orthodoxy = |player: Option<&str>| Event::SetZealousOrthodoxyOwner {
+        player: player.map(p),
+    };
+    let total_war = |player: &str, points| Event::SetTotalWarPoints {
+        player: p(player),
+        points,
+    };
+    let alice_votes = Event::AddAgendaPlayerVote {
+        player: p("Alice"),
+        outcome: FOR,
+        votes: 1,
+    };
+
+    g.apply(stellar_atomics("Alice", true))
+        .apply(Event::AddAgendaBegin {
+            agenda: Agenda::Mutiny,
+        })
+        .expect_rejected(alice_votes.clone(), "Stellar Atomics token used")
+        .apply(stellar_atomics("Alice", false))
+        .apply(alice_votes)
+        .apply(Event::AddAgendaCancel);
+    assert!(g.state().stellar_atomics_used.is_empty());
+
+    g.apply(zealous_orthodoxy(Some("Bob")));
+    assert_eq!(g.points("Bob"), 1);
+    g.apply(zealous_orthodoxy(Some("Carol")));
+    assert_eq!([g.points("Bob"), g.points("Carol")], [0, 1]);
+    g.apply(zealous_orthodoxy(None));
+    assert_eq!(g.points("Carol"), 0);
+
+    g.apply(total_war("Alice", 3))
+        .apply(total_war("Alice", 2))
+        .apply(total_war("Bob", 1));
+    assert_eq!([g.points("Alice"), g.points("Bob")], [2, 1]);
+    g.apply(total_war("Bob", 0));
+    assert_eq!(g.points("Bob"), 0);
+    assert!(!(g.state().score.galactic_events.total_war).contains_key(&p("Bob")));
+
+    g.expect_rejected(
+        stellar_atomics("Nobody", true),
+        "Player doesn't exist 'Nobody'",
+    )
+    .expect_rejected(
+        zealous_orthodoxy(Some("Nobody")),
+        "Player doesn't exist 'Nobody'",
+    )
+    .expect_rejected(total_war("Nobody", 1), "Player doesn't exist 'Nobody'")
+    .expect_rejected(stellar_atomics("Alice", false), "No change")
+    .expect_rejected(zealous_orthodoxy(None), "No change")
+    .expect_rejected(total_war("Alice", 2), "No change")
+    .expect_rejected(total_war("Alice", -1), "can't be negative");
+    g
+}
+
+#[test]
+fn galactic_events_admin_needs_the_events() {
+    let mut g = three_players().pok().thunders_edge().codex().start();
+    g.expect_rejected(
+        Event::SetStellarAtomicsUsed {
+            player: p("Alice"),
+            used: true,
+        },
+        "Stellar Atomics isn't in play",
+    )
+    .expect_rejected(
+        Event::SetZealousOrthodoxyOwner {
+            player: Some(p("Alice")),
+        },
+        "Zealous Orthodoxy isn't in play",
+    )
+    .expect_rejected(
+        Event::SetTotalWarPoints {
+            player: p("Alice"),
+            points: 1,
+        },
+        "Total War isn't in play",
+    );
 }
 
 #[test]

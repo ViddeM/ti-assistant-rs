@@ -538,6 +538,28 @@ pub enum Event {
         in_play: bool,
     },
 
+    /// Mark a player's Stellar Atomics token as used, or put it back on the card (admin).
+    SetStellarAtomicsUsed {
+        /// The player whose token it is.
+        player: PlayerId,
+        /// Whether the token has been used.
+        used: bool,
+    },
+
+    /// Give / remove the Zealous Orthodoxy point to/from a player (admin).
+    SetZealousOrthodoxyOwner {
+        /// The player that should have it, or None if no one should have it.
+        player: Option<PlayerId>,
+    },
+
+    /// Set the points a player has gained with the Total War action (admin).
+    SetTotalWarPoints {
+        /// The player whose points are set.
+        player: PlayerId,
+        /// The points, 0 or more.
+        points: i8,
+    },
+
     /// The result of the roll for the Fracture by a player who gained their breakthrough while it
     /// wasn't in play.
     RollForTheFracture {

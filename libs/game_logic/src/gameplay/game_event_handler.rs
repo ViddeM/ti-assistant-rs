@@ -895,12 +895,7 @@ fn try_update_game_state(
                 game_state.action_progress.is_none(),
                 "Invalid game state, action_progress not None during Action Phase"
             );
-            let galactic_event = action.event();
-            ensure!(
-                game_state.galactic_events.contains(&galactic_event),
-                "{} isn't in play",
-                galactic_event.info().name
-            );
+            game_state.assert_galactic_event(&action.event())?;
 
             match action {
                 GalacticEventAction::TotalWar => {
@@ -2215,6 +2210,49 @@ fn try_update_game_state(
             );
 
             game_state.fracture_in_play = in_play;
+        }
+        Event::SetStellarAtomicsUsed { player, used } => {
+            game_state.assert_galactic_event(&GalacticEvent::StellarAtomics)?;
+            ensure!(
+                game_state.players.contains_key(&player),
+                "Player doesn't exist '{player}'"
+            );
+            let changed = if used {
+                game_state.stellar_atomics_used.insert(player)
+            } else {
+                game_state.stellar_atomics_used.remove(&player)
+            };
+            ensure!(changed, "No change provided in event");
+        }
+        Event::SetZealousOrthodoxyOwner { player } => {
+            game_state.assert_galactic_event(&GalacticEvent::ZealousOrthodoxy)?;
+            if let Some(p) = player.as_ref() {
+                ensure!(
+                    game_state.players.contains_key(p),
+                    "Player doesn't exist '{p}'"
+                );
+            }
+            let zealous_orthodoxy = &mut game_state.score.galactic_events.zealous_orthodoxy;
+            ensure!(*zealous_orthodoxy != player, "No change provided in event");
+            *zealous_orthodoxy = player;
+        }
+        Event::SetTotalWarPoints { player, points } => {
+            game_state.assert_galactic_event(&GalacticEvent::TotalWar)?;
+            ensure!(
+                game_state.players.contains_key(&player),
+                "Player doesn't exist '{player}'"
+            );
+            ensure!(points >= 0, "Total War points can't be negative");
+            let total_war = &mut game_state.score.galactic_events.total_war;
+            ensure!(
+                total_war.get(&player).copied().unwrap_or(0) != points,
+                "No change provided in event"
+            );
+            if points == 0 {
+                total_war.remove(&player);
+            } else {
+                total_war.insert(player, points);
+            }
         }
         Event::RollForTheFracture {
             player,

@@ -1,0 +1,24 @@
+@import "../vars.scss";
+
+.galactic-events-view-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.galactic-events-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.galactic-events-table {
+  margin-top: $margin-large;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: $padding $padding-large;
+  }
+}

@@ -1,6 +1,7 @@
 pub mod book_of_latvinia_research;
 pub mod destroyed_planets;
 pub mod frontier_card;
+pub mod galactic_events_view_mode;
 pub mod game;
 pub mod info_box;
 pub mod laws_view_mode;

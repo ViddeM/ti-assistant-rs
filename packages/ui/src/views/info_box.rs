@@ -11,6 +11,7 @@ use crate::{
         event_context::EventContext, game_context::GameContext, info_context::Info,
         player_view::PlayerViewContext, view_mode::ViewMode,
     },
+    views::galactic_events_view_mode::has_admin_section,
 };
 
 const INFO_BOX_SCSS: Asset = asset!("/assets/styling/views/info_box.scss");
@@ -67,6 +68,12 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
 
     let relics_enabled = use_memo(move || !gc.game_options().relics.is_empty());
     let te_enabled = use_memo(move || gc.game_state().game_settings.expansions.thunders_edge);
+    let has_galactic_event_sections = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .iter()
+            .any(has_admin_section)
+    });
 
     rsx! {
         document::Stylesheet { href: INFO_BOX_SCSS }
@@ -88,6 +95,13 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
                 ViewModeButton {
                     class: "margin-top",
                     view_mode: ViewMode::ThundersEdge,
+                    current: view_mode,
+                }
+            }
+            if has_galactic_event_sections() {
+                ViewModeButton {
+                    class: "margin-top",
+                    view_mode: ViewMode::GalacticEvents,
                     current: view_mode,
                 }
             }

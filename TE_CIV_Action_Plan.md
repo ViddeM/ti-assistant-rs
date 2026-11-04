@@ -232,9 +232,12 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
    - ✅ From Setup on, the info box lists the chosen events (name + info button) under a "Galactic event(s):" label. Creation keeps its own table.
 6. **Scoring:** `Score::galactic_events` (`GalacticEventScore`) holds the event points, one field per event (Zealous Orthodoxy, Total War), added up in `update_player_points`. Monuments' VP is derived from planet ownership instead. The score table shows them in a "Galactic Events" section.
 7. **Tests:** ✅ the builder's `.galactic_events([..])` and the creation tests in `setup.rs`. The per-event scenarios go in `libs/system_tests/tests/scenarios/galactic_events.rs`.
-8. **Admin page:** a "Galactic Events" page to fix the tracked state of the events in play without undoing. Like the Thunder's Edge page: a `ViewMode` with its info box button, shown when an event is in play, and one section per event in play that has tracked state:
-   - Stellar Atomics: add or remove players from `GameState::stellar_atomics_used`, e.g. with `SetStellarAtomicsUsed { player, used }` (any phase).
-   - Zealous Orthodoxy and Total War: their score rows are read-only, so set the holder and the points here.
+8. ✅ **Admin page:** a "Galactic Events" page (`views/galactic_events_view_mode/`) fixes the tracked state of the events in play without undoing (`galactic_events_admin` scenario). Like the Thunder's Edge page, it's a `ViewMode` with its info box button. The button is shown when an event in play has a section (`has_admin_section`), and the page shows one section per such event:
+   - Stellar Atomics: each player's token, used or on the card, with a button that sends `SetStellarAtomicsUsed { player, used }`.
+   - Zealous Orthodoxy: a player dropdown for the holder (`SetZealousOrthodoxyOwner { player }`). Clearing it lets the next player to reach 2 secret objectives gain it.
+   - Total War: each player's points with `^`/`v` buttons (`SetTotalWarPoints { player, points }`, never negative). The buttons are the score table's `IncDecView`, now in `components/inc_dec.rs`.
+   - Conventions of War Abandoned: the "Destroyed Planets" section from the Planets page (`SetPlanetDestroyed`, §5.2.2 item 8).
+   - The events are any phase and need their galactic event in play (`GameState::assert_galactic_event`), an existing player and a change.
    - Each later event with tracked state adds its section.
 
 ### 5.1 Overview
@@ -406,7 +409,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 3. Add the `GalacticEventAction::ConventionsOfWarAbandoned { planet }` variant. Besides the shared checks, it checks that the player owns any X-89 version (`X89BacterialWeapon`, `…Omega`, `…OmegaOmega`) and that the planet isn't destroyed yet. Home planets are allowed.
 4. It removes the planet (and its attachments) like the Stellar Converter does, then ends the turn.
 5. Its form in the Galactic Event tab is a planet dropdown.
-6. ✅ The admin `SetPlanetDestroyed { planet, destroyed }` (any phase) destroys a planet on the board or restores a destroyed one (`score_manual_destroyed_planets` scenario). A restored planet is unowned, has no attachments and can be taken again. Its "Destroyed Planets" section (`views/destroyed_planets.rs`) is on the Planets page.
+6. ✅ The admin `SetPlanetDestroyed { planet, destroyed }` (any phase) destroys a planet on the board or restores a destroyed one (`score_manual_destroyed_planets` scenario). A restored planet is unowned, has no attachments and can be taken again. Its "Destroyed Planets" section (`views/destroyed_planets.rs`) is on the Planets page and the Galactic Events page.
 - Elimination is game end, so skip it.
 
 ##### 9. Dangerous Wilds (TE, complexity 1): Track
@@ -558,7 +561,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
    - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics, Wild, Wild Galaxy, Conventions of War Abandoned.
-   - The galactic events admin page (§5.0 item 8) (P2).
+   - ✅ The galactic events admin page (§5.0 item 8) (P2).
    - Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**
