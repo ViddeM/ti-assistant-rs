@@ -1015,6 +1015,32 @@ fn try_update_game_state(
                 BreakthroughAction::Psychospore
                 | BreakthroughAction::DeorbitBarrage
                 | BreakthroughAction::ResonanceGenerator => {}
+                BreakthroughAction::VaultsOfTheHeir { purged_tech, relic } => {
+                    ensure!(
+                        game_state
+                            .players
+                            .get(&player)
+                            .is_some_and(|p| p.has_tech(&purged_tech)),
+                        "{player} doesn't own {}",
+                        purged_tech.info().name
+                    );
+                    game_state.assert_enabled(&relic)?;
+                    ensure!(
+                        !game_state
+                            .players
+                            .values()
+                            .any(|p| p.relics.contains(&relic)),
+                        "Relic {relic:?} is already owned by another player."
+                    );
+
+                    game_state
+                        .players
+                        .get_mut(&player)
+                        .context("Player not found")?
+                        .technologies
+                        .remove(&purged_tech);
+                    game_state.set_relic_owner(relic, Some(player))?;
+                }
             }
 
             game_state.phase = Phase::EndActionTurn;

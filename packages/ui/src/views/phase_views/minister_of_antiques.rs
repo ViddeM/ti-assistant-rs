@@ -8,6 +8,7 @@ use crate::{
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
+    views::phase_views::action_phase::unowned_relics,
 };
 
 #[component]
@@ -18,26 +19,7 @@ pub fn MinisterOfAntiques(player_id: PlayerId) -> Element {
 
     let mut selected_relic: Signal<Option<Relic>> = use_signal(|| None);
 
-    let taken_relics = use_memo(move || {
-        gc.game_state()
-            .players
-            .values()
-            .flat_map(|p| p.relics.iter())
-            .cloned()
-            .collect::<Vec<_>>()
-    });
-
-    let available_relics = use_memo(move || {
-        let mut relics = gc
-            .game_options()
-            .relics
-            .iter()
-            .filter(|r| !taken_relics().contains(r))
-            .cloned()
-            .collect::<Vec<_>>();
-        relics.sort();
-        relics
-    });
+    let available_relics = use_memo(move || unowned_relics(&gc));
 
     let gainer = player_id.clone();
     let gain = use_callback(move |relic: Option<Relic>| {

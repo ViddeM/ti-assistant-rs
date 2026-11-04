@@ -32,6 +32,7 @@ scenarios![
     thunders_edge_quantumcore,
     thunders_edge_map_tiles,
     thunders_edge_breakthrough_actions,
+    thunders_edge_vaults_of_the_heir,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -1204,5 +1205,60 @@ pub fn thunders_edge_breakthrough_actions() -> TestGame {
         .breakthrough(BreakthroughAction::DeorbitBarrage)
         .end_turn();
     assert_eq!(g.current_player(), p("Carol"));
+    g
+}
+
+/// Vaults of the Heir purges one of the player's technologies to gain a relic nobody owns.
+pub fn thunders_edge_vaults_of_the_heir() -> TestGame {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::MahactGeneSorcerers)
+            .player("Bob", Faction::EmiratesOfHacan)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .thunders_edge(),
+    );
+    let vaults = |purged_tech, relic| Event::PlayBreakthroughAction {
+        player: p("Alice"),
+        action: BreakthroughAction::VaultsOfTheHeir { purged_tech, relic },
+    };
+
+    g.apply(Event::SetBreakthrough {
+        player: p("Alice"),
+        breakthrough: Some(Breakthrough::VaultsOfTheHeir),
+    })
+    .apply(roll("Alice", false))
+    .apply(Event::SetRelicOwner {
+        relic: Relic::TheCodex,
+        player: Some(p("Bob")),
+    });
+
+    g.expect_rejected(
+        vaults(Technology::GravityDrive, Relic::ShardOfTheThrone),
+        "Alice doesn't own Gravity Drive",
+    )
+    .expect_rejected(
+        vaults(Technology::BioStims, Relic::TheCodex),
+        "already owned",
+    );
+    let alice = g
+        .turn("Alice")
+        .breakthrough(BreakthroughAction::VaultsOfTheHeir {
+            purged_tech: Technology::BioStims,
+            relic: Relic::ShardOfTheThrone,
+        });
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice.end_turn();
+
+    let alice = g.player("Alice");
+    assert!(!alice.technologies.contains(&Technology::BioStims));
+    assert!(
+        alice
+            .technologies
+            .contains(&Technology::PredictiveIntelligence)
+    );
+    assert!(alice.relics.contains(&Relic::ShardOfTheThrone));
+    assert!(g.player("Bob").relics.contains(&Relic::TheCodex));
+    assert_eq!(g.points("Alice"), 1);
     g
 }

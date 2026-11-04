@@ -857,6 +857,14 @@ pub enum BreakthroughAction {
     DeorbitBarrage,
     /// Flip a breach, or place an active breach in a non-home system with your units.
     ResonanceGenerator,
+    /// Purge 1 of your technologies to gain 1 relic.
+    #[serde(rename_all = "camelCase")]
+    VaultsOfTheHeir {
+        /// The technology that is purged.
+        purged_tech: Technology,
+        /// The relic that is gained.
+        relic: Relic,
+    },
 }
 
 impl BreakthroughAction {
@@ -866,6 +874,7 @@ impl BreakthroughAction {
             BreakthroughAction::Psychospore => Breakthrough::Psychospore,
             BreakthroughAction::DeorbitBarrage => Breakthrough::DeorbitBarrage,
             BreakthroughAction::ResonanceGenerator => Breakthrough::ResonanceGenerator,
+            BreakthroughAction::VaultsOfTheHeir { .. } => Breakthrough::VaultsOfTheHeir,
         }
     }
 }

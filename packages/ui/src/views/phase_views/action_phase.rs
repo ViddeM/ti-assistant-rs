@@ -10,7 +10,7 @@ use ti_helper_game_data::{
         frontier_card::FrontierCardType,
         galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
-        relic::RelicPlay,
+        relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
     },
     state::{faction_state::FirmamentSide, game_state::GameState},
@@ -434,28 +434,7 @@ fn GainRelicView() -> Element {
 
     let mut selected_relic = use_signal(|| None);
 
-    let taken_relics = use_memo(move || {
-        gc.game_state()
-            .players
-            .values()
-            .flat_map(|p| p.relics.iter())
-            .cloned()
-            .collect::<Vec<_>>()
-    });
-
-    let available_relics = use_memo(move || {
-        let mut relics = gc
-            .game_options()
-            .relics
-            .iter()
-            .filter(|r| !taken_relics().contains(r))
-            .cloned()
-            .collect::<Vec<_>>();
-
-        relics.sort();
-
-        relics
-    });
+    let available_relics = use_memo(move || unowned_relics(&gc));
 
     let current_player_id = use_memo(move || {
         gc.game_state()
@@ -718,6 +697,20 @@ fn PlayLeaderView() -> Element {
             }
         }
     }
+}
+
+/// The relics in the game that nobody owns, sorted.
+pub fn unowned_relics(gc: &GameContext) -> Vec<Relic> {
+    let game_state = gc.game_state();
+    let mut relics = gc
+        .game_options()
+        .relics
+        .iter()
+        .filter(|r| !game_state.players.values().any(|p| p.relics.contains(r)))
+        .cloned()
+        .collect::<Vec<_>>();
+    relics.sort();
+    relics
 }
 
 fn get_playable_strategy_cards(
