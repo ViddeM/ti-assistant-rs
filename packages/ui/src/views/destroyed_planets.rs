@@ -40,7 +40,9 @@ pub fn DestroyedPlanets() -> Element {
                 p { "No planets have been destroyed." }
             }
             for planet in destroyed_planets() {
-                div { key: "{planet}", class: "row margin-top",
+                div {
+                    key: "{planet}",
+                    class: "row full-width space-between margin-top",
                     p { class: "margin-right", "{planet.info().name}" }
                     Button {
                         onclick: {
@@ -57,8 +59,9 @@ pub fn DestroyedPlanets() -> Element {
                     }
                 }
             }
-            div { class: "margin-top",
+            div { class: "margin-top full-width",
                 PlanetDropdown {
+                    class: "full-width",
                     value: selected_planet,
                     on_select: move |p| selected_planet.set(p),
                     options: planets_on_board(),

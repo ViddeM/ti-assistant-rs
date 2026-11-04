@@ -4,7 +4,18 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+
+  @media (min-width: 800px) {
+    width: fit-content;
+    min-width: 420px;
+    max-width: 600px;
+  }
+
+  > .card {
+    width: auto;
+    max-width: none;
+  }
 }
 
 .galactic-events-heading {
@@ -14,6 +25,7 @@
 }
 
 .galactic-events-table {
+  width: 100%;
   margin-top: $margin-large;
   border-collapse: collapse;
 

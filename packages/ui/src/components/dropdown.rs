@@ -302,6 +302,7 @@ pub fn GalacticEventDropdown(
 
 #[component]
 pub fn PlanetDropdown(
+    class: Option<String>,
     value: ReadSignal<Option<Planet>>,
     options: Vec<Planet>,
     on_select: EventHandler<Option<Planet>>,
@@ -322,6 +323,7 @@ pub fn PlanetDropdown(
 
     rsx! {
         Dropdown {
+            class: class.unwrap_or_default(),
             value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,

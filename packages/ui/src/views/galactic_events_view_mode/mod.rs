@@ -91,7 +91,7 @@ fn StellarAtomics() -> Element {
                                     "Token on the card"
                                 }
                             }
-                            td {
+                            td { class: "align-right",
                                 Button {
                                     onclick: {
                                         let player = player.clone();
@@ -136,7 +136,7 @@ fn ZealousOrthodoxy() -> Element {
         div { class: "card column margin-top",
             SectionHeading { galactic_event: GalacticEvent::ZealousOrthodoxy }
             PlayerDropdown {
-                class: "margin-top",
+                class: "margin-top full-width",
                 value: holder,
                 options: players(),
                 on_select: move |player| {
@@ -165,7 +165,7 @@ fn TotalWar() -> Element {
                 thead {
                     tr {
                         for player in players() {
-                            th { key: "{player}", "{player}" }
+                            th { key: "{player}", class: "align-center", "{player}" }
                         }
                     }
                 }
