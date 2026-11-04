@@ -1,6 +1,7 @@
 pub mod action_card;
 pub mod action_phase;
 pub mod agenda_phase_view;
+pub mod breakthrough_action;
 pub mod creation_phase;
 pub mod end_action_phase;
 pub mod faction_setup_views;

@@ -250,7 +250,7 @@ The code only stores names and initiative numbers, which are correct. The change
 | Item | Sev | Field | Code | Wiki | Location |
 |---|---|---|---|---|---|
 | N'orr Supremacy | ⚪ | name | "Norr Supremacy" | "N'orr Supremacy" | `breakthrough/mod.rs:290` ✔ |
-| Deorbit Barrage | 🟡 | kind | `Other` | its text starts with "ACTION:" | `breakthrough/mod.rs:133-139` |
+| Deorbit Barrage | 🟡 | kind | `Other` | its text starts with "ACTION:" | `breakthrough/mod.rs:142-150` ✔ |
 
 Verified OK:
 - **Coverage:** All 33 breakthroughs (30 factions plus the flip sides Corsair, The Reaping and Eidolon Maximum) match on faction and synergy pair.

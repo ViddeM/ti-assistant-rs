@@ -12,8 +12,9 @@ use super::{color_assignment::assign_colors, error::GameError};
 use ti_helper_game_data::{
     actions::{
         event::{
-            ActionCardAction, Event, FrontierCardAction, GalacticEventAction, RelicAction,
-            action_matches_action_card, action_matches_frontier_card, action_matches_relic,
+            ActionCardAction, BreakthroughAction, Event, FrontierCardAction, GalacticEventAction,
+            RelicAction, action_matches_action_card, action_matches_frontier_card,
+            action_matches_relic,
         },
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
@@ -989,6 +990,31 @@ fn try_update_game_state(
                     );
                     game_state.destroy_planet(planet);
                 }
+            }
+
+            game_state.phase = Phase::EndActionTurn;
+        }
+        Event::PlayBreakthroughAction { player, action } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Invalid game state, action_progress not None during Action Phase"
+            );
+            let breakthrough = action.breakthrough();
+            ensure!(
+                game_state
+                    .players
+                    .get(&player)
+                    .is_some_and(|p| p.breakthrough.as_ref() == Some(&breakthrough)),
+                "{player} doesn't have {}",
+                breakthrough.info().name
+            );
+
+            match action {
+                BreakthroughAction::Psychospore
+                | BreakthroughAction::DeorbitBarrage
+                | BreakthroughAction::ResonanceGenerator => {}
             }
 
             game_state.phase = Phase::EndActionTurn;

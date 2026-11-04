@@ -145,7 +145,8 @@ impl Breakthrough {
                 faction: ClanOfSaar,
                 expansion: ThundersEdge,
                 syn_a: Propulsion,
-                syn_b: Warfare
+                syn_b: Warfare,
+                kind: Action
             },
             Breakthrough::IIHQModernization => info! {
                 tag: IIHQModernization,

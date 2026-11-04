@@ -22,7 +22,8 @@ pub mod prelude {
     pub use ti_helper_game_data::{
         actions::{
             event::{
-                ActionCardAction, Event, FrontierCardAction, GalacticEventAction, RelicAction,
+                ActionCardAction, BreakthroughAction, Event, FrontierCardAction,
+                GalacticEventAction, RelicAction,
             },
             strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
         },

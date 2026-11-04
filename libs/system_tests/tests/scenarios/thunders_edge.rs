@@ -31,6 +31,7 @@ scenarios![
     thunders_edge_crisis_and_puppets_on_a_string,
     thunders_edge_quantumcore,
     thunders_edge_map_tiles,
+    thunders_edge_breakthrough_actions,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -1146,5 +1147,62 @@ pub fn thunders_edge_crisis_and_puppets_on_a_string() -> TestGame {
 
     g.turn("Carol").tactical().commit().end_turn();
     assert_eq!(g.phase(), Phase::Status);
+    g
+}
+
+/// An ACTION breakthrough can only be played by the player who has it, on their turn, and it ends
+/// the turn.
+pub fn thunders_edge_breakthrough_actions() -> TestGame {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::Arborec)
+            .player("Bob", Faction::ClanOfSaar)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .thunders_edge(),
+    );
+    let play = |player: &str, action| Event::PlayBreakthroughAction {
+        player: p(player),
+        action,
+    };
+
+    g.expect_rejected(
+        play("Alice", BreakthroughAction::Psychospore),
+        "Alice doesn't have Psychospore",
+    );
+    g.apply(Event::SetBreakthrough {
+        player: p("Alice"),
+        breakthrough: Some(Breakthrough::Psychospore),
+    })
+    .apply(roll("Alice", false))
+    .apply(Event::SetBreakthrough {
+        player: p("Bob"),
+        breakthrough: Some(Breakthrough::DeorbitBarrage),
+    })
+    .apply(roll("Bob", false));
+
+    g.expect_rejected(
+        play("Bob", BreakthroughAction::DeorbitBarrage),
+        "wrong players turn",
+    );
+    let alice = g
+        .turn("Alice")
+        .breakthrough(BreakthroughAction::Psychospore);
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice
+        .expect_rejected(
+            play("Alice", BreakthroughAction::Psychospore),
+            "expected Action",
+        )
+        .end_turn();
+
+    g.turn("Bob")
+        .expect_rejected(
+            play("Bob", BreakthroughAction::Psychospore),
+            "Bob doesn't have Psychospore",
+        )
+        .breakthrough(BreakthroughAction::DeorbitBarrage)
+        .end_turn();
+    assert_eq!(g.current_player(), p("Carol"));
     g
 }

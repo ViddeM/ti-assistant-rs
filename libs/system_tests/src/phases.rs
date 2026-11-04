@@ -11,7 +11,10 @@ use std::ops::{Deref, DerefMut};
 
 use ti_helper_game_data::{
     actions::{
-        event::{ActionCardAction, Event, FrontierCardAction, GalacticEventAction, RelicAction},
+        event::{
+            ActionCardAction, BreakthroughAction, Event, FrontierCardAction, GalacticEventAction,
+            RelicAction,
+        },
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::player_id::PlayerId,
@@ -297,6 +300,16 @@ impl<'g> Turn<'g> {
     #[track_caller]
     pub fn galactic_event(self, action: GalacticEventAction) -> Self {
         self.game.apply(Event::PlayGalacticEventAction {
+            player: self.id(),
+            action,
+        });
+        self
+    }
+
+    /// Perform the ACTION of the player's breakthrough.
+    #[track_caller]
+    pub fn breakthrough(self, action: BreakthroughAction) -> Self {
+        self.game.apply(Event::PlayBreakthroughAction {
             player: self.id(),
             action,
         });

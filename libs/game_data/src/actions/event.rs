@@ -231,6 +231,14 @@ pub enum Event {
         action: GalacticEventAction,
     },
 
+    /// Perform the ACTION of the player's breakthrough.
+    PlayBreakthroughAction {
+        /// The player who performs the action.
+        player: PlayerId,
+        /// Which action it is, and its data.
+        action: BreakthroughAction,
+    },
+
     /// Begin playing a frontier card.
     FrontierCardActionBegin {
         /// The player who plays the card.
@@ -836,6 +844,28 @@ impl GalacticEventAction {
             GalacticEventAction::ConventionsOfWarAbandoned { .. } => {
                 GalacticEvent::ConventionsOfWarAbandoned
             }
+        }
+    }
+}
+
+/// The ACTIONs of the breakthroughs.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub enum BreakthroughAction {
+    /// Remove a command token from a system with your infantry and place 1 infantry there.
+    Psychospore,
+    /// Spend resources to roll dice against the ground forces on a planet near an asteroid field.
+    DeorbitBarrage,
+    /// Flip a breach, or place an active breach in a non-home system with your units.
+    ResonanceGenerator,
+}
+
+impl BreakthroughAction {
+    /// The breakthrough this action belongs to.
+    pub fn breakthrough(&self) -> Breakthrough {
+        match self {
+            BreakthroughAction::Psychospore => Breakthrough::Psychospore,
+            BreakthroughAction::DeorbitBarrage => Breakthrough::DeorbitBarrage,
+            BreakthroughAction::ResonanceGenerator => Breakthrough::ResonanceGenerator,
         }
     }
 }
