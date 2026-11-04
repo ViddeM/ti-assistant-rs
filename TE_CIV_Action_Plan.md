@@ -155,7 +155,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
-| G1 Can't be elected in "elect planet" agendas | Track | Filter `OrbitalBodyType::SpaceStation` out of the planet options in `state/agenda.rs:~170` (trait-based elects already exclude them because stations have no traits) and in `AgendaElect::parse`. | P2 / S |
+| G1 Can't be elected in "elect planet" agendas | Track | ✅ `VoteState::new` leaves space stations out of the planet candidates. Votes aren't checked against the candidates, but the UI only offers them. | P2 / S |
 | G2 Don't count as planets for objectives | Info | Exclude them from per-trait and planet-count displays (`planet_view_mode/player_planets_grid.rs`). | P3 / S |
 | G3 Commodity +1, remote transactions, exhaust for trade goods | 👺 | Economy isn't tracked. | — |
 
@@ -573,7 +573,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - TE-B4 relic prompt for Fracture planets.
    - E6 leader data → Ta Zern and Director Nel.
    - ✅ Brilliance, Overrule, Strategize.
-   - J1 Thunder's Edge on the map, G1 space stations in agendas.
+   - ✅ J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
    - Civilized Society without its game end rule (P1).
    - Cultural Exchange Program, Monuments to the Ages, Age of Exploration, Rapid Mobilization, Minor Factions (P2).

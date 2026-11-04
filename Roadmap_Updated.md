@@ -158,7 +158,7 @@
 - ❌ Speaker tiebreak
 - ❌ Error handling for invalid agendas. (Should frontend filter these away or should the BE provide a filtered list or just report the error?)
 - ❌ Fix the inverted trait check for elect cultural/hazardous/industrial planet (Known bugs)
-- ❌ Space stations can't be elected (TE) `[TE-G1]`
+- ✅ Space stations can't be elected (TE) `[TE-G1]`
 
 *prio 2*:
 - 🚱 Secret objective scoring (possible via the Score view)
