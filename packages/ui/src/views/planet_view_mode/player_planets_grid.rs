@@ -80,6 +80,20 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
         planets.sort_by(|(a, _, _), (b, _, _)| a.cmp(b));
         planets
     });
+    let monuments = use_memo(move || {
+        let game_state = gc.game_state();
+        (game_state.monuments.keys())
+            .filter_map(|planet| {
+                let commodities = game_state.monument_commodities(planet)?;
+                let unit = if commodities == 1 {
+                    "commodity"
+                } else {
+                    "commodities"
+                };
+                Some((planet.clone(), format!("{commodities} {unit}")))
+            })
+            .collect::<HashMap<_, _>>()
+    });
 
     rsx! {
         div { class: "card player-planets-table-container",
@@ -237,6 +251,40 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
                                                         player: player.clone(),
                                                         planet: p.clone(),
                                                         attachment: a.clone(),
+                                                    })
+                                            }
+                                        },
+                                        Icon {
+                                            class: "inline-icon",
+                                            icon: FaTrashCan,
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if let Some(commodities) = monuments().get(planet) {
+                            tr {
+                                td { class: "align-center",
+                                    Icon {
+                                        icon: FaArrowTurnUp,
+                                        class: "rotate90",
+                                    }
+                                }
+                                td { class: "align-right attachment-row-text", "Monument" }
+                                td {
+                                    class: "attachment-row-text align-center",
+                                    colspan: 3,
+                                    "{commodities}"
+                                }
+                                td { class: DELETE_COL_ALIGN,
+                                    Button {
+                                        class: "unclaim-planet-button",
+                                        onclick: {
+                                            let p = planet.clone();
+                                            move |_| {
+                                                event
+                                                    .send_event(Event::DestroyMonument {
+                                                        planet: p.clone(),
                                                     })
                                             }
                                         },

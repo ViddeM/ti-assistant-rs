@@ -237,6 +237,7 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
    - Zealous Orthodoxy: a player dropdown for the holder (`SetZealousOrthodoxyOwner { player }`). Clearing it lets the next player to reach 2 secret objectives gain it.
    - Total War: each player's points with `^`/`v` buttons (`SetTotalWarPoints { player, points }`, never negative). The buttons are the score table's `IncDecView`, now in `components/inc_dec.rs`.
    - Conventions of War Abandoned: the "Destroyed Planets" section from the Planets page (`SetPlanetDestroyed`, §5.2.2 item 8).
+   - Monuments to the Ages: the monuments with their controller, commodities (`^`/`v`, `SetMonumentCommodities`), VP and a Destroy button, and a form to build one (§5.2.3 item 3).
    - The events are any phase and need their galactic event in play (`GameState::assert_galactic_event`), an existing player and a change.
    - Each later event with tracked state adds its section.
 
@@ -281,7 +282,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 |---|---|---|---|---|---|---|
 | 1 | Civilized Society | TE | 2 | Track | ✅ All 10 objectives revealed at setup, no status phase reveal, unlimited scoring; the game end rule comes later with E5 | P1 / M |
 | 2 | Cultural Exchange Program | TE | 2 | Track | ✅ Players use a drawn faction's leaders (E8); the Firmament gets The Obsidian | P2 / M |
-| 3 | Monuments to the Ages | TE | 2 | Track | Monuments with derived commodities → VP | P2 / M |
+| 3 | Monuments to the Ages | TE | 2 | Track | ✅ Monuments with derived commodities → VP | P2 / M |
 | 4 | Age of Exploration | CIV (PoK) | 2 | Track | "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
 | 5 | Rapid Mobilization | TE | 1 | Track | Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
 | 6 | Minor Factions | CIV (PoK) | 2 | Track | Pick minor factions; their planets gain all 3 traits everywhere traits are read; alliance reminder | P2 / M |
@@ -461,8 +462,14 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 5. At `StartGame`, the Firmament player gets `Relic::TheObsidian` through `set_relic_owner`.
 - The Obsidian's own effect (1 extra secret) and commander unlocking aren't tracked.
 
-##### 3. Monuments to the Ages (TE, complexity 2): Track (VP source)
+##### 3. Monuments to the Ages (TE, complexity 2): Track (VP source) ✅
 > Instead of placing a structure on a non-home planet, you may spend 5 trade goods to place a **monument** (max 3 in play). **At the start of the status phase each monument gets 1 commodity; each monument is worth 1 VP per 3 commodities to whoever controls its planet.** The new controller may destroy it.
+
+✅ Done as planned below (`galactic_events_monuments_to_the_ages` scenario), with these changes:
+- The events work in any phase, like the admin events, since placing structures isn't tracked. Building also needs the planet on the board.
+- The admin `SetMonumentCommodities { planet, commodities }` fixes a monument entered late. It sets the stored value so the derived count matches, up to one commodity per status phase so far. The `^` button stops there (`IncDecView` has an optional `max`), since a rejected event shows the error screen.
+- The Galactic Events page has a Monuments section (build form, commodities, Destroy). The Planets page shows a monument row with a remove button, and the tactical view offers "Destroy monument" for a taken planet with one.
+- Destroying or purging a planet (`GameState::destroy_planet`) removes its monument.
 
 1. Add `GameState::monuments: BTreeMap<Planet, u32>`. The value is the number of status phases already started when the monument was built.
 2. Derive the commodities instead of counting them: the status phases started now (`round - 1`, plus 1 once the round's status phase has begun) minus the stored value. No counter is incremented at the status phase.
@@ -583,7 +590,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
    - ✅ Civilized Society without its game end rule (P1).
-   - ✅ Cultural Exchange Program, then Monuments to the Ages, Age of Exploration, Rapid Mobilization, Minor Factions (P2).
+   - ✅ Cultural Exchange Program and Monuments to the Ages, then Age of Exploration, Rapid Mobilization, Minor Factions (P2).
    - F2 Firmament plots.
 6. **Optional (P3).**
    - ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.

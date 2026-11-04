@@ -597,6 +597,28 @@ pub enum Event {
         points: i8,
     },
 
+    /// Place a monument on a non-home planet the player controls ('Monuments to the Ages').
+    BuildMonument {
+        /// The player who places the monument.
+        player: PlayerId,
+        /// The planet the monument is placed on.
+        planet: Planet,
+    },
+
+    /// Destroy the monument on a planet ('Monuments to the Ages').
+    DestroyMonument {
+        /// The planet with the monument.
+        planet: Planet,
+    },
+
+    /// Set the number of commodities beneath the monument on a planet (admin).
+    SetMonumentCommodities {
+        /// The planet with the monument.
+        planet: Planet,
+        /// The commodities, at most one per status phase so far.
+        commodities: u32,
+    },
+
     /// The result of the roll for the Fracture by a player who gained their breakthrough while it
     /// wasn't in play.
     RollForTheFracture {

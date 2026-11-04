@@ -61,8 +61,13 @@ pub struct Score {
 }
 
 impl Score {
-    /// Update [Score::player_points] to the correct values.
-    pub fn update_player_points(&mut self, all_players: &BTreeMap<PlayerId, Player>) {
+    /// Update [Score::player_points] to the correct values, given the points each player has
+    /// from monuments (see [GameState::monument_points](super::game_state::GameState::monument_points)).
+    pub fn update_player_points(
+        &mut self,
+        all_players: &BTreeMap<PlayerId, Player>,
+        monument_points: &HashMap<PlayerId, i8>,
+    ) {
         self.max_points = 10; // TODO set up score
 
         for (player_id, player) in all_players {
@@ -126,6 +131,7 @@ impl Score {
                 .sum::<i8>();
 
             player_points += self.galactic_events.points(player_id);
+            player_points += monument_points.get(player_id).copied().unwrap_or(0);
 
             // TODO: player_points could in theory be negative here, is that allowed or should we reset it to 0 in that case?
 

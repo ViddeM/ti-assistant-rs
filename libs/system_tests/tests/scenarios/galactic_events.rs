@@ -19,6 +19,7 @@ scenarios![
     galactic_events_dangerous_wilds,
     galactic_events_civilized_society,
     galactic_events_cultural_exchange_program,
+    galactic_events_monuments_to_the_ages,
     galactic_events_admin,
 ];
 
@@ -649,6 +650,127 @@ pub fn galactic_events_cultural_exchange_program() -> TestGame {
     g
 }
 
+/// Monuments to the Ages: up to 3 monuments on non-home planets. Each gets a commodity at the start
+/// of every status phase and gives 1 VP per 3 commodities to whoever controls its planet. The
+/// commodities can be fixed, and destroying the planet destroys its monument.
+pub fn galactic_events_monuments_to_the_ages() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::MonumentsToTheAges]),
+    );
+    let build = |player: &str, planet: Planet| Event::BuildMonument {
+        player: p(player),
+        planet,
+    };
+    let set_commodities = |planet: Planet, commodities| Event::SetMonumentCommodities {
+        planet,
+        commodities,
+    };
+    let commodities = |g: &TestGame, planet: Planet| g.state().monument_commodities(&planet);
+
+    g.expect_rejected(
+        build("Alice", Planet::Jord),
+        "Monuments can't be placed on home planets",
+    )
+    .expect_rejected(build("Alice", Planet::Abyz), "Alice doesn't control Abyz")
+    .expect_rejected(
+        build("Nobody", Planet::Abyz),
+        "Player doesn't exist 'Nobody'",
+    )
+    .expect_rejected(
+        Event::DestroyMonument {
+            planet: Planet::Abyz,
+        },
+        "Abyz has no monument",
+    )
+    .apply(Event::SetPlanetOwner {
+        player: Some(p("Alice")),
+        planet: Planet::ThundersEdge,
+    })
+    .expect_rejected(build("Alice", Planet::ThundersEdge), "isn't on the board")
+    .apply(Event::SetPlanetOwner {
+        player: None,
+        planet: Planet::ThundersEdge,
+    });
+
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::Abyz)
+        .take(Planet::Fria)
+        .commit()
+        .end_turn();
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Arinam)
+        .take(Planet::Meer)
+        .commit()
+        .end_turn();
+    g.apply(build("Alice", Planet::Abyz))
+        .apply(build("Alice", Planet::Fria))
+        .apply(build("Bob", Planet::Arinam))
+        .expect_rejected(
+            build("Bob", Planet::Meer),
+            "There can only be 3 monuments in play",
+        )
+        .expect_rejected(build("Alice", Planet::Abyz), "Abyz already has a monument");
+    assert_eq!(commodities(&g, Planet::Abyz), Some(0));
+    assert_eq!(commodities(&g, Planet::Meer), None);
+
+    g.play_out_action_phase();
+    assert_eq!(commodities(&g, Planet::Abyz), Some(1));
+    assert_eq!(commodities(&g, Planet::Arinam), Some(1));
+    g.expect_rejected(
+        set_commodities(Planet::Abyz, 2),
+        "The monument on Abyz can have at most 1 commodities",
+    )
+    .expect_rejected(set_commodities(Planet::Abyz, 1), "No change")
+    .expect_rejected(set_commodities(Planet::Meer, 0), "Meer has no monument")
+    .apply(set_commodities(Planet::Fria, 0));
+    assert_eq!(commodities(&g, Planet::Fria), Some(0));
+    g.status_phase()
+        .reveal(PublicObjective::DiversifyResearch)
+        .complete();
+    assert_eq!((g.round(), g.phase()), (2, Phase::Strategy));
+    assert_eq!(commodities(&g, Planet::Abyz), Some(1));
+
+    g.strategy_phase(SIMPLE_PICKS).play_out_action_phase();
+    assert_eq!(commodities(&g, Planet::Abyz), Some(2));
+    assert_eq!(commodities(&g, Planet::Fria), Some(1));
+    assert!(g.state().monument_points().is_empty());
+    g.status_phase()
+        .reveal(PublicObjective::ErectAMonument)
+        .complete();
+
+    g.strategy_phase(SIMPLE_PICKS);
+    g.turn("Alice").play_card(StrategyCard::Leadership);
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Abyz)
+        .commit()
+        .end_turn();
+    g.play_out_action_phase();
+    assert_eq!(commodities(&g, Planet::Abyz), Some(3));
+    assert_eq!(commodities(&g, Planet::Fria), Some(2));
+    assert_eq!([g.points("Alice"), g.points("Bob")], [0, 2]);
+
+    g.apply(set_commodities(Planet::Fria, 3));
+    assert_eq!(g.points("Alice"), 1);
+    g.apply(Event::SetPlanetDestroyed {
+        planet: Planet::Arinam,
+        destroyed: true,
+    });
+    assert_eq!(commodities(&g, Planet::Arinam), None);
+    assert_eq!(g.points("Bob"), 1);
+    g.apply(Event::DestroyMonument {
+        planet: Planet::Abyz,
+    })
+    .apply(build("Bob", Planet::Meer));
+    assert_eq!(g.points("Bob"), 0);
+    assert_eq!(commodities(&g, Planet::Meer), Some(0));
+    g
+}
+
 /// The admin events fix the tracked state of the galactic events in play, in any phase: a used
 /// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
 /// the Total War points. Each needs an existing player and a change.
@@ -808,5 +930,30 @@ fn cultural_exchange_program_needs_pok() {
             events: BTreeSet::from([GalacticEvent::CulturalExchangeProgram]),
         },
         "is not available with the enabled expansions",
+    );
+}
+
+#[test]
+fn monuments_to_the_ages_needs_the_event() {
+    let mut g = three_players().thunders_edge().start();
+    g.expect_rejected(
+        Event::BuildMonument {
+            player: p("Alice"),
+            planet: Planet::Jord,
+        },
+        "Monuments to the Ages isn't in play",
+    )
+    .expect_rejected(
+        Event::DestroyMonument {
+            planet: Planet::Jord,
+        },
+        "Monuments to the Ages isn't in play",
+    )
+    .expect_rejected(
+        Event::SetMonumentCommodities {
+            planet: Planet::Jord,
+            commodities: 1,
+        },
+        "Monuments to the Ages isn't in play",
     );
 }

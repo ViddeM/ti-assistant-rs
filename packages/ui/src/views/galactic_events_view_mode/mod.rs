@@ -1,11 +1,20 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    actions::event::Event, common::player_id::PlayerId, components::galactic_event::GalacticEvent,
+    actions::event::Event,
+    common::player_id::PlayerId,
+    components::{
+        galactic_event::{GalacticEvent, MAX_MONUMENTS},
+        planet::Planet,
+    },
+    state::game_state::PlanetLocation,
 };
 
 use crate::{
     components::{
-        button::Button, dropdown::PlayerDropdown, inc_dec::IncDecView, info_button::InfoButton,
+        button::Button,
+        dropdown::{PlanetDropdown, PlayerDropdown},
+        inc_dec::IncDecView,
+        info_button::InfoButton,
     },
     data::{event_context::EventContext, game_context::GameContext, info_context::Info},
     views::destroyed_planets::DestroyedPlanets,
@@ -22,6 +31,7 @@ pub fn has_admin_section(event: &GalacticEvent) -> bool {
             | GalacticEvent::ZealousOrthodoxy
             | GalacticEvent::TotalWar
             | GalacticEvent::ConventionsOfWarAbandoned
+            | GalacticEvent::MonumentsToTheAges
     )
 }
 
@@ -53,6 +63,9 @@ pub fn GalacticEventsViewMode() -> Element {
             }
             if in_play().contains(&GalacticEvent::ConventionsOfWarAbandoned) {
                 DestroyedPlanets {}
+            }
+            if in_play().contains(&GalacticEvent::MonumentsToTheAges) {
+                MonumentsToTheAges {}
             }
         }
     }
@@ -189,6 +202,145 @@ fn TotalWar() -> Element {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn MonumentsToTheAges() -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let players = use_memo(move || sorted_players(&gc));
+    let monuments = use_memo(move || {
+        let game_state = gc.game_state();
+        (game_state.monuments.keys())
+            .map(|planet| {
+                let controller = (game_state.players.iter())
+                    .find(|(_, player)| player.planets.contains_key(planet))
+                    .map(|(id, _)| id.to_string())
+                    .unwrap_or_else(|| "Nobody".to_string());
+                let commodities = game_state.monument_commodities(planet).unwrap_or(0);
+                (planet.clone(), controller, commodities)
+            })
+            .collect::<Vec<_>>()
+    });
+    let full = use_memo(move || gc.game_state().monuments.len() >= MAX_MONUMENTS);
+    let max_commodities =
+        use_memo(move || i8::try_from(gc.game_state().status_phases_started()).unwrap_or(i8::MAX));
+
+    let mut builder: Signal<Option<PlayerId>> = use_signal(|| None);
+    let mut planet: Signal<Option<Planet>> = use_signal(|| None);
+    let buildable = use_memo(move || {
+        let game_state = gc.game_state();
+        let Some(player) = builder().and_then(|builder| game_state.players.get(&builder).cloned())
+        else {
+            return Vec::new();
+        };
+        let mut planets = (player.planets.keys())
+            .filter(|p| !p.is_in_home_system())
+            .filter(|p| game_state.planet_location(p) != PlanetLocation::NotOnBoard)
+            .filter(|p| !game_state.monuments.contains_key(p))
+            .cloned()
+            .collect::<Vec<_>>();
+        planets.sort();
+        planets
+    });
+
+    rsx! {
+        div { class: "card column margin-top",
+            SectionHeading { galactic_event: GalacticEvent::MonumentsToTheAges }
+            if monuments().is_empty() {
+                p { class: "margin-top", "No monuments in play" }
+            } else {
+                table { class: "galactic-events-table",
+                    thead {
+                        tr {
+                            th { "Planet" }
+                            th { "Controlled by" }
+                            th { class: "align-center", "Commodities" }
+                            th { class: "align-center", "VP" }
+                            th {}
+                        }
+                    }
+                    tbody {
+                        for (planet, controller, commodities) in monuments() {
+                            tr { key: "{planet}",
+                                td { "{planet.info().name}" }
+                                td { "{controller}" }
+                                td { class: "align-center",
+                                    IncDecView {
+                                        points: i8::try_from(commodities).unwrap_or(i8::MAX),
+                                        max: max_commodities(),
+                                        change_points: {
+                                            let planet = planet.clone();
+                                            move |points| {
+                                                if let Ok(commodities) = u32::try_from(points) {
+                                                    event
+                                                        .send_event(Event::SetMonumentCommodities {
+                                                            planet: planet.clone(),
+                                                            commodities,
+                                                        })
+                                                }
+                                            }
+                                        },
+                                    }
+                                }
+                                td { class: "align-center", "{commodities / 3}" }
+                                td { class: "align-right",
+                                    Button {
+                                        onclick: {
+                                            let planet = planet.clone();
+                                            move |_| {
+                                                event
+                                                    .send_event(Event::DestroyMonument {
+                                                        planet: planet.clone(),
+                                                    })
+                                            }
+                                        },
+                                        "Destroy"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if full() {
+                p { class: "margin-top", "{MAX_MONUMENTS} monuments in play" }
+            } else {
+                PlayerDropdown {
+                    class: "margin-top full-width",
+                    value: builder,
+                    options: players(),
+                    on_select: move |player| {
+                        builder.set(player);
+                        planet.set(None);
+                    },
+                }
+                PlanetDropdown {
+                    class: "margin-top full-width",
+                    value: planet,
+                    options: buildable(),
+                    on_select: move |selected| planet.set(selected),
+                    disabled: builder().is_none(),
+                }
+                Button {
+                    class: "margin-top",
+                    disabled: builder().is_none() || planet().is_none(),
+                    onclick: move |_| {
+                        if let (Some(player), Some(selected)) = (builder(), planet()) {
+                            event
+                                .send_event(Event::BuildMonument {
+                                    player,
+                                    planet: selected,
+                                });
+                            planet.set(None);
+                        }
+                    },
+                    "Build monument"
                 }
             }
         }

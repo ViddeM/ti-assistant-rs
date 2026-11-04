@@ -159,6 +159,10 @@ pub struct GameState {
     /// The players who have discarded their Stellar Atomics token. It can't be derived, since the
     /// event history isn't in [GameState].
     pub stellar_atomics_used: BTreeSet<PlayerId>,
+
+    /// The planets with a monument ('Monuments to the Ages'), and the number of status phases
+    /// that had started when it was built, see [GameState::monument_commodities].
+    pub monuments: BTreeMap<Planet, u32>,
 }
 
 /// Where a planet is on the board, see [GameState::planet_location].
@@ -711,7 +715,39 @@ impl GameState {
         for player in self.players.values_mut() {
             player.remove_planet(&planet);
         }
+        self.monuments.remove(&planet);
         self.map_data.destroyed_planets.push(planet);
+    }
+
+    /// The number of status phases that have started: one per earlier round, plus the current
+    /// round's once it has begun.
+    pub fn status_phases_started(&self) -> u32 {
+        let this_round = matches!(self.phase, Phase::Status | Phase::Relics | Phase::Agenda);
+        self.round.saturating_sub(1) + u32::from(this_round)
+    }
+
+    /// The commodities beneath the monument on `planet`, if it has one: one per status phase
+    /// started since it was built.
+    pub fn monument_commodities(&self, planet: &Planet) -> Option<u32> {
+        let built = self.monuments.get(planet)?;
+        Some(self.status_phases_started().saturating_sub(*built))
+    }
+
+    /// The victory points of the players who control a planet with a monument: 1 per 3
+    /// commodities beneath it.
+    pub fn monument_points(&self) -> HashMap<PlayerId, i8> {
+        let mut points = HashMap::new();
+        for planet in self.monuments.keys() {
+            let monument_points = self.monument_commodities(planet).unwrap_or(0) / 3;
+            let owner = (self.players.iter())
+                .find(|(_, player)| player.planets.contains_key(planet))
+                .filter(|_| monument_points > 0);
+            if let Some((owner, _)) = owner {
+                *points.entry(owner.clone()).or_insert(0) +=
+                    i8::try_from(monument_points).unwrap_or(i8::MAX);
+            }
+        }
+        points
     }
 
     /// Give `relic` to `owner`, or to nobody, taking it from whoever had it.

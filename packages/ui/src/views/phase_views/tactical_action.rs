@@ -157,6 +157,7 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
                             previous_owner: previous_owner.clone(),
                             tech: progress().researched_techs.get(planet).cloned(),
                         }
+                        MonumentPrompt { planet: planet.clone() }
                     }
                 }
             }
@@ -215,6 +216,35 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
                     })
             },
             "End Tactical"
+        }
+    }
+}
+
+#[component]
+fn MonumentPrompt(planet: ReadSignal<Planet>) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let commodities = use_memo(move || gc.game_state().monument_commodities(&planet()));
+
+    rsx! {
+        if let Some(commodities) = commodities() {
+            p {
+                if commodities == 1 {
+                    "Monument with 1 commodity"
+                } else {
+                    "Monument with {commodities} commodities"
+                }
+            }
+            Button {
+                onclick: move |_| {
+                    event
+                        .send_event(Event::DestroyMonument {
+                            planet: planet(),
+                        })
+                },
+                "Destroy monument"
+            }
         }
     }
 }

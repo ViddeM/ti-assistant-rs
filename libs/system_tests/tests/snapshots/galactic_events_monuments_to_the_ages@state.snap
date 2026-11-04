@@ -1,0 +1,151 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 3
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: false
+    codex1: false
+    codex2: false
+    codex3: false
+    codex4: false
+    thundersEdge: true
+galacticEvents:
+  - MonumentsToTheAges
+phase: Status
+mapData:
+  miltyInformation: ~
+  destroyedPlanets:
+    - Arinam
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+      Fria: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+      Abyz: []
+      Meer: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Politics: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+currentPlayer: Bob
+spentStrategyCards:
+  - Leadership
+  - Diplomacy
+  - Politics
+  - Construction
+  - Trade
+  - Warfare
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 1
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    DiversifyResearch: []
+    ErectAMonument: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+  galacticEvents:
+    zealousOrthodoxy: ~
+    totalWar: {}
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives: {}
+  scoredSecretObjectives: {}
+  revealedObjective: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol: []
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 2400
+    nanos: 0
+  Bob:
+    secs: 2340
+    nanos: 0
+  Carol:
+    secs: 2160
+    nanos: 0
+currentTurnStartTime: ~
+naaluTelepathy: ~
+teExpedition:
+  completed: ~
+  progress: {}
+fractureInPlay: false
+fractureRoll: ~
+bookOfLatviniaResearch: ~
+ministerOfAntiquesRelic: ~
+stellarAtomicsUsed: []
+monuments:
+  Fria: 0
+  Meer: 3

@@ -26,7 +26,7 @@ use ti_helper_game_data::{
         action_card::{ActionCard, ActionCardPlay},
         agenda::{AgendaElectKind, AgendaKind},
         frontier_card::FrontierCardType,
-        galactic_event::GalacticEvent,
+        galactic_event::{GalacticEvent, MAX_MONUMENTS},
         leaders::LeaderAbilityKind,
         objectives::{Objective, ObjectiveKind, PUBLIC_OBJECTIVES_PER_STAGE},
         phase::Phase,
@@ -2496,6 +2496,61 @@ fn try_update_game_state(
                 total_war.insert(player, points);
             }
         }
+        Event::BuildMonument { player, planet } => {
+            game_state.assert_galactic_event(&GalacticEvent::MonumentsToTheAges)?;
+            let Some(player_state) = game_state.players.get(&player) else {
+                bail!("Player doesn't exist '{player}'");
+            };
+            let name = planet.info().name;
+            ensure!(
+                player_state.planets.contains_key(&planet),
+                "{player} doesn't control {name}"
+            );
+            ensure!(
+                !planet.is_in_home_system(),
+                "Monuments can't be placed on home planets"
+            );
+            ensure!(
+                game_state.planet_location(&planet) != PlanetLocation::NotOnBoard,
+                "{name} isn't on the board"
+            );
+            ensure!(
+                !game_state.monuments.contains_key(&planet),
+                "{name} already has a monument"
+            );
+            ensure!(
+                game_state.monuments.len() < MAX_MONUMENTS,
+                "There can only be {MAX_MONUMENTS} monuments in play"
+            );
+
+            let started = game_state.status_phases_started();
+            game_state.monuments.insert(planet, started);
+        }
+        Event::DestroyMonument { planet } => {
+            game_state.assert_galactic_event(&GalacticEvent::MonumentsToTheAges)?;
+            ensure!(
+                game_state.monuments.remove(&planet).is_some(),
+                "{} has no monument",
+                planet.info().name
+            );
+        }
+        Event::SetMonumentCommodities {
+            planet,
+            commodities,
+        } => {
+            game_state.assert_galactic_event(&GalacticEvent::MonumentsToTheAges)?;
+            let name = planet.info().name;
+            let Some(current) = game_state.monument_commodities(&planet) else {
+                bail!("{name} has no monument");
+            };
+            let started = game_state.status_phases_started();
+            ensure!(
+                commodities <= started,
+                "The monument on {name} can have at most {started} commodities"
+            );
+            ensure!(current != commodities, "No change provided in event");
+            game_state.monuments.insert(planet, started - commodities);
+        }
         Event::RollForTheFracture {
             player,
             entered_play,
@@ -2534,7 +2589,10 @@ fn try_update_game_state(
 
     // TODO: maybe not recalculate this all the time?
     game_state.update_available_leaders();
-    game_state.score.update_player_points(&game_state.players);
+    let monument_points = game_state.monument_points();
+    game_state
+        .score
+        .update_player_points(&game_state.players, &monument_points);
 
     Ok(())
 }

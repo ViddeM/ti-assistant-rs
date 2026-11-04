@@ -69,7 +69,7 @@
      - ❌ The Silver Flame (TE) `[TE-D2]`
    - ❌ Legendary planets
      - ✅ Styx (TE) `[TE-C1]`
-   - ❌ Galactic event VP sources (Total War, Zealous Orthodoxy, Monuments) `[GE]`
+   - ✅ Galactic event VP sources (Total War, Zealous Orthodoxy, Monuments) `[GE]`
    - ❌ Use the configured victory points (currently hard-coded to 10) (lowest priority: game end is handled at the table) `[E5]`
    - ❌ Winning the game (when reaching the winning score) (lowest priority: game end is handled at the table) `[E5]`
  - ❌ Action cards
@@ -346,7 +346,7 @@
    - 🚱 Civilized Society: ✅ all objectives up at setup, ✅ unlimited scoring; still open: game ends after status phase `[E5]`
    - ✅ Zealous Orthodoxy (first to 2 secrets: +1 VP)
    - ✅ Total War (action: +1 VP)
-   - ❌ Monuments to the Ages (monuments → VP)
+   - ✅ Monuments to the Ages (monuments → VP)
    - ✅ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
    - ❌ Rapid Mobilization (setup planets, breakthroughs, techs; the Fracture enters play)
  - Assisted
