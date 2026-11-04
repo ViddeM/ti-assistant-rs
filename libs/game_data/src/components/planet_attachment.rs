@@ -284,12 +284,12 @@ impl PlanetAttachment {
 
     /// Returns true if this is a real attachment and false if it is one that only exists for technical reasons.
     pub fn is_real(&self) -> bool {
-        matches!(
+        !matches!(
             self,
-            PlanetAttachment::BioticResearchFacility
-                | PlanetAttachment::CyberneticResearchFacility
-                | PlanetAttachment::PropulsionResearchFacility
-                | PlanetAttachment::WarfareResearchFacility
+            PlanetAttachment::BioticResearchFacilityResources
+                | PlanetAttachment::CyberneticResearchFacilityResources
+                | PlanetAttachment::PropulsionResearchFacilityResources
+                | PlanetAttachment::WarfareResearchFacilityResources
         )
     }
 
@@ -317,5 +317,23 @@ impl Component for PlanetAttachment {
 
     fn expansion(&self) -> Expansion {
         self.info().expansion
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use strum::IntoEnumIterator;
+
+    use super::*;
+
+    #[test]
+    fn real_attachments_are_their_own_real_version() {
+        for attachment in PlanetAttachment::iter() {
+            assert_eq!(
+                attachment.is_real(),
+                attachment.clone().to_real() == attachment,
+                "{attachment:?}"
+            );
+        }
     }
 }
