@@ -1,10 +1,13 @@
 use dioxus::prelude::*;
 
-use crate::views::{
-    destroyed_planets::DestroyedPlanets,
-    planet_view_mode::{
-        add_planet_attachment::AddPlanetAttachment, player_planets_grid::PlayerPlanetsGrid,
-        unclaimed_planets_table::UnclaimedPlanetsTable,
+use crate::{
+    data::game_context::GameContext,
+    views::{
+        destroyed_planets::DestroyedPlanets,
+        planet_view_mode::{
+            add_planet_attachment::AddPlanetAttachment, player_planets_grid::PlayerPlanetsGrid,
+            unclaimed_planets_table::UnclaimedPlanetsTable,
+        },
     },
 };
 
@@ -16,12 +19,16 @@ const PLANET_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/planet_view_m
 
 #[component]
 pub fn PlanetViewMode() -> Element {
+    let gc = use_context::<GameContext>();
+
     rsx! {
         document::Stylesheet { href: PLANET_VIEW_MODE_SCSS }
 
         div { class: "planet-view-container",
             PlayerPlanetsGrid {}
-            AddPlanetAttachment {}
+            if !gc.game_options().planet_attachments.is_empty() {
+                AddPlanetAttachment {}
+            }
             UnclaimedPlanetsTable {}
             DestroyedPlanets {}
         }
