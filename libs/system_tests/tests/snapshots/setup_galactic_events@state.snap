@@ -252,6 +252,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Ben:
     name: Ben
     faction: NaazRokhaAlliance
@@ -265,6 +266,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Cid:
     name: Cid
     faction: RalNelConsortium
@@ -277,6 +279,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Dee:
     name: Dee
     faction: DeepwroughtScholarate
@@ -289,6 +292,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Eve:
     name: Eve
     faction: FirmamentObsidian
@@ -303,6 +307,7 @@ players:
     factionState:
       Firmament:
         side: Firmament
+    leadersFrom: ~
 speaker: Ben
 tableOrder:
   - Ben

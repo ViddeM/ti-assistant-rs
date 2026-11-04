@@ -29,6 +29,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -48,6 +49,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -60,6 +62,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
 speaker: Carol
 tableOrder:
   - Alice

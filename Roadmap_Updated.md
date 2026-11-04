@@ -347,7 +347,7 @@
    - ✅ Zealous Orthodoxy (first to 2 secrets: +1 VP)
    - ✅ Total War (action: +1 VP)
    - ❌ Monuments to the Ages (monuments → VP)
-   - ❌ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
+   - ✅ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
    - ❌ Rapid Mobilization (setup planets, breakthroughs, techs; the Fracture enters play)
  - Assisted
    - ❌ Minor Factions (minor faction planets have all traits, alliance reminder)

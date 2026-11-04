@@ -162,6 +162,8 @@ impl TestGame {
     /// - Speaker: the first player in table order, unless imported from milty.
     /// - Civilized Society: the first five enabled stage I and stage II objectives (in declaration
     ///   order) are revealed, ignoring the `objectives(..)` override.
+    /// - Cultural Exchange Program: each player except the Firmament draws the faction of the next
+    ///   such player in table order, wrapping around.
     #[track_caller]
     pub fn auto_setup(&mut self) -> &mut Self {
         let setup = self.setup.clone();
@@ -258,6 +260,24 @@ impl TestGame {
             }
             // The milty import already sets the speaker.
             None => {}
+        }
+
+        if self
+            .state()
+            .galactic_events
+            .contains(&GalacticEvent::CulturalExchangeProgram)
+        {
+            let drawing: Vec<(PlayerId, Faction)> = (table_order.iter())
+                .map(|player| (player.clone(), self.state().players[player].faction))
+                .filter(|(_, faction)| *faction != Faction::FirmamentObsidian)
+                .collect();
+            for (index, (player, _)) in drawing.iter().enumerate() {
+                let (_, faction) = drawing[(index + 1) % drawing.len()];
+                self.apply(Event::SetupCulturalExchange {
+                    player: player.clone(),
+                    faction: Some(faction),
+                });
+            }
         }
 
         if self

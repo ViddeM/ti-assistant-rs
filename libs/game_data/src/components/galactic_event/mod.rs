@@ -160,7 +160,8 @@ impl GalacticEvent {
                 event: CulturalExchangeProgram,
                 name: "Cultural Exchange Program",
                 complexity: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
+                also_requires: ProphecyOfKings
             },
             GalacticEvent::CosmicPhenomenae => info! {
                 event: CosmicPhenomenae,
@@ -305,7 +306,6 @@ mod tests {
                 CallOfTheVoid,
                 HiddenAgenda,
                 WildWildGalaxy,
-                CulturalExchangeProgram,
                 CosmicPhenomenae,
                 AdventOfTheWarSun,
                 MercenariesForHire,
@@ -316,5 +316,10 @@ mod tests {
                 ConventionsOfWarAbandoned,
             ]
         );
+        assert!(CulturalExchangeProgram.is_enabled_in(&Expansions {
+            prophecy_of_kings: true,
+            thunders_edge: true,
+            ..Default::default()
+        }));
     }
 }

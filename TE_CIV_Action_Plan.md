@@ -74,7 +74,7 @@ Several TE, CIV and galactic-event features need the same building blocks. Build
 | E5 | **Victory target and game end** | The configured target is ignored (`state/score.rs:63`), but nothing reads it, and game end is handled at the table. Revisit it with the galactic events (Civilized Society), where it may matter more. | If ever wanted: use `GameSettings::max_points` and show the target. | P3 (lowest) / S |
 | E6 | **Data on leader actions** | `LeaderActionBegin` jumps straight to `EndActionTurn` without data (TODO list at `game_event_handler.rs:851-867`). Ta Zern, and later others, need data. | Add `LeaderAction` data, mirroring `RelicAction` + `action_matches_relic`, and use the existing (unused) `Phase::LeaderAction` + `LeaderActionCommit { data }`. Leaders without data keep the one-click path. Also track **purged heroes** (`purged_leaders: BTreeSet<Leader>`) so used heroes disappear from `available_leaders`. | P2 / M |
 | E7 | **Galactic event framework** | Prerequisite for §5. | See §5.0. | P2 / M |
-| E8 | **A leader-faction override** | Cultural Exchange Program, and Creuss's "Unknown" leaders in Liberation of Ordinian. | `Player::leaders_from: Option<Faction>`, read by `update_available_leaders` (`state/game_state.rs:879`). Built with Cultural Exchange Program (§5.2.3). | P2 / S |
+| E8 | **A leader-faction override** | Cultural Exchange Program, and Creuss's "Unknown" leaders in Liberation of Ordinian. | `Player::leaders_from: Option<Faction>`, read by `update_available_leaders` (`state/game_state.rs:879`). ✅ Built with Cultural Exchange Program (§5.2.3). `Player::leader_faction` gives the override, or else the player's own faction. | P2 / S |
 
 ---
 
@@ -280,7 +280,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | # | Event | Origin | Cx | Verdict | What the app does | P / Effort |
 |---|---|---|---|---|---|---|
 | 1 | Civilized Society | TE | 2 | Track | ✅ All 10 objectives revealed at setup, no status phase reveal, unlimited scoring; the game end rule comes later with E5 | P1 / M |
-| 2 | Cultural Exchange Program | TE | 2 | Track | Players use a drawn faction's leaders (E8); the Firmament gets The Obsidian | P2 / M |
+| 2 | Cultural Exchange Program | TE | 2 | Track | ✅ Players use a drawn faction's leaders (E8); the Firmament gets The Obsidian | P2 / M |
 | 3 | Monuments to the Ages | TE | 2 | Track | Monuments with derived commodities → VP | P2 / M |
 | 4 | Age of Exploration | CIV (PoK) | 2 | Track | "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
 | 5 | Rapid Mobilization | TE | 1 | Track | Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
@@ -446,8 +446,13 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 3. ✅ **Unlimited scoring.** The one `ScorePublicObjective` slot stays. Once it holds an objective, a "score another" row in the player's status view sends `ScoreExtraPublicObjective` (any phase, bypasses the slot). `StatusPhaseState` is unchanged.
 4. **Game end.** Do the "ends after the status phase" rule and the influence tiebreak last, separately, with E5. They're not a dependency.
 
-##### 2. Cultural Exchange Program (TE, complexity 2): Track
+##### 2. Cultural Exchange Program (TE, complexity 2): Track ✅
 > At the end of setup, shuffle the reference cards of the factions in play; each player draws one, **takes all of that faction's leaders** for the rest of the game and unlocks that commander. **The Firmament/Obsidian doesn't take part; it starts with The Obsidian relic.**
+
+✅ Done as planned below (`galactic_events_cultural_exchange_program` scenario), with three changes:
+- The draw is an `Option<Faction>`. `None` puts the card back, so a misclick can be fixed or two draws swapped.
+- The event also needs PoK, since leaders and relics do. A Thunder's Edge game without PoK can't choose it.
+- `LeaderActionBegin` now rejects a leader that isn't in the player's `available_leaders`.
 
 1. Add `Player::leaders_from: Option<Faction>`. This is E8, which doesn't exist yet.
 2. Setup event `SetupCulturalExchange { player, faction }`. Checks: Setup phase, event active, the faction is in play, neither side is `FirmamentObsidian`, each faction is drawn once. Drawing your own faction is allowed, since the card doesn't forbid it.
@@ -578,7 +583,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
    - ✅ Civilized Society without its game end rule (P1).
-   - Cultural Exchange Program, Monuments to the Ages, Age of Exploration, Rapid Mobilization, Minor Factions (P2).
+   - ✅ Cultural Exchange Program, then Monuments to the Ages, Age of Exploration, Rapid Mobilization, Minor Factions (P2).
    - F2 Firmament plots.
 6. **Optional (P3).**
    - ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.

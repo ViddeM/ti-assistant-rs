@@ -208,6 +208,7 @@ players:
     factionState:
       Firmament:
         side: Firmament
+    leadersFrom: ~
   Ben:
     name: Ben
     faction: DeepwroughtScholarate
@@ -226,6 +227,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Cid:
     name: Cid
     faction: CrimsonRebellion
@@ -243,6 +245,7 @@ players:
     relics: []
     breakthrough: ResonanceGenerator
     factionState: None
+    leadersFrom: ~
   Dee:
     name: Dee
     faction: RalNelConsortium
@@ -261,6 +264,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Eve:
     name: Eve
     faction: LastBastion
@@ -280,6 +284,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
 speaker: Ann
 tableOrder:
   - Ann

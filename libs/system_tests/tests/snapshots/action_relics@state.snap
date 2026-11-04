@@ -33,6 +33,7 @@ players:
       - ShardOfTheThrone
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -49,6 +50,7 @@ players:
       - JrXs4550
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -62,6 +64,7 @@ players:
       - CircletOfTheVoid
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
 speaker: Alice
 tableOrder:
   - Alice

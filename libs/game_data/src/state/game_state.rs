@@ -938,7 +938,7 @@ impl GameState {
             anyhow::bail!("player does not exist (this is a bug)");
         };
 
-        Ok(match player.faction {
+        let faction_setup_finished = match player.faction {
             Faction::Winnu => player.technologies.len() == 1,
             Faction::ArgentFlight => player.technologies.len() == 2,
             Faction::CouncilKeleres => player.technologies.len() == 2 && !player.planets.is_empty(),
@@ -948,7 +948,14 @@ impl GameState {
             Faction::DeepwroughtScholarate => player.technologies.len() == 2,
             Faction::RalNelConsortium => player.technologies.len() == 1,
             _ => true,
-        })
+        };
+        let cultural_exchange_finished = !self
+            .galactic_events
+            .contains(&GalacticEvent::CulturalExchangeProgram)
+            || player.faction == Faction::FirmamentObsidian
+            || player.leaders_from.is_some();
+
+        Ok(faction_setup_finished && cultural_exchange_finished)
     }
 
     /// The max number of players allowed for this game.
@@ -963,7 +970,7 @@ impl GameState {
 
             // Yssaril can play everyones agents
             let yssaril_agent = |leader: &Leader| {
-                if player.faction != Faction::YssarilTribes {
+                if player.leader_faction() != Faction::YssarilTribes {
                     return false;
                 }
 
@@ -973,13 +980,15 @@ impl GameState {
 
                 self.players
                     .values()
-                    .any(|player| player.faction == leader.info().faction())
+                    .any(|player| player.leader_faction() == leader.info().faction())
             };
 
             let available_to_this_player = Leader::iter()
                 .filter(|leader| leader.is_enabled_in(&self.game_settings.expansions))
                 // TODO: there may be cases where players can use other players factions
-                .filter(|leader| leader.info().faction() == player.faction || yssaril_agent(leader))
+                .filter(|leader| {
+                    leader.info().faction() == player.leader_faction() || yssaril_agent(leader)
+                })
                 .filter(|leader| leader.info().ability_kind() == LeaderAbilityKind::Action)
                 .filter(|leader| can_play_hero || !matches!(leader, Leader::Hero(..)))
                 .collect();

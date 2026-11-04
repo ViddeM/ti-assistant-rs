@@ -51,6 +51,9 @@ pub struct Player {
     pub breakthrough: Option<Breakthrough>,
     /// State that is specific to the players faction, if the faction has any.
     pub faction_state: Arc<FactionState>,
+    /// The faction whose leaders the player holds instead of their own ('Cultural Exchange
+    /// Program').
+    pub leaders_from: Option<Faction>,
 }
 
 impl NewPlayer {
@@ -81,11 +84,17 @@ impl NewPlayer {
             relics: BTreeSet::new(),
             breakthrough,
             faction_state: Arc::new(faction_state),
+            leaders_from: None,
         }
     }
 }
 
 impl Player {
+    /// The faction whose leaders the player holds, see [Player::leaders_from].
+    pub fn leader_faction(&self) -> Faction {
+        self.leaders_from.unwrap_or(self.faction)
+    }
+
     /// Which side of the Firmament / The Obsidian the player is playing, if they play that faction.
     pub fn firmament_side(&self) -> Option<FirmamentSide> {
         match &*self.faction_state {

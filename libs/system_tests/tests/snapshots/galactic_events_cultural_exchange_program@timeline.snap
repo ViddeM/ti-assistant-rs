@@ -1,0 +1,33 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 AddPlayer(Dave)                          r0 Creation           -
+   5 SetGalacticEvents                        r0 Creation           -
+   6 CreationDone                             r0 Setup              -
+   7 SetupCulturalExchange(Alice)             r0 Setup              -
+   8 SetupCulturalExchange(Alice)             r0 Setup              -
+   9 SetupPlayerTechs(Dave)                   r0 Setup              -
+  10 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+  11 SetupCulturalExchange(Alice)             r0 Setup              -
+  12 SetupCulturalExchange(Bob)               r0 Setup              -
+  13 SetupCulturalExchange(Carol)             r0 Setup              -
+  14 RevealInitialObjectives                  r0 Setup              -
+  15 SetupCulturalExchange(Bob)               r0 Setup              -
+  16 SetupCulturalExchange(Bob)               r0 Setup              -
+  17 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol Dave]
+  18 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  19 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  20 TakeStrategyCard(Carol)                  r1 Strategy           Dave
+  21 TakeStrategyCard(Dave)                   r1 Strategy           Alice
+  22 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  23 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  24 TakeStrategyCard(Carol)                  r1 Strategy           Dave
+  25 TakeStrategyCard(Dave)                   r1 Strategy           Alice
+  26 CompleteStrategyPhase                    r1 Action             Alice
+  27 LeaderActionBegin(Alice)                 r1 EndActionTurn      Alice
+  28 EndTurn(Alice)                           r1 Action             Bob
+  29 LeaderActionBegin(Bob)                   r1 EndActionTurn      Bob

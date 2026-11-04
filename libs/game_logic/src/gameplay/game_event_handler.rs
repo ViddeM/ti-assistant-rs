@@ -278,6 +278,36 @@ fn try_update_game_state(
                 player.planets.insert(planet, BTreeSet::new());
             }
         }
+        Event::SetupCulturalExchange { player, faction } => {
+            game_state.assert_phase(Phase::Setup)?;
+            game_state.assert_galactic_event(&GalacticEvent::CulturalExchangeProgram)?;
+            let Some(own_faction) = game_state.players.get(&player).map(|p| p.faction) else {
+                bail!("Player doesn't exist '{player}'");
+            };
+            ensure!(
+                own_faction != Faction::FirmamentObsidian
+                    && faction != Some(Faction::FirmamentObsidian),
+                "The Firmament doesn't take part in the Cultural Exchange Program"
+            );
+
+            if let Some(faction) = faction {
+                ensure!(
+                    game_state.players.values().any(|p| p.faction == faction),
+                    "{} isn't in play",
+                    faction.name()
+                );
+                let holder = (game_state.players.iter())
+                    .find(|(id, p)| **id != player && p.leaders_from == Some(faction));
+                if let Some((holder, _)) = holder {
+                    bail!("{} has already been drawn by {holder}", faction.name());
+                }
+            }
+
+            let Some(player) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist '{player}'");
+            };
+            player.leaders_from = faction;
+        }
         Event::SetupPlayerTechs {
             player,
             technologies,
@@ -446,6 +476,18 @@ fn try_update_game_state(
                 }
                 if advent_of_the_war_sun && player.faction != Faction::EmbersOfMuaat {
                     player.technologies.insert(Technology::WarSun);
+                }
+            }
+
+            if game_state
+                .galactic_events
+                .contains(&GalacticEvent::CulturalExchangeProgram)
+            {
+                let firmament = (game_state.players.iter())
+                    .find(|(_, player)| player.faction == Faction::FirmamentObsidian)
+                    .map(|(id, _)| id.clone());
+                if let Some(firmament) = firmament {
+                    game_state.set_relic_owner(Relic::TheObsidian, Some(firmament))?;
                 }
             }
 

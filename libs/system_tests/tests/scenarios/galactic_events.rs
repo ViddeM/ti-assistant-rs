@@ -18,6 +18,7 @@ scenarios![
     galactic_events_conventions_of_war_abandoned,
     galactic_events_dangerous_wilds,
     galactic_events_civilized_society,
+    galactic_events_cultural_exchange_program,
     galactic_events_admin,
 ];
 
@@ -559,6 +560,95 @@ pub fn galactic_events_civilized_society() -> TestGame {
     g
 }
 
+/// Cultural Exchange Program: at the end of setup each player draws the faction of a player in
+/// play and holds its leaders instead of their own. The Firmament doesn't take part and starts with
+/// The Obsidian. The Yssaril agent follows the player who drew the Yssaril.
+pub fn galactic_events_cultural_exchange_program() -> TestGame {
+    let mut g = TestGame::builder()
+        .pok()
+        .thunders_edge()
+        .player("Alice", Faction::Arborec)
+        .player("Bob", Faction::XxchaKingdom)
+        .player("Carol", Faction::YssarilTribes)
+        .player("Dave", Faction::FirmamentObsidian)
+        .galactic_events([GalacticEvent::CulturalExchangeProgram])
+        .setup();
+    let draw = |player: &str, faction: Option<Faction>| Event::SetupCulturalExchange {
+        player: p(player),
+        faction,
+    };
+
+    g.expect_rejected(
+        draw("Dave", Some(Faction::Arborec)),
+        "The Firmament doesn't take part in the Cultural Exchange Program",
+    )
+    .expect_rejected(
+        draw("Alice", Some(Faction::FirmamentObsidian)),
+        "The Firmament doesn't take part in the Cultural Exchange Program",
+    )
+    .expect_rejected(
+        draw("Alice", Some(Faction::FederationOfSol)),
+        "The Federation of Sol isn't in play",
+    )
+    .apply(draw("Alice", Some(Faction::Arborec)))
+    .expect_rejected(
+        draw("Carol", Some(Faction::Arborec)),
+        "The Arborec has already been drawn by Alice",
+    )
+    .apply(draw("Alice", None));
+    assert_eq!(g.player("Alice").leaders_from, None);
+
+    g.auto_setup();
+    assert_eq!(g.player("Alice").leaders_from, Some(Faction::XxchaKingdom));
+    assert_eq!(g.player("Bob").leaders_from, Some(Faction::YssarilTribes));
+    assert_eq!(g.player("Carol").leaders_from, Some(Faction::Arborec));
+    assert_eq!(g.player("Dave").leaders_from, None);
+
+    g.apply(draw("Bob", None))
+        .expect_rejected(
+            Event::StartGame,
+            "All initialization has not yet been completed",
+        )
+        .apply(draw("Bob", Some(Faction::YssarilTribes)))
+        .start_game();
+    assert!(g.player("Dave").relics.contains(&Relic::TheObsidian));
+
+    let leaders = |g: &TestGame, player: &str| {
+        (g.state().available_leaders[&p(player)].iter())
+            .copied()
+            .collect::<BTreeSet<_>>()
+    };
+    let rinn = Leader::Agent(Agent::GgrucotoRinn);
+    let ospha = Leader::Agent(Agent::LetaniOspha);
+    assert_eq!(leaders(&g, "Alice"), BTreeSet::from([rinn]));
+    assert_eq!(leaders(&g, "Bob"), BTreeSet::from([rinn, ospha]));
+    assert_eq!(leaders(&g, "Carol"), BTreeSet::from([ospha]));
+    assert_eq!(leaders(&g, "Dave"), BTreeSet::new());
+
+    g.strategy_phase(&[
+        ("Alice", StrategyCard::Leadership),
+        ("Bob", StrategyCard::Diplomacy),
+        ("Carol", StrategyCard::Politics),
+        ("Dave", StrategyCard::Construction),
+        ("Alice", StrategyCard::Trade),
+        ("Bob", StrategyCard::Warfare),
+        ("Carol", StrategyCard::Technology),
+        ("Dave", StrategyCard::Imperial),
+    ]);
+    g.turn("Alice")
+        .expect_rejected(
+            Event::LeaderActionBegin {
+                player: p("Alice"),
+                leader: ospha,
+            },
+            "Letani Ospha isn't available to Alice",
+        )
+        .leader(rinn)
+        .end_turn();
+    g.turn("Bob").leader(ospha);
+    g
+}
+
 /// The admin events fix the tracked state of the galactic events in play, in any phase: a used
 /// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
 /// the Total War points. Each needs an existing player and a change.
@@ -695,5 +785,28 @@ fn revealing_all_objectives_needs_civilized_society() {
             stage_two: objectives(&STAGE_TWO),
         },
         "Civilized Society isn't in play",
+    );
+}
+
+#[test]
+fn cultural_exchange_program_needs_the_event() {
+    let mut g = three_players().pok().thunders_edge().setup();
+    g.expect_rejected(
+        Event::SetupCulturalExchange {
+            player: p("Alice"),
+            faction: Some(Faction::XxchaKingdom),
+        },
+        "Cultural Exchange Program isn't in play",
+    );
+}
+
+#[test]
+fn cultural_exchange_program_needs_pok() {
+    let mut g = three_players().thunders_edge().create();
+    g.expect_rejected(
+        Event::SetGalacticEvents {
+            events: BTreeSet::from([GalacticEvent::CulturalExchangeProgram]),
+        },
+        "is not available with the enabled expansions",
     );
 }

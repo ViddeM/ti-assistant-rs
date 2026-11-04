@@ -17,7 +17,11 @@ use crate::views::phase_views::faction_setup_views::{
     pick_one_tech_setup::PickOneTechSetup,
 };
 use crate::{
-    components::{button::Button, dropdown::ObjectiveDropdown, faction_icon::FactionIcon},
+    components::{
+        button::Button,
+        dropdown::{FactionDropdown, ObjectiveDropdown},
+        faction_icon::FactionIcon,
+    },
     data::{event_context::EventContext, game_context::GameContext},
 };
 
@@ -86,6 +90,11 @@ fn PlayersSetup() -> Element {
         });
         players
     });
+    let cultural_exchange = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .contains(&GalacticEvent::CulturalExchangeProgram)
+    });
 
     rsx! {
         div { class: "player-specific-setup-container",
@@ -129,6 +138,9 @@ fn PlayersSetup() -> Element {
 
                                     {player.faction_name()}
                                     FactionSpecificSetup { player_id: Arc::clone(&name), player: Arc::clone(&player) }
+                                    if cultural_exchange() {
+                                        CulturalExchangeSetup { player_id: Arc::clone(&name), player: Arc::clone(&player) }
+                                    }
                                 }
                             }
                         })
@@ -189,6 +201,58 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         _ => rsx! {
             div { "No faction specific setup" }
         },
+    }
+}
+
+#[component]
+fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let p1 = Arc::clone(&player_id);
+    let leaders_from = use_memo(move || {
+        gc.game_state()
+            .players
+            .get(&p1)
+            .and_then(|player| player.leaders_from)
+    });
+
+    let p2 = Arc::clone(&player_id);
+    let options = use_memo(move || {
+        let game_state = gc.game_state();
+        let mut factions = (game_state.players.values())
+            .map(|player| player.faction)
+            .filter(|faction| *faction != Faction::FirmamentObsidian)
+            .filter(|faction| {
+                !(game_state.players.iter())
+                    .any(|(id, player)| *id != p2 && player.leaders_from == Some(*faction))
+            })
+            .collect::<Vec<_>>();
+        factions.sort();
+        factions
+    });
+
+    if player.faction == Faction::FirmamentObsidian {
+        return rsx! {
+            p { "Starts with The Obsidian" }
+        };
+    }
+
+    rsx! {
+        div { class: "setup-column",
+            label { "Cultural Exchange" }
+            FactionDropdown {
+                value: leaders_from,
+                options: options(),
+                on_select: move |faction| {
+                    event
+                        .send_event(Event::SetupCulturalExchange {
+                            player: Arc::clone(&player_id),
+                            faction,
+                        })
+                },
+            }
+        }
     }
 }
 

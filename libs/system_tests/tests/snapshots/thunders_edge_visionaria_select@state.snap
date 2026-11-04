@@ -30,6 +30,7 @@ players:
     relics: []
     breakthrough: VisionariaSelect
     factionState: None
+    leadersFrom: ~
   Bob:
     name: Bob
     faction: MahactGeneSorcerers
@@ -43,6 +44,7 @@ players:
     relics: []
     breakthrough: VaultsOfTheHeir
     factionState: None
+    leadersFrom: ~
   Carol:
     name: Carol
     faction: Arborec
@@ -55,6 +57,7 @@ players:
     relics: []
     breakthrough: Psychospore
     factionState: None
+    leadersFrom: ~
 speaker: Alice
 tableOrder:
   - Alice

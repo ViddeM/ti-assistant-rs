@@ -31,6 +31,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -48,6 +49,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Carol:
     name: Carol
     faction: NekroVirus
@@ -59,6 +61,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
 speaker: Alice
 tableOrder:
   - Alice

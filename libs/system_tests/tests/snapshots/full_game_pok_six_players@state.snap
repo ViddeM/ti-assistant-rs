@@ -31,6 +31,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -49,6 +50,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Carol:
     name: Carol
     faction: NekroVirus
@@ -61,6 +63,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Dave:
     name: Dave
     faction: Winnu
@@ -74,6 +77,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Erin:
     name: Erin
     faction: ArgentFlight
@@ -88,6 +92,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Finn:
     name: Finn
     faction: CouncilKeleres
@@ -105,6 +110,7 @@ players:
       - ShardOfTheThrone
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
 speaker: Erin
 tableOrder:
   - Alice

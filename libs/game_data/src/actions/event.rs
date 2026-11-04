@@ -68,6 +68,15 @@ pub enum Event {
         faction: Faction,
     },
 
+    /// Draw the reference card of a faction in play and take its leaders ('Cultural Exchange
+    /// Program').
+    SetupCulturalExchange {
+        /// The player who draws the reference card.
+        player: PlayerId,
+        /// The drawn faction, or none to put the card back.
+        faction: Option<Faction>,
+    },
+
     /// Faction-specific technology selection for a player.
     SetupPlayerTechs {
         /// The player who selects the technologies.

@@ -29,6 +29,7 @@ players:
     relics: []
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -44,6 +45,7 @@ players:
       - TheCodex
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -57,6 +59,7 @@ players:
       - StellarConverter
     breakthrough: ~
     factionState: None
+    leadersFrom: ~
 speaker: Alice
 tableOrder:
   - Alice
