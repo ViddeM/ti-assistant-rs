@@ -399,7 +399,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 ##### 8. Conventions of War Abandoned (TE, complexity 3): Track
 > BOMBARDMENT hits destroy 3 units. **ACTION (if you own X-89): exhaust it to purge a planet in a system containing your BOMBARDMENT unit, along with its attachments and legendary card.** You're eliminated if all your home planets are purged.
 
-1. **Prerequisite fix (own commit):** destroyed planets can currently be taken again (the TODO near handler ~1078). Reject them in `TacticalActionTakePlanet` and `SetPlanetOwner`, and filter them out of the tactical take, unclaimed and Stellar Converter pickers.
+1. ✅ **Prerequisite fix (own commit):** destroyed planets can currently be taken again (the TODO near handler ~1078). Reject them in `TacticalActionTakePlanet` and `SetPlanetOwner`, and filter them out of the tactical take, unclaimed and Stellar Converter pickers.
 2. Rename `MapData::stellar_converter_destroyed_planets` to `destroyed_planets`, so purged planets share the same list and the same map token (TE-J2).
 3. Add the `GalacticEventAction::ConventionsOfWarAbandoned { planet }` variant. Besides the shared checks, it checks that the player owns any X-89 version (`X89BacterialWeapon`, `…Omega`, `…OmegaOmega`) and that the planet isn't destroyed yet. Home planets are allowed.
 4. It removes the planet (and its attachments) like the Stellar Converter does, then ends the turn.

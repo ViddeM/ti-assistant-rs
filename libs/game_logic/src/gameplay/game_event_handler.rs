@@ -1137,7 +1137,6 @@ fn try_update_game_state(
                             .map_data
                             .stellar_converter_destroyed_planets
                             .push(planet);
-                        // TODO: Should we also mark the planet as destroyed and disallow anyone else taking it in the future?
                     }
                     RelicAction::NanoForge { planet } => {
                         ensure!(
@@ -1865,6 +1864,15 @@ fn try_update_game_state(
         }
         Event::SetPlanetOwner { player, planet } => {
             game_state.assert_enabled(&planet)?;
+            ensure!(
+                player.is_none()
+                    || !game_state
+                        .map_data
+                        .stellar_converter_destroyed_planets
+                        .contains(&planet),
+                "{} has been destroyed",
+                planet.info().name
+            );
 
             game_state.set_planet_owner(planet, player)?;
         }

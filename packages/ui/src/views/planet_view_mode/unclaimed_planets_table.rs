@@ -39,6 +39,12 @@ pub fn UnclaimedPlanetsTable() -> Element {
             .planet_infos
             .iter()
             .filter(|(p, _)| !claimed_planets().contains(p))
+            .filter(|(p, _)| {
+                !gc.game_state()
+                    .map_data
+                    .stellar_converter_destroyed_planets
+                    .contains(p)
+            })
             .filter(|(_, i)| i.name.to_lowercase().contains(&planets_filter_lc()))
             .map(|(p, i)| (p.clone(), i.clone()))
             .collect::<Vec<_>>();

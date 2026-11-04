@@ -170,8 +170,8 @@ pub enum PlanetLocation {
     /// The planet is a token on the board, in the given system if that is tracked.
     Token(Option<SystemId>),
     /// The planet hasn't been spawned (Mirage, Avernus, Thunder's Edge), only exists as a card
-    /// (Custodia Vigilia), is on the hidden side of the Firmament / The Obsidian home system tile
-    /// or is in the Fracture before it's in play.
+    /// (Custodia Vigilia), is on the hidden side of the Firmament / The Obsidian home system tile,
+    /// is in the Fracture before it's in play or has been destroyed.
     NotOnBoard,
 }
 
@@ -610,9 +610,17 @@ impl GameState {
     /// Mirage and Avernus are isn't tracked, Thunder's Edge is where the expedition placed it and
     /// Custodia Vigilia only exists as a card. Only the planets on the shown side of the
     /// Firmament / The Obsidian home system tile are on the board. The Fracture planets are only
-    /// on the board once the Fracture is in play.
+    /// on the board once the Fracture is in play. A planet that has been destroyed isn't on the
+    /// board.
     pub fn planet_location(&self, planet: &Planet) -> PlanetLocation {
         match planet {
+            _ if self
+                .map_data
+                .stellar_converter_destroyed_planets
+                .contains(planet) =>
+            {
+                PlanetLocation::NotOnBoard
+            }
             Planet::Cocytus | Planet::Lethe | Planet::Phlegethon | Planet::Styx
                 if !self.fracture_in_play =>
             {

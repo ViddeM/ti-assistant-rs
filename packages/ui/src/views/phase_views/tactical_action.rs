@@ -92,6 +92,7 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
             .values()
             .filter(|&s| activated_system().as_ref().eq(&Some(&s.id)))
             .flat_map(|s| s.planets.iter())
+            .filter(|&p| gc.game_state().planet_location(p) != PlanetLocation::NotOnBoard)
             .filter(|&p| {
                 !current_player_planets().contains(p)
                     && taken_planets().iter().find(|(ps, _)| ps.eq(p)).is_none()

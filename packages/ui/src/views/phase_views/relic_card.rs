@@ -129,6 +129,12 @@ fn StellarConvertersView() -> Element {
             .game_options()
             .planet_infos
             .keys()
+            .filter(|&p| {
+                !gc.game_state()
+                    .map_data
+                    .stellar_converter_destroyed_planets
+                    .contains(p)
+            })
             .filter(|p| any_planet || !p.is_mecatol_rex())
             .filter(|p| any_planet || !p.info().is_legendary)
             .filter(|&p| any_planet || !planets_with_legendary_attachments().contains(p))

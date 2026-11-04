@@ -661,7 +661,8 @@ pub fn action_frontier_cards() -> TestGame {
 }
 
 /// Gaining and using relics (purged, or exhausted and kept), and Shard of the Throne moving with
-/// legendary planets and the holder's home planets.
+/// legendary planets and the holder's home planets. A planet destroyed by the Stellar Converter
+/// can't be taken again.
 pub fn action_relics() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     let set_owner = |player: &str, planet: Planet| Event::SetPlanetOwner {
@@ -738,6 +739,7 @@ pub fn action_relics() -> TestGame {
         [Planet::Lodor]
     );
     assert!(g.player("Carol").relics.is_empty());
+    g.expect_rejected(set_owner("Bob", Planet::Lodor), "destroyed");
 
     let nano_forge = |planet| RelicAction::NanoForge { planet };
     g.turn("Alice")
@@ -771,6 +773,13 @@ pub fn action_relics() -> TestGame {
     // Taking a planet in the holder's home system also takes the Shard of the Throne.
     g.turn("Alice")
         .tactical()
+        .expect_rejected(
+            Event::TacticalActionTakePlanet {
+                player: p("Alice"),
+                planet: Planet::Lodor,
+            },
+            "isn't on the board",
+        )
         .take(Planet::Arretze)
         .commit()
         .end_turn();
