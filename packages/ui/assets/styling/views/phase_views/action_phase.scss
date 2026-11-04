@@ -19,6 +19,10 @@
   border-radius: $border-radius;
 }
 
+legend.action-player-container {
+  background: linear-gradient($fieldset-background calc(50% - 2px), transparent calc(50% - 2px));
+}
+
 .actions-container {
   display: flex;
   flex-direction: row;

@@ -75,7 +75,7 @@ textarea {
     border-style: solid;
     border-radius: $border-radius;
 
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: $fieldset-background;
 
     &:not([class*="player-color-border"]) {
       border-color: rgba(255, 255, 255, 0.12);
