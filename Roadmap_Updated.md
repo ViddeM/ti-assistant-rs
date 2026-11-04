@@ -212,7 +212,7 @@
   - ❌ Action Card 'Trade Rider' (_reminder to perform effect_)
   - ❌ Action Card 'Warfare Rider' (_reminder to perform effect_)
   - ❌ Action Card 'Sanctions' (_reminder to perform effect_)
-  - ❌ Galactic event 'Hidden Agenda' (_hide individual votes until resolved_) `[GE]`
+  - ✅ Galactic event 'Hidden Agenda' (_the speaker enters the votes as they're read out_) `[GE]`
 
 - When vote is over (_can use "admin view" instead_)
   - ❌ Action Card 'Politics Rider' (_change speaker_)
@@ -338,23 +338,23 @@
  - 👺 Twilight's Fall game mode
 
 ### Galactic Events (Codex IV + Thunder's Edge)
- - 🚱 Framework: ✅ data, choosing the events on the Creation screen (new game and milty), info modal; still open: in-game display, random pick, VP rows `[GE 5.0]`
+ - 🚱 Framework: ✅ data, choosing the events on the Creation screen (new game and milty), info modal, in-game display, VP rows, admin page; still open: random pick `[GE 5.0]`
  - Tracked
-   - ❌ Stellar Atomics (one-shot action, spent players can't vote)
-   - ❌ Age of Fighters (Fighter II for everyone at setup)
-   - ❌ Advent of the War Sun (War Sun for everyone but Muaat at setup)
+   - ✅ Stellar Atomics (one-shot action, spent players can't vote)
+   - ✅ Age of Fighters (Fighter II for everyone at setup)
+   - ✅ Advent of the War Sun (War Sun for everyone but Muaat at setup)
    - 🚱 Civilized Society: ✅ all objectives up at setup, ✅ unlimited scoring; still open: game ends after status phase `[E5]`
-   - ❌ Zealous Orthodoxy (first to 2 secrets: +1 VP)
-   - ❌ Total War (action: +1 VP)
+   - ✅ Zealous Orthodoxy (first to 2 secrets: +1 VP)
+   - ✅ Total War (action: +1 VP)
    - ❌ Monuments to the Ages (monuments → VP)
    - ❌ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
    - ❌ Rapid Mobilization (setup planets, breakthroughs, techs; the Fracture enters play)
  - Assisted
    - ❌ Minor Factions (minor faction planets have all traits, alliance reminder)
-   - ❌ Dangerous Wilds (tech prompt for unowned hazardous planets)
-   - ❌ Conventions of War Abandoned (X-89: purge planet)
+   - ✅ Dangerous Wilds (tech prompt for unowned hazardous planets)
+   - ✅ Conventions of War Abandoned (X-89: purge planet)
    - ❌ Age of Commerce (share technology shortcut)
-   - ❌ Hidden Agenda (hide votes until resolved)
+   - ✅ Hidden Agenda (the speaker enters the votes as they're read out)
  - Info only: Age of Exploration, Call of the Void, Wild Wild Galaxy, Cosmic Phenomenae, Mercenaries for Hire, Weird Wormholes
 
 ## Prettify things
