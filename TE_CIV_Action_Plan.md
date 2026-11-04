@@ -551,7 +551,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ TE-H1 strategy card images and the H2 hint.
    - ✅ TE-E-1 leader updates, TE-F1 Keleres.
    - ✅ The 14 action cards (data only) and the Ω wording.
-   - Disable the Setup screen's "Start Game" button until a speaker is set. In `setup_phase.rs`, `setup_complete` is `speaker_chosen() || revealed_objectives() > 0`, so once the objectives are revealed the button is enabled without a speaker, and `StartGame` is rejected with "No speaker has been set!".
+   - ✅ The Setup screen's "Start Game" button stays disabled until a speaker is set.
 2. **Core TE effects (P1/P2).**
    - ✅ E2/E3/E4 helpers.
    - ✅ A1 Crimson, A4 I.I.H.Q., A5 Stellar Genesis, C2 Jupiter Brain.

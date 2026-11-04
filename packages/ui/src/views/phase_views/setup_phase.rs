@@ -39,8 +39,6 @@ pub fn SetupPhaseView() -> Element {
             .count()
     });
 
-    let setup_complete = use_memo(move || speaker_chosen() || revealed_objectives() > 0);
-
     rsx! {
         document::Stylesheet { href: SETUP_PHASE_SCSS }
 
@@ -52,7 +50,7 @@ pub fn SetupPhaseView() -> Element {
             ObjectivesSetup {}
 
             Button {
-                disabled: !setup_complete() || revealed_objectives == 0 || unfinished_players() > 0,
+                disabled: !speaker_chosen() || revealed_objectives() == 0 || unfinished_players() > 0,
                 onclick: move |_| event.send_event(Event::StartGame),
                 "Start Game"
             }
