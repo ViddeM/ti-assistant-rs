@@ -546,6 +546,20 @@ pub fn action_leaders() -> TestGame {
             },
             "can't be played as an action",
         )
+        .expect_rejected(
+            Event::LeaderActionBegin {
+                player: p("Alice"),
+                leader: Leader::Agent(Agent::GgrucotoRinn),
+            },
+            "Ggrucoto Rinn isn't available to Alice",
+        )
+        .expect_rejected(
+            Event::LeaderActionBegin {
+                player: p("Alice"),
+                leader: hero,
+            },
+            "isn't available to Alice",
+        )
         .leader(Leader::Agent(Agent::LetaniOspha))
         .expect_rejected(
             Event::LeaderActionCommit {

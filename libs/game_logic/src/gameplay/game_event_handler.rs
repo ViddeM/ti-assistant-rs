@@ -924,6 +924,14 @@ fn try_update_game_state(
                 "{}'s ability can't be played as an action",
                 leader.info().name(),
             );
+            ensure!(
+                game_state
+                    .available_leaders
+                    .get(&player)
+                    .is_some_and(|leaders| leaders.contains(&leader)),
+                "{} isn't available to {player}",
+                leader.info().name(),
+            );
 
             // TODO: the following leaders may need special handling:
             //   XxekirGrom - discard law from play (sure, absolutely)
