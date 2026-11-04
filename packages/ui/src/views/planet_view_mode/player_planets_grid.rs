@@ -262,16 +262,16 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
                                         class: "rotate90",
                                     }
                                 }
-                                td { class: "align-right attachment-row-text",
+                                td { class: format!("attachment-row-text {TRAIT_COL_ALIGN}"),
                                     Icon {
                                         icon: FaMonument,
                                         class: "inline-icon",
                                         title: "Monument",
                                     }
                                 }
-                                td {
-                                    class: "attachment-row-text align-center",
-                                    colspan: 3,
+                                td { class: RESOURCE_COL_ALIGN }
+                                td { class: INFLUENCE_COL_ALIGN }
+                                td { class: format!("attachment-row-text {TECH_COL_ALIGN}"),
                                     span { title: "{commodities} commodities",
                                         "{commodities} "
                                         TiIcon { icon: TiIconType::TradeGoods }
