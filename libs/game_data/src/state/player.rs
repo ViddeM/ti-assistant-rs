@@ -188,6 +188,17 @@ impl Player {
         self.technologies.contains(tech)
     }
 
+    /// Returns true if the player has any version of X-89 Bacterial Weapon.
+    pub fn has_x89_bacterial_weapon(&self) -> bool {
+        [
+            Technology::X89BacterialWeapon,
+            Technology::X89BacterialWeaponOmega,
+            Technology::X89BacterialWeaponOmegaOmega,
+        ]
+        .iter()
+        .any(|tech| self.has_tech(tech))
+    }
+
     /// The technology specialties of the planets the player controls, including those gained from attachments.
     pub fn controlled_tech_specialties(&self) -> BTreeSet<TechCategory> {
         self.planets

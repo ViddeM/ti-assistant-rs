@@ -54,7 +54,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 | TE leader actions Kan Kip Rel, Ahk Ravin, Sharsiss, Sharsiss Hollow | ✅ (as "no-data" actions) |
 | CIV toggle, ΩΩ techs (Magen Defense Grid, X-89) | ✅ |
 | CIV relics: Circlet of the Void (no effect), Neuraloop (status phase), Book of Latvinia (research up to 2 techs when gained, VP or speaker) | ✅ (`codex.rs` scenarios) |
-| Galactic events (4 CIV + 16 TE = 20) | Framework ✅ (data, `GameState::galactic_events`, the Creation picker, the info modal and the info box list). No game rule reads them yet: 4 need nothing, 10 need a small implementation and 6 need large changes (§5.1) |
+| Galactic events (4 CIV + 16 TE = 20) | Framework ✅ (data, `GameState::galactic_events`, the Creation picker, the info modal and the info box list). 4 need nothing, 8 of the 10 small ones are done and the 6 large ones are left (§5.1) |
 | Liberation of Ordinian | ❌ nothing |
 | TE action cards (14 new, Ω versions of 8 Codex I cards) and the tracked effects of Brilliance, Mercenary Contract, Overrule, Strategize, Crisis and Puppets on a String. Codex IV has no action cards | ✅ (`thunders_edge_action_cards`, `thunders_edge_overrule_and_strategize`, `thunders_edge_crisis_and_puppets_on_a_string` scenarios) |
 | Breakthrough effects, legendary planet abilities, Fracture, TE strategy cards, TE leader updates | ❌ |
@@ -239,7 +239,7 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
 
 ### 5.1 Overview
 
-No game rule reads `GameState::galactic_events` yet. The events are grouped by how much the app has to do, and each group is listed in the suggested order of work:
+The events are grouped by how much the app has to do, and each group is listed in the suggested order of work:
 - **Nothing to implement:** the rule only touches untracked things (units, movement, commodities, trade goods, action cards, alliances, dice). The info modal and the info box already cover it.
 - **Small implementation:** fits an existing flow: a grant at `StartGame`, a check, a score field, or one action in the Galactic Event tab. A few hours and one commit each.
 - **Large changes:** new setup or status steps, new state that several subsystems read, or changes to existing checks across the handler and the UI. A day or more each.
@@ -268,7 +268,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 5 | Mercenaries for Hire | TE | 1 | Track | ✅ "Mercenaries for Hire" action that just ends the turn | P1 / S |
 | 6 | Stellar Atomics | TE | 2 | Track | ✅ One-shot action; players who used it can't vote | P1 / S |
 | 7 | Wild, Wild Galaxy | TE | 3 | Assist | ✅ The Stellar Converter works on any planet | P2 / S |
-| 8 | Conventions of War Abandoned | TE | 3 | Track | "X-89: purge planet" action, after the destroyed-planets fix | P2 / S |
+| 8 | Conventions of War Abandoned | TE | 3 | Track | ✅ "X-89: purge planet" action | P2 / S |
 | 9 | Dangerous Wilds | TE | 1 | Track | Free tech when a tactical action takes an unowned hazardous planet | P2 / S |
 | 10 | Hidden Agenda | TE | 2 | Assist | Hide individual votes until everyone has voted (UI only) | P3 / S |
 
@@ -308,7 +308,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 
 #### 5.2.2 Small implementation
 
-Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with the `TotalWar`, `MercenariesForHire` and `StellarAtomics` variants so far. Each later event adds its variant, its `has_action` entry and its form arm.
+Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with the `TotalWar`, `MercenariesForHire`, `StellarAtomics` and `ConventionsOfWarAbandoned` variants so far. Each later event adds its variant, its `has_action` entry and its form arm.
 
 - **One event:** `Event::PlayGalacticEventAction { player, action: GalacticEventAction }`, with one variant per event, like `RelicAction`:
   - `TotalWar`
@@ -396,8 +396,10 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 - The `relic_card.rs` picker drops the same filters.
 - The action cards and Nova Seed stay info only.
 
-##### 8. Conventions of War Abandoned (TE, complexity 3): Track
+##### 8. Conventions of War Abandoned (TE, complexity 3): Track ✅
 > BOMBARDMENT hits destroy 3 units. **ACTION (if you own X-89): exhaust it to purge a planet in a system containing your BOMBARDMENT unit, along with its attachments and legendary card.** You're eliminated if all your home planets are purged.
+
+✅ Done as planned below (`galactic_events_conventions_of_war_abandoned` scenario).
 
 1. ✅ **Prerequisite fix (own commit):** destroyed planets can currently be taken again (the TODO near handler ~1078). Reject them in `TacticalActionTakePlanet` and `SetPlanetOwner`, and filter them out of the tactical take, unclaimed and Stellar Converter pickers.
 2. ✅ Rename `MapData::stellar_converter_destroyed_planets` to `destroyed_planets`, so purged planets share the same list and the same map token (TE-J2).
@@ -554,9 +556,9 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ C1 Styx.
 3. **Galactic event framework plus the small events (§5.2.2), in order.**
    - ✅ The framework (§5.0).
-   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics, Wild, Wild Galaxy.
+   - ✅ Age of Fighters, Advent of the War Sun, Zealous Orthodoxy, Total War, Mercenaries for Hire, Stellar Atomics, Wild, Wild Galaxy, Conventions of War Abandoned.
    - The galactic events admin page (§5.0 item 8) (P2).
-   - Conventions of War Abandoned (after the destroyed-planets fix), Dangerous Wilds (P2).
+   - Dangerous Wilds (P2).
    - Hidden Agenda (P3).
 4. **TE actions (P2).**
    - A3/A6/A7 breakthrough actions, C3 Faunus, D2 Silver Flame.

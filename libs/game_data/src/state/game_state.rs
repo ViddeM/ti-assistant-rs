@@ -693,6 +693,15 @@ impl GameState {
         Ok(previous_owner)
     }
 
+    /// Destroy or purge `planet`: it's taken from its owner along with its attachments and added
+    /// to [MapData::destroyed_planets].
+    pub fn destroy_planet(&mut self, planet: Planet) {
+        for player in self.players.values_mut() {
+            player.remove_planet(&planet);
+        }
+        self.map_data.destroyed_planets.push(planet);
+    }
+
     /// Give `relic` to `owner`, or to nobody, taking it from whoever had it.
     ///
     /// Shard of the Throne's point follows the relic, gaining The Quantumcore unlocks the new

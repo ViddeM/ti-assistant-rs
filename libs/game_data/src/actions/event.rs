@@ -776,6 +776,12 @@ pub enum GalacticEventAction {
     MercenariesForHire,
     /// Discard your control token to destroy all ground forces and structures on a non-home planet.
     StellarAtomics,
+    /// Exhaust X-89 Bacterial Weapon to purge a planet in a system containing your BOMBARDMENT
+    /// unit, along with its attachments and legendary card.
+    ConventionsOfWarAbandoned {
+        /// The planet that is purged.
+        planet: Planet,
+    },
 }
 
 impl GalacticEventAction {
@@ -785,6 +791,9 @@ impl GalacticEventAction {
             GalacticEventAction::TotalWar => GalacticEvent::TotalWar,
             GalacticEventAction::MercenariesForHire => GalacticEvent::MercenariesForHire,
             GalacticEventAction::StellarAtomics => GalacticEvent::StellarAtomics,
+            GalacticEventAction::ConventionsOfWarAbandoned { .. } => {
+                GalacticEvent::ConventionsOfWarAbandoned
+            }
         }
     }
 }

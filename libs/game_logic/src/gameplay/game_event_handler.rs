@@ -920,6 +920,22 @@ fn try_update_game_state(
                     );
                     game_state.stellar_atomics_used.insert(player);
                 }
+                GalacticEventAction::ConventionsOfWarAbandoned { planet } => {
+                    game_state.assert_enabled(&planet)?;
+                    ensure!(
+                        game_state
+                            .players
+                            .get(&player)
+                            .is_some_and(|p| p.has_x89_bacterial_weapon()),
+                        "{player} doesn't own X-89 Bacterial Weapon"
+                    );
+                    ensure!(
+                        game_state.planet_location(&planet) != PlanetLocation::NotOnBoard,
+                        "{} isn't on the board",
+                        planet.info().name
+                    );
+                    game_state.destroy_planet(planet);
+                }
             }
 
             game_state.phase = Phase::EndActionTurn;
@@ -1063,7 +1079,7 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::RelicAction)?;
             game_state.assert_player_turn(&player)?;
 
-            let Some(ActionPhaseProgress::Relic(progress)) = game_state.action_progress.as_ref()
+            let Some(ActionPhaseProgress::Relic(progress)) = game_state.action_progress.clone()
             else {
                 bail!(
                     "Invalid state, expected relic progress, got {:?}",
@@ -1123,14 +1139,7 @@ fn try_update_game_state(
                             "Cannot use stellar converter on a planet that has already been destroyed!"
                         );
 
-                        if let Some(player) = game_state
-                            .players
-                            .values_mut()
-                            .find(|p| p.planets.contains_key(&planet))
-                        {
-                            player.planets.remove(&planet);
-                        }
-                        game_state.map_data.destroyed_planets.push(planet);
+                        game_state.destroy_planet(planet);
                     }
                     RelicAction::NanoForge { planet } => {
                         ensure!(

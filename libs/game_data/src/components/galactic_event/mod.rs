@@ -221,6 +221,7 @@ impl GalacticEvent {
             GalacticEvent::TotalWar
                 | GalacticEvent::MercenariesForHire
                 | GalacticEvent::StellarAtomics
+                | GalacticEvent::ConventionsOfWarAbandoned
         )
     }
 }

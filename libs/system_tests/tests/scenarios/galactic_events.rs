@@ -15,6 +15,7 @@ scenarios![
     galactic_events_mercenaries_for_hire,
     galactic_events_stellar_atomics,
     galactic_events_wild_wild_galaxy,
+    galactic_events_conventions_of_war_abandoned,
 ];
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
@@ -358,6 +359,50 @@ pub fn galactic_events_wild_wild_galaxy() -> TestGame {
     assert_eq!(
         g.state().map_data.destroyed_planets,
         [Planet::MecatolRex, Planet::Jord, Planet::Primor]
+    );
+    g
+}
+
+/// The Conventions of War Abandoned action needs X-89 Bacterial Weapon and ends the turn. It
+/// purges any planet on the board, home planets included, and the planet leaves its owner. A
+/// purged planet can't be purged again.
+pub fn galactic_events_conventions_of_war_abandoned() -> TestGame {
+    let mut g = action_phase(
+        three_players()
+            .pok()
+            .thunders_edge()
+            .galactic_events([GalacticEvent::ConventionsOfWarAbandoned]),
+    );
+    let purge = |planet| GalacticEventAction::ConventionsOfWarAbandoned { planet };
+    let play = |planet| Event::PlayGalacticEventAction {
+        player: p("Alice"),
+        action: purge(planet),
+    };
+    assert!(g.player("Bob").planets.contains_key(&Planet::Arretze));
+
+    let alice = g
+        .turn("Alice")
+        .expect_rejected(play(Planet::Arretze), "X-89")
+        .apply(Event::AddTechToPlayer {
+            player: p("Alice"),
+            tech: Technology::X89BacterialWeapon,
+        })
+        .galactic_event(purge(Planet::Arretze));
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice.end_turn();
+    assert!(!g.player("Bob").planets.contains_key(&Planet::Arretze));
+    assert_eq!(g.state().map_data.destroyed_planets, [Planet::Arretze]);
+
+    g.turn("Bob").play_card(StrategyCard::Diplomacy);
+    g.turn("Carol").play_card(StrategyCard::Politics);
+    g.turn("Alice")
+        .expect_rejected(play(Planet::Arretze), "isn't on the board")
+        .galactic_event(purge(Planet::Jord))
+        .end_turn();
+    assert!(!g.player("Alice").planets.contains_key(&Planet::Jord));
+    assert_eq!(
+        g.state().map_data.destroyed_planets,
+        [Planet::Arretze, Planet::Jord]
     );
     g
 }

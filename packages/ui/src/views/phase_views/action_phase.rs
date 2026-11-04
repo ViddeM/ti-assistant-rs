@@ -12,14 +12,18 @@ use ti_helper_game_data::{
         relic::RelicPlay,
         strategy_card::StrategyCard,
     },
-    state::{faction_state::FirmamentSide, game_state::GameState},
+    state::{
+        faction_state::FirmamentSide,
+        game_state::{GameState, PlanetLocation},
+    },
 };
 
 use crate::{
     components::{
         button::Button,
         dropdown::{
-            ActionCardDropdown, FrontierCardDropdown, GalacticEventDropdown, RelicDropdown,
+            ActionCardDropdown, FrontierCardDropdown, GalacticEventDropdown, PlanetDropdown,
+            RelicDropdown,
         },
         info_button::InfoButton,
     },
@@ -556,6 +560,11 @@ fn GalacticEventActionForm(player: PlayerId, galactic_event: GalacticEvent) -> E
             };
         }
         GalacticEvent::StellarAtomics => GalacticEventAction::StellarAtomics,
+        GalacticEvent::ConventionsOfWarAbandoned => {
+            return rsx! {
+                ConventionsOfWarAbandonedForm { player }
+            };
+        }
         _ => return rsx! {},
     };
 
@@ -569,6 +578,66 @@ fn GalacticEventActionForm(player: PlayerId, galactic_event: GalacticEvent) -> E
                     })
             },
             "Play"
+        }
+    }
+}
+
+#[component]
+fn ConventionsOfWarAbandonedForm(player: PlayerId) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected_planet = use_signal(|| None);
+
+    let has_x89 = use_memo({
+        let player = player.clone();
+        move || {
+            gc.game_state()
+                .players
+                .get(&player)
+                .is_some_and(|p| p.has_x89_bacterial_weapon())
+        }
+    });
+
+    let planets_on_board = use_memo(move || {
+        let mut planets = gc
+            .game_options()
+            .planet_infos
+            .keys()
+            .filter(|p| gc.game_state().planet_location(p) != PlanetLocation::NotOnBoard)
+            .cloned()
+            .collect::<Vec<_>>();
+        planets.sort();
+        planets
+    });
+
+    if !has_x89() {
+        return rsx! {
+            p { "Requires X-89 Bacterial Weapon" }
+        };
+    }
+
+    rsx! {
+        div { class: "column",
+            PlanetDropdown {
+                value: selected_planet,
+                on_select: move |p| selected_planet.set(p),
+                options: planets_on_board(),
+            }
+            Button {
+                class: "margin-top",
+                disabled: selected_planet().is_none(),
+                onclick: move |_| {
+                    event
+                        .send_event(Event::PlayGalacticEventAction {
+                            player: player.clone(),
+                            action: GalacticEventAction::ConventionsOfWarAbandoned {
+                                planet: selected_planet().expect("Planet to be selected"),
+                            },
+                        })
+                },
+                "Play"
+            }
         }
     }
 }
