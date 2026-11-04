@@ -111,7 +111,9 @@ pub fn AddPlanetAttachment() -> Element {
                 PlanetAttachment::Terraform => {
                     !planet.is_mecatol_rex() && !home_planets().contains(&planet)
                 }
-                PlanetAttachment::NanoForge => !home_planets().contains(&planet),
+                PlanetAttachment::NanoForge => {
+                    !home_planets().contains(&planet) && !planet.info().is_legendary
+                }
                 _ => true,
             })
             .map(|(a, _)| a.clone())
