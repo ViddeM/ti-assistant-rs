@@ -522,7 +522,8 @@ impl<'g> Strategic<'g> {
 /// Scoring and revealing objectives in the status phase.
 ///
 /// Scoring decisions are applied immediately. [StatusPhase::reveal] fills in "nothing scored"
-/// for every player that hasn't made a decision before revealing the objective.
+/// for every player that hasn't made a decision before revealing the objective, and
+/// [StatusPhase::skip_undecided] does so without revealing one.
 pub struct StatusPhase<'g> {
     game: &'g mut TestGame,
 }
@@ -550,9 +551,9 @@ impl<'g> StatusPhase<'g> {
         self
     }
 
-    /// Record "nothing scored" for everyone without a decision, then reveal the objective.
+    /// Record "nothing scored" for everyone without a decision.
     #[track_caller]
-    pub fn reveal(self, objective: PublicObjective) -> Self {
+    pub fn skip_undecided(self) -> Self {
         let state = self.game.state();
         let status = state
             .status_phase_state
@@ -583,8 +584,14 @@ impl<'g> StatusPhase<'g> {
                 objective: None,
             });
         }
-        self.game.apply(Event::RevealPublicObjective { objective });
         self
+    }
+
+    /// Record "nothing scored" for everyone without a decision, then reveal the objective.
+    #[track_caller]
+    pub fn reveal(self, objective: PublicObjective) -> Self {
+        self.skip_undecided()
+            .apply(Event::RevealPublicObjective { objective })
     }
 
     /// Complete the status phase.

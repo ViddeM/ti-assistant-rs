@@ -877,6 +877,14 @@ impl GameState {
         self.round >= FIRST_STAGE_TWO_ROUND
     }
 
+    /// Returns true if the status phase reveals a public objective, which it doesn't under
+    /// Civilized Society since every public objective is revealed at setup.
+    pub fn status_phase_reveals_objective(&self) -> bool {
+        !self
+            .galactic_events
+            .contains(&GalacticEvent::CivilizedSociety)
+    }
+
     /// Returns true if the objective used to be a public objective but no longer is: a secret
     /// objective made public by Classified Document Leaks, once the law has been discarded. The
     /// players who scored it keep their points.

@@ -6,6 +6,7 @@ use ti_helper_game_data::{
     actions::event::Event,
     common::{
         color::Color,
+        component::Component,
         faction::Faction,
         game_settings::{Expansions, GameSettings},
         milty_data::MiltyData,
@@ -14,7 +15,9 @@ use ti_helper_game_data::{
     components::{
         agenda::{AgendaElect, ForOrAgainst},
         galactic_event::GalacticEvent,
-        objectives::public::PublicObjective,
+        objectives::{
+            Objective, ObjectiveKind, PUBLIC_OBJECTIVES_PER_STAGE, public::PublicObjective,
+        },
         phase::Phase,
         tech::{TechOrigin, Technology},
     },
@@ -157,6 +160,8 @@ impl TestGame {
     /// - Council Keleres: the first of Mentak/Xxcha/Argent not in the game, and the first two
     ///   (by name) base techs owned by the other players.
     /// - Speaker: the first player in table order, unless imported from milty.
+    /// - Civilized Society: the first five enabled stage I and stage II objectives (in declaration
+    ///   order) are revealed, ignoring the `objectives(..)` override.
     #[track_caller]
     pub fn auto_setup(&mut self) -> &mut Self {
         let setup = self.setup.clone();
@@ -253,6 +258,25 @@ impl TestGame {
             }
             // The milty import already sets the speaker.
             None => {}
+        }
+
+        if self
+            .state()
+            .galactic_events
+            .contains(&GalacticEvent::CivilizedSociety)
+        {
+            let expansions = self.state().game_settings.expansions.clone();
+            let stage = |kind: ObjectiveKind| {
+                PublicObjective::iter()
+                    .map(Objective::from)
+                    .filter(|o| o.info().kind == kind && o.is_enabled_in(&expansions))
+                    .take(PUBLIC_OBJECTIVES_PER_STAGE)
+                    .collect()
+            };
+            return self.apply(Event::RevealAllPublicObjectives {
+                stage_one: stage(ObjectiveKind::StageI),
+                stage_two: stage(ObjectiveKind::StageII),
+            });
         }
 
         let (first, second) = setup.objectives;

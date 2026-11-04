@@ -85,6 +85,7 @@ pub fn StatusPhaseActionsView() -> Element {
             .map(|(id, _)| id.clone())
     });
 
+    let reveals_objective = use_memo(move || gc.game_state().status_phase_reveals_objective());
     let reveal_stage_two = use_memo(move || gc.game_state().status_phase_reveals_stage_two());
     let stage = use_memo(move || if reveal_stage_two() { "II" } else { "I" });
 
@@ -107,43 +108,45 @@ pub fn StatusPhaseActionsView() -> Element {
             for player in players().iter() {
                 PlayerObjectives { key: "{player}", player: player.clone() }
             }
-            fieldset { class: "reveal-objective-container",
-                legend {
-                    h3 { "Reveal Stage {stage()} Objective" }
-                }
-                if let Some(revealed) = revealed_objective() {
-                    div { class: "row",
-                        p { "{revealed.info().name}" }
-                        InfoButton { info: Info::Objective(revealed) }
+            if reveals_objective() {
+                fieldset { class: "reveal-objective-container",
+                    legend {
+                        h3 { "Reveal Stage {stage()} Objective" }
                     }
-                    if let Some(holder) = neuraloop_holder() {
-                        if view.display_for(&holder) {
-                            NeuraloopView { player: holder }
+                    if let Some(revealed) = revealed_objective() {
+                        div { class: "row",
+                            p { "{revealed.info().name}" }
+                            InfoButton { info: Info::Objective(revealed) }
                         }
+                        if let Some(holder) = neuraloop_holder() {
+                            if view.display_for(&holder) {
+                                NeuraloopView { player: holder }
+                            }
+                        }
+                    } else if view.is_global_or_speaker() {
+                        ObjectiveDropdown {
+                            disabled: !reveal_unlocked(),
+                            value: selected_objective,
+                            options: selectable_objectives(),
+                            on_select: move |obj| selected_objective.set(obj),
+                        }
+                        Button {
+                            disabled: selected_objective().is_none(),
+                            onclick: move |_| {
+                                let Objective::Public(p) = selected_objective()
+                                    .expect("Revealed objective to be set") else {
+                                    panic!("Objective should be public")
+                                };
+                                event
+                                    .send_event(Event::RevealPublicObjective {
+                                        objective: p,
+                                    })
+                            },
+                            "Reveal"
+                        }
+                    } else {
+                        p { "Waiting for {speaker()} to reveal a stage {stage()} objective" }
                     }
-                } else if view.is_global_or_speaker() {
-                    ObjectiveDropdown {
-                        disabled: !reveal_unlocked(),
-                        value: selected_objective,
-                        options: selectable_objectives(),
-                        on_select: move |obj| selected_objective.set(obj),
-                    }
-                    Button {
-                        disabled: selected_objective().is_none(),
-                        onclick: move |_| {
-                            let Objective::Public(p) = selected_objective()
-                                .expect("Revealed objective to be set") else {
-                                panic!("Objective should be public")
-                            };
-                            event
-                                .send_event(Event::RevealPublicObjective {
-                                    objective: p,
-                                })
-                        },
-                        "Reveal"
-                    }
-                } else {
-                    p { "Waiting for {speaker()} to reveal a stage {stage()} objective" }
                 }
             }
         }
@@ -164,6 +167,10 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
 
     let public_objective =
         use_memo(move || sp_state().scored_public_objectives.get(&player()).cloned());
+    let score_another = use_memo(move || {
+        !gc.game_state().status_phase_reveals_objective()
+            && matches!(public_objective(), Some(Some(_)))
+    });
     let secret_objective =
         use_memo(move || sp_state().scored_secret_objectives.get(&player()).cloned());
 
@@ -238,6 +245,30 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                         "Skipped"
                     }
                 }
+                if score_another() {
+                    div { class: "score-objectives-container",
+                        ObjectiveDropdown {
+                            value: selected_public_objective,
+                            options: available_pubs(),
+                            on_select: move |obj| selected_public_objective.set(obj),
+                        }
+                        div { class: "score-objective-buttons-container",
+                            Button {
+                                disabled: selected_public_objective().is_none(),
+                                onclick: move |_| {
+                                    event
+                                        .send_event(Event::ScoreExtraPublicObjective {
+                                            player: player(),
+                                            objective: selected_public_objective()
+                                                .expect("Selected public objective to be set"),
+                                        });
+                                    selected_public_objective.set(None);
+                                },
+                                "Score"
+                            }
+                        }
+                    }
+                }
             } else {
                 div { class: "score-objectives-container",
                     ObjectiveDropdown {
@@ -249,9 +280,15 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                         Button { onclick: move |_| score_public(None), "Skip" }
                         Button {
                             disabled: selected_public_objective().is_none(),
-                            onclick: move |_| score_public(
-                                Some(selected_public_objective().expect("Selected public objective to be set")),
-                            ),
+                            onclick: move |_| {
+                                score_public(
+                                    Some(
+                                        selected_public_objective()
+                                            .expect("Selected public objective to be set"),
+                                    ),
+                                );
+                                selected_public_objective.set(None);
+                            },
                             "Score"
                         }
                     }

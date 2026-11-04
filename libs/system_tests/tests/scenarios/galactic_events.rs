@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{action_phase, three_players};
+use crate::fixtures::{SIMPLE_PICKS, action_phase, three_players};
 
 scenarios![
     galactic_events_age_of_fighters,
@@ -17,8 +17,29 @@ scenarios![
     galactic_events_wild_wild_galaxy,
     galactic_events_conventions_of_war_abandoned,
     galactic_events_dangerous_wilds,
+    galactic_events_civilized_society,
     galactic_events_admin,
 ];
+
+const STAGE_ONE: [PublicObjective; 5] = [
+    PublicObjective::CornerTheMarket,
+    PublicObjective::DevelopWeaponry,
+    PublicObjective::DiversifyResearch,
+    PublicObjective::ErectAMonument,
+    PublicObjective::ExpandBorders,
+];
+
+const STAGE_TWO: [PublicObjective; 5] = [
+    PublicObjective::CentralizeGalacticTrade,
+    PublicObjective::ConquerTheWeak,
+    PublicObjective::FormGalacticBrainTrust,
+    PublicObjective::FoundAGoldenAge,
+    PublicObjective::GalvanizeThePeople,
+];
+
+fn objectives(objectives: &[PublicObjective]) -> BTreeSet<Objective> {
+    objectives.iter().map(|&o| Objective::from(o)).collect()
+}
 
 /// Age of Fighters gives everyone Fighter II when the game starts, and the Naalu Hybrid Crystal
 /// Fighter II instead. Setup techs are kept.
@@ -472,6 +493,72 @@ pub fn galactic_events_dangerous_wilds() -> TestGame {
     g
 }
 
+/// Civilized Society reveals all five stage I and five stage II objectives at setup, and the
+/// status phase reveals none. A player scores any number of public objectives in the status
+/// phase: the first in their slot, the others as extra objectives.
+pub fn galactic_events_civilized_society() -> TestGame {
+    let mut g = three_players()
+        .thunders_edge()
+        .galactic_events([GalacticEvent::CivilizedSociety])
+        .setup();
+
+    g.expect_rejected(
+        Event::RevealInitialObjectives {
+            first_objective: PublicObjective::CornerTheMarket.into(),
+            second_objective: PublicObjective::DevelopWeaponry.into(),
+        },
+        "Civilized Society reveals all public objectives at setup",
+    )
+    .expect_rejected(
+        Event::RevealAllPublicObjectives {
+            stage_one: objectives(&STAGE_ONE[..4]),
+            stage_two: objectives(&STAGE_TWO),
+        },
+        "Expected 5 stage I objectives, got 4",
+    )
+    .expect_rejected(
+        Event::RevealAllPublicObjectives {
+            stage_one: objectives(&[&STAGE_ONE[..4], &STAGE_TWO[..1]].concat()),
+            stage_two: objectives(&STAGE_TWO),
+        },
+        "Centralize Galactic Trade isn't a stage I objective",
+    );
+
+    g.auto_setup().start_game();
+    let revealed = (g.state().score.revealed_objectives.keys())
+        .copied()
+        .collect::<BTreeSet<_>>();
+    assert_eq!(revealed, objectives(&[STAGE_ONE, STAGE_TWO].concat()));
+
+    g.strategy_phase(SIMPLE_PICKS)
+        .play_out_action_phase()
+        .status_phase()
+        .public("Alice", PublicObjective::CornerTheMarket)
+        .apply(Event::ScoreExtraPublicObjective {
+            player: p("Alice"),
+            objective: PublicObjective::DevelopWeaponry.into(),
+        })
+        .apply(Event::ScoreExtraPublicObjective {
+            player: p("Alice"),
+            objective: PublicObjective::CentralizeGalacticTrade.into(),
+        })
+        .expect_rejected(
+            Event::CompleteStatusPhase,
+            "Not all players have made a decision regarding their public objectives",
+        )
+        .skip_undecided()
+        .expect_rejected(
+            Event::RevealPublicObjective {
+                objective: PublicObjective::FoundResearchOutposts,
+            },
+            "Under Civilized Society all public objectives are revealed at setup",
+        )
+        .complete();
+    assert_eq!(g.points("Alice"), 4);
+    assert_eq!((g.round(), g.phase()), (2, Phase::Strategy));
+    g
+}
+
 /// The admin events fix the tracked state of the galactic events in play, in any phase: a used
 /// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
 /// the Total War points. Each needs an existing player and a change.
@@ -597,4 +684,16 @@ fn dangerous_wilds_needs_the_event() {
             },
             "Dangerous Wilds isn't in play",
         );
+}
+
+#[test]
+fn revealing_all_objectives_needs_civilized_society() {
+    let mut g = three_players().thunders_edge().setup();
+    g.expect_rejected(
+        Event::RevealAllPublicObjectives {
+            stage_one: objectives(&STAGE_ONE),
+            stage_two: objectives(&STAGE_TWO),
+        },
+        "Civilized Society isn't in play",
+    );
 }

@@ -279,7 +279,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 
 | # | Event | Origin | Cx | Verdict | What the app does | P / Effort |
 |---|---|---|---|---|---|---|
-| 1 | Civilized Society | TE | 2 | Track | All 10 objectives revealed at setup, no status phase reveal, unlimited scoring; the game end rule comes later with E5 | P1 / M |
+| 1 | Civilized Society | TE | 2 | Track | ✅ All 10 objectives revealed at setup, no status phase reveal, unlimited scoring; the game end rule comes later with E5 | P1 / M |
 | 2 | Cultural Exchange Program | TE | 2 | Track | Players use a drawn faction's leaders (E8); the Firmament gets The Obsidian | P2 / M |
 | 3 | Monuments to the Ages | TE | 2 | Track | Monuments with derived commodities → VP | P2 / M |
 | 4 | Age of Exploration | CIV (PoK) | 2 | Track | "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
@@ -437,11 +437,13 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 ##### 1. Civilized Society (TE, complexity 2): Track
 > At setup **all public objectives are turned face up**. **No limit** on public objectives scored per status phase. The game doesn't end at the VP target; it ends **at the end of that round's status phase**, most VP wins, and ties are broken by influence of controlled planets + unspent trade goods.
 
-1. **Setup.** `RevealAllPublicObjectives { stage_one, stage_two }` (5 + 5) instead of `RevealInitialObjectives` (handler ~330), with 10 dropdowns in `setup_phase.rs` (~242). The stage II gating (`GameState::status_phase_reveals_stage_two`) doesn't apply to it.
-2. **Status phase.**
-   - `CompleteStatusPhase` (handler ~1355) and the "Next phase" button (`status_phase_instructions_view.rs` ~14-37) both require `revealed_objective` today. Drop that requirement, and reject `RevealPublicObjective`, when the event is active.
-   - Hide the reveal fieldset (`status_phase_actions_view.rs` ~110-148), which also hides the Neuraloop prompt.
-3. **Unlimited scoring.** Keep the one `ScorePublicObjective` slot and add "score another" in the status view through `ScoreExtraPublicObjective` (any phase, bypasses the slot). `StatusPhaseState` stays unchanged.
+✅ Steps 1–3 done (`galactic_events_civilized_society` scenario). Step 4 stays open.
+
+1. ✅ **Setup.** `RevealAllPublicObjectives { stage_one, stage_two }` (5 + 5) replaces `RevealInitialObjectives`, which is rejected under the event. `setup_phase.rs` shows two fieldsets of 5 dropdowns, one per stage. The stage II gating (`GameState::status_phase_reveals_stage_two`) doesn't apply to it.
+2. ✅ **Status phase.**
+   - `GameState::status_phase_reveals_objective` is false under the event. `CompleteStatusPhase` and the "Next phase" button then only need every player's decision, and `RevealPublicObjective` is rejected.
+   - The reveal fieldset (`status_phase_actions_view.rs`) and the "Reveal Public Objective" step are hidden, which also hides the Neuraloop prompt.
+3. ✅ **Unlimited scoring.** The one `ScorePublicObjective` slot stays. Once it holds an objective, a "score another" row in the player's status view sends `ScoreExtraPublicObjective` (any phase, bypasses the slot). `StatusPhaseState` is unchanged.
 4. **Game end.** Do the "ends after the status phase" rule and the influence tiebreak last, separately, with E5. They're not a dependency.
 
 ##### 2. Cultural Exchange Program (TE, complexity 2): Track
@@ -575,7 +577,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ Brilliance, Overrule, Strategize.
    - ✅ J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
-   - Civilized Society without its game end rule (P1).
+   - ✅ Civilized Society without its game end rule (P1).
    - Cultural Exchange Program, Monuments to the Ages, Age of Exploration, Rapid Mobilization, Minor Factions (P2).
    - F2 Firmament plots.
 6. **Optional (P3).**

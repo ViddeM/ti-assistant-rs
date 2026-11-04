@@ -343,7 +343,7 @@
    - ❌ Stellar Atomics (one-shot action, spent players can't vote)
    - ❌ Age of Fighters (Fighter II for everyone at setup)
    - ❌ Advent of the War Sun (War Sun for everyone but Muaat at setup)
-   - ❌ Civilized Society (all objectives up at setup, unlimited scoring, game ends after status phase)
+   - 🚱 Civilized Society: ✅ all objectives up at setup, ✅ unlimited scoring; still open: game ends after status phase `[E5]`
    - ❌ Zealous Orthodoxy (first to 2 secrets: +1 VP)
    - ❌ Total War (action: +1 VP)
    - ❌ Monuments to the Ages (monuments → VP)

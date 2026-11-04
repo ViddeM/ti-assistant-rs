@@ -12,6 +12,9 @@ use self::{public::PublicObjective, secret::SecretObjective};
 
 use super::phase::Phase;
 
+/// How many public objectives there are of each stage in a game.
+pub const PUBLIC_OBJECTIVES_PER_STAGE: usize = 5;
+
 /// An objective in the game.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Hash, PartialEq, Eq)]
 #[serde(untagged)] // crimes

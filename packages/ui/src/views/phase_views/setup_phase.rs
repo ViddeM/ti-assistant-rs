@@ -4,7 +4,10 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     common::{component::Component, expansions::Expansion, faction::Faction, player_id::PlayerId},
-    components::objectives::{Objective, ObjectiveKind},
+    components::{
+        galactic_event::GalacticEvent,
+        objectives::{Objective, ObjectiveKind, PUBLIC_OBJECTIVES_PER_STAGE},
+    },
     state::player::Player,
 };
 
@@ -237,11 +240,25 @@ fn ObjectivesSetup() -> Element {
         objectives
     });
 
+    let civilized_society = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .contains(&GalacticEvent::CivilizedSociety)
+    });
+
     rsx! {
         div { class: "reveal-objectives-container",
-            h3 { "Select initial objectives" }
+            if civilized_society() {
+                h3 { "Select all public objectives" }
+            } else {
+                h3 { "Select initial objectives" }
+            }
             {
-                if revealed_objectives.is_empty() {
+                if revealed_objectives.is_empty() && civilized_society() {
+                    rsx! {
+                        AllObjectivesSetup {}
+                    }
+                } else if revealed_objectives.is_empty() {
                     rsx! {
                         ObjectiveDropdown {
                             value: first_objective,
@@ -281,6 +298,104 @@ fn ObjectivesSetup() -> Element {
                     }
                 }
             }
+        }
+    }
+}
+
+#[component]
+fn AllObjectivesSetup() -> Element {
+    let event = use_context::<EventContext>();
+
+    let stage_one: Signal<Vec<Option<Objective>>> =
+        use_signal(|| vec![None; PUBLIC_OBJECTIVES_PER_STAGE]);
+    let stage_two: Signal<Vec<Option<Objective>>> =
+        use_signal(|| vec![None; PUBLIC_OBJECTIVES_PER_STAGE]);
+
+    let all_picked = use_memo(move || {
+        stage_one
+            .read()
+            .iter()
+            .chain(stage_two.read().iter())
+            .all(Option::is_some)
+    });
+
+    rsx! {
+        StageObjectivesSetup { kind: ObjectiveKind::StageI, picks: stage_one }
+        StageObjectivesSetup { kind: ObjectiveKind::StageII, picks: stage_two }
+        Button {
+            disabled: !all_picked(),
+            onclick: move |_| {
+                event
+                    .send_event(Event::RevealAllPublicObjectives {
+                        stage_one: stage_one.read().iter().flatten().copied().collect(),
+                        stage_two: stage_two.read().iter().flatten().copied().collect(),
+                    })
+            },
+            "Reveal Objectives"
+        }
+    }
+}
+
+#[component]
+fn StageObjectivesSetup(kind: ObjectiveKind, picks: Signal<Vec<Option<Objective>>>) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let legend = if kind == ObjectiveKind::StageI {
+        "Stage I"
+    } else {
+        "Stage II"
+    };
+
+    let options = use_memo(move || {
+        let mut objectives = gc
+            .game_options()
+            .objectives
+            .iter()
+            .filter(|o| o.info().kind == kind)
+            .cloned()
+            .collect::<Vec<_>>();
+        objectives.sort();
+        objectives
+    });
+
+    rsx! {
+        fieldset { class: "setup-column",
+            legend { "{legend}" }
+            for index in 0..PUBLIC_OBJECTIVES_PER_STAGE {
+                ObjectiveSlot {
+                    key: "{index}",
+                    index,
+                    options,
+                    picks,
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn ObjectiveSlot(
+    index: usize,
+    options: ReadSignal<Vec<Objective>>,
+    mut picks: Signal<Vec<Option<Objective>>>,
+) -> Element {
+    let selected = use_memo(move || picks.read()[index]);
+
+    let available = use_memo(move || {
+        let picks = picks.read();
+        options()
+            .into_iter()
+            .filter(|o| {
+                !(picks.iter().enumerate()).any(|(i, pick)| i != index && pick.as_ref() == Some(o))
+            })
+            .collect::<Vec<_>>()
+    });
+
+    rsx! {
+        ObjectiveDropdown {
+            value: selected,
+            options: available(),
+            on_select: move |obj| picks.write()[index] = obj,
         }
     }
 }

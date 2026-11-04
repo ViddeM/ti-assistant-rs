@@ -11,12 +11,19 @@ pub fn StatusPhaseInstructionsView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
+    let reveals_objective = use_memo(move || gc.game_state().status_phase_reveals_objective());
+
     let status_phase_complete = use_memo(move || {
-        gc.game_state()
+        let game_state = gc.game_state();
+        let state = game_state
             .status_phase_state
             .as_ref()
-            .map(|s| s.revealed_objective.is_some())
-            .expect("Status phase state to be set during status phase")
+            .expect("Status phase state to be set during status phase");
+        if reveals_objective() {
+            state.revealed_objective.is_some()
+        } else {
+            state.can_reveal_objective(game_state.players.len())
+        }
     });
 
     rsx! {
@@ -24,7 +31,9 @@ pub fn StatusPhaseInstructionsView() -> Element {
             h2 { "Status Phase" }
             ol {
                 li { "Score Objectives" }
-                li { "Reveal Public Objective" }
+                if reveals_objective() {
+                    li { "Reveal Public Objective" }
+                }
                 li { "Draw Action Cards" }
                 li { "Remove Command Tokens" }
                 li { "Gain and Redistribute Tokens" }

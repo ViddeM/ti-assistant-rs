@@ -91,6 +91,15 @@ pub enum Event {
         second_objective: Objective,
     },
 
+    /// Reveal every public objective during setup, for Civilized Society.
+    #[serde(rename_all = "camelCase")]
+    RevealAllPublicObjectives {
+        /// The stage I objectives.
+        stage_one: BTreeSet<Objective>,
+        /// The stage II objectives.
+        stage_two: BTreeSet<Objective>,
+    },
+
     /// Start the game.
     StartGame,
 

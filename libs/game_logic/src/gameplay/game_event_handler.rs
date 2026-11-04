@@ -28,7 +28,7 @@ use ti_helper_game_data::{
         frontier_card::FrontierCardType,
         galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
-        objectives::{Objective, ObjectiveKind},
+        objectives::{Objective, ObjectiveKind, PUBLIC_OBJECTIVES_PER_STAGE},
         phase::Phase,
         planet::{Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
@@ -335,6 +335,12 @@ fn try_update_game_state(
         } => {
             game_state.assert_phase(Phase::Setup)?;
             ensure!(
+                !game_state
+                    .galactic_events
+                    .contains(&GalacticEvent::CivilizedSociety),
+                "Civilized Society reveals all public objectives at setup"
+            );
+            ensure!(
                 game_state.score.revealed_objectives.is_empty(),
                 "Objectives have already been revealed"
             );
@@ -357,6 +363,43 @@ fn try_update_game_state(
             score
                 .revealed_objectives
                 .insert(second_objective, BTreeSet::new());
+        }
+        Event::RevealAllPublicObjectives {
+            stage_one,
+            stage_two,
+        } => {
+            game_state.assert_phase(Phase::Setup)?;
+            game_state.assert_galactic_event(&GalacticEvent::CivilizedSociety)?;
+            ensure!(
+                game_state.score.revealed_objectives.is_empty(),
+                "Objectives have already been revealed"
+            );
+
+            for (objectives, kind, stage) in [
+                (&stage_one, ObjectiveKind::StageI, "I"),
+                (&stage_two, ObjectiveKind::StageII, "II"),
+            ] {
+                ensure!(
+                    objectives.len() == PUBLIC_OBJECTIVES_PER_STAGE,
+                    "Expected {PUBLIC_OBJECTIVES_PER_STAGE} stage {stage} objectives, got {}",
+                    objectives.len()
+                );
+                for objective in objectives {
+                    game_state.assert_enabled(objective)?;
+                    ensure!(
+                        objective.info().kind == kind,
+                        "{} isn't a stage {stage} objective",
+                        objective.info().name
+                    );
+                }
+            }
+
+            for objective in stage_one.into_iter().chain(stage_two) {
+                game_state
+                    .score
+                    .revealed_objectives
+                    .insert(objective, BTreeSet::new());
+            }
         }
         Event::StartGame => {
             game_state.assert_phase(Phase::Setup)?;
@@ -1520,6 +1563,10 @@ fn try_update_game_state(
         }
         Event::RevealPublicObjective { objective } => {
             game_state.assert_phase(Phase::Status)?;
+            ensure!(
+                game_state.status_phase_reveals_objective(),
+                "Under Civilized Society all public objectives are revealed at setup"
+            );
 
             let pub_obj = Objective::Public(objective);
             ensure!(
@@ -1571,7 +1618,7 @@ fn try_update_game_state(
             };
 
             ensure!(
-                state.revealed_objective.is_some(),
+                state.revealed_objective.is_some() || !game_state.status_phase_reveals_objective(),
                 "No public objective has been revealed!"
             );
             ensure!(
