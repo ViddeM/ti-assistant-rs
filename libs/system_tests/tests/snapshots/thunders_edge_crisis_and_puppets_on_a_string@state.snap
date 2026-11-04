@@ -15,7 +15,7 @@ galacticEvents: []
 phase: Status
 mapData:
   miltyInformation: ~
-  stellarConverterDestroyedPlanets: []
+  destroyedPlanets: []
 players:
   Alice:
     name: Alice

@@ -185,7 +185,7 @@ mapData:
           position: OutsideGalaxy
       ring_count: 4
     mirageSystem: ~
-  stellarConverterDestroyedPlanets: []
+  destroyedPlanets: []
 players:
   Ann:
     name: Ann

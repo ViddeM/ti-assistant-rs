@@ -203,11 +203,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     }
 
     let mut destroyed_planets_in_system: HashMap<SystemId, Vec<Planet>> = HashMap::new();
-    for planet in game_state
-        .map_data
-        .stellar_converter_destroyed_planets
-        .iter()
-    {
+    for planet in game_state.map_data.destroyed_planets.iter() {
         // A planet that doesn't belong to a (single) system can't be shown on the map.
         if let Ok(system) = System::for_planet(planet) {
             destroyed_planets_in_system

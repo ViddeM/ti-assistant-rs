@@ -15,7 +15,7 @@ galacticEvents: []
 phase: Strategy
 mapData:
   miltyInformation: ~
-  stellarConverterDestroyedPlanets: []
+  destroyedPlanets: []
 players:
   Argus:
     name: Argus

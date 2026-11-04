@@ -734,10 +734,7 @@ pub fn action_relics() -> TestGame {
         .apply(commit("Carol", stellar(Planet::Lodor)))
         .end_turn();
     assert!(!g.player("Bob").planets.contains_key(&Planet::Lodor));
-    assert_eq!(
-        g.state().map_data.stellar_converter_destroyed_planets,
-        [Planet::Lodor]
-    );
+    assert_eq!(g.state().map_data.destroyed_planets, [Planet::Lodor]);
     assert!(g.player("Carol").relics.is_empty());
     g.expect_rejected(set_owner("Bob", Planet::Lodor), "destroyed");
 

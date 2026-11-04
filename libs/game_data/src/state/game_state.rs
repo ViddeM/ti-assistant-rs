@@ -200,8 +200,8 @@ impl VoteRestriction {
 pub struct MapData {
     /// Map information relevant to games imported from milty draft.
     pub milty_information: Option<MiltyInformation>,
-    /// Which planets (if any) has been destroyed by the stellar converter.
-    pub stellar_converter_destroyed_planets: Vec<Planet>,
+    /// Which planets (if any) have been destroyed or purged.
+    pub destroyed_planets: Vec<Planet>,
 }
 
 /// Information relevant to things that has happened on the gameboard.
@@ -614,13 +614,7 @@ impl GameState {
     /// board.
     pub fn planet_location(&self, planet: &Planet) -> PlanetLocation {
         match planet {
-            _ if self
-                .map_data
-                .stellar_converter_destroyed_planets
-                .contains(planet) =>
-            {
-                PlanetLocation::NotOnBoard
-            }
+            _ if self.map_data.destroyed_planets.contains(planet) => PlanetLocation::NotOnBoard,
             Planet::Cocytus | Planet::Lethe | Planet::Phlegethon | Planet::Styx
                 if !self.fracture_in_play =>
             {

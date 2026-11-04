@@ -187,7 +187,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
 | J1 Show Thunder's Edge where it was placed | Info | ✅ `build_layout` draws `TiToken::ThundersEdge` and its owner label in the system from `GameState::planet_location`. | P2 / S |
-| J2 Destroyed and purged planets (Silver Flame, Conventions of War Abandoned) | Info | They already render through `stellar_converter_destroyed_planets` + `TiToken::DestroyedPlanet`. Generalise the field name. | P2 / S |
+| J2 Destroyed and purged planets (Silver Flame, Conventions of War Abandoned) | Info | ✅ They render through `destroyed_planets` + `TiToken::DestroyedPlanet`. | P2 / S |
 | J3 Fracture tiles, Avernus token, breaches, coexistence | 👺 | Positions aren't tracked. | — |
 
 ### TE-K Other
@@ -400,7 +400,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 > BOMBARDMENT hits destroy 3 units. **ACTION (if you own X-89): exhaust it to purge a planet in a system containing your BOMBARDMENT unit, along with its attachments and legendary card.** You're eliminated if all your home planets are purged.
 
 1. ✅ **Prerequisite fix (own commit):** destroyed planets can currently be taken again (the TODO near handler ~1078). Reject them in `TacticalActionTakePlanet` and `SetPlanetOwner`, and filter them out of the tactical take, unclaimed and Stellar Converter pickers.
-2. Rename `MapData::stellar_converter_destroyed_planets` to `destroyed_planets`, so purged planets share the same list and the same map token (TE-J2).
+2. ✅ Rename `MapData::stellar_converter_destroyed_planets` to `destroyed_planets`, so purged planets share the same list and the same map token (TE-J2).
 3. Add the `GalacticEventAction::ConventionsOfWarAbandoned { planet }` variant. Besides the shared checks, it checks that the player owns any X-89 version (`X89BacterialWeapon`, `…Omega`, `…OmegaOmega`) and that the planet isn't destroyed yet. Home planets are allowed.
 4. It removes the planet (and its attachments) like the Stellar Converter does, then ends the turn.
 5. Its form in the Galactic Event tab is a planet dropdown.

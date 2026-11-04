@@ -16,7 +16,7 @@ galacticEvents:
 phase: Action
 mapData:
   miltyInformation: ~
-  stellarConverterDestroyedPlanets:
+  destroyedPlanets:
     - MecatolRex
     - Jord
     - Primor

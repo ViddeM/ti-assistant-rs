@@ -111,7 +111,7 @@ fn try_update_game_state(
                     hex_map,
                     mirage_system: None,
                 }),
-                stellar_converter_destroyed_planets: vec![],
+                destroyed_planets: vec![],
             };
 
             // Sorted so that the outcome (e.g. color ties) doesn't depend on HashMap order.
@@ -1119,10 +1119,7 @@ fn try_update_game_state(
                             );
                         }
                         ensure!(
-                            !game_state
-                                .map_data
-                                .stellar_converter_destroyed_planets
-                                .contains(&planet),
+                            !game_state.map_data.destroyed_planets.contains(&planet),
                             "Cannot use stellar converter on a planet that has already been destroyed!"
                         );
 
@@ -1133,10 +1130,7 @@ fn try_update_game_state(
                         {
                             player.planets.remove(&planet);
                         }
-                        game_state
-                            .map_data
-                            .stellar_converter_destroyed_planets
-                            .push(planet);
+                        game_state.map_data.destroyed_planets.push(planet);
                     }
                     RelicAction::NanoForge { planet } => {
                         ensure!(
@@ -1865,11 +1859,7 @@ fn try_update_game_state(
         Event::SetPlanetOwner { player, planet } => {
             game_state.assert_enabled(&planet)?;
             ensure!(
-                player.is_none()
-                    || !game_state
-                        .map_data
-                        .stellar_converter_destroyed_planets
-                        .contains(&planet),
+                player.is_none() || !game_state.map_data.destroyed_planets.contains(&planet),
                 "{} has been destroyed",
                 planet.info().name
             );

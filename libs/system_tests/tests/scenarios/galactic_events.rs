@@ -356,7 +356,7 @@ pub fn galactic_events_wild_wild_galaxy() -> TestGame {
         .end_turn();
     assert!(!g.player("Bob").planets.contains_key(&Planet::Primor));
     assert_eq!(
-        g.state().map_data.stellar_converter_destroyed_planets,
+        g.state().map_data.destroyed_planets,
         [Planet::MecatolRex, Planet::Jord, Planet::Primor]
     );
     g
