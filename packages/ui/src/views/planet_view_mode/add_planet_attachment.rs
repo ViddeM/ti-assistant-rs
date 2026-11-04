@@ -106,14 +106,13 @@ pub fn AddPlanetAttachment() -> Element {
                     true
                 }
             })
-            .filter(|&(a, _)| !a.eq(&PlanetAttachment::Geoform) || planet.eq(&Planet::Elysium))
-            .filter(|&(a, _)| {
-                !(a.eq(&PlanetAttachment::Terraform)
-                    && (planet.is_mecatol_rex() || planet.info().is_legendary))
-            })
-            .filter(|&(a, _)| {
-                !(a.eq(&PlanetAttachment::Terraform)
-                    || a.eq(&PlanetAttachment::NanoForge) && home_planets().contains(&planet))
+            .filter(|(a, _)| match a {
+                PlanetAttachment::Geoform => planet == Planet::Elysium,
+                PlanetAttachment::Terraform => {
+                    !planet.is_mecatol_rex() && !home_planets().contains(&planet)
+                }
+                PlanetAttachment::NanoForge => !home_planets().contains(&planet),
+                _ => true,
             })
             .map(|(a, _)| a.clone())
             .collect::<Vec<_>>();
