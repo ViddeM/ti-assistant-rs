@@ -6,6 +6,14 @@
 - 🚱 = Feature is untested or needs polish
 - 👺 = OUT OF SCOPE, go away, I have no more spare time to give 😢
 
+## Scope
+ - The app is used alongside the physical game, so every feature has to be faster than doing the thing at the table.
+ - **Tracked:** game structure (players, factions, strategy cards, turn order, phases, rounds), every VP source, and board-adjacent state (planets and attachments, techs, relics, breakthroughs, laws, agenda votes, leaders, the Thunder's Edge expedition, time per player, the milty map).
+ - **Not tracked, by design:** units, fleets and command tokens; trade goods, commodities, exhausted/readied state; cards in hand; movement and adjacency; dice and random draws (players roll or draw at the table and enter the result). Anything that is "secret", we shouldn't have to worry about "leaking" information that is not public to everyone.
+ - **How effects are handled:** an effect that changes tracked state is modelled. One that touches it rarely gets a shortcut to an existing event. One that only touches untracked things is shown as text.
+ - **Out of scope (👺):** non-standard game variants (Pax Nomina, Twilight's Fall, Liberation of Ordinian). Galactic events are in scope.
+ - **Lowest priority:** game end (VP target, winners, tiebreaks, elimination), which is handled at the table.
+
 ## Infra
  - ✅ Multiple games
  - ✅ Multiple WS clients per game
@@ -117,6 +125,9 @@
    - 🍑 Agendas
    - ❌ Action Cards
    - 🍑 Leaders
+   - ❌ Breakthroughs (with synergy)
+   - ❌ Legendary planet abilities (PoK and TE)
+   - ✅ Galactic events
  - ❌ Status phase
    - ✅ Score objectives
    - ✅ Reveal objectives
@@ -134,8 +145,9 @@
  - ❌ Creuss portals
  - ❌ Creuss hero
  - ❌ System destruction (supernova bois)
- - ❌ Planet destruction (Stellar converter relic)
+ - ✅ Planet destruction (Stellar Converter, Conventions of War Abandoned)
  - ✅ Mirage
+ - ✅ Thunder's Edge where it was placed
 
 ### Agenda Phase
 
@@ -175,6 +187,7 @@
   - ❌ 'Rider' Action Cards
   - ❌ Relic: 'Maw of Worlds'
   - ❌ The Council Keleres Promisary
+  - ✅ Galactic event 'Stellar Atomics' (players who used their token can't vote)
 
 - Abilities that affect voting order (_with no limit on voting order, this is not required_)
   - ❌ Argent Flight 'Zeal'
@@ -228,30 +241,45 @@
  - ❌ Go over TE to see if anything has been missed.
 
 ## Thunder's Edge
- - 🚱  Breakthroughs for each faction (assigning them works, the effects below are not handled)
-  - ❌  Generic actions that we don't track (just a button in the UI)
-  - ❌  I.I.H.Q. Modernization (gain planet)
-  - ❌  Resonance Generator (maybe for map purposes? LOW PRIO)
-  - ❌  Visionaria Select (Coordinate players & research + gain techs)
-  - ❌  Stellar Genesis (gain planet)
-  - ❌  Void Tether (I have no idea, maybe for map purposes? Double check)
-  - ❌  Vaults of the heir (Action, purge tech to gain relic)
-  - ❌  N'orr Supremacy (Can research after winning a combat so litteraly whenever, just do it on the tech page instead).
-  - ❌  Al'Raith Ix Ianovar - Fracture enter play (if tracked) also ingress tokens if we want them on the map.
+ - ✅  Breakthroughs for each faction
+  - ✅  Gained automatically (expedition, Thunder's Edge planet, The Quantumcore, Brilliance, Rapid Mobilization); the Crimson Rebellion starts with it
+  - ✅  Generic actions that we don't track (just a button in the UI): Psychospore, Deorbit Barrage, Resonance Generator end the turn
+  - ✅  I.I.H.Q. Modernization (gain planet Custodia Vigilia Ω)
+  - ✅  Resonance Generator (generic action, see above)
+  - ✅  Visionaria Select (Coordinate players & research + gain techs)
+  - ✅  Stellar Genesis (gain planet Avernus)
+  - 👺  Void Tether (adjacency)
+  - ✅  Vaults of the heir (Action, purge tech to gain relic)
+  - ✅  N'orr Supremacy (nothing to do: research on the tech page)
+  - ✅  Al'Raith Ix Ianovar (the Fracture enters play; ingress tokens 👺)
  - ❌  new relic cards, added but some need more handling.
-  - ❌  The quantumcore, depends on if we will handle breakthroughs and/or synergies.
+  - ✅  The Quantumcore (gaining it gains the breakthrough)
   - ❌  The Silver Flame
-  - ❌  The Triad (maybe we'll want to show it on the planet page somehow? But we don't track relic fragments...)
+  - ❌  The Triad ("3 + X" badge in the resources; relic fragments aren't tracked)
+  - ❌  Dynamis Core / Nano-Forge: TE wording
  - 🚱  new factions
+  - ✅  Firmament → Obsidian flip
+  - ✅  Keleres TE update
+  - ❌  Firmament "Plots within Plots" (plots instead of VP for another player's secret; Sharsiss edits them)
+  - ❌  Deepwrought "Radical Advancement" (swap a tech in the status phase)
+  - ❌  Deepwrought ocean cards (resource/influence counter)
  - ✅  new planets
  - ❌  new legendary planet abilities
-  - ❌  Thunder's Edge (PERFORM 1 ACTION AT THE END OF YOUR TURN??? Can be worked around atm by taking another turn but not very pretty, also if we should handle breakthroughs)
-  - ❌  Styx (Have an extra point as long as you hold the planet)
+  - ✅  Thunder's Edge (gaining it gains the breakthrough; "take 1 more action" button at end of turn)
+  - ✅  Styx (+1 VP while controlled)
   - ❌  Avernus (Action, just allow it as an option, nothing to do).
   - ❌  Faunus (Gain control of planet when you pass)
- - ❌  fracture? (option for picking relic after taking those planets?)
+ - 🚱  The Fracture
+  - ✅  in-play toggle; its planets stay off the board until then
+  - ✅  forced roll when a breakthrough is gained
+  - ❌  Plane Splitter puts it into play
+  - ❌  gain a relic when taking a Fracture planet from the deck
+  - ❌  hide its planets in the unclaimed table and the admin dropdown until in play
+  - 👺  ingress/egress tokens, adjacency
  - ✅  space stations.
- - ❌  new anomaly?
+  - ✅  can't be elected in agendas
+  - ❌  don't count as planets in planet counts (incl. Last Bastion's Revelation)
+ - 👺  new anomaly (entropic scars: movement and combat)
  - ❌  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
   - ✅  Ω action cards, replace the codex I versions when TE is enabled
   - ✅  new action cards (14 unique, 20 in the deck)
@@ -260,14 +288,13 @@
   - ✅  Crisis (skip a turn), Puppets on a String (passed player performs an action)
   - ✅  Mercenary Contract (owner returns the planet card)
   - ✅  Rest are not handled by this application.
- - ❌  updated strategy cards
- - ❌  thunder's edge
-   - ❌  planet
-   - ❌  exploration
+  - ✅  leader updates (Z'eu ΩΩ, Xxekir Grom ΩΩ, Yin ΩΩ, Odlynn Myrr, Kuuasi Aun Jalatai, Agnlan Oln)
+ - ✅  updated strategy cards (Construction ΩΩ / Warfare Ω images, Construction secondary hint)
+ - ✅  Thunder's Edge expedition and planet (commit, pass, completion, placement on the map, admin page)
  - ✅  update milty import
- - ❌  Coexistance (map visualization)
+ - 👺  Coexistance (map visualization)
  - ❌  New Leaders
-  - ❌  Agents
+  - ✅  Agents
     - ✅  Kan Kip Rel (Action)
     - ✅  Ahk Ravin (Action)
   - ✅  Commanders
@@ -276,6 +303,9 @@
     - ❌  Ta Zern (Action: Delete a tech from everyone, the ones that got a tech deleted researches again)
     - ✅  Sharsiss (Action)
     - ✅  Sharsiss Hollow (Action)
+    - ❌  Used heroes are purged (they stay playable today)
+ - 👺  Twilight's Fall game mode
+ - ✅  Galactic events (see "Galactic Events")
 
 ## Codex IV
   - ✅  separate expansion toggle
@@ -283,9 +313,31 @@
   - ✅  relics
     - ✅ Circlet of the Void (the effects are not tracked)
     - ✅ Neuraloop (status phase only, not objectives revealed outside of it)
-    - ✅ Book of Latvinia (the techs gained with it are added manually)
-  - ❌  galactic events (could be difficult!)
-  - ❌  Liberation of Ordinian scenario
+      - ❌ also after objectives revealed outside the status phase
+    - ✅ Book of Latvinia (research prompt for up to 2 techs without prerequisites)
+  - ✅  galactic events (see "Galactic Events")
+  - 👺  Liberation of Ordinian scenario
 
-TODO: Look overall strategy cards to see that we always display the correct variant.
+## Galactic Events (Codex IV + Thunder's Edge)
+ - ✅ Framework: data, choosing the events on the Creation screen (new game and milty), info modal, in-game display, VP rows, admin page; random picks happen at the table
+ - Tracked
+   - ✅ Stellar Atomics (one-shot action, spent players can't vote)
+   - ✅ Age of Fighters (Fighter II for everyone at setup)
+   - ✅ Advent of the War Sun (War Sun for everyone but Muaat at setup)
+   - 🚱 Civilized Society: ✅ all objectives up at setup, ✅ unlimited scoring, ❌ game ends after that round's status phase, influence tiebreak (lowest priority, with game end)
+   - ✅ Zealous Orthodoxy (first to 2 secrets: +1 VP)
+   - ✅ Total War (action: +1 VP)
+   - ✅ Monuments to the Ages (monuments → VP)
+   - ✅ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
+   - ✅ Age of Exploration (Dark Energy Tap: place the drawn tile on the milty map)
+   - ✅ Rapid Mobilization (the Fracture and breakthroughs at Start Game; each player picks planets and researches)
+   - ✅ Mercenaries for Hire (action that ends the turn)
+ - Assisted
+   - ✅ Minor Factions (minor faction planets have all traits, alliance reminder)
+   - ✅ Dangerous Wilds (tech prompt for unowned hazardous planets)
+   - ✅ Conventions of War Abandoned (X-89: purge planet)
+   - ✅ Hidden Agenda (the speaker enters the votes as they're read out)
+   - ✅ Wild, Wild Galaxy (the Stellar Converter works on any planet)
+ - Info only: Age of Commerce (share a tech by toggling it in the tech view), Call of the Void, Cosmic Phenomenae, Weird Wormholes
+
 TODO: Display "Undo event {NAME}" popup or smth when undoing so that it is more clear for other players (and oneself).
