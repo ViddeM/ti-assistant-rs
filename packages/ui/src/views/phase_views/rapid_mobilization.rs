@@ -26,10 +26,19 @@ pub fn RapidMobilization() -> Element {
     });
 
     rsx! {
-        div { class: "card column",
-            h2 { "Rapid Mobilization" }
-            p {
-                "Place the infantry, the space dock, the flagship and 3 fighters at the table, then pick the planets adjacent to your home system (or the Creuss Gate / The Sorrow) and research."
+        div { class: "column screen-container",
+            div { class: "card column full-width",
+                h2 { "Rapid Mobilization" }
+                ol {
+                    li {
+                        "Place 1 infantry on each planet adjacent to your home system (or the Creuss Gate / The Sorrow). Gain control of and ready those planets, but don't explore them."
+                    }
+                    li {
+                        "Place 1 space dock on a planet you control, and your flagship and 3 fighters in its system."
+                    }
+                    li { "Gain your breakthrough (already done)." }
+                    li { "Research 1 technology, or 2 for the Nomad." }
+                }
             }
             for player_id in pending() {
                 RapidMobilizationPlayer { key: "{player_id}", player_id }
@@ -67,16 +76,16 @@ fn RapidMobilizationPlayer(player_id: PlayerId) -> Element {
 
     if !view.display_for(&player_id) {
         return rsx! {
-            fieldset { class: "column screen-container margin-top",
-                legend { "{player_id}" }
+            div { class: "card column margin-top full-width",
+                h2 { "{player_id}" }
                 p { "Waiting for {player_id}." }
             }
         };
     }
 
     rsx! {
-        fieldset { class: "column screen-container margin-top",
-            legend { "{player_id}" }
+        div { class: "card column margin-top full-width",
+            h2 { "{player_id}" }
             h3 { "Planets" }
             for planet in planets() {
                 p { key: "{planet}", class: "margin-top", "{planet.info().name}" }
@@ -102,7 +111,7 @@ fn RapidMobilizationPlayer(player_id: PlayerId) -> Element {
             }
             h3 { class: "margin-top", "Technologies" }
             if faction() == Some(Faction::NekroVirus) {
-                p { "Nekro Virus can't research technology" }
+                p { "The Nekro Virus can't research technology: gain 3 command tokens instead." }
             }
             for tech in technologies() {
                 p { key: "{tech}", class: "margin-top", "{tech.info().name}" }

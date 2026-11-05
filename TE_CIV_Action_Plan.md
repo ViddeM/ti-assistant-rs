@@ -520,7 +520,7 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 ✅ Done (`galactic_events_rapid_mobilization` scenario), with these changes:
 - The per-player step runs after `StartGame`, as a blocking prompt like the roll for the Fracture (`GameState::rapid_mobilization`, `ResolveRapidMobilization`), instead of a setup step. So `player_initialization_finished` is unchanged.
 - The player picks the planets. Nothing is inferred from the map: the planets only have to be unowned, outside the home systems and on the board.
-- The Nekro Virus researches no technology.
+- The Nekro Virus researches no technology. Propagation's 3 command tokens stay at the table, since command tokens aren't tracked.
 
 1. At `StartGame`: set `fracture_in_play` first (so there's no roll), then `gain_breakthrough` for everyone, which applies the I.I.H.Q. and Stellar Genesis effects.
 2. The planets and the research (1 tech, Nomad 2) need a per-player step after the faction setup. `player_initialization_finished` counts total techs, so that check has to change first.
