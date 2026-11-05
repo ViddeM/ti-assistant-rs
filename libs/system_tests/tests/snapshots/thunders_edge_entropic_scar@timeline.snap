@@ -1,0 +1,59 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 ImportFromMilty                          r0 Creation           -          speaker=Ann
+   1 CreationDone                             r0 Setup              -
+   2 SetupPlayerTechs(Ann)                    r0 Setup              -
+   3 SetupPlayerTechs(Ben)                    r0 Setup              -
+   4 SetupPlayerTechs(Cid)                    r0 Setup              -
+   5 SetupPlayerTechs(Dee)                    r0 Setup              -
+   6 SetupPlayerTechs(Eve)                    r0 Setup              -
+   7 RevealInitialObjectives                  r0 Setup              -
+   8 StartGame                                r1 Strategy           Ann        order=[Ann Ben Cid Dee Eve]
+   9 RollForTheFracture(Cid)                  r1 Strategy           Ann
+  10 TakeStrategyCard(Ann)                    r1 Strategy           Ben
+  11 TakeStrategyCard(Ben)                    r1 Strategy           Cid
+  12 TakeStrategyCard(Cid)                    r1 Strategy           Dee
+  13 TakeStrategyCard(Dee)                    r1 Strategy           Eve
+  14 TakeStrategyCard(Eve)                    r1 Strategy           Ann
+  15 CompleteStrategyPhase                    r1 Action             Ann
+  16 StrategicActionBegin(Ann)                r1 StrategicAction    Ann
+  17 StrategicActionCommit                    r1 EndActionTurn      Ann
+  18 EndTurn(Ann)                             r1 Action             Ben
+  19 StrategicActionBegin(Ben)                r1 StrategicAction    Ben
+  20 StrategicActionCommit                    r1 EndActionTurn      Ben
+  21 EndTurn(Ben)                             r1 Action             Cid
+  22 StrategicActionBegin(Cid)                r1 StrategicAction    Cid
+  23 StrategicActionPrimary(Cid)              r1 StrategicAction    Cid
+  24 StrategicActionCommit                    r1 EndActionTurn      Cid
+  25 EndTurn(Cid)                             r1 Action             Dee
+  26 StrategicActionBegin(Dee)                r1 StrategicAction    Dee
+  27 StrategicActionCommit                    r1 EndActionTurn      Dee
+  28 EndTurn(Dee)                             r1 Action             Eve
+  29 StrategicActionBegin(Eve)                r1 StrategicAction    Eve
+  30 StrategicActionCommit                    r1 EndActionTurn      Eve
+  31 EndTurn(Eve)                             r1 Action             Ann
+  32 PassAction(Ann)                          r1 EndActionTurn      Ann
+  33 EndTurn(Ann)                             r1 Action             Ben
+  34 PassAction(Ben)                          r1 EndActionTurn      Ben
+  35 EndTurn(Ben)                             r1 Action             Cid
+  36 PassAction(Cid)                          r1 EndActionTurn      Cid
+  37 EndTurn(Cid)                             r1 Action             Dee
+  38 PassAction(Dee)                          r1 EndActionTurn      Dee
+  39 EndTurn(Dee)                             r1 Action             Eve
+  40 PassAction(Eve)                          r1 EndActionTurn      Eve
+  41 EndTurn(Eve)                             r1 Status             Eve
+  42 GainEntropicScarTech(Ben)                r1 Status             Eve
+  43 GainEntropicScarTech(Ann)                r1 Status             Eve
+  44 ScorePublicObjective(Dee)                r1 Status             Eve        Dee=1
+  45 ScorePublicObjective(Ann)                r1 Status             Eve
+  46 ScorePublicObjective(Ben)                r1 Status             Eve
+  47 ScorePublicObjective(Cid)                r1 Status             Eve
+  48 ScorePublicObjective(Eve)                r1 Status             Eve
+  49 ScoreSecretObjective(Ann)                r1 Status             Eve
+  50 ScoreSecretObjective(Ben)                r1 Status             Eve
+  51 ScoreSecretObjective(Cid)                r1 Status             Eve
+  52 ScoreSecretObjective(Dee)                r1 Status             Eve
+  53 ScoreSecretObjective(Eve)                r1 Status             Eve
+  54 RevealPublicObjective                    r1 Status             Eve
+  55 CompleteStatusPhase                      r2 Strategy           Ann

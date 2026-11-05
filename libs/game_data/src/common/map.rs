@@ -6,7 +6,7 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::components::system::{System, SystemId, SystemType, systems};
+use crate::components::system::{AnomalyType, System, SystemId, SystemType, systems};
 
 pub type HexMapResult<T> = Result<T, HexMapError>;
 
@@ -227,6 +227,17 @@ impl HexMap {
             SystemType::Normal | SystemType::Anomaly(_)
         ) && !is_special
             && !self.tiles.iter().any(|tile| tile.system == system.id)
+    }
+
+    /// Whether a tile on the map is an anomaly of the given type.
+    pub fn has_anomaly(&self, anomaly: &AnomalyType) -> bool {
+        let systems = systems();
+        self.tiles.iter().any(|tile| {
+            matches!(
+                systems.get(&tile.system).map(|system| &system.system_type),
+                Some(SystemType::Anomaly(types)) if types.contains(anomaly)
+            )
+        })
     }
 
     /// The empty coordinates that touch at least 2 tiles that aren't home systems or hyperlanes,

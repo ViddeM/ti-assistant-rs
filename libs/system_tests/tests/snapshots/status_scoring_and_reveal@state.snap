@@ -116,6 +116,7 @@ statusPhaseState:
     Bob: BecomeTheGatekeeper
     Carol: ~
   revealedObjective: ExpandBorders
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []

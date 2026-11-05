@@ -265,6 +265,7 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: NegotiateTradeRoutes
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []

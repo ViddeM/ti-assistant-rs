@@ -153,6 +153,7 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: ExpandBorders
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []

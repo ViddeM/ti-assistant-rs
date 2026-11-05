@@ -29,7 +29,7 @@ use crate::{
         planet_attachment::PlanetAttachment,
         relic::Relic,
         strategy_card::StrategyCard,
-        system::SystemId,
+        system::{AnomalyType, SystemId},
         tech::Technology,
     },
     state::expedition::{TEExpedition, TEExpeditionSlot},
@@ -996,6 +996,19 @@ impl GameState {
         !self
             .galactic_events
             .contains(&GalacticEvent::CivilizedSociety)
+    }
+
+    /// Returns true if an entropic scar can be in play: Thunder's Edge is enabled and the map, if
+    /// it is known, has an entropic scar.
+    pub fn entropic_scar_in_play(&self) -> bool {
+        self.game_settings
+            .expansions
+            .is_enabled(&Expansion::ThundersEdge)
+            && self
+                .map_data
+                .milty_information
+                .as_ref()
+                .is_none_or(|milty| milty.hex_map.has_anomaly(&AnomalyType::EntropicScar))
     }
 
     /// Returns true if the objective used to be a public objective but no longer is: a secret

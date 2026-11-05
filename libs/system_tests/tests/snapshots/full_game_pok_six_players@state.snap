@@ -405,6 +405,7 @@ statusPhaseState:
   scoredPublicObjectives: {}
   scoredSecretObjectives: {}
   revealedObjective: ~
+  entropicScarTechs: {}
 availableLeaders:
   Alice:
     - ZeuCxIII

@@ -119,6 +119,7 @@ statusPhaseState:
     Bob: MonopolizeProduction
     Carol: ~
   revealedObjective: ExpandBorders
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []

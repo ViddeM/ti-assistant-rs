@@ -4,7 +4,10 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     common::player_id::PlayerId,
-    components::objectives::{Objective, secret::SecretObjective},
+    components::{
+        objectives::{Objective, secret::SecretObjective},
+        tech::Technology,
+    },
 };
 
 /// State for the status phase.
@@ -17,6 +20,9 @@ pub struct StatusPhaseState {
     pub scored_secret_objectives: HashMap<PlayerId, Option<SecretObjective>>,
     /// What objective was revealed during this status phase.
     pub revealed_objective: Option<Objective>,
+    /// The faction technology each player gained from an entropic scar at the start of this status
+    /// phase.
+    pub entropic_scar_techs: HashMap<PlayerId, Technology>,
 }
 
 impl StatusPhaseState {
@@ -26,6 +32,7 @@ impl StatusPhaseState {
             scored_public_objectives: HashMap::new(),
             scored_secret_objectives: HashMap::new(),
             revealed_objective: None,
+            entropic_scar_techs: HashMap::new(),
         }
     }
 

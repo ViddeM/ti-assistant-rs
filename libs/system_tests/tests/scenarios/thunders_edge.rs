@@ -1,6 +1,6 @@
 //! Thunder's Edge: the expedition, The Obsidian, its planets and its action cards.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use ti_helper_game_data::{
     common::{expansions::Expansion, map::HexPosition},
@@ -36,6 +36,7 @@ scenarios![
     thunders_edge_breakthrough_actions,
     thunders_edge_vaults_of_the_heir,
     thunders_edge_visionaria_select,
+    thunders_edge_entropic_scar,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -1360,4 +1361,116 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
     alice.end_turn();
     assert_eq!(technologies(&g), before);
     g
+}
+
+fn gain_scar_tech(player: &str, tech: Technology) -> Event {
+    Event::GainEntropicScarTech {
+        player: p(player),
+        tech,
+    }
+}
+
+/// At the start of the status phase, each player with ships in an entropic scar may gain one of
+/// their own faction technologies, without prerequisites, until they score an objective.
+pub fn thunders_edge_entropic_scar() -> TestGame {
+    let mut g = TestGame::builder()
+        .milty(every_thunders_edge_tile_draft())
+        .setup_techs(
+            "Ben",
+            [Technology::NeuralMotivator, Technology::RadicalAdvancement],
+        )
+        .create();
+    g.finish_creation()
+        .auto_setup()
+        .start_game()
+        .apply(roll("Cid", false));
+    g.strategy_phase(&[
+        ("Ann", StrategyCard::Leadership),
+        ("Ben", StrategyCard::Diplomacy),
+        ("Cid", StrategyCard::Politics),
+        ("Dee", StrategyCard::Construction),
+        ("Eve", StrategyCard::Trade),
+    ]);
+    g.expect_rejected(
+        gain_scar_tech("Ben", Technology::HydrothermalMining),
+        "expected Status",
+    )
+    .play_out_action_phase();
+
+    let status = g
+        .status_phase()
+        .expect_rejected(
+            gain_scar_tech("Ben", Technology::NeuralParasite),
+            "isn't one of",
+        )
+        .expect_rejected(
+            gain_scar_tech("Ben", Technology::SarweenTools),
+            "isn't one of",
+        )
+        .expect_rejected(
+            gain_scar_tech("Ben", Technology::RadicalAdvancement),
+            "already has tech",
+        )
+        .apply(gain_scar_tech("Ben", Technology::HydrothermalMining))
+        .apply(gain_scar_tech("Ann", Technology::NeuralParasite))
+        .expect_rejected(
+            gain_scar_tech("Ann", Technology::PlaneSplitter),
+            "already gained",
+        )
+        .public("Dee", PublicObjective::CornerTheMarket)
+        .expect_rejected(
+            gain_scar_tech("Dee", Technology::Nanomachines),
+            "before scoring",
+        );
+    assert_eq!(
+        status
+            .state()
+            .status_phase_state
+            .as_ref()
+            .unwrap()
+            .entropic_scar_techs,
+        HashMap::from([
+            (p("Ben"), Technology::HydrothermalMining),
+            (p("Ann"), Technology::NeuralParasite),
+        ])
+    );
+    status.reveal(PublicObjective::ExpandBorders).complete();
+
+    assert!(g.player("Ben").has_tech(&Technology::HydrothermalMining));
+    assert!(g.player("Ann").has_tech(&Technology::NeuralParasite));
+    assert!(!g.player("Dee").has_tech(&Technology::Nanomachines));
+    g
+}
+
+#[test]
+fn entropic_scar_needs_a_scar_on_the_map() {
+    let mut g = TestGame::builder().milty(five_player_draft()).start();
+    g.strategy_phase(&[
+        ("Ben", StrategyCard::Leadership),
+        ("Cid", StrategyCard::Diplomacy),
+        ("Ann", StrategyCard::Politics),
+        ("Dee", StrategyCard::Construction),
+        ("Eve", StrategyCard::Trade),
+    ])
+    .play_out_action_phase()
+    .status_phase()
+    .expect_rejected(
+        gain_scar_tech("Dee", Technology::HydrothermalMining),
+        "no entropic scar",
+    );
+}
+
+#[test]
+fn entropic_scar_without_a_map() {
+    let mut g = action_phase(three_players().pok().codex().thunders_edge());
+    g.play_out_action_phase()
+        .status_phase()
+        .apply(gain_scar_tech("Alice", Technology::AdvancedCarrierII));
+    assert!(g.player("Alice").has_tech(&Technology::AdvancedCarrierII));
+
+    let mut g = action_phase(three_players().pok().codex());
+    g.play_out_action_phase().status_phase().expect_rejected(
+        gain_scar_tech("Alice", Technology::AdvancedCarrierII),
+        "no entropic scar",
+    );
 }

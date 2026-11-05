@@ -191,6 +191,7 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: ErectAMonument
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []

@@ -375,6 +375,15 @@ pub enum Event {
         replacement: Objective,
     },
 
+    /// At the start of the status phase, a player with ships in an entropic scar spends a token
+    /// from their strategy pool to gain one of their faction technologies.
+    GainEntropicScarTech {
+        /// The player who gains the technology.
+        player: PlayerId,
+        /// The faction technology that is gained.
+        tech: Technology,
+    },
+
     /// A player plays the Crown of Emphidia card.
     PlayCrownOfEmphidia {
         /// The player who plays the Crown of Emphidia card.

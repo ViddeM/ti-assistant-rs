@@ -343,6 +343,7 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: CentralizeGalacticTrade
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []

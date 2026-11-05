@@ -123,6 +123,7 @@ statusPhaseState:
     Alice: DestroyTheirGreatestShip
   scoredSecretObjectives: {}
   revealedObjective: ~
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []

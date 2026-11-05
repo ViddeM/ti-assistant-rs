@@ -1853,6 +1853,40 @@ fn try_update_game_state(
                 game_state.score.shard_of_the_throne = None;
             }
         }
+        Event::GainEntropicScarTech { player, tech } => {
+            game_state.assert_phase(Phase::Status)?;
+            ensure!(
+                game_state.entropic_scar_in_play(),
+                "There is no entropic scar in this game"
+            );
+            game_state.assert_enabled(&tech)?;
+
+            let Some(status_state) = game_state.status_phase_state.as_mut() else {
+                bail!("Status phase state not set!")
+            };
+            ensure!(
+                !status_state.scored_public_objectives.contains_key(&player)
+                    && !status_state.scored_secret_objectives.contains_key(&player),
+                "An entropic scar is used at the start of the status phase, before scoring objectives"
+            );
+            ensure!(
+                !status_state.entropic_scar_techs.contains_key(&player),
+                "{player} has already gained a technology from an entropic scar this status phase"
+            );
+
+            let p = game_state
+                .players
+                .get_mut(&player)
+                .context("Player doesn't exist")?;
+            ensure!(
+                tech.info().origin == TechOrigin::Faction(p.faction),
+                "{} isn't one of {}'s faction technologies",
+                tech.info().name,
+                p.faction.name()
+            );
+            p.take_tech(tech.clone())?;
+            status_state.entropic_scar_techs.insert(player, tech);
+        }
         Event::PlayCrownOfEmphidia { player } => {
             game_state.assert_phase(Phase::Relics)?;
 

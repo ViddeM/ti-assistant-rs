@@ -123,6 +123,7 @@ statusPhaseState:
     Bob: ~
     Carol: ~
   revealedObjective: ~
+  entropicScarTechs: {}
 availableLeaders:
   Alice: []
   Bob: []
