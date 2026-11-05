@@ -95,7 +95,8 @@ fn EntropicScarPlayer(player: ReadSignal<PlayerId>) -> Element {
                     InfoButton { info: Info::Tech(tech) }
                 }
             } else {
-                p { "Ships in an entropic scar? Spend a strategy token to gain a faction technology." }
+                p { "Ships in an entropic scar?" }
+                p { class: "warning-text", "Spend a strategy token" }
                 if !has_faction_tech_left() {
                     p { "No faction technologies left to gain." }
                 } else if picking() {

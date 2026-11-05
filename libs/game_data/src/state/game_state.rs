@@ -1008,14 +1008,18 @@ impl GameState {
     /// Returns true if an entropic scar can be in play: Thunder's Edge is enabled and the map, if
     /// it is known, has an entropic scar.
     pub fn entropic_scar_in_play(&self) -> bool {
-        self.game_settings
+        if !self
+            .game_settings
             .expansions
             .is_enabled(&Expansion::ThundersEdge)
-            && self
-                .map_data
-                .milty_information
-                .as_ref()
-                .is_none_or(|milty| milty.hex_map.has_anomaly(&AnomalyType::EntropicScar))
+        {
+            return false;
+        }
+
+        self.map_data
+            .milty_information
+            .as_ref()
+            .is_none_or(|milty| milty.hex_map.has_anomaly(&AnomalyType::EntropicScar))
     }
 
     /// Returns true if the objective used to be a public objective but no longer is: a secret
@@ -1053,7 +1057,9 @@ impl GameState {
     /// Zealous Orthodoxy: the first of `candidates` with 2 scored secret objectives gains its point,
     /// if the event is in play and nobody has gained it yet.
     pub fn gain_zealous_orthodoxy(&mut self, candidates: &[PlayerId]) {
-        if !self.galactic_events.contains(&GalacticEvent::ZealousOrthodoxy)
+        if !self
+            .galactic_events
+            .contains(&GalacticEvent::ZealousOrthodoxy)
             || self.score.galactic_events.zealous_orthodoxy.is_some()
         {
             return;
