@@ -81,6 +81,7 @@ pub fn SelectTechView(
                             TechCategoryButton {
                                 key: "{tech_type}",
                                 tech_type: tech_type.clone(),
+                                disabled: !available_techs().iter().any(|t| &t.info().tech_type == tech_type),
                                 is_selected: selected_tech_type().as_ref().eq(&Some(&tech_type)),
                                 set_selected: move |_| {
                                     selected_tech_type.set(Some(tech_type));
@@ -105,6 +106,7 @@ pub fn SelectTechView(
 #[derive(Debug, Clone, PartialEq, Props)]
 struct TechCategoryButtonProps {
     tech_type: TechType,
+    disabled: bool,
     is_selected: bool,
     set_selected: EventHandler<()>,
     selected_tech: ReadSignal<Option<Technology>>,
@@ -116,6 +118,7 @@ struct TechCategoryButtonProps {
 fn TechCategoryButton(
     TechCategoryButtonProps {
         tech_type,
+        disabled,
         is_selected,
         set_selected,
         selected_tech,
@@ -130,7 +133,10 @@ fn TechCategoryButton(
 
     if !is_selected {
         return rsx! {
-            Button { onclick: move |_| set_selected(()), class: base_style,
+            Button {
+                disabled,
+                onclick: move |_| set_selected(()),
+                class: base_style,
                 "{tech_type.to_display_name()}"
                 {
                     if let TechType::Category(t) = &tech_type {
