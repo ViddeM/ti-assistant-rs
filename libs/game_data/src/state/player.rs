@@ -54,6 +54,9 @@ pub struct Player {
     /// The faction whose leaders the player holds instead of their own ('Cultural Exchange
     /// Program').
     pub leaders_from: Option<Faction>,
+    /// The faction whose home system the player was dealt as a minor faction system ('Minor
+    /// Factions').
+    pub minor_faction: Option<Faction>,
 }
 
 impl NewPlayer {
@@ -85,6 +88,7 @@ impl NewPlayer {
             breakthrough,
             faction_state: Arc::new(faction_state),
             leaders_from: None,
+            minor_faction: None,
         }
     }
 }

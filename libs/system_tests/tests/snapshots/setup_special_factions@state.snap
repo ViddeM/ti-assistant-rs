@@ -32,6 +32,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Kel:
     name: Kel
     faction: CouncilKeleres
@@ -46,6 +47,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Wendy:
     name: Wendy
     faction: Winnu
@@ -58,6 +60,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
 speaker: Kel
 tableOrder:
   - Wendy

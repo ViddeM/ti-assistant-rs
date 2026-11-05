@@ -209,6 +209,7 @@ players:
       Firmament:
         side: Firmament
     leadersFrom: ~
+    minorFaction: ~
   Ben:
     name: Ben
     faction: DeepwroughtScholarate
@@ -228,6 +229,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Cid:
     name: Cid
     faction: CrimsonRebellion
@@ -246,6 +248,7 @@ players:
     breakthrough: ResonanceGenerator
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Dee:
     name: Dee
     faction: RalNelConsortium
@@ -265,6 +268,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Eve:
     name: Eve
     faction: LastBastion
@@ -285,6 +289,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
 speaker: Ann
 tableOrder:
   - Ann

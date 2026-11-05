@@ -240,7 +240,7 @@ fn MonumentsToTheAges() -> Element {
             return Vec::new();
         };
         let mut planets = (player.planets.keys())
-            .filter(|p| !p.is_in_home_system())
+            .filter(|p| !game_state.is_home_planet(p))
             .filter(|p| game_state.planet_location(p) != PlanetLocation::NotOnBoard)
             .filter(|p| !game_state.monuments.contains_key(p))
             .cloned()

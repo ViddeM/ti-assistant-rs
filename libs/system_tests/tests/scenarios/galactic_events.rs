@@ -2,7 +2,10 @@
 
 use std::collections::BTreeSet;
 
-use ti_helper_game_data::common::map::{Coordinate, HexPosition};
+use ti_helper_game_data::{
+    common::map::{Coordinate, HexPosition},
+    components::planet::PlanetTrait,
+};
 use ti_helper_system_tests::prelude::*;
 
 use crate::fixtures::{SIMPLE_PICKS, action_phase, five_player_draft, three_players};
@@ -23,6 +26,7 @@ scenarios![
     galactic_events_monuments_to_the_ages,
     galactic_events_age_of_exploration,
     galactic_events_rapid_mobilization,
+    galactic_events_minor_factions,
     galactic_events_admin,
 ];
 
@@ -967,6 +971,151 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
     g
 }
 
+/// Minor Factions: each player is dealt a faction that isn't being played, whose home system
+/// becomes a minor faction system. Its planets aren't home planets and have all three traits, and
+/// controlling all of them gives the player that faction's alliance card.
+pub fn galactic_events_minor_factions() -> TestGame {
+    let mut g = TestGame::builder()
+        .pok()
+        .codex()
+        .thunders_edge()
+        .player("Alice", Faction::FederationOfSol)
+        .player("Bob", Faction::EmiratesOfHacan)
+        .player("Carol", Faction::CouncilKeleres)
+        .tribunii(Faction::XxchaKingdom)
+        .galactic_events([GalacticEvent::MinorFactions, GalacticEvent::DangerousWilds])
+        .setup();
+    let deal = |player: &str, faction: Option<Faction>| Event::SetupMinorFaction {
+        player: p(player),
+        faction,
+    };
+    let minor_faction = |g: &TestGame, player: &str| g.player(player).minor_faction;
+    let alliance =
+        |g: &TestGame, player: &str, planet| g.state().minor_faction_alliance(&p(player), &planet);
+
+    g.expect_rejected(
+        deal("Alice", Some(Faction::EmiratesOfHacan)),
+        "The Emirates of Hacan can't be Alice's minor faction",
+    )
+    .expect_rejected(
+        deal("Alice", Some(Faction::CouncilKeleres)),
+        "The Council Keleres can't be Alice's minor faction",
+    )
+    .apply(deal("Alice", Some(Faction::MentakCoalition)))
+    .expect_rejected(
+        deal("Bob", Some(Faction::MentakCoalition)),
+        "The Mentak Coalition can't be Bob's minor faction",
+    )
+    .expect_rejected(
+        Event::SetupTheTribunii {
+            player: p("Carol"),
+            faction: Faction::MentakCoalition,
+        },
+        "The Mentak Coalition is Alice's minor faction",
+    );
+
+    g.auto_setup();
+    assert_eq!(minor_faction(&g, "Alice"), Some(Faction::MentakCoalition));
+    assert_eq!(minor_faction(&g, "Bob"), Some(Faction::Arborec));
+    assert_eq!(minor_faction(&g, "Carol"), Some(Faction::BaronyOfLetnev));
+
+    g.apply(deal("Bob", None))
+        .expect_rejected(
+            Event::StartGame,
+            "All initialization has not yet been completed",
+        )
+        .expect_rejected(
+            deal("Bob", Some(Faction::XxchaKingdom)),
+            "The Xxcha Kingdom can't be Bob's minor faction",
+        )
+        .apply(deal("Bob", Some(Faction::NaaluCollective)))
+        .start_game()
+        .strategy_phase(SIMPLE_PICKS);
+
+    assert!(!g.state().is_home_planet(&Planet::MollPrimus));
+    assert!(g.state().is_home_planet(&Planet::Jord));
+    assert_eq!(
+        g.state().planet_traits(&Planet::MollPrimus),
+        BTreeSet::from([
+            PlanetTrait::Cultural,
+            PlanetTrait::Hazardous,
+            PlanetTrait::Industrial,
+        ])
+    );
+    assert_eq!(alliance(&g, "Alice", Planet::MollPrimus), None);
+
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::MollPrimus)
+        .attach(Planet::MollPrimus, PlanetAttachment::DysonSphere)
+        .research(Planet::MollPrimus, Technology::GravityDrive)
+        .commit()
+        .end_turn();
+    assert_eq!(
+        alliance(&g, "Alice", Planet::MollPrimus),
+        Some(Faction::MentakCoalition)
+    );
+    assert!(
+        g.player("Alice")
+            .technologies
+            .contains(&Technology::GravityDrive)
+    );
+
+    let terraform = |planet| Event::AddPlanetAttachment {
+        player: p("Alice"),
+        planet,
+        attachment: PlanetAttachment::Terraform,
+    };
+    g.apply(terraform(Planet::MollPrimus))
+        .expect_rejected(terraform(Planet::Jord), "Cannot terraform home planet")
+        .apply(Event::AddAgendaBegin {
+            agenda: Agenda::ColonialRedistribution,
+        });
+    let candidates = &(g.state().agenda_override_state.as_ref())
+        .expect("Colonial Redistribution to be in progress")
+        .vote_state
+        .candidates;
+    assert!(candidates.contains(&AgendaElect::PlanetWithTrait(Planet::MollPrimus)));
+    g.apply(Event::AddAgendaCancel);
+
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Maaluuk)
+        .commit()
+        .end_turn();
+    assert_eq!(alliance(&g, "Bob", Planet::Maaluuk), None);
+
+    g.apply(Event::SetRelicOwner {
+        relic: Relic::StellarConverter,
+        player: Some(p("Carol")),
+    });
+    g.turn("Carol")
+        .relic(
+            Relic::StellarConverter,
+            Some(RelicAction::StellarConverter {
+                planet: Planet::MollPrimus,
+            }),
+        )
+        .end_turn();
+    assert!(!g.player("Alice").planets.contains_key(&Planet::MollPrimus));
+
+    g.turn("Alice").tactical().commit().end_turn();
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Druaa)
+        .commit()
+        .end_turn();
+    assert_eq!(
+        alliance(&g, "Bob", Planet::Druaa),
+        Some(Faction::NaaluCollective)
+    );
+    assert_eq!(
+        alliance(&g, "Bob", Planet::Maaluuk),
+        Some(Faction::NaaluCollective)
+    );
+    g
+}
+
 /// The admin events fix the tracked state of the galactic events in play, in any phase: a used
 /// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
 /// the Total War points. Each needs an existing player and a change.
@@ -1126,6 +1275,18 @@ fn cultural_exchange_program_needs_pok() {
             events: BTreeSet::from([GalacticEvent::CulturalExchangeProgram]),
         },
         "is not available with the enabled expansions",
+    );
+}
+
+#[test]
+fn minor_factions_needs_the_event() {
+    let mut g = three_players().codex().setup();
+    g.expect_rejected(
+        Event::SetupMinorFaction {
+            player: p("Alice"),
+            faction: Some(Faction::MentakCoalition),
+        },
+        "Minor Factions isn't in play",
     );
 }
 

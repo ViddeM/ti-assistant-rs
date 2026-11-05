@@ -14,7 +14,7 @@ use super::{
 };
 
 /// A planetary trait.
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[allow(missing_docs)]
 pub enum PlanetTrait {
     Cultural,

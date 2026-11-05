@@ -78,6 +78,15 @@ pub enum Event {
         faction: Option<Faction>,
     },
 
+    /// Deal a player the reference card of a faction that isn't being played, whose home system
+    /// becomes a minor faction system ('Minor Factions').
+    SetupMinorFaction {
+        /// The player who is dealt the reference card.
+        player: PlayerId,
+        /// The dealt faction, or none to put the card back.
+        faction: Option<Faction>,
+    },
+
     /// Faction-specific technology selection for a player.
     SetupPlayerTechs {
         /// The player who selects the technologies.

@@ -25,7 +25,7 @@ use crate::{
         leaders::{Leader, LeaderAbilityKind},
         objectives::{Objective, secret::SecretObjective},
         phase::Phase,
-        planet::Planet,
+        planet::{Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
         relic::Relic,
         strategy_card::StrategyCard,
@@ -670,11 +670,74 @@ impl GameState {
     /// board, outside the home systems, that no player controls.
     pub fn is_rapid_mobilization_planet(&self, planet: &Planet) -> bool {
         self.planet_location(planet) == PlanetLocation::SystemTile
-            && !planet.is_in_home_system()
+            && !self.is_home_planet(planet)
             && !self
                 .players
                 .values()
                 .any(|p| p.planets.contains_key(planet))
+    }
+
+    /// The minor faction whose home system holds `planet`, if a player was dealt that faction
+    /// ('Minor Factions').
+    pub fn minor_faction_of(&self, planet: &Planet) -> Option<Faction> {
+        (self.players.values())
+            .filter_map(|player| player.minor_faction)
+            .find(|faction| planet.is_in_home_system_of(*faction))
+    }
+
+    /// Whether `player` can be dealt `faction` as their minor faction: a faction that isn't being
+    /// played and isn't another player's minor faction, with a home system that no player
+    /// controls a planet of.
+    pub fn is_minor_faction_available(&self, player: &PlayerId, faction: Faction) -> bool {
+        let home_planets = faction.get_starting_planets();
+        !home_planets.is_empty()
+            && self.players.iter().all(|(id, other)| {
+                other.faction != faction
+                    && (id == player || other.minor_faction != Some(faction))
+                    && home_planets
+                        .iter()
+                        .all(|planet| !other.planets.contains_key(planet))
+            })
+    }
+
+    /// Whether `planet` is a home planet. Minor faction systems don't count as home systems.
+    pub fn is_home_planet(&self, planet: &Planet) -> bool {
+        planet.is_in_home_system() && self.minor_faction_of(planet).is_none()
+    }
+
+    /// The traits of `planet`, including those added by its attachments. Planets in minor faction
+    /// systems have all three traits.
+    pub fn planet_traits(&self, planet: &Planet) -> BTreeSet<PlanetTrait> {
+        if self.minor_faction_of(planet).is_some() {
+            return BTreeSet::from([
+                PlanetTrait::Cultural,
+                PlanetTrait::Hazardous,
+                PlanetTrait::Industrial,
+            ]);
+        }
+
+        let attachments = (self.players.values()).filter_map(|player| player.planets.get(planet));
+        planet
+            .info()
+            .planet_traits
+            .into_iter()
+            .chain(
+                attachments
+                    .flatten()
+                    .flat_map(|attachment| attachment.info().added_planet_traits),
+            )
+            .collect()
+    }
+
+    /// The minor faction whose alliance card `player` takes for controlling every planet in its
+    /// system, if `planet` is in that system.
+    pub fn minor_faction_alliance(&self, player: &PlayerId, planet: &Planet) -> Option<Faction> {
+        let faction = self.minor_faction_of(planet)?;
+        let player = self.players.get(player)?;
+        (faction.get_starting_planets())
+            .iter()
+            .all(|planet| player.planets.contains_key(planet))
+            .then_some(faction)
     }
 
     /// Give `planet` and its attachments to `owner`, or to nobody, returning the previous owner.
@@ -1004,8 +1067,10 @@ impl GameState {
             .contains(&GalacticEvent::CulturalExchangeProgram)
             || player.faction == Faction::FirmamentObsidian
             || player.leaders_from.is_some();
+        let minor_faction_finished = !self.galactic_events.contains(&GalacticEvent::MinorFactions)
+            || player.minor_faction.is_some();
 
-        Ok(faction_setup_finished && cultural_exchange_finished)
+        Ok(faction_setup_finished && cultural_exchange_finished && minor_faction_finished)
     }
 
     /// The max number of players allowed for this game.

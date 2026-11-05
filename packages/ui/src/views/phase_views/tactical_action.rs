@@ -158,6 +158,7 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
                             tech: progress().researched_techs.get(planet).cloned(),
                         }
                         MonumentPrompt { planet: planet.clone() }
+                        MinorFactionAlliance { planet: planet.clone() }
                     }
                 }
             }
@@ -250,6 +251,26 @@ fn MonumentPrompt(planet: ReadSignal<Planet>) -> Element {
 }
 
 #[component]
+fn MinorFactionAlliance(planet: ReadSignal<Planet>) -> Element {
+    let gc = use_context::<GameContext>();
+
+    let alliance = use_memo(move || {
+        let game_state = gc.game_state();
+        let current_player = game_state.current_player.as_ref()?;
+        if !game_state.game_settings.expansions.prophecy_of_kings {
+            return None;
+        }
+        game_state.minor_faction_alliance(current_player, &planet())
+    });
+
+    rsx! {
+        if let Some(faction) = alliance() {
+            p { "Take the alliance card of {faction.name()}: you control every planet in its system." }
+        }
+    }
+}
+
+#[component]
 fn DangerousWildsResearch(
     planet: ReadSignal<Planet>,
     previous_owner: ReadSignal<Option<PlayerId>>,
@@ -278,9 +299,9 @@ fn DangerousWildsResearch(
             .galactic_events
             .contains(&GalacticEvent::DangerousWilds)
             && previous_owner().is_none()
-            && planet()
-                .info()
-                .planet_traits
+            && gc
+                .game_state()
+                .planet_traits(&planet())
                 .contains(&PlanetTrait::Hazardous)
     });
 
@@ -323,9 +344,9 @@ pub fn SelectPlanetAttachment(
 
     let mut selected_attachment = use_signal(|| None);
 
-    let planet_info = use_memo(move || planet().info());
+    let planet_traits = use_memo(move || gc.game_state().planet_traits(&planet()));
 
-    if planet_info().planet_traits.is_empty() {
+    if planet_traits().is_empty() {
         return rsx! { "Cannot explore" };
     }
 
@@ -348,10 +369,10 @@ pub fn SelectPlanetAttachment(
             .iter()
             .filter(|(_, info)| {
                 if let Some(t) = info.planet_trait.as_ref() {
-                    return planet_info().planet_traits.contains(t);
+                    return planet_traits().contains(t);
                 }
 
-                planet_info().planet_traits.is_empty()
+                planet_traits().is_empty()
             })
             .filter(|(a, _)| a.is_real())
             .map(|(a, _)| a.clone())

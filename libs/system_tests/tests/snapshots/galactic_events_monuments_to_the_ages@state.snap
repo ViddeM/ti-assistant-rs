@@ -33,6 +33,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -50,6 +51,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -63,6 +65,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
 speaker: Alice
 tableOrder:
   - Alice

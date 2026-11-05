@@ -259,6 +259,11 @@ fn try_update_game_state(
         }
         Event::SetupTheTribunii { player, faction } => {
             game_state.assert_phase(Phase::Setup)?;
+            let holder =
+                (game_state.players.iter()).find(|(_, other)| other.minor_faction == Some(faction));
+            if let Some((holder, _)) = holder {
+                bail!("{} is {holder}'s minor faction", faction.name());
+            }
             let Some(player) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist!")
             };
@@ -318,6 +323,28 @@ fn try_update_game_state(
                 bail!("Player doesn't exist '{player}'");
             };
             player.leaders_from = faction;
+        }
+        Event::SetupMinorFaction { player, faction } => {
+            game_state.assert_phase(Phase::Setup)?;
+            game_state.assert_galactic_event(&GalacticEvent::MinorFactions)?;
+            ensure!(
+                game_state.players.contains_key(&player),
+                "Player doesn't exist '{player}'"
+            );
+
+            if let Some(faction) = faction {
+                game_state.assert_enabled(&faction)?;
+                ensure!(
+                    game_state.is_minor_faction_available(&player, faction),
+                    "{} can't be {player}'s minor faction: it has to be out of play, not another player's minor faction and have a home system with no controlled planets",
+                    faction.name()
+                );
+            }
+
+            let Some(player) = game_state.players.get_mut(&player) else {
+                bail!("Player doesn't exist '{player}'");
+            };
+            player.minor_faction = faction;
         }
         Event::SetupPlayerTechs {
             player,
@@ -599,6 +626,7 @@ fn try_update_game_state(
         } => {
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
+            let planet_traits = game_state.planet_traits(&planet);
 
             {
                 let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
@@ -631,10 +659,7 @@ fn try_update_game_state(
                     bail!("Only attachments with planet_traits can be used during exploration")
                 };
                 ensure!(
-                    planet
-                        .info()
-                        .planet_traits
-                        .contains(attachment_planet_trait),
+                    planet_traits.contains(attachment_planet_trait),
                     "Planet does not meet the trait requirements for the attachment"
                 );
             }
@@ -686,9 +711,8 @@ fn try_update_game_state(
                 );
 
                 ensure!(
-                    planet
-                        .info()
-                        .planet_traits
+                    game_state
+                        .planet_traits(&planet)
                         .contains(&PlanetTrait::Hazardous),
                     "{} isn't hazardous",
                     planet.info().name
@@ -928,7 +952,7 @@ fn try_update_game_state(
                     ActionCardAction::MercenaryContract { planet } => {
                         if let Some(planet) = planet {
                             ensure!(
-                                !planet.is_in_home_system(),
+                                !game_state.is_home_planet(&planet),
                                 "Cannot use Mercenary Contract on a home planet"
                             );
                             ensure!(
@@ -1412,10 +1436,7 @@ fn try_update_game_state(
                                 "Cannot use stellar converter on mecatol rex"
                             );
                             ensure!(
-                                !matches!(
-                                    System::for_planet(&planet)?.system_type,
-                                    SystemType::HomeSystem(..)
-                                ),
+                                !game_state.is_home_planet(&planet),
                                 "Cannot use stellar converter on home system"
                             );
                             ensure!(
@@ -1445,10 +1466,7 @@ fn try_update_game_state(
                             "Cannot place nano forge on legendary planet"
                         );
                         ensure!(
-                            !matches!(
-                                System::for_planet(&planet)?.system_type,
-                                SystemType::HomeSystem(..)
-                            ),
+                            !game_state.is_home_planet(&planet),
                             "Cannot place Nano Forge on home planet"
                         );
                         let Some(player) = game_state.players.get_mut(&player) else {
@@ -2201,6 +2219,8 @@ fn try_update_game_state(
             planet,
             attachment,
         } => {
+            let home_planet = game_state.is_home_planet(&planet);
+            let planet_traits = game_state.planet_traits(&planet);
             let Some(player) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist");
             };
@@ -2223,31 +2243,19 @@ fn try_update_game_state(
                 }
                 PlanetAttachment::Terraform => {
                     ensure!(!planet.is_mecatol_rex(), "Cannot terraform Mecatol Rex");
-                    ensure!(
-                        !matches!(
-                            System::for_planet(&planet)?.system_type,
-                            SystemType::HomeSystem(..)
-                        ),
-                        "Cannot terraform home planet"
-                    );
+                    ensure!(!home_planet, "Cannot terraform home planet");
                 }
                 PlanetAttachment::NanoForge => {
                     ensure!(
                         !planet.info().is_legendary,
                         "Cannot place Nano Forge on legendary planet"
                     );
-                    ensure!(
-                        !matches!(
-                            System::for_planet(&planet)?.system_type,
-                            SystemType::HomeSystem(..)
-                        ),
-                        "Cannot place Nano Forge on home planet"
-                    );
+                    ensure!(!home_planet, "Cannot place Nano Forge on home planet");
                 }
                 v => {
                     if let Some(t) = v.info().planet_trait {
                         ensure!(
-                            planet.info().planet_traits.contains(&t),
+                            planet_traits.contains(&t),
                             "Attachment is not allowed to be placed on this planet, planet_trait requirement not met."
                         );
                     }
@@ -2572,7 +2580,7 @@ fn try_update_game_state(
                 "{player} doesn't control {name}"
             );
             ensure!(
-                !planet.is_in_home_system(),
+                !game_state.is_home_planet(&planet),
                 "Monuments can't be placed on home planets"
             );
             ensure!(

@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::{planet::Planet, planet_attachment::PlanetAttachment, system::SystemType},
+    components::{planet::Planet, planet_attachment::PlanetAttachment},
 };
 
 use crate::{
@@ -73,22 +73,13 @@ pub fn AddPlanetAttachment() -> Element {
             .unwrap_or_default()
     });
 
-    let home_planets = use_memo(move || {
-        let mut planets = gc
-            .game_options()
-            .systems
-            .values()
-            .filter(|system| matches!(system.system_type, SystemType::HomeSystem(..)))
-            .flat_map(|system| system.planets.clone())
-            .collect::<Vec<_>>();
-        planets.sort();
-        planets
-    });
-
     let available_attachments = use_memo(move || {
         let Some(planet) = planet() else {
             return vec![];
         };
+        let game_state = gc.game_state();
+        let home_planet = game_state.is_home_planet(&planet);
+        let planet_traits = game_state.planet_traits(&planet);
 
         let mut attachments = gc
             .game_options()
@@ -101,19 +92,15 @@ pub fn AddPlanetAttachment() -> Element {
             })
             .filter(|(_, i)| {
                 if let Some(t) = i.planet_trait.as_ref() {
-                    planet.info().planet_traits.contains(t)
+                    planet_traits.contains(t)
                 } else {
                     true
                 }
             })
             .filter(|(a, _)| match a {
                 PlanetAttachment::Geoform => planet == Planet::Elysium,
-                PlanetAttachment::Terraform => {
-                    !planet.is_mecatol_rex() && !home_planets().contains(&planet)
-                }
-                PlanetAttachment::NanoForge => {
-                    !home_planets().contains(&planet) && !planet.info().is_legendary
-                }
+                PlanetAttachment::Terraform => !planet.is_mecatol_rex() && !home_planet,
+                PlanetAttachment::NanoForge => !home_planet && !planet.info().is_legendary,
                 _ => true,
             })
             .map(|(a, _)| a.clone())

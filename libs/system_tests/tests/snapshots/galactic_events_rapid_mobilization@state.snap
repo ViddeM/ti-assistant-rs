@@ -34,6 +34,7 @@ players:
     breakthrough: ThundersParadox
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Bob:
     name: Bob
     faction: NekroVirus
@@ -48,6 +49,7 @@ players:
     breakthrough: ValefarAssimilatorZ
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Carol:
     name: Carol
     faction: EmbersOfMuaat
@@ -63,6 +65,7 @@ players:
     breakthrough: StellarGenesis
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
 speaker: Alice
 tableOrder:
   - Alice

@@ -1,0 +1,50 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 SetGalacticEvents                        r0 Creation           -
+   5 CreationDone                             r0 Setup              -
+   6 SetupMinorFaction(Alice)                 r0 Setup              -
+   7 SetupTheTribunii(Carol)                  r0 Setup              -
+   8 SetupPlayerTechs(Carol)                  r0 Setup              -
+   9 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+  10 SetupMinorFaction(Bob)                   r0 Setup              -
+  11 SetupMinorFaction(Carol)                 r0 Setup              -
+  12 RevealInitialObjectives                  r0 Setup              -
+  13 SetupMinorFaction(Bob)                   r0 Setup              -
+  14 SetupMinorFaction(Bob)                   r0 Setup              -
+  15 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
+  16 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  17 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  18 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  19 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  20 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  21 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  22 CompleteStrategyPhase                    r1 Action             Alice
+  23 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  24 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  25 TacticalActionAttachPlanetAttachment(Alice) r1 TacticalAction     Alice
+  26 TacticalActionResearchTechnology(Alice)  r1 TacticalAction     Alice
+  27 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  28 EndTurn(Alice)                           r1 Action             Bob
+  29 AddPlanetAttachment(Alice)               r1 Action             Bob
+  30 AddAgendaBegin                           r1 Action             Bob
+  31 AddAgendaCancel                          r1 Action             Bob
+  32 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  33 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob
+  34 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  35 EndTurn(Bob)                             r1 Action             Carol
+  36 SetRelicOwner(Carol)                     r1 Action             Carol
+  37 RelicActionBegin(Carol)                  r1 RelicAction        Carol
+  38 RelicActionCommit(Carol)                 r1 EndActionTurn      Carol
+  39 EndTurn(Carol)                           r1 Action             Alice
+  40 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  41 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  42 EndTurn(Alice)                           r1 Action             Bob
+  43 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  44 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob
+  45 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  46 EndTurn(Bob)                             r1 Action             Carol

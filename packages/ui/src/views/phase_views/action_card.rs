@@ -380,7 +380,7 @@ fn MercenaryContractView(send_commit_message: Callback<Option<ActionCardAction>>
             .iter()
             .filter(|&(id, _)| id != &current_player)
             .flat_map(|(_, player)| player.planets.keys())
-            .filter(|planet| !planet.is_in_home_system())
+            .filter(|planet| !state.is_home_planet(planet))
             .filter(|planet| state.planet_location(planet) != PlanetLocation::NotOnBoard)
             .cloned()
             .collect::<Vec<_>>();

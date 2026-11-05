@@ -53,18 +53,11 @@ pub fn PlayerResources(player_id: PlayerId) -> Element {
     });
 
     let planet_traits = use_memo(move || {
-        planets()
-            .iter()
-            .flat_map(|(_, info, attachments)| {
-                let mut traits = info.planet_traits.clone();
-                for t in attachments
-                    .iter()
-                    .flat_map(|a| a.info().added_planet_traits.clone())
-                {
-                    traits.push(t);
-                }
-                traits
-            })
+        let game_state = gc.game_state();
+        player()
+            .planets
+            .keys()
+            .flat_map(|planet| game_state.planet_traits(planet))
             .collect::<Vec<_>>()
     });
 

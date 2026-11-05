@@ -3,10 +3,7 @@ use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::event::{Event, RelicAction},
     components::{
-        galactic_event::GalacticEvent,
-        planet_attachment::PlanetAttachment,
-        relic::Relic,
-        system::{System, SystemType},
+        galactic_event::GalacticEvent, planet_attachment::PlanetAttachment, relic::Relic,
         tech::TechCategory,
     },
     state::game_state::ActionPhaseProgress,
@@ -133,19 +130,7 @@ fn StellarConvertersView() -> Element {
             .filter(|p| any_planet || !p.is_mecatol_rex())
             .filter(|p| any_planet || !p.info().is_legendary)
             .filter(|&p| any_planet || !planets_with_legendary_attachments().contains(p))
-            .filter(|p| {
-                if any_planet {
-                    return true;
-                }
-                let go = gc.game_options().clone();
-                let (_, info) = go
-                    .systems
-                    .iter()
-                    .find(|(_, info)| info.planets.contains(p))
-                    .expect("Planet to be in a system");
-
-                !matches!(info.system_type, SystemType::HomeSystem(..))
-            })
+            .filter(|p| any_planet || !gc.game_state().is_home_planet(p))
             .cloned()
             .collect::<Vec<_>>();
 
@@ -199,12 +184,7 @@ fn NanoForgeView() -> Element {
             .flat_map(|p| p.planets.iter().map(|(p, a)| (p.clone(), p.info(), a)))
             .filter(|(_, i, _)| !i.is_legendary)
             .filter(|(_, _, attachments)| !attachments.contains(&PlanetAttachment::NanoForge))
-            .filter(|(p, _, _)| {
-                let system_type = System::for_planet(p)
-                    .expect("Planet to have system")
-                    .system_type;
-                !matches!(system_type, SystemType::HomeSystem(..))
-            })
+            .filter(|(p, _, _)| !state.is_home_planet(p))
             .map(|(p, _, _)| p)
             .collect::<Vec<_>>();
         planets.sort();

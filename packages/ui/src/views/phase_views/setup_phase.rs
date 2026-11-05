@@ -95,6 +95,11 @@ fn PlayersSetup() -> Element {
             .galactic_events
             .contains(&GalacticEvent::CulturalExchangeProgram)
     });
+    let minor_factions = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .contains(&GalacticEvent::MinorFactions)
+    });
 
     rsx! {
         div { class: "player-specific-setup-container",
@@ -140,6 +145,9 @@ fn PlayersSetup() -> Element {
                                     FactionSpecificSetup { player_id: Arc::clone(&name), player: Arc::clone(&player) }
                                     if cultural_exchange() {
                                         CulturalExchangeSetup { player_id: Arc::clone(&name), player: Arc::clone(&player) }
+                                    }
+                                    if minor_factions() {
+                                        MinorFactionSetup { player_id: Arc::clone(&name) }
                                     }
                                 }
                             }
@@ -247,6 +255,48 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                 on_select: move |faction| {
                     event
                         .send_event(Event::SetupCulturalExchange {
+                            player: Arc::clone(&player_id),
+                            faction,
+                        })
+                },
+            }
+        }
+    }
+}
+
+#[component]
+fn MinorFactionSetup(player_id: PlayerId) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let p1 = Arc::clone(&player_id);
+    let minor_faction = use_memo(move || {
+        gc.game_state()
+            .players
+            .get(&p1)
+            .and_then(|player| player.minor_faction)
+    });
+
+    let p2 = Arc::clone(&player_id);
+    let options = use_memo(move || {
+        let game_state = gc.game_state();
+        let mut factions = (gc.game_options().factions.iter())
+            .map(|f| f.faction)
+            .filter(|faction| game_state.is_minor_faction_available(&p2, *faction))
+            .collect::<Vec<_>>();
+        factions.sort();
+        factions
+    });
+
+    rsx! {
+        div { class: "setup-column",
+            label { "Minor faction" }
+            FactionDropdown {
+                value: minor_faction,
+                options: options(),
+                on_select: move |faction| {
+                    event
+                        .send_event(Event::SetupMinorFaction {
                             player: Arc::clone(&player_id),
                             faction,
                         })

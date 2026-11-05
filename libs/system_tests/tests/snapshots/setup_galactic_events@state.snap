@@ -253,6 +253,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Ben:
     name: Ben
     faction: NaazRokhaAlliance
@@ -267,6 +268,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Cid:
     name: Cid
     faction: RalNelConsortium
@@ -280,6 +282,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Dee:
     name: Dee
     faction: DeepwroughtScholarate
@@ -293,6 +296,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
+    minorFaction: ~
   Eve:
     name: Eve
     faction: FirmamentObsidian
@@ -308,6 +312,7 @@ players:
       Firmament:
         side: Firmament
     leadersFrom: ~
+    minorFaction: ~
 speaker: Ben
 tableOrder:
   - Ben

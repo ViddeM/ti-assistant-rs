@@ -12,7 +12,6 @@ use crate::{
     components::{
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind, ForOrAgainst},
         planet::{OrbitalBodyType, Planet, PlanetTrait},
-        planet_attachment::PlanetAttachment,
         strategy_card::StrategyCard,
     },
     state::game_state::GameState,
@@ -107,25 +106,16 @@ impl VoteState {
         let info = agenda.info();
 
         // list eligible planets for the vote, given the provided trait filter
-        let planets = |trait_filter: fn(Vec<PlanetTrait>) -> bool,
+        let planets = |trait_filter: fn(BTreeSet<PlanetTrait>) -> bool,
                        to_elect: fn(Planet) -> AgendaElect| {
             let eligible_planets: Vec<_> = Planet::iter()
-                // Filter to planets that are held by a player & map to a tuple of the planet, planet attachments.
-                .filter_map(|p| {
-                    game.players.values().find_map(|player| {
-                        if player.planets.contains_key(&p) {
-                            return Some((p.clone(), &player.planets[&p]));
-                        }
-                        None
-                    })
-                })
+                // Filter to planets that are held by a player.
+                .filter(|p| (game.players.values()).any(|player| player.planets.contains_key(p)))
                 // Filter away space stations as they cannot be elected.
-                .filter(|(p, _)| p.info().body_type != OrbitalBodyType::SpaceStation)
+                .filter(|p| p.info().body_type != OrbitalBodyType::SpaceStation)
                 // Filter to only include planets with the relevant traits.
-                .filter(|(planet, attachments)| {
-                    trait_filter(get_planet_traits(planet, attachments))
-                })
-                .map(|(p, _)| to_elect(p))
+                .filter(|planet| trait_filter(game.planet_traits(planet)))
+                .map(to_elect)
                 .collect();
 
             if eligible_planets.is_empty() {
@@ -262,22 +252,4 @@ impl Vote {
     pub fn get_outcome(&self) -> AgendaElect {
         self.outcome.clone()
     }
-}
-
-fn get_planet_traits(
-    planet: &Planet,
-    attachments: &BTreeSet<PlanetAttachment>,
-) -> Vec<PlanetTrait> {
-    let mut ts = vec![];
-
-    for t in planet.info().planet_traits.into_iter() {
-        ts.push(t);
-    }
-
-    attachments
-        .iter()
-        .flat_map(|attachment| attachment.info().added_planet_traits)
-        .for_each(|t| ts.push(t));
-
-    ts
 }

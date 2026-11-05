@@ -164,6 +164,8 @@ impl TestGame {
     ///   order) are revealed, ignoring the `objectives(..)` override.
     /// - Cultural Exchange Program: each player except the Firmament draws the faction of the next
     ///   such player in table order, wrapping around.
+    /// - Minor Factions: each player without a minor faction, in table order, is dealt the first
+    ///   enabled faction (in declaration order) that is available as one.
     #[track_caller]
     pub fn auto_setup(&mut self) -> &mut Self {
         let setup = self.setup.clone();
@@ -274,6 +276,29 @@ impl TestGame {
             for (index, (player, _)) in drawing.iter().enumerate() {
                 let (_, faction) = drawing[(index + 1) % drawing.len()];
                 self.apply(Event::SetupCulturalExchange {
+                    player: player.clone(),
+                    faction: Some(faction),
+                });
+            }
+        }
+
+        if self
+            .state()
+            .galactic_events
+            .contains(&GalacticEvent::MinorFactions)
+        {
+            let expansions = self.state().game_settings.expansions.clone();
+            for player in &table_order {
+                if self.state().players[player].minor_faction.is_some() {
+                    continue;
+                }
+                let faction = Faction::iter()
+                    .find(|f| {
+                        f.is_enabled_in(&expansions)
+                            && self.state().is_minor_faction_available(player, *f)
+                    })
+                    .expect("no faction available as a minor faction");
+                self.apply(Event::SetupMinorFaction {
                     player: player.clone(),
                     faction: Some(faction),
                 });

@@ -351,7 +351,7 @@
    - ✅ Age of Exploration (Dark Energy Tap: place the drawn tile on the milty map)
    - ✅ Rapid Mobilization (the Fracture and breakthroughs at Start Game; each player picks planets and researches)
  - Assisted
-   - ❌ Minor Factions (minor faction planets have all traits, alliance reminder)
+   - ✅ Minor Factions (minor faction planets have all traits, alliance reminder)
    - ✅ Dangerous Wilds (tech prompt for unowned hazardous planets)
    - ✅ Conventions of War Abandoned (X-89: purge planet)
    - ❌ Age of Commerce (share technology shortcut)

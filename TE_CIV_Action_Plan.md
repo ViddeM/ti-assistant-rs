@@ -285,7 +285,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 3 | Monuments to the Ages | TE | 2 | Track | ✅ Monuments with derived commodities → VP | P2 / M |
 | 4 | Age of Exploration | CIV (PoK) | 2 | Track | ✅ "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
 | 5 | Rapid Mobilization | TE | 1 | Track | ✅ Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
-| 6 | Minor Factions | CIV (PoK) | 2 | Track | Pick minor factions; their planets gain all 3 traits everywhere traits are read; alliance reminder | P2 / M |
+| 6 | Minor Factions | CIV (PoK) | 2 | Track | ✅ Pick minor factions; their planets gain all 3 traits everywhere traits are read; alliance reminder | P2 / M |
 
 ### 5.2 Per-event plans
 
@@ -527,8 +527,15 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 3. In milty games, use Age of Exploration's neighbour helper (`Coordinate::neighbors()`) to offer the planets next to the home system. Without a map, trust the picker: non-home, unowned, on the board.
 - Units aren't tracked.
 
-##### 6. Minor Factions (CIV, complexity 2, needs PoK): Track
+##### 6. Minor Factions (CIV, complexity 2, needs PoK): Track ✅
 > Setup: players get 1 fewer blue tile. Each player is dealt a non-played faction and places its home system in ring 2 with 3 neutral infantry. Controlling every planet in a minor faction system gives you that faction's alliance card. **Planets in minor faction systems have all three traits.**
+
+✅ Done (`galactic_events_minor_factions` scenario), with these changes:
+- Each player picks their minor faction in the Setup phase (`SetupMinorFaction`), and Start Game waits for every pick. Keleres can't use a minor faction for The Tribunii, and a Tribunii faction can't be a minor faction.
+- The alliance reminder only shows with PoK, which has the alliance cards. Without PoK the event still works.
+- The map view doesn't draw minor faction systems, since milty drafts can't leave the ring-2 gaps for them. Their planets still count as on the board.
+- `GameState::is_home_planet` also covers Mercenary Contract, Nano-Forge, Terraform and Rapid Mobilization. Shard of the Throne keeps its check of the holder's own home system, and Conventions of War Abandoned has no home check.
+- The handler's trait checks (exploration, Dangerous Wilds, the admin attach form) now count attachment traits too, so a Terraformed planet has all three, as in the agenda code.
 
 1. Minor factions are chosen per game, validated as not in play, one per player.
 2. Promote the private `get_planet_traits` (`state/agenda.rs:267`) to `GameState::planet_traits`, which returns all three traits for minor-faction planets. Use it at every trait read:
@@ -600,7 +607,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
    - ✅ Civilized Society without its game end rule (P1).
-   - ✅ Cultural Exchange Program, Monuments to the Ages, Age of Exploration and Rapid Mobilization, then Minor Factions (P2).
+   - ✅ Cultural Exchange Program, Monuments to the Ages, Age of Exploration, Rapid Mobilization and Minor Factions (P2).
    - F2 Firmament plots.
 6. **Optional (P3).**
    - ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.

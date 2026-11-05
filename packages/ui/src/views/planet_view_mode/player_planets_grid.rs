@@ -12,7 +12,7 @@ use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
     components::{planet::PlanetTrait, planet_attachment::PlanetAttachment, tech::TechCategory},
-    state::player::Player,
+    state::{game_state::GameState, player::Player},
 };
 
 use crate::{
@@ -66,18 +66,19 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
             .expect("Player to exist")
     });
 
-    let summary = use_memo(move || PlayerSummary::from_player(&player()));
+    let summary = use_memo(move || PlayerSummary::from_player(&gc.game_state(), &player()));
     let planets = use_memo(move || {
+        let game_state = gc.game_state();
         let mut planets = player()
             .planets
             .iter()
             .map(|(p, a)| {
                 let mut a = a.iter().cloned().collect::<Vec<_>>();
                 a.sort();
-                (p.clone(), p.info(), a)
+                (p.clone(), p.info(), game_state.planet_traits(p), a)
             })
             .collect::<Vec<_>>();
-        planets.sort_by(|(a, _, _), (b, _, _)| a.cmp(b));
+        planets.sort_by(|(a, _, _, _), (b, _, _, _)| a.cmp(b));
         planets
     });
     let monuments = use_memo(move || {
@@ -171,11 +172,11 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
                     }
                 }
                 tbody {
-                    for (planet , info , attachments) in planets().iter() {
+                    for (planet , info , planet_traits , attachments) in planets().iter() {
                         tr { class: "planet-row",
                             td { class: NAME_COL_ALIGN, "{info.name}" }
                             td { class: TRAIT_COL_ALIGN,
-                                for t in info.planet_traits.iter() {
+                                for t in planet_traits.iter() {
                                     TiIcon { icon: TiIconType::from(t) }
                                 }
                             }
@@ -318,7 +319,7 @@ struct PlayerSummary {
 }
 
 impl PlayerSummary {
-    fn from_player(value: &Player) -> Self {
+    fn from_player(game_state: &GameState, value: &Player) -> Self {
         let mut player_info = PlayerSummary::default();
 
         for (planet, attachment) in value.planets.iter() {
@@ -328,19 +329,7 @@ impl PlayerSummary {
                 .map(|a| (a.clone(), a.info()))
                 .collect::<HashMap<_, _>>();
 
-            let mut distinct_traits = HashSet::new();
-            for t in planet_info.planet_traits.iter() {
-                distinct_traits.insert(t);
-            }
-
-            for info in attachment_infos
-                .values()
-                .flat_map(|i| i.added_planet_traits.iter())
-            {
-                distinct_traits.insert(info);
-            }
-
-            for t in distinct_traits {
+            for t in game_state.planet_traits(planet) {
                 match t {
                     PlanetTrait::Cultural => player_info.cultural += 1,
                     PlanetTrait::Hazardous => player_info.hazardous += 1,

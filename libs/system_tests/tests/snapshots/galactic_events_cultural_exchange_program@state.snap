@@ -30,6 +30,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: XxchaKingdom
+    minorFaction: ~
   Bob:
     name: Bob
     faction: XxchaKingdom
@@ -43,6 +44,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: YssarilTribes
+    minorFaction: ~
   Carol:
     name: Carol
     faction: YssarilTribes
@@ -56,6 +58,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: Arborec
+    minorFaction: ~
   Dave:
     name: Dave
     faction: FirmamentObsidian
@@ -72,6 +75,7 @@ players:
       Firmament:
         side: Firmament
     leadersFrom: ~
+    minorFaction: ~
 speaker: Alice
 tableOrder:
   - Alice

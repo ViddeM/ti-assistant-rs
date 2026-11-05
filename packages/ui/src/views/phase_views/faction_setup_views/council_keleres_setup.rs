@@ -27,7 +27,8 @@ pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element 
         gc.game_state()
             .players
             .values()
-            .map(|p| p.faction)
+            .flat_map(|p| [Some(p.faction), p.minor_faction])
+            .flatten()
             .collect::<Vec<_>>()
     });
     let possible_factions = use_memo(move || {
