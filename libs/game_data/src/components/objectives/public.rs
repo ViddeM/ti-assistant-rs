@@ -213,7 +213,7 @@ impl PublicObjective {
                 StageI,
                 "Raise a Fleet",
                 "Have 5 or more non-fighter ships in 1 system.",
-                Expansion::Base
+                Expansion::ProphecyOfKings
             ),
             PublicObjective::CentralizeGalacticTrade => {
                 o!(

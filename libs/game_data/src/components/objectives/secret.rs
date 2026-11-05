@@ -309,13 +309,13 @@ impl SecretObjective {
                 Phase::Agenda,
                 "Dictate Policy",
                 "There are 3 or more laws in play.",
-                Expansion::Base
+                Expansion::ProphecyOfKings
             ),
             SecretObjective::DriveTheDebate => s!(
                 Phase::Agenda,
                 "Drive the Debate",
                 "You or a planet you control are elected by an agenda.",
-                Expansion::Base
+                Expansion::ProphecyOfKings
             ),
         }
     }

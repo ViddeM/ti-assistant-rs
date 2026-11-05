@@ -34,7 +34,7 @@ Paths below are relative to `libs/game_data/src/components/` unless stated other
 | 4 | 🔴 | **Some planets are in no system, so they can't be taken with a tactical action:** Thunder's Edge, Avernus, Custodia Vigilia and the Fracture planets. Mirage is special-cased; the others are not. Today the only way to give them to a player is the admin `SetPlanetOwner` event. **✅ Fixed** (Fracture planets in #1). Thunder's Edge can now be taken once the expedition has placed it (in that system), and Avernus once someone controls it (system not tracked, like Mirage). Correction: Custodia Vigilia should *not* be takeable; it has no tile and the Keleres "cannot lose" it. **✅** It's now granted with I.I.H.Q. instead (action plan E2, A4). | `system.rs` (no entries), `game_event_handler.rs:410` | ✔ |
 | 5 | 🟠 | **Styx has 3 resources; it should have 4** (4/0 on 4 separate wiki pages). **✅ Fixed** | `planet.rs:968` | ✔ |
 | 6 | 🟠 | **14 Thunder's Edge action cards are missing** (20 cards in total; see §2). **✅ Fixed**, including the Ω versions of 8 Codex I cards. | `action_card.rs:15-112` | ✔ |
-| 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. **✅ Fixed** for the two techs. The three objectives are left open on purpose: the handlers call `assert_expansion`, so retagging would stop stored base-only games that used one of them from replaying. | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
+| 7 | 🟠 | **Wrong expansion tags:** Raise a Fleet (public), Dictate Policy and Drive the Debate (secrets) are tagged `Base` but are PoK, so they show up in base-only games. I.I.H.Q. Modernization and Agency Supply Network are tagged `Base` but are Codex III. **✅ Fixed.** A stored base-only game that used one of the three objectives won't replay any more (none in the dev DB did). | `objectives/public.rs:216`, `objectives/secret.rs:312,318`, `tech.rs:1031,1101` | ✔ |
 | 8 | 🟠 | **Keleres hasn't been updated for Thunder's Edge.** The I.I.H.Q. Modernization *tech* stays enabled alongside the new I.I.H.Q. *breakthrough*. The replacement tech Executive Order is missing, Agency Supply Network has the Codex III text, and Custodia Vigilia should be 2/2 under Thunder's Edge. **✅ Fixed.** Under Thunder's Edge, Executive Order and Agency Supply Network Ω replace the Codex III techs (§7), Custodia Vigilia Ω (2/2) replaces Custodia Vigilia, and the heroes have their new texts (#9). Like the faction, all of them need Codex III. Gaining Custodia Vigilia through the I.I.H.Q. breakthrough is done too (action plan A4). | `tech.rs:1026-1105`, `planet.rs:786-796` | ✔ |
 | 9 | 🟠 | **None of Thunder's Edge's updated leader cards exist:** Naalu agent, Xxcha hero, all three Yin leaders, two Keleres heroes, and the Jol-Nar commander rename. `Leader::is_enabled_in` only knows about the Codex III swaps. **✅ Fixed.** All 8 exist, tagged Thunder's Edge, and replace the older versions through the `replacements!` chains in `leaders.rs`. The Keleres heroes also need Codex III, like the faction. A stored Thunder's Edge game that played Z'eu Ω or Dannel of the Tenth Ω as an action won't replay any more (`LeaderActionBegin` asserts the leader is enabled). | `components/leaders.rs:86-115` | ✔ |
 | 10 | 🟠 | **Plane Splitter needs 2 cybernetic prerequisites; the code has 1.** **✅ Fixed** | `tech.rs:1231` | ✔ |
@@ -121,13 +121,13 @@ Code problems found during the audit that aren't data-vs-wiki issues are in [§9
 
 | Item | Sev | Field | Code | Wiki | Location |
 |---|---|---|---|---|---|
-| Raise a Fleet | 🟠 | expansion | Base | PoK | `public.rs:212-217` ✔ |
-| Dictate Policy | 🟠 | expansion | Base | PoK (PoK introduced agenda-phase secrets) | `secret.rs:308-313` ✔ |
-| Drive the Debate | 🟠 | expansion | Base | PoK | `secret.rs:314-319` ✔ |
+| Raise a Fleet | 🟠 | expansion | Base | PoK. **✅ Fixed** | `public.rs:212-217` ✔ |
+| Dictate Policy | 🟠 | expansion | Base | PoK (PoK introduced agenda-phase secrets). **✅ Fixed** | `secret.rs:308-313` ✔ |
+| Drive the Debate | 🟠 | expansion | Base | PoK. **✅ Fixed** | `secret.rs:314-319` ✔ |
 | Intimidate Council | ⚪ | condition | "Mectrol Rex's System" | "Mecatol Rex's System" | `public.rs:132` ✔ |
 | Amass Wealth | ⚪ | name | "Amass wealth" | "Amass wealth" (the wiki has the same capitalisation; the card is probably "Amass Wealth") | `public.rs:158` |
 
-With the three fixes the split becomes 20 Base / 20 PoK secrets (the code currently has 22/18).
+The secrets now split 20 Base / 20 PoK.
 
 ### Codex III Ω secret objectives: not applied (`// TODO` at `secret.rs:75`)
 
