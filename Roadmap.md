@@ -280,7 +280,7 @@
   - ✅  Al'Raith Ix Ianovar (the Fracture enters play; ingress tokens 👺)
  - ❌  new relic cards, added but some need more handling.
   - ✅  The Quantumcore (gaining it gains the breakthrough)
-  - ❌  The Silver Flame
+  - ❌  The Silver Flame (roll: a 10 gives +1 VP, otherwise purge your home system and you can't score public objectives; the Fracture enters play)
   - ❌  The Triad ("3 + X" badge in the resources; relic fragments aren't tracked)
   - ❌  Dynamis Core / Nano-Forge: TE wording
  - 🚱  new factions
@@ -307,7 +307,7 @@
  - ✅  space stations.
   - ✅  can't be elected in agendas
   - ❌  don't count as planets in planet counts (incl. Last Bastion's Revelation)
- - 👺  new anomaly (entropic scars: movement and combat)
+ - ✅  new anomaly (entropic scars, data only)
  - ❌  updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
   - ✅  Ω action cards, replace the codex I versions when TE is enabled
   - ✅  new action cards (14 unique, 20 in the deck)
