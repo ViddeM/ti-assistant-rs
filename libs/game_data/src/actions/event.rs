@@ -6,7 +6,8 @@ use strum_macros::IntoStaticStr;
 use crate::{
     actions::strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     common::{
-        faction::Faction, game_settings::GameSettings, milty_data::MiltyData, player_id::PlayerId,
+        faction::Faction, game_settings::GameSettings, map::Coordinate, milty_data::MiltyData,
+        player_id::PlayerId,
     },
     components::{
         action_card::ActionCard,
@@ -872,6 +873,12 @@ pub enum GalacticEventAction {
         /// The planet that is purged.
         planet: Planet,
     },
+    /// Exhaust Dark Energy Tap to roll for a random unused red or blue tile and place it next to an
+    /// edge system containing your ships, touching at least 2 non-home systems.
+    AgeOfExploration {
+        /// The drawn tile and where it goes on the map, set exactly when the game has a milty map.
+        tile: Option<(SystemId, Coordinate)>,
+    },
 }
 
 impl GalacticEventAction {
@@ -884,6 +891,7 @@ impl GalacticEventAction {
             GalacticEventAction::ConventionsOfWarAbandoned { .. } => {
                 GalacticEvent::ConventionsOfWarAbandoned
             }
+            GalacticEventAction::AgeOfExploration { .. } => GalacticEvent::AgeOfExploration,
         }
     }
 }

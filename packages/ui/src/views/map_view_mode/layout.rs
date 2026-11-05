@@ -218,7 +218,6 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     let mut owners = Vec::new();
 
     let mut occupied_slots = HashSet::new();
-    let mut outer_ring = 0;
 
     let hex_map = &milty_information.hex_map;
     for (tile, (center, rotation_degrees)) in hex_map
@@ -228,7 +227,6 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     {
         if let HexPosition::Pos(coord) = &tile.position {
             occupied_slots.insert((coord.ring, coord.position));
-            outer_ring = outer_ring.max(coord.ring);
         }
 
         tiles.push(TileLayout {
@@ -318,7 +316,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         }
     }
 
-    let empty_slots = (1..=outer_ring)
+    let empty_slots = (1..=hex_map.galaxy_outer_ring())
         .flat_map(|ring| (0..ring * 6).map(move |position| (ring, position)))
         .filter(|slot| !occupied_slots.contains(slot))
         .map(|(ring, position)| {
@@ -413,13 +411,15 @@ pub(super) fn get_tile_position(coord: &Coordinate) -> (f32, f32) {
 
 #[cfg(test)]
 mod test {
+    use std::collections::BTreeSet;
+
     use strum::IntoEnumIterator;
     use ti_helper_game_data::{
         common::map::Coordinate,
         components::{planet::Planet, system::systems},
     };
 
-    use super::{get_tile_position, planet_offset};
+    use super::{TILE_HEIGHT, get_tile_position, planet_offset, tile_pos_to_visual_pos, to_svg};
 
     #[test]
     fn center_maps_correctly() {
@@ -515,6 +515,41 @@ mod test {
             .map(|system| system.id)
             .collect::<Vec<_>>();
         assert!(failures.is_empty(), "{failures:#?}");
+    }
+
+    #[test]
+    fn neighbors_are_the_hexes_drawn_next_to_each_other() {
+        let coordinates = (0..=4u32)
+            .flat_map(|ring| {
+                (0..(ring * 6).max(1)).map(move |position| Coordinate {
+                    ring,
+                    position,
+                    rotation: 0,
+                })
+            })
+            .collect::<Vec<_>>();
+        let center = |coord: &Coordinate| to_svg(tile_pos_to_visual_pos(get_tile_position(coord)));
+        let slot = |coord: &Coordinate| (coord.ring, coord.position);
+
+        for coord in coordinates.iter() {
+            let (x, y) = center(coord);
+            let drawn_next_to = coordinates
+                .iter()
+                .filter(|other| {
+                    let (other_x, other_y) = center(other);
+                    let distance = (x - other_x).hypot(y - other_y);
+                    distance > 0.0 && distance < TILE_HEIGHT * 1.2
+                })
+                .map(slot)
+                .collect::<BTreeSet<_>>();
+            let neighbors = coord
+                .neighbors()
+                .iter()
+                .filter(|neighbor| neighbor.ring <= 4)
+                .map(slot)
+                .collect::<BTreeSet<_>>();
+            assert_eq!(drawn_next_to, neighbors, "{coord:?}");
+        }
     }
 
     fn test_tile(ring: u32, position: u32, expected_x: i32, expected_y: i32) {

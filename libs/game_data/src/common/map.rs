@@ -1,8 +1,12 @@
-use std::{fmt::Display, str::FromStr};
+use std::{
+    collections::{BTreeSet, HashSet},
+    fmt::Display,
+    str::FromStr,
+};
 
 use serde::{Deserialize, Serialize};
 
-use crate::components::system::{SystemId, systems};
+use crate::components::system::{System, SystemId, SystemType, systems};
 
 pub type HexMapResult<T> = Result<T, HexMapError>;
 
@@ -33,6 +37,7 @@ impl HexMap {
     const CRIMSON_REBELLION_GATE: &'static str = "94";
     const CRIMSON_REBELLION_HOME_SYSTEM: &'static str = "118";
     const THE_FRACTURE: [&'static str; 3] = ["125", "126", "127"];
+    const MUAAT_SUPERNOVA: &'static str = "81";
 
     /// The system ID for the mecatol rex system.
     const MECATOL_REX_ID: u32 = 18;
@@ -168,20 +173,116 @@ impl HexMap {
             return None;
         }
 
-        let galaxy = self.tiles.iter().filter_map(|tile| match &tile.position {
-            HexPosition::Pos(coord) => Some((&tile.system, coord)),
-            HexPosition::OutsideGalaxy => None,
-        });
-        let outer_ring = galaxy.clone().map(|(_, coord)| coord.ring).max()?;
-        let (_, gate) = galaxy
-            .clone()
-            .find(|(system, _)| *system == Self::CRIMSON_REBELLION_GATE)?;
+        let outer_ring = self.galaxy_outer_ring();
+        let gate = self.tiles.iter().find_map(|tile| match &tile.position {
+            HexPosition::Pos(coord) if tile.system == Self::CRIMSON_REBELLION_GATE => Some(coord),
+            _ => None,
+        })?;
 
         let mut coord = gate.outward_neighbor();
         while coord.ring <= outer_ring {
             coord = coord.outward_neighbor();
         }
         Some(coord)
+    }
+
+    /// The outermost ring of the galaxy: the outermost ring with a tile, but not past the rings
+    /// imported from milty, so tiles placed outside them (Age of Exploration) don't make the
+    /// galaxy bigger.
+    pub fn galaxy_outer_ring(&self) -> u32 {
+        self.tiles
+            .iter()
+            .filter_map(|tile| match &tile.position {
+                HexPosition::Pos(coord) => Some(coord.ring),
+                HexPosition::OutsideGalaxy => None,
+            })
+            .max()
+            .unwrap_or(0)
+            .min(self.ring_count.saturating_sub(1))
+    }
+
+    /// Whether the system is a red or blue tile that isn't on the map and isn't one of the
+    /// special tiles (Mecatol Rex, the Creuss gate, the Muaat supernova, the Wormhole Nexus, the
+    /// Crimson Rebellion gate and the Fracture), i.e. a tile that can be drawn for Age of
+    /// Exploration.
+    pub fn is_unused_red_or_blue_tile(&self, system: &System) -> bool {
+        let id = system.id.as_str();
+        let is_special = [
+            Self::MECATOL_REX_ID,
+            Self::MECATOL_REX_OMEGA_ID,
+            Self::CREUSS_WORMHILE_ID,
+        ]
+        .iter()
+        .any(|number| id == number.to_string())
+            || [
+                Self::MUAAT_SUPERNOVA,
+                Self::WORMHOLE_NEXUS_TILE_ID,
+                Self::CRIMSON_REBELLION_GATE,
+            ]
+            .contains(&id)
+            || Self::THE_FRACTURE.contains(&id);
+
+        matches!(
+            system.system_type,
+            SystemType::Normal | SystemType::Anomaly(_)
+        ) && !is_special
+            && !self.tiles.iter().any(|tile| tile.system == system.id)
+    }
+
+    /// The empty coordinates that touch at least 2 tiles that aren't home systems or hyperlanes,
+    /// where a tile drawn for Age of Exploration can be placed, sorted by ring and position.
+    pub fn exploration_positions(&self) -> Vec<Coordinate> {
+        let systems = systems();
+        let galaxy = self
+            .tiles
+            .iter()
+            .filter_map(|tile| match &tile.position {
+                HexPosition::Pos(coord) => Some((tile, (coord.ring, coord.position))),
+                HexPosition::OutsideGalaxy => None,
+            })
+            .collect::<Vec<_>>();
+        let occupied = galaxy.iter().map(|(_, slot)| *slot).collect::<HashSet<_>>();
+        let counting = galaxy
+            .iter()
+            .filter(|(tile, _)| {
+                systems.get(&tile.system).is_some_and(|system| {
+                    !matches!(
+                        system.system_type,
+                        SystemType::HomeSystem(_) | SystemType::Hyperlane
+                    )
+                })
+            })
+            .map(|(_, slot)| *slot)
+            .collect::<HashSet<_>>();
+        let touches_counting = |coord: &Coordinate| {
+            coord
+                .neighbors()
+                .iter()
+                .filter(|neighbor| counting.contains(&(neighbor.ring, neighbor.position)))
+                .count()
+        };
+
+        counting
+            .iter()
+            .flat_map(|&(ring, position)| {
+                Coordinate {
+                    ring,
+                    position,
+                    rotation: 0,
+                }
+                .neighbors()
+            })
+            .filter(|coord| !occupied.contains(&(coord.ring, coord.position)))
+            .filter(|coord| touches_counting(coord) >= 2)
+            .map(|coord| (coord.ring, coord.position))
+            .collect::<BTreeSet<_>>()
+            .into_iter()
+            .map(|(ring, position)| Coordinate {
+                ring,
+                position,
+                rotation: 0,
+            })
+            .collect()
     }
 }
 
@@ -204,7 +305,7 @@ pub enum HexPosition {
 }
 
 /// A coordinate of a tile in the system.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Coordinate {
     /// Which ring the coordinate is in (starting with mecatol rex on 0).
     pub ring: u32,
@@ -214,7 +315,57 @@ pub struct Coordinate {
     pub rotation: u32,
 }
 
+/// The axial directions to the neighbors of a hex, clockwise from the one directly above it.
+const DIRECTIONS: [(i32, i32); 6] = [(0, 1), (1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1)];
+
 impl Coordinate {
+    /// The 6 unrotated coordinates around this one.
+    pub fn neighbors(&self) -> Vec<Coordinate> {
+        let (q, r) = self.to_axial();
+        DIRECTIONS
+            .iter()
+            .map(|(dq, dr)| Coordinate::from_axial((q + dq, r + dr)))
+            .collect()
+    }
+
+    /// The axial coordinates of the hex: Mecatol Rex is `(0, 0)`, `(0, 1)` is directly above it
+    /// and `(1, 0)` is above it to the right.
+    fn to_axial(&self) -> (i32, i32) {
+        if self.ring == 0 {
+            return (0, 0);
+        }
+        let ring = self.ring as i32;
+        let position = self.position as i32;
+        let side = (position / ring) as usize;
+        let (corner_q, corner_r) = DIRECTIONS[side % 6];
+        let (step_q, step_r) = DIRECTIONS[(side + 2) % 6];
+        let steps = position % ring;
+        (
+            corner_q * ring + step_q * steps,
+            corner_r * ring + step_r * steps,
+        )
+    }
+
+    fn from_axial((q, r): (i32, i32)) -> Coordinate {
+        let ring = ((q.abs() + r.abs() + (q + r).abs()) / 2) as u32;
+        let position = (0..ring * 6)
+            .find(|&position| {
+                Coordinate {
+                    ring,
+                    position,
+                    rotation: 0,
+                }
+                .to_axial()
+                    == (q, r)
+            })
+            .unwrap_or(0);
+        Coordinate {
+            ring,
+            position,
+            rotation: 0,
+        }
+    }
+
     /// An unrotated neighbor in the next ring out.
     fn outward_neighbor(&self) -> Coordinate {
         let ring = self.ring + 1;
@@ -353,9 +504,152 @@ struct HyperLaneTile {
 
 #[cfg(test)]
 mod test {
+    use std::collections::BTreeSet;
+
     use crate::components::system::{AnomalyType, SystemType, systems};
 
-    use super::{HexMap, HexPosition, MiltySystemId};
+    use super::{Coordinate, HexMap, HexPosition, MiltySystemId, Tile};
+
+    fn coordinate(ring: u32, position: u32) -> Coordinate {
+        Coordinate {
+            ring,
+            position,
+            rotation: 0,
+        }
+    }
+
+    fn slots(coordinates: &[Coordinate]) -> Vec<(u32, u32)> {
+        coordinates
+            .iter()
+            .map(|coord| (coord.ring, coord.position))
+            .collect()
+    }
+
+    fn coordinates_up_to_ring(rings: u32) -> impl Iterator<Item = Coordinate> {
+        (0..=rings)
+            .flat_map(|ring| (0..(ring * 6).max(1)).map(move |position| coordinate(ring, position)))
+    }
+
+    #[test]
+    fn neighbors_of_the_tile_above_mecatol_rex() {
+        assert_eq!(
+            slots(&coordinate(1, 0).neighbors())
+                .into_iter()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([(0, 0), (1, 1), (1, 5), (2, 0), (2, 1), (2, 11)])
+        );
+    }
+
+    #[test]
+    fn neighbors_are_six_adjacent_coordinates_both_ways() {
+        for coord in coordinates_up_to_ring(5) {
+            let neighbors = coord.neighbors();
+            let distinct = slots(&neighbors).into_iter().collect::<BTreeSet<_>>();
+            assert_eq!(distinct.len(), 6, "{coord:?} has {neighbors:?}");
+
+            for neighbor in neighbors {
+                assert!(
+                    coord.ring.abs_diff(neighbor.ring) <= 1,
+                    "{neighbor:?} is next to {coord:?}"
+                );
+                assert!(
+                    neighbor.neighbors().contains(&coord),
+                    "{neighbor:?} is next to {coord:?}, but not the other way around"
+                );
+            }
+        }
+    }
+
+    /// Mecatol Rex and a ring 1 of tile 19, with `ring_one` (or no tile) at ring 1 position 0.
+    fn mecatol_rex_and_ring_one(ring_one: Option<&str>) -> HexMap {
+        let tiles = coordinates_up_to_ring(1)
+            .filter_map(|coord| {
+                let system = match (coord.ring, coord.position) {
+                    (0, _) => Some("18"),
+                    (1, 0) => ring_one,
+                    _ => Some("19"),
+                };
+                system.map(|system| Tile {
+                    system: system.to_string(),
+                    position: HexPosition::Pos(coord),
+                })
+            })
+            .collect();
+        HexMap {
+            tiles,
+            ring_count: 2,
+        }
+    }
+
+    #[test]
+    fn exploration_positions_touch_two_systems() {
+        assert_eq!(
+            slots(&mecatol_rex_and_ring_one(Some("20")).exploration_positions()),
+            [(2, 1), (2, 3), (2, 5), (2, 7), (2, 9), (2, 11)]
+        );
+    }
+
+    #[test]
+    fn home_systems_and_hyperlanes_dont_count_for_exploration_positions() {
+        for system in ["1", "83A"] {
+            assert_eq!(
+                slots(&mecatol_rex_and_ring_one(Some(system)).exploration_positions()),
+                [(2, 3), (2, 5), (2, 7), (2, 9)],
+                "with {system} in ring 1"
+            );
+        }
+    }
+
+    #[test]
+    fn a_gap_in_the_galaxy_is_an_exploration_position() {
+        assert_eq!(
+            slots(&mecatol_rex_and_ring_one(None).exploration_positions()),
+            [(1, 0), (2, 3), (2, 5), (2, 7), (2, 9)]
+        );
+    }
+
+    #[test]
+    fn unused_red_or_blue_tiles() {
+        let systems = systems();
+        let hex_map = mecatol_rex_and_ring_one(Some("20"));
+        let is_unused = |id: &str| hex_map.is_unused_red_or_blue_tile(&systems[id]);
+
+        for (id, what) in [
+            ("19", "a tile on the map"),
+            ("1", "a home system"),
+            ("83A", "a hyperlane"),
+            ("18", "Mecatol Rex"),
+            ("112", "Mecatol Rex"),
+            ("17", "the Creuss gate"),
+            ("81", "the Muaat supernova"),
+            ("82", "the Wormhole Nexus"),
+            ("94", "the Crimson Rebellion gate"),
+            ("125", "the Fracture"),
+            ("126", "the Fracture"),
+            ("127", "the Fracture"),
+        ] {
+            assert!(!is_unused(id), "{id} is {what}");
+        }
+        assert!(is_unused("26"), "26 is an unused blue tile");
+        assert!(is_unused("41"), "41 is an unused red tile");
+    }
+
+    #[test]
+    fn tiles_outside_the_imported_rings_are_outside_the_galaxy() {
+        let three_rings = (19..55)
+            .map(|system| system.to_string())
+            .collect::<Vec<_>>()
+            .join(" ");
+        let mut hex_map = HexMap::from_milty_string(&three_rings, true).expect("to parse");
+        assert_eq!(hex_map.galaxy_outer_ring(), 3);
+
+        hex_map.tiles.push(Tile {
+            system: "59".to_string(),
+            position: HexPosition::Pos(coordinate(4, 0)),
+        });
+
+        assert_eq!(hex_map.galaxy_outer_ring(), 3);
+    }
 
     #[test]
     fn milty_variants_match_system_ids() {

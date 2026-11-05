@@ -348,6 +348,7 @@
    - ✅ Total War (action: +1 VP)
    - ✅ Monuments to the Ages (monuments → VP)
    - ✅ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
+   - ✅ Age of Exploration (Dark Energy Tap: place the drawn tile on the milty map)
    - ❌ Rapid Mobilization (setup planets, breakthroughs, techs; the Fracture enters play)
  - Assisted
    - ❌ Minor Factions (minor faction planets have all traits, alliance reminder)
@@ -355,7 +356,7 @@
    - ✅ Conventions of War Abandoned (X-89: purge planet)
    - ❌ Age of Commerce (share technology shortcut)
    - ✅ Hidden Agenda (the speaker enters the votes as they're read out)
- - Info only: Age of Exploration, Call of the Void, Wild Wild Galaxy, Cosmic Phenomenae, Mercenaries for Hire, Weird Wormholes
+ - Info only: Call of the Void, Wild Wild Galaxy, Cosmic Phenomenae, Mercenaries for Hire, Weird Wormholes
 
 ## Prettify things
  - ❌ Make things pretty (FE)

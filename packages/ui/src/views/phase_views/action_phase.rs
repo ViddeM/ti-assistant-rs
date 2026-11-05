@@ -3,7 +3,10 @@ use std::sync::Arc;
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::{Event, GalacticEventAction},
-    common::player_id::PlayerId,
+    common::{
+        map::{Coordinate, HexPosition},
+        player_id::PlayerId,
+    },
     components::{
         action_card::{ActionCard, ActionCardPlay},
         breakthrough::{Breakthrough, BreakthroughKind},
@@ -12,6 +15,7 @@ use ti_helper_game_data::{
         leaders::LeaderAbilityKind,
         relic::{Relic, RelicPlay},
         strategy_card::StrategyCard,
+        tech::Technology,
     },
     state::{faction_state::FirmamentSide, game_state::GameState},
 };
@@ -20,8 +24,8 @@ use crate::{
     components::{
         button::Button,
         dropdown::{
-            ActionCardDropdown, FrontierCardDropdown, GalacticEventDropdown, PlanetDropdown,
-            RelicDropdown,
+            ActionCardDropdown, Dropdown, FrontierCardDropdown, GalacticEventDropdown,
+            PlanetDropdown, RelicDropdown, SystemDropdown,
         },
         info_button::InfoButton,
     },
@@ -577,6 +581,11 @@ fn GalacticEventActionForm(player: PlayerId, galactic_event: GalacticEvent) -> E
                 ConventionsOfWarAbandonedForm { player }
             };
         }
+        GalacticEvent::AgeOfExploration => {
+            return rsx! {
+                AgeOfExplorationForm { player }
+            };
+        }
         _ => return rsx! {},
     };
 
@@ -635,6 +644,190 @@ fn ConventionsOfWarAbandonedForm(player: PlayerId) -> Element {
                             player: player.clone(),
                             action: GalacticEventAction::ConventionsOfWarAbandoned {
                                 planet: selected_planet().expect("Planet to be selected"),
+                            },
+                        })
+                },
+                "Play"
+            }
+        }
+    }
+}
+
+#[component]
+fn AgeOfExplorationForm(player: PlayerId) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected_system = use_signal(|| None);
+    let mut selected_ring = use_signal(|| None::<u32>);
+    let mut selected_position = use_signal(|| None::<u32>);
+
+    let has_dark_energy_tap = use_memo({
+        let player = player.clone();
+        move || {
+            gc.game_state()
+                .players
+                .get(&player)
+                .is_some_and(|p| p.has_tech(&Technology::DarkEnergyTap))
+        }
+    });
+
+    let hex_map = use_memo(move || {
+        gc.game_state()
+            .map_data
+            .milty_information
+            .as_ref()
+            .map(|milty| milty.hex_map.clone())
+    });
+
+    let drawable_tiles = use_memo(move || {
+        let Some(hex_map) = hex_map() else {
+            return Vec::new();
+        };
+        let mut tiles = gc
+            .game_options()
+            .systems
+            .values()
+            .filter(|system| hex_map.is_unused_red_or_blue_tile(system))
+            .map(|system| system.id.clone())
+            .collect::<Vec<_>>();
+        tiles.sort_by_key(|id| id.parse::<u32>().unwrap_or(u32::MAX));
+        tiles
+    });
+
+    let spots = use_memo(move || {
+        hex_map()
+            .map(|hex_map| hex_map.exploration_positions())
+            .unwrap_or_default()
+    });
+    let rings = use_memo(move || {
+        let mut rings = spots().iter().map(|coord| coord.ring).collect::<Vec<_>>();
+        rings.dedup();
+        rings
+    });
+    let ring_positions = use_memo(move || {
+        spots()
+            .iter()
+            .filter(|coord| Some(coord.ring) == selected_ring())
+            .map(|coord| coord.position)
+            .collect::<Vec<_>>()
+    });
+    let ring_value = use_memo(move || selected_ring().map(|r| r.to_string()).unwrap_or_default());
+    let position_value = use_memo(move || {
+        selected_position()
+            .map(|p| p.to_string())
+            .unwrap_or_default()
+    });
+
+    let next_to = use_memo(move || {
+        let (Some(hex_map), Some(ring), Some(position)) =
+            (hex_map(), selected_ring(), selected_position())
+        else {
+            return Vec::new();
+        };
+        Coordinate {
+            ring,
+            position,
+            rotation: 0,
+        }
+        .neighbors()
+        .iter()
+        .filter_map(|neighbor| {
+            hex_map.tiles.iter().find_map(|tile| match &tile.position {
+                HexPosition::Pos(coord)
+                    if coord.ring == neighbor.ring && coord.position == neighbor.position =>
+                {
+                    Some(format!("System {}", tile.system))
+                }
+                _ => None,
+            })
+        })
+        .collect::<Vec<_>>()
+    });
+
+    if !has_dark_energy_tap() {
+        return rsx! {
+            p { "Requires Dark Energy Tap" }
+        };
+    }
+
+    if hex_map().is_none() {
+        return rsx! {
+            div { class: "column",
+                p { "Place the drawn tile at the table" }
+                Button {
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::PlayGalacticEventAction {
+                                player: player.clone(),
+                                action: GalacticEventAction::AgeOfExploration {
+                                    tile: None,
+                                },
+                            })
+                    },
+                    "Play"
+                }
+            }
+        };
+    }
+
+    rsx! {
+        div { class: "column",
+            SystemDropdown {
+                value: selected_system,
+                options: drawable_tiles,
+                on_select: move |s| selected_system.set(s),
+            }
+            p {
+                "Ring 0 is Mecatol Rex. Ring N has 6 × N positions, numbered from 0 directly above Mecatol Rex, going clockwise."
+            }
+            Dropdown {
+                value: ring_value,
+                oninput: move |e: FormEvent| {
+                    selected_ring.set(e.value().parse().ok());
+                    selected_position.set(None);
+                },
+                option { value: "", "--Select ring--" }
+                for ring in rings().iter() {
+                    option { key: "{ring}", value: "{ring}", "Ring {ring}" }
+                }
+            }
+            Dropdown {
+                value: position_value,
+                disabled: selected_ring().is_none(),
+                oninput: move |e: FormEvent| selected_position.set(e.value().parse().ok()),
+                option { value: "", "--Select position--" }
+                for position in ring_positions().iter() {
+                    option { key: "{position}", value: "{position}", "Position {position}" }
+                }
+            }
+            if !next_to().is_empty() {
+                p { "Next to: {next_to().join(\", \")}" }
+            }
+            Button {
+                class: "margin-top",
+                disabled: selected_system().is_none() || selected_ring().is_none()
+                    || selected_position().is_none(),
+                onclick: move |_| {
+                    let (Some(system), Some(ring), Some(position)) = (
+                        selected_system(),
+                        selected_ring(),
+                        selected_position(),
+                    ) else {
+                        return;
+                    };
+                    event
+                        .send_event(Event::PlayGalacticEventAction {
+                            player: player.clone(),
+                            action: GalacticEventAction::AgeOfExploration {
+                                tile: Some((
+                                    system,
+                                    Coordinate {
+                                        ring,
+                                        position,
+                                        rotation: 0,
+                                    },
+                                )),
                             },
                         })
                 },

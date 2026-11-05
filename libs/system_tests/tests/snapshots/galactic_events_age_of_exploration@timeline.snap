@@ -1,0 +1,24 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 ImportFromMilty                          r0 Creation           -          speaker=Ben
+   1 SetGalacticEvents                        r0 Creation           -
+   2 CreationDone                             r0 Setup              -
+   3 SetupPlayerTechs(Cid)                    r0 Setup              -
+   4 SetupPlayerTechs(Dee)                    r0 Setup              -
+   5 SetupPlayerTechs(Eve)                    r0 Setup              -
+   6 RevealInitialObjectives                  r0 Setup              -
+   7 StartGame                                r1 Strategy           Ben        order=[Ben Cid Ann Dee Eve]
+   8 TakeStrategyCard(Ben)                    r1 Strategy           Cid
+   9 TakeStrategyCard(Cid)                    r1 Strategy           Ann
+  10 TakeStrategyCard(Ann)                    r1 Strategy           Dee
+  11 TakeStrategyCard(Dee)                    r1 Strategy           Eve
+  12 TakeStrategyCard(Eve)                    r1 Strategy           Ben
+  13 CompleteStrategyPhase                    r1 Action             Ben
+  14 AddTechToPlayer(Ben)                     r1 Action             Ben
+  15 PlayGalacticEventAction(Ben)             r1 EndActionTurn      Ben
+  16 EndTurn(Ben)                             r1 Action             Cid
+  17 TacticalActionBegin(Cid)                 r1 TacticalAction     Cid
+  18 TacticalActionTakePlanet(Cid)            r1 TacticalAction     Cid
+  19 TacticalActionCommit(Cid)                r1 EndActionTurn      Cid
+  20 EndTurn(Cid)                             r1 Action             Ann

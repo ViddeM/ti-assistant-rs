@@ -223,7 +223,7 @@ mod test {
         });
         HexMap {
             tiles: galaxy.chain(outside).collect(),
-            ring_count: 3,
+            ring_count: 4,
         }
     }
 
@@ -278,36 +278,89 @@ mod test {
             .collect()
     }
 
+    /// Asserts that each hex of each tile outside the galaxy is [OUTSIDE_GALAXY_GAP] away from
+    /// every hex of the other tiles.
+    fn assert_space_around_tiles_outside_the_galaxy(
+        hex_map: &HexMap,
+        player_count: usize,
+        context: &str,
+    ) {
+        let cells = placed_cells(hex_map, player_count);
+        let same_piece = |a: &Tile, b: &Tile| a == b || is_the_fracture(a) && is_the_fracture(b);
+
+        for (tile, tile_cells) in hex_map.tiles.iter().zip(&cells) {
+            if tile.position != HexPosition::OutsideGalaxy {
+                continue;
+            }
+            for (other, other_cells) in hex_map.tiles.iter().zip(&cells) {
+                if same_piece(tile, other) {
+                    continue;
+                }
+                for (x, y) in tile_cells {
+                    for (other_x, other_y) in other_cells {
+                        let distance = hex_distance(x - other_x, y - other_y);
+                        assert!(
+                            distance >= TILE_HEIGHT + OUTSIDE_GALAXY_GAP - NUDGE_STEP,
+                            "{context}, {} is {distance} from {}",
+                            tile.system,
+                            other.system
+                        );
+                    }
+                }
+            }
+        }
+    }
+
     #[test]
     fn tiles_outside_the_galaxy_have_space_around_them() {
         for player_count in PLAYER_COUNTS {
             for gate_position in 0..18 {
-                let hex_map = three_ring_map_with_gate_at(gate_position);
-                let cells = placed_cells(&hex_map, player_count);
-                let same_piece =
-                    |a: &Tile, b: &Tile| a == b || is_the_fracture(a) && is_the_fracture(b);
+                assert_space_around_tiles_outside_the_galaxy(
+                    &three_ring_map_with_gate_at(gate_position),
+                    player_count,
+                    &format!("with {player_count} players and the gate at {gate_position}"),
+                );
+            }
+        }
+    }
 
-                for (tile, tile_cells) in hex_map.tiles.iter().zip(&cells) {
-                    if tile.position != HexPosition::OutsideGalaxy {
-                        continue;
-                    }
-                    for (other, other_cells) in hex_map.tiles.iter().zip(&cells) {
-                        if same_piece(tile, other) {
-                            continue;
-                        }
-                        for (x, y) in tile_cells {
-                            for (other_x, other_y) in other_cells {
-                                let distance = hex_distance(x - other_x, y - other_y);
-                                assert!(
-                                    distance >= TILE_HEIGHT + OUTSIDE_GALAXY_GAP - NUDGE_STEP,
-                                    "with {player_count} players and the gate at {gate_position}, {} is {distance} from {}",
-                                    tile.system,
-                                    other.system
-                                );
-                            }
-                        }
-                    }
+    #[test]
+    fn tiles_outside_the_galaxy_have_space_around_explored_tiles() {
+        for player_count in PLAYER_COUNTS {
+            for gate_position in 0..18 {
+                let mut hex_map = three_ring_map_with_gate_at(gate_position);
+                let crimson_rebellion_home_system = hex_map
+                    .tiles
+                    .iter()
+                    .find(|tile| tile.system == "118")
+                    .expect("to have the Crimson Rebellion home system");
+                let next_to_the_gate = hex_map
+                    .outside_galaxy_coordinate(crimson_rebellion_home_system)
+                    .expect("to be next to the gate");
+                let under_the_fracture = Coordinate {
+                    ring: 4,
+                    position: 0,
+                    rotation: 0,
+                };
+
+                let mut explored = vec![under_the_fracture];
+                if !explored.contains(&next_to_the_gate) {
+                    explored.push(next_to_the_gate);
                 }
+                for (system, coord) in ["26", "27"].into_iter().zip(explored) {
+                    hex_map.tiles.push(Tile {
+                        system: system.to_string(),
+                        position: HexPosition::Pos(coord),
+                    });
+                }
+
+                assert_space_around_tiles_outside_the_galaxy(
+                    &hex_map,
+                    player_count,
+                    &format!(
+                        "with {player_count} players, the gate at {gate_position} and explored tiles"
+                    ),
+                );
             }
         }
     }

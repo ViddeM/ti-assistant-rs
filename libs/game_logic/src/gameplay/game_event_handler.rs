@@ -19,8 +19,13 @@ use ti_helper_game_data::{
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::{
-        component::Component, expansions::Expansion, faction::Faction, game_settings::GameSettings,
-        milty_data::MiltyPlayer, player_id::PlayerId,
+        component::Component,
+        expansions::Expansion,
+        faction::Faction,
+        game_settings::GameSettings,
+        map::{Coordinate, HexPosition, Tile},
+        milty_data::MiltyPlayer,
+        player_id::PlayerId,
     },
     components::{
         action_card::{ActionCard, ActionCardPlay},
@@ -1082,6 +1087,48 @@ fn try_update_game_state(
                         planet.info().name
                     );
                     game_state.destroy_planet(planet);
+                }
+                GalacticEventAction::AgeOfExploration { tile } => {
+                    ensure!(
+                        game_state
+                            .players
+                            .get(&player)
+                            .is_some_and(|p| p.has_tech(&Technology::DarkEnergyTap)),
+                        "{player} doesn't own Dark Energy Tap"
+                    );
+                    match (game_state.map_data.milty_information.as_mut(), tile) {
+                        (Some(milty), Some((system, coord))) => {
+                            ensure!(
+                                systems().get(&system).is_some_and(|s| {
+                                    s.is_enabled_in(&game_state.game_settings.expansions)
+                                        && milty.hex_map.is_unused_red_or_blue_tile(s)
+                                }),
+                                "System {system} isn't an unused red or blue tile"
+                            );
+                            let coord = Coordinate {
+                                rotation: 0,
+                                ..coord
+                            };
+                            ensure!(
+                                milty.hex_map.exploration_positions().contains(&coord),
+                                "Ring {}, position {} isn't an empty spot touching at least 2 \
+                                 non-home systems",
+                                coord.ring,
+                                coord.position
+                            );
+                            milty.hex_map.tiles.push(Tile {
+                                system,
+                                position: HexPosition::Pos(coord),
+                            });
+                        }
+                        (Some(_), None) => {
+                            bail!("Choose the drawn tile and where it goes on the map")
+                        }
+                        (None, Some(_)) => {
+                            bail!("Only games imported from milty have a map to place the tile on")
+                        }
+                        (None, None) => {}
+                    }
                 }
             }
 

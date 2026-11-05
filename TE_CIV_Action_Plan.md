@@ -283,7 +283,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 1 | Civilized Society | TE | 2 | Track | ✅ All 10 objectives revealed at setup, no status phase reveal, unlimited scoring; the game end rule comes later with E5 | P1 / M |
 | 2 | Cultural Exchange Program | TE | 2 | Track | ✅ Players use a drawn faction's leaders (E8); the Firmament gets The Obsidian | P2 / M |
 | 3 | Monuments to the Ages | TE | 2 | Track | ✅ Monuments with derived commodities → VP | P2 / M |
-| 4 | Age of Exploration | CIV (PoK) | 2 | Track | "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
+| 4 | Age of Exploration | CIV (PoK) | 2 | Track | ✅ "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
 | 5 | Rapid Mobilization | TE | 1 | Track | Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
 | 6 | Minor Factions | CIV (PoK) | 2 | Track | Pick minor factions; their planets gain all 3 traits everywhere traits are read; alliance reminder | P2 / M |
 
@@ -312,7 +312,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 
 #### 5.2.2 Small implementation
 
-Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with the `TotalWar`, `MercenariesForHire`, `StellarAtomics` and `ConventionsOfWarAbandoned` variants so far. Each later event adds its variant, its `has_action` entry and its form arm.
+Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Conventions of War Abandoned and Age of Exploration in §5.2.3) goes through one event and one tab. Total War built both: `PlayGalacticEventAction` and the Galactic Event button now exist, with the `TotalWar`, `MercenariesForHire`, `StellarAtomics`, `ConventionsOfWarAbandoned` and `AgeOfExploration` variants so far. Each later event adds its variant, its `has_action` entry and its form arm.
 
 - **One event:** `Event::PlayGalacticEventAction { player, action: GalacticEventAction }`, with one variant per event, like `RelicAction`:
   - `TotalWar`
@@ -479,10 +479,15 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
 4. `update_player_points` gives `commodities / 3` VP to the planet's owner. Add a "Monuments" score row and a planet badge.
 - Trade goods aren't tracked, so the 5 trade goods aren't checked.
 
-##### 4. Age of Exploration (CIV, complexity 2, needs PoK): Track
+##### 4. Age of Exploration (CIV, complexity 2, needs PoK): Track ✅
 > Relics require only 2 matching fragments be purged instead of 3. The Naaz-Rokha Alliance's FABRICATION faction ability and BLACK MARKET FORGERY promissory note do not require purged fragments to match.
 >
 > **ACTION: Exhaust DARK ENERGY TAP and choose a non-home edge system that contains your ships to roll 1 die. On a result of 1-4, draw a random unused red tile; on a result of 5-10, draw a random unused blue tile. Place that tile adjacent to the chosen system so that it is touching at least 2 non-home systems.** Place a frontier token in the system if it does not contain any planets.
+
+✅ Done as planned below (`galactic_events_age_of_exploration` scenario), with these changes:
+- Tile 81 (the Muaat hero's supernova) is also excluded from the tiles that can be drawn. It isn't in the red tile pool.
+- `HexMap::ring_count` counts ring 0: `from_milty_string` gives 4 for a 3-ring map. `HexMap::galaxy_outer_ring` caps the galaxy at the imported rings (`ring_count - 1`). The placeholders and the Crimson Rebellion home system use it, so an explored tile doesn't add a dashed ring or push the home system a ring away from its gate.
+- Under the position dropdowns, a "Next to: System X, System Y" hint lists the chosen spot's neighbours on the map, so players can check it against the table.
 
 1. **The action:** `GalacticEventAction::AgeOfExploration { tile: Option<(SystemId, Coordinate)> }`. Besides the shared checks (§5.2.2 intro):
    - the player owns `DarkEnergyTap`;
@@ -590,7 +595,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
    - ✅ Civilized Society without its game end rule (P1).
-   - ✅ Cultural Exchange Program and Monuments to the Ages, then Age of Exploration, Rapid Mobilization, Minor Factions (P2).
+   - ✅ Cultural Exchange Program, Monuments to the Ages and Age of Exploration, then Rapid Mobilization, Minor Factions (P2).
    - F2 Firmament plots.
 6. **Optional (P3).**
    - ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.

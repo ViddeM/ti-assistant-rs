@@ -226,6 +226,7 @@ impl GalacticEvent {
                 | GalacticEvent::MercenariesForHire
                 | GalacticEvent::StellarAtomics
                 | GalacticEvent::ConventionsOfWarAbandoned
+                | GalacticEvent::AgeOfExploration
         )
     }
 }

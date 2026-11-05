@@ -2,9 +2,10 @@
 
 use std::collections::BTreeSet;
 
+use ti_helper_game_data::common::map::{Coordinate, HexPosition};
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{SIMPLE_PICKS, action_phase, three_players};
+use crate::fixtures::{SIMPLE_PICKS, action_phase, five_player_draft, three_players};
 
 scenarios![
     galactic_events_age_of_fighters,
@@ -20,6 +21,7 @@ scenarios![
     galactic_events_civilized_society,
     galactic_events_cultural_exchange_program,
     galactic_events_monuments_to_the_ages,
+    galactic_events_age_of_exploration,
     galactic_events_admin,
 ];
 
@@ -771,6 +773,90 @@ pub fn galactic_events_monuments_to_the_ages() -> TestGame {
     g
 }
 
+fn explore(system: &str, ring: u32, position: u32) -> GalacticEventAction {
+    GalacticEventAction::AgeOfExploration {
+        tile: Some((
+            system.into(),
+            Coordinate {
+                ring,
+                position,
+                rotation: 0,
+            },
+        )),
+    }
+}
+
+/// The Age of Exploration action needs Dark Energy Tap and ends the turn. On a milty map the
+/// drawn tile must be an unused red or blue tile, placed in an empty spot touching at least 2
+/// non-home systems. It is added to the map, and its planets can be taken.
+pub fn galactic_events_age_of_exploration() -> TestGame {
+    let mut g = TestGame::builder()
+        .milty(five_player_draft())
+        .galactic_events([GalacticEvent::AgeOfExploration])
+        .start();
+    g.strategy_phase(&[
+        ("Ben", StrategyCard::Leadership),
+        ("Cid", StrategyCard::Diplomacy),
+        ("Ann", StrategyCard::Politics),
+        ("Dee", StrategyCard::Construction),
+        ("Eve", StrategyCard::Trade),
+    ]);
+    let play = |action| Event::PlayGalacticEventAction {
+        player: p("Ben"),
+        action,
+    };
+
+    let ben = g
+        .turn("Ben")
+        .expect_rejected(play(explore("26", 4, 2)), "doesn't own Dark Energy Tap")
+        .apply(Event::AddTechToPlayer {
+            player: p("Ben"),
+            tech: Technology::DarkEnergyTap,
+        })
+        .expect_rejected(
+            play(GalacticEventAction::AgeOfExploration { tile: None }),
+            "Choose the drawn tile",
+        )
+        .expect_rejected(
+            play(explore("65", 4, 2)),
+            "isn't an unused red or blue tile",
+        )
+        .expect_rejected(
+            play(explore("82", 4, 2)),
+            "isn't an unused red or blue tile",
+        )
+        .expect_rejected(play(explore("26", 2, 0)), "isn't an empty spot")
+        .expect_rejected(play(explore("26", 4, 1)), "isn't an empty spot")
+        .galactic_event(explore("26", 4, 2));
+    assert_eq!(ben.phase(), Phase::EndActionTurn);
+    ben.end_turn();
+
+    let hex_map = &g
+        .state()
+        .map_data
+        .milty_information
+        .as_ref()
+        .unwrap()
+        .hex_map;
+    let lodor = hex_map.tiles.iter().find(|tile| tile.system == "26");
+    assert_eq!(
+        lodor.map(|tile| &tile.position),
+        Some(&HexPosition::Pos(Coordinate {
+            ring: 4,
+            position: 2,
+            rotation: 0,
+        }))
+    );
+
+    g.turn("Cid")
+        .tactical()
+        .take(Planet::Lodor)
+        .commit()
+        .end_turn();
+    assert!(g.player("Cid").planets.contains_key(&Planet::Lodor));
+    g
+}
+
 /// The admin events fix the tracked state of the galactic events in play, in any phase: a used
 /// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
 /// the Total War points. Each needs an existing player and a change.
@@ -956,4 +1042,28 @@ fn monuments_to_the_ages_needs_the_event() {
         },
         "Monuments to the Ages isn't in play",
     );
+}
+
+#[test]
+fn age_of_exploration_without_a_milty_map() {
+    let mut g = action_phase(
+        three_players()
+            .pok()
+            .codex()
+            .galactic_events([GalacticEvent::AgeOfExploration]),
+    );
+    g.turn("Alice")
+        .apply(Event::AddTechToPlayer {
+            player: p("Alice"),
+            tech: Technology::DarkEnergyTap,
+        })
+        .expect_rejected(
+            Event::PlayGalacticEventAction {
+                player: p("Alice"),
+                action: explore("26", 4, 2),
+            },
+            "Only games imported from milty",
+        )
+        .galactic_event(GalacticEventAction::AgeOfExploration { tile: None });
+    assert_eq!(g.phase(), Phase::EndActionTurn);
 }
