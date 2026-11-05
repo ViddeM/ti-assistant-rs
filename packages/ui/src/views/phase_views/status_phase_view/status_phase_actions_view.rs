@@ -5,14 +5,13 @@ use ti_helper_game_data::{
     components::{
         objectives::{Objective, ObjectiveKind, secret::SecretObjective},
         relic::Relic,
-        tech::TechOrigin,
     },
 };
 
 use crate::{
     components::{
         button::Button,
-        dropdown::{ObjectiveDropdown, RelicDropdown, TechDropdown},
+        dropdown::{ObjectiveDropdown, RelicDropdown},
         info_button::InfoButton,
     },
     data::{
@@ -174,7 +173,6 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
     });
     let secret_objective =
         use_memo(move || sp_state().scored_secret_objectives.get(&player()).cloned());
-    let entropic_scar_in_play = use_memo(move || gc.game_state().entropic_scar_in_play());
 
     let mut selected_public_objective = use_signal(|| None);
     let mut selected_secret_objective = use_signal(|| None);
@@ -236,9 +234,6 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
         fieldset {
             legend {
                 h4 { "{player()}" }
-            }
-            if entropic_scar_in_play() {
-                EntropicScarTech { player: player() }
             }
             if let Some(choice) = public_objective() {
                 p {
@@ -329,75 +324,6 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                             },
                             "Score"
                         }
-                    }
-                }
-            }
-        }
-    }
-}
-
-#[component]
-fn EntropicScarTech(player: ReadSignal<PlayerId>) -> Element {
-    let gc = use_context::<GameContext>();
-    let event = use_context::<EventContext>();
-
-    let mut selected_tech = use_signal(|| None);
-
-    let sp_state = use_memo(move || {
-        gc.game_state()
-            .status_phase_state
-            .clone()
-            .expect("Status phase state to be set in status phase")
-    });
-    let gained_tech = use_memo(move || sp_state().entropic_scar_techs.get(&player()).cloned());
-    let has_scored = use_memo(move || {
-        let state = sp_state();
-        state.scored_public_objectives.contains_key(&player())
-            || state.scored_secret_objectives.contains_key(&player())
-    });
-    let options = use_memo(move || {
-        let state = gc.game_state();
-        let Some(p) = state.players.get(&player()) else {
-            return Vec::new();
-        };
-        let mut techs = gc
-            .game_options()
-            .technologies
-            .iter()
-            .filter(|t| t.info().origin == TechOrigin::Faction(p.faction))
-            .filter(|t| !p.has_tech(t))
-            .cloned()
-            .collect::<Vec<_>>();
-        techs.sort();
-        techs
-    });
-
-    rsx! {
-        if let Some(tech) = gained_tech() {
-            p {
-                "Entropic scar: {tech.info().name}"
-                InfoButton { info: Info::Tech(tech) }
-            }
-        } else if !has_scored() && !options().is_empty() {
-            div { class: "score-objectives-container",
-                p { "Ships in an entropic scar? Spend a strategy token to gain a faction technology." }
-                TechDropdown {
-                    value: selected_tech,
-                    options: options(),
-                    on_select: move |t| selected_tech.set(t),
-                }
-                div { class: "score-objective-buttons-container",
-                    Button {
-                        disabled: selected_tech().is_none(),
-                        onclick: move |_| {
-                            event
-                                .send_event(Event::GainEntropicScarTech {
-                                    player: player(),
-                                    tech: selected_tech().expect("Tech to be selected"),
-                                });
-                            selected_tech.set(None);
-                        },
-                        "Gain"
                     }
                 }
             }

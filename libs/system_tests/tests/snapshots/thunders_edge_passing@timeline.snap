@@ -42,4 +42,4 @@ source: libs/system_tests/src/check.rs
   38 PassAction(Bob)                          r1 EndActionTurn      Bob
   39 EndTurn(Bob)                             r1 Action             Carol
   40 PassAction(Carol)                        r1 EndActionTurn      Carol
-  41 EndTurn(Carol)                           r1 Status             Carol
+  41 EndTurn(Carol)                           r1 EntropicScar       Carol

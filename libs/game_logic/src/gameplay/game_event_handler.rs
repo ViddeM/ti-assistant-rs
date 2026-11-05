@@ -1863,21 +1863,12 @@ fn try_update_game_state(
             }
         }
         Event::GainEntropicScarTech { player, tech } => {
-            game_state.assert_phase(Phase::Status)?;
-            ensure!(
-                game_state.entropic_scar_in_play(),
-                "There is no entropic scar in this game"
-            );
+            game_state.assert_phase(Phase::EntropicScar)?;
             game_state.assert_enabled(&tech)?;
 
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
                 bail!("Status phase state not set!")
             };
-            ensure!(
-                !status_state.scored_public_objectives.contains_key(&player)
-                    && !status_state.scored_secret_objectives.contains_key(&player),
-                "An entropic scar is used at the start of the status phase, before scoring objectives"
-            );
             ensure!(
                 !status_state.entropic_scar_techs.contains_key(&player),
                 "{player} has already gained a technology from an entropic scar this status phase"
@@ -1895,6 +1886,10 @@ fn try_update_game_state(
             );
             p.take_tech(tech.clone())?;
             status_state.entropic_scar_techs.insert(player, tech);
+        }
+        Event::CompleteEntropicScarPhase => {
+            game_state.assert_phase(Phase::EntropicScar)?;
+            game_state.phase = Phase::Status;
         }
         Event::PlayCrownOfEmphidia { player } => {
             game_state.assert_phase(Phase::Relics)?;
@@ -2940,6 +2935,11 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::RelicAction
         | Phase::ActionCardAction => true,
 
-        Phase::Relics | Phase::Setup | Phase::Status | Phase::Agenda | Phase::Creation => false,
+        Phase::Relics
+        | Phase::Setup
+        | Phase::EntropicScar
+        | Phase::Status
+        | Phase::Agenda
+        | Phase::Creation => false,
     }
 }

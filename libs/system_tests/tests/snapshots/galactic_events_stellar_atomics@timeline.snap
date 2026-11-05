@@ -46,16 +46,17 @@ source: libs/system_tests/src/check.rs
   42 PassAction(Carol)                        r1 EndActionTurn      Carol
   43 EndTurn(Carol)                           r1 Action             Alice
   44 PassAction(Alice)                        r1 EndActionTurn      Alice
-  45 EndTurn(Alice)                           r1 Status             Alice
-  46 ScorePublicObjective(Alice)              r1 Status             Alice
-  47 ScorePublicObjective(Bob)                r1 Status             Alice
-  48 ScorePublicObjective(Carol)              r1 Status             Alice
-  49 ScoreSecretObjective(Alice)              r1 Status             Alice
-  50 ScoreSecretObjective(Bob)                r1 Status             Alice
-  51 ScoreSecretObjective(Carol)              r1 Status             Alice
-  52 RevealPublicObjective                    r1 Status             Alice
-  53 CompleteStatusPhase                      r1 Agenda             Bob        order=[Bob Carol Alice]
-  54 RevealAgenda                             r1 Agenda             Bob
-  55 CastAgendaVote(Bob)                      r1 Agenda             Bob
-  56 CastAgendaVote(Carol)                    r1 Agenda             Bob
-  57 ResolveAgenda                            r1 Agenda             Bob        Bob=1 Carol=1
+  45 EndTurn(Alice)                           r1 EntropicScar       Alice
+  46 CompleteEntropicScarPhase                r1 Status             Alice
+  47 ScorePublicObjective(Alice)              r1 Status             Alice
+  48 ScorePublicObjective(Bob)                r1 Status             Alice
+  49 ScorePublicObjective(Carol)              r1 Status             Alice
+  50 ScoreSecretObjective(Alice)              r1 Status             Alice
+  51 ScoreSecretObjective(Bob)                r1 Status             Alice
+  52 ScoreSecretObjective(Carol)              r1 Status             Alice
+  53 RevealPublicObjective                    r1 Status             Alice
+  54 CompleteStatusPhase                      r1 Agenda             Bob        order=[Bob Carol Alice]
+  55 RevealAgenda                             r1 Agenda             Bob
+  56 CastAgendaVote(Bob)                      r1 Agenda             Bob
+  57 CastAgendaVote(Carol)                    r1 Agenda             Bob
+  58 ResolveAgenda                            r1 Agenda             Bob        Bob=1 Carol=1

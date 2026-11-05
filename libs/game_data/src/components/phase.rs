@@ -39,6 +39,10 @@ pub enum Phase {
     /// Player has finished one action turn, check if they're gonna take another one.
     EndActionTurn,
 
+    /// Before the status phase when an entropic scar is in play: players with ships in an
+    /// entropic scar may gain a faction technology.
+    EntropicScar,
+
     /// The Status phase.
     Status,
 
@@ -66,6 +70,7 @@ impl Display for Phase {
                 Phase::FrontierCardAction => "Frontier Card Action",
                 Phase::RelicAction => "Relic Action",
                 Phase::EndActionTurn => "End Action Turn",
+                Phase::EntropicScar => "Entropic Scar",
                 Phase::Status => "Status",
                 Phase::Relics => "Relics",
                 Phase::Agenda => "Agenda",

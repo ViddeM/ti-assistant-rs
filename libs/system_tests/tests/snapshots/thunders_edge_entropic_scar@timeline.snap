@@ -42,18 +42,19 @@ source: libs/system_tests/src/check.rs
   38 PassAction(Dee)                          r1 EndActionTurn      Dee
   39 EndTurn(Dee)                             r1 Action             Eve
   40 PassAction(Eve)                          r1 EndActionTurn      Eve
-  41 EndTurn(Eve)                             r1 Status             Eve
-  42 GainEntropicScarTech(Ben)                r1 Status             Eve
-  43 GainEntropicScarTech(Ann)                r1 Status             Eve
-  44 ScorePublicObjective(Dee)                r1 Status             Eve        Dee=1
-  45 ScorePublicObjective(Ann)                r1 Status             Eve
-  46 ScorePublicObjective(Ben)                r1 Status             Eve
-  47 ScorePublicObjective(Cid)                r1 Status             Eve
-  48 ScorePublicObjective(Eve)                r1 Status             Eve
-  49 ScoreSecretObjective(Ann)                r1 Status             Eve
-  50 ScoreSecretObjective(Ben)                r1 Status             Eve
-  51 ScoreSecretObjective(Cid)                r1 Status             Eve
-  52 ScoreSecretObjective(Dee)                r1 Status             Eve
-  53 ScoreSecretObjective(Eve)                r1 Status             Eve
-  54 RevealPublicObjective                    r1 Status             Eve
-  55 CompleteStatusPhase                      r2 Strategy           Ann
+  41 EndTurn(Eve)                             r1 EntropicScar       Eve
+  42 GainEntropicScarTech(Ben)                r1 EntropicScar       Eve
+  43 GainEntropicScarTech(Ann)                r1 EntropicScar       Eve
+  44 CompleteEntropicScarPhase                r1 Status             Eve
+  45 ScorePublicObjective(Dee)                r1 Status             Eve        Dee=1
+  46 ScorePublicObjective(Ann)                r1 Status             Eve
+  47 ScorePublicObjective(Ben)                r1 Status             Eve
+  48 ScorePublicObjective(Cid)                r1 Status             Eve
+  49 ScorePublicObjective(Eve)                r1 Status             Eve
+  50 ScoreSecretObjective(Ann)                r1 Status             Eve
+  51 ScoreSecretObjective(Ben)                r1 Status             Eve
+  52 ScoreSecretObjective(Cid)                r1 Status             Eve
+  53 ScoreSecretObjective(Dee)                r1 Status             Eve
+  54 ScoreSecretObjective(Eve)                r1 Status             Eve
+  55 RevealPublicObjective                    r1 Status             Eve
+  56 CompleteStatusPhase                      r2 Strategy           Ann

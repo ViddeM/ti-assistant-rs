@@ -41,13 +41,14 @@ source: libs/system_tests/src/check.rs
   37 PassAction(Bob)                          r1 EndActionTurn      Bob
   38 EndTurn(Bob)                             r1 Action             Carol
   39 PassAction(Carol)                        r1 EndActionTurn      Carol
-  40 EndTurn(Carol)                           r1 Status             Carol
-  41 ScorePublicObjective(Alice)              r1 Status             Carol      Alice=1
-  42 ScoreExtraPublicObjective(Alice)         r1 Status             Carol      Alice=2
-  43 ScoreExtraPublicObjective(Alice)         r1 Status             Carol      Alice=4
-  44 ScorePublicObjective(Bob)                r1 Status             Carol
-  45 ScorePublicObjective(Carol)              r1 Status             Carol
-  46 ScoreSecretObjective(Alice)              r1 Status             Carol
-  47 ScoreSecretObjective(Bob)                r1 Status             Carol
-  48 ScoreSecretObjective(Carol)              r1 Status             Carol
-  49 CompleteStatusPhase                      r2 Strategy           Alice
+  40 EndTurn(Carol)                           r1 EntropicScar       Carol
+  41 CompleteEntropicScarPhase                r1 Status             Carol
+  42 ScorePublicObjective(Alice)              r1 Status             Carol      Alice=1
+  43 ScoreExtraPublicObjective(Alice)         r1 Status             Carol      Alice=2
+  44 ScoreExtraPublicObjective(Alice)         r1 Status             Carol      Alice=4
+  45 ScorePublicObjective(Bob)                r1 Status             Carol
+  46 ScorePublicObjective(Carol)              r1 Status             Carol
+  47 ScoreSecretObjective(Alice)              r1 Status             Carol
+  48 ScoreSecretObjective(Bob)                r1 Status             Carol
+  49 ScoreSecretObjective(Carol)              r1 Status             Carol
+  50 CompleteStatusPhase                      r2 Strategy           Alice

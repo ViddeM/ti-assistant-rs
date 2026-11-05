@@ -8,9 +8,10 @@ use crate::{
         phase_views::{
             action_card::ActionCardView, action_phase::ActionPhaseView,
             agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
-            end_action_phase::EndActionPhaseView, fracture_roll::FractureRoll,
-            minister_of_antiques::MinisterOfAntiques, rapid_mobilization::RapidMobilization,
-            relic_card::RelicCardView, relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
+            end_action_phase::EndActionPhaseView, entropic_scar_phase::EntropicScarPhaseView,
+            fracture_roll::FractureRoll, minister_of_antiques::MinisterOfAntiques,
+            rapid_mobilization::RapidMobilization, relic_card::RelicCardView,
+            relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
             status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
             strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
         },
@@ -66,6 +67,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::RelicAction => rsx! {
             RelicCardView {}
+        },
+        Phase::EntropicScar => rsx! {
+            EntropicScarPhaseView {}
         },
         Phase::Status => rsx! {
             StatusPhaseView {}

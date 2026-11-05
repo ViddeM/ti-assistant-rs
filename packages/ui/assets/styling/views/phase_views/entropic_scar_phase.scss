@@ -1,0 +1,13 @@
+@import "../../vars.scss";
+
+.entropic-scar-fieldset {
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
+}
+
+.entropic-scar-legend {
+  border-radius: $border-radius;
+  border-width: 4px;
+  border-style: solid;
+}

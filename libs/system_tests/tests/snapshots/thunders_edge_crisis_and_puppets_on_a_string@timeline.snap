@@ -52,4 +52,4 @@ source: libs/system_tests/src/check.rs
   48 PlayPuppetsOnAString(Carol)              r1 Action             Carol
   49 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
   50 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
-  51 EndTurn(Carol)                           r1 Status             Carol
+  51 EndTurn(Carol)                           r1 EntropicScar       Carol

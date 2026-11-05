@@ -4,6 +4,7 @@ pub mod agenda_phase_view;
 pub mod breakthrough_action;
 pub mod creation_phase;
 pub mod end_action_phase;
+pub mod entropic_scar_phase;
 pub mod faction_setup_views;
 pub mod fracture_roll;
 pub mod minister_of_antiques;

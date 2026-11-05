@@ -12,7 +12,6 @@ pub fn StatusPhaseInstructionsView() -> Element {
     let event = use_context::<EventContext>();
 
     let reveals_objective = use_memo(move || gc.game_state().status_phase_reveals_objective());
-    let entropic_scar_in_play = use_memo(move || gc.game_state().entropic_scar_in_play());
 
     let status_phase_complete = use_memo(move || {
         let game_state = gc.game_state();
@@ -31,9 +30,6 @@ pub fn StatusPhaseInstructionsView() -> Element {
         div { class: "card status-view-card",
             h2 { "Status Phase" }
             ol {
-                if entropic_scar_in_play() {
-                    li { "Entropic Scar: Gain a Faction Technology" }
-                }
                 li { "Score Objectives" }
                 if reveals_objective() {
                     li { "Reveal Public Objective" }

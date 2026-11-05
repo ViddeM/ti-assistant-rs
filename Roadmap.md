@@ -293,7 +293,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
 - ✅ Space stations
   - ✅ Can't be elected in agendas
   - ❌ Don't count as planets in planet counts (incl. Last Bastion's Revelation)
-- ✅ New anomaly (entropic scars: gain a faction tech at the start of the status phase; unit abilities and wormholes 👺)
+- ✅ New anomaly (entropic scars: an Entropic Scar phase before the status phase to gain a faction tech; unit abilities and wormholes 👺)
 - ✅ Thunder's Edge expedition and planet (commit, pass, completion, placement on the map, admin page)
   - ✅ Map: Thunder's Edge where it was placed
 - ✅ Action cards

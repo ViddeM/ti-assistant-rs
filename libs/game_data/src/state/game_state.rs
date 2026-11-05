@@ -489,7 +489,11 @@ impl GameState {
                 Phase::Action => {
                     self.calculate_action_turn_order()?;
                     self.passed_players.clear();
-                    self.phase = Phase::Status;
+                    self.phase = if self.entropic_scar_in_play() {
+                        Phase::EntropicScar
+                    } else {
+                        Phase::Status
+                    };
                     self.current_turn_start_time = None;
 
                     self.status_phase_state = Some(StatusPhaseState::new())
@@ -799,7 +803,10 @@ impl GameState {
     /// The number of status phases that have started: one per earlier round, plus the current
     /// round's once it has begun.
     pub fn status_phases_started(&self) -> u32 {
-        let this_round = matches!(self.phase, Phase::Status | Phase::Relics | Phase::Agenda);
+        let this_round = matches!(
+            self.phase,
+            Phase::EntropicScar | Phase::Status | Phase::Relics | Phase::Agenda
+        );
         self.round.saturating_sub(1) + u32::from(this_round)
     }
 

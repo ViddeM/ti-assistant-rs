@@ -130,8 +130,14 @@ impl TestGame {
     }
 
     /// Start scoring the status phase, see [StatusPhase].
+    ///
+    /// In the entropic scar phase, it completes that phase first without anyone gaining a
+    /// technology.
     #[track_caller]
     pub fn status_phase(&mut self) -> StatusPhase<'_> {
+        if self.phase() == Phase::EntropicScar {
+            self.apply(Event::CompleteEntropicScarPhase);
+        }
         assert_eq!(
             self.phase(),
             Phase::Status,

@@ -45,4 +45,4 @@ source: libs/system_tests/src/check.rs
   41 PassAction(Carol)                        r1 EndActionTurn      Carol
   42 EndTurn(Carol)                           r1 Action             Alice
   43 PassAction(Alice)                        r1 EndActionTurn      Alice
-  44 EndTurn(Alice)                           r1 Status             Alice
+  44 EndTurn(Alice)                           r1 EntropicScar       Alice
