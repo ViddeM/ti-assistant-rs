@@ -1,10 +1,7 @@
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap};
 
 use ti_helper_game_data::{
-    common::{
-        color::Color,
-        map::{Coordinate, HexPosition},
-    },
+    common::{color::Color, map::Coordinate},
     components::{
         planet::Planet,
         planet_attachment::PlanetAttachment,
@@ -217,18 +214,12 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     let mut tokens = Vec::new();
     let mut owners = Vec::new();
 
-    let mut occupied_slots = HashSet::new();
-
     let hex_map = &milty_information.hex_map;
     for (tile, (center, rotation_degrees)) in hex_map
         .tiles
         .iter()
         .zip(place_tiles(hex_map, game_state.players.len()))
     {
-        if let HexPosition::Pos(coord) = &tile.position {
-            occupied_slots.insert((coord.ring, coord.position));
-        }
-
         tiles.push(TileLayout {
             system_id: tile.system.clone(),
             x: center.0,
@@ -316,16 +307,10 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         }
     }
 
-    let empty_slots = (1..=hex_map.galaxy_outer_ring())
-        .flat_map(|ring| (0..ring * 6).map(move |position| (ring, position)))
-        .filter(|slot| !occupied_slots.contains(slot))
-        .map(|(ring, position)| {
-            to_svg(tile_pos_to_visual_pos(get_tile_position(&Coordinate {
-                ring,
-                position,
-                rotation: 0,
-            })))
-        })
+    let empty_slots = hex_map
+        .empty_galaxy_slots()
+        .iter()
+        .map(|coord| to_svg(tile_pos_to_visual_pos(get_tile_position(coord))))
         .collect();
 
     Some(MapLayout {

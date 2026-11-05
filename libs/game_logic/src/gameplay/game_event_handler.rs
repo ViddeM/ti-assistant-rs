@@ -293,6 +293,15 @@ fn try_update_game_state(
             for planet in faction.get_starting_planets().into_iter() {
                 player.planets.insert(planet, BTreeSet::new());
             }
+
+            if let Some(milty) = game_state.map_data.milty_information.as_mut() {
+                let home_system = systems()
+                    .into_values()
+                    .find(|system| system.system_type == SystemType::HomeSystem(faction));
+                if let Some(home_system) = home_system {
+                    milty.hex_map.place_keleres_home_system(home_system.id);
+                }
+            }
         }
         Event::SetupCulturalExchange { player, faction } => {
             game_state.assert_phase(Phase::Setup)?;

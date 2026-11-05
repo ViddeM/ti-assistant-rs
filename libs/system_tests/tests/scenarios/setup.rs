@@ -2,8 +2,11 @@
 
 use std::collections::BTreeSet;
 
-use ti_helper_game_data::state::player::NewPlayer;
-use ti_helper_system_tests::prelude::*;
+use ti_helper_game_data::{
+    common::map::{Coordinate, HexPosition},
+    state::player::NewPlayer,
+};
+use ti_helper_system_tests::{milty::milty_data_on_map, prelude::*};
 
 use crate::fixtures::five_player_draft;
 
@@ -232,6 +235,47 @@ pub fn setup_galactic_events() -> TestGame {
         BTreeSet::from([GalacticEvent::TotalWar, GalacticEvent::StellarAtomics])
     );
     g
+}
+
+#[test]
+fn keleres_home_system_is_placed_on_the_milty_map() {
+    let draft = milty_data_on_map(
+        "65 74 41 85A0 113 100 63 39 102 28 36 87A2 78 87A0 59 34 32 68 96a 47 49 95 50 64 94 24 83A0 85A0 83A1 35 93 80 67 0 107 110",
+        &[
+            ("Ann", Faction::FirmamentObsidian, 0),
+            ("Ben", Faction::DeepwroughtScholarate, 1),
+            ("Cid", Faction::CrimsonRebellion, 2),
+            ("Dee", Faction::RalNelConsortium, 3),
+            ("Kel", Faction::CouncilKeleres, 4),
+        ],
+    );
+    let mut g = TestGame::builder()
+        .milty(draft)
+        .tribunii(Faction::XxchaKingdom)
+        .create();
+
+    g.finish_creation().auto_setup();
+
+    let hex_map = &g
+        .state()
+        .map_data
+        .milty_information
+        .as_ref()
+        .unwrap()
+        .hex_map;
+    let keleres_slot = HexPosition::Pos(Coordinate {
+        ring: 3,
+        position: 15,
+        rotation: 0,
+    });
+    assert!(
+        hex_map
+            .tiles
+            .iter()
+            .any(|tile| tile.system == "14" && tile.position == keleres_slot)
+    );
+    assert!(hex_map.empty_galaxy_slots().is_empty());
+    assert!(g.player("Kel").planets.contains_key(&Planet::ArchonRen));
 }
 
 #[test]

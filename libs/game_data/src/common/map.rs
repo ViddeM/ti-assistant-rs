@@ -164,6 +164,47 @@ impl HexMap {
         }
     }
 
+    /// The coordinates in the rings around Mecatol Rex, up to the outermost ring of the galaxy, that
+    /// have no tile, sorted by ring and position.
+    pub fn empty_galaxy_slots(&self) -> Vec<Coordinate> {
+        let occupied = self
+            .tiles
+            .iter()
+            .filter_map(|tile| match &tile.position {
+                HexPosition::Pos(coord) => Some((coord.ring, coord.position)),
+                HexPosition::OutsideGalaxy => None,
+            })
+            .collect::<HashSet<_>>();
+
+        (1..=self.galaxy_outer_ring())
+            .flat_map(|ring| (0..ring * 6).map(move |position| (ring, position)))
+            .filter(|slot| !occupied.contains(slot))
+            .map(|(ring, position)| Coordinate {
+                ring,
+                position,
+                rotation: 0,
+            })
+            .collect()
+    }
+
+    /// Places the home system chosen by The Council Keleres in the only empty slot of the galaxy,
+    /// which milty leaves for its home system, if there is exactly one and the system isn't on
+    /// the map yet.
+    pub fn place_keleres_home_system(&mut self, system: SystemId) {
+        if self.tiles.iter().any(|tile| tile.system == system) {
+            return;
+        }
+
+        let Ok([slot]) = <[Coordinate; 1]>::try_from(self.empty_galaxy_slots()) else {
+            return;
+        };
+
+        self.tiles.push(Tile {
+            system,
+            position: HexPosition::Pos(slot),
+        });
+    }
+
     /// The coordinate just outside the galaxy where a tile that is outside the galaxy belongs, if it
     /// belongs next to a tile in the galaxy (the Crimson Rebellion home system next to its gate).
     pub fn outside_galaxy_coordinate(&self, tile: &Tile) -> Option<Coordinate> {
@@ -617,6 +658,60 @@ mod test {
             slots(&mecatol_rex_and_ring_one(None).exploration_positions()),
             [(1, 0), (2, 3), (2, 5), (2, 7), (2, 9)]
         );
+    }
+
+    #[test]
+    fn empty_galaxy_slots_are_the_slots_without_a_tile() {
+        assert_eq!(
+            slots(&mecatol_rex_and_ring_one(None).empty_galaxy_slots()),
+            [(1, 0)]
+        );
+        assert!(
+            mecatol_rex_and_ring_one(Some("20"))
+                .empty_galaxy_slots()
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn keleres_home_system_is_placed_in_the_only_empty_slot() {
+        let mut hex_map = mecatol_rex_and_ring_one(None);
+
+        hex_map.place_keleres_home_system("14".to_string());
+
+        assert!(hex_map.tiles.contains(&Tile {
+            system: "14".to_string(),
+            position: HexPosition::Pos(coordinate(1, 0)),
+        }));
+        assert!(hex_map.empty_galaxy_slots().is_empty());
+    }
+
+    #[test]
+    fn keleres_home_system_is_not_placed_with_two_empty_slots() {
+        let mut hex_map = mecatol_rex_and_ring_one(None);
+        hex_map
+            .tiles
+            .retain(|tile| tile.position != HexPosition::Pos(coordinate(1, 3)));
+        let before = hex_map.clone();
+
+        hex_map.place_keleres_home_system("14".to_string());
+
+        assert_eq!(hex_map, before);
+    }
+
+    #[test]
+    fn keleres_home_system_is_not_placed_twice() {
+        let mut hex_map = mecatol_rex_and_ring_one(None);
+        for tile in &mut hex_map.tiles {
+            if tile.position == HexPosition::Pos(coordinate(1, 3)) {
+                tile.system = "14".to_string();
+            }
+        }
+        let before = hex_map.clone();
+
+        hex_map.place_keleres_home_system("14".to_string());
+
+        assert_eq!(hex_map, before);
     }
 
     #[test]
