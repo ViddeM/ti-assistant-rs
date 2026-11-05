@@ -168,7 +168,7 @@
 - ❌ Show available votes (soft limit)
 - ❌ Show voting order (but allow votes in any order)
 - ✅ Veto (can be solved with Undo, but messes up time tracking)
-- ❌ Stellar Atomics: players without a token can't vote (Galactic event) `[GE]`
+- ✅ Stellar Atomics: players without a token can't vote (Galactic event) `[GE]`
 
 #### Extras (nice to have)
 - Abilities that give extra votes (_with a soft cap on castable votes, these aren't required_)
@@ -273,7 +273,7 @@
    - ✅ Neuraloop (status phase only, not objectives revealed outside of it) `[CIV-2]`
    - ✅ Book of Latvinia (research prompt for the 2 techs when gained) `[CIV-1]`
  - ✅ Action cards: Codex IV has none
- - ❌ Galactic events: Minor Factions, Total War, Age of Commerce, Age of Exploration (see "Galactic Events") `[GE]`
+ - ✅ Galactic events: Minor Factions, Total War, Age of Commerce, Age of Exploration (see "Galactic Events") `[GE]`
  - ❌ Liberation of Ordinian scenario `[LO]`
 
 ### Thunder's Edge
@@ -333,12 +333,12 @@
      - ❌ Ta Zern (Action: delete a tech from everyone, the ones that lost a tech research again) `[TE-E-3]`
      - ✅ Sharsiss (Action)
      - ✅ Sharsiss Hollow (Action)
- - ❌ Galactic events: 16 new (see "Galactic Events") `[GE]`
+ - 🚱 Galactic events: all 16 handled; Civilized Society's game end rule waits for E5 (see "Galactic Events") `[GE]`
  - ❌ Decide: should ticking Thunder's Edge pre-tick Codex I–IV (the box contains the codex cards)? `[TE-K1]`
  - 👺 Twilight's Fall game mode
 
 ### Galactic Events (Codex IV + Thunder's Edge)
- - 🚱 Framework: ✅ data, choosing the events on the Creation screen (new game and milty), info modal, in-game display, VP rows, admin page; still open: random pick `[GE 5.0]`
+ - ✅ Framework: data, choosing the events on the Creation screen (new game and milty), info modal, in-game display, VP rows, admin page; random picks happen at the table `[GE 5.0]`
  - Tracked
    - ✅ Stellar Atomics (one-shot action, spent players can't vote)
    - ✅ Age of Fighters (Fighter II for everyone at setup)
@@ -350,13 +350,14 @@
    - ✅ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
    - ✅ Age of Exploration (Dark Energy Tap: place the drawn tile on the milty map)
    - ✅ Rapid Mobilization (the Fracture and breakthroughs at Start Game; each player picks planets and researches)
+   - ✅ Mercenaries for Hire (action that ends the turn)
  - Assisted
    - ✅ Minor Factions (minor faction planets have all traits, alliance reminder)
    - ✅ Dangerous Wilds (tech prompt for unowned hazardous planets)
    - ✅ Conventions of War Abandoned (X-89: purge planet)
-   - ❌ Age of Commerce (share technology shortcut)
    - ✅ Hidden Agenda (the speaker enters the votes as they're read out)
- - Info only: Call of the Void, Wild Wild Galaxy, Cosmic Phenomenae, Mercenaries for Hire, Weird Wormholes
+   - ✅ Wild, Wild Galaxy (the Stellar Converter works on any planet)
+ - Info only: Age of Commerce (share a tech by toggling it in the tech view), Call of the Void, Cosmic Phenomenae, Weird Wormholes
 
 ## Prettify things
  - ❌ Make things pretty (FE)

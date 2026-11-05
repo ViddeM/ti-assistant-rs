@@ -18,7 +18,7 @@ This app is used **alongside** the physical game. Every feature has to be faster
 - **Economy:** trade goods and commodities, exhausted/readied state.
 - **Cards in hand:** action cards, promissory notes, unscored secret objectives, relic fragments.
 - **Positional rules:** movement, adjacency.
-- **Randomness:** dice. The backend must stay deterministic for undo and replay, so players roll at the table and enter the result.
+- **Randomness:** dice and random draws (e.g. picking the galactic event). The backend must stay deterministic for undo and replay, so players roll or draw at the table and enter the result.
 
 **Lowest priority:** game end (reaching the VP target, winners, tiebreaks, elimination). Players handle it at the table.
 
@@ -226,7 +226,7 @@ Codex IV introduced 4 events; TE adds 16 and reprints the 4 (the "20 Galactic Ev
 2. ✅ **State:** `GameState::galactic_events: BTreeSet<GalacticEvent>`. A set, because the Codex IV rulebook says advanced players can play with several events at once.
 3. ✅ **Choosing:** the creation-phase event `SetGalacticEvents { events }` replaces the whole set (empty clears it) and checks each event with `assert_enabled`. `SetSettings` and `ImportFromMilty` don't touch it.
    - The Creation ("Add Players") screen, which both the new-game and milty flows land on, lists the chosen events in a table (name, complexity bars, info button, remove button) above a dropdown of the remaining enabled events and an Add button. It's hidden when no event is enabled.
-4. **Random pick:** a **"Pick random"** button on the Creation screen picker. The randomness lives in the client, so the event stays deterministic.
+4. 👺 **Random pick:** players pick the event at the table and enter it in the Creation screen picker.
 5. **In-game display:**
    - ✅ `Info::GalacticEvent` (info modal), opened from the Creation screen.
    - ✅ From Setup on, the info box lists the chosen events (name + info button) under a "Galactic event(s):" label. Creation keeps its own table.
