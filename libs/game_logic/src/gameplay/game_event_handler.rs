@@ -87,6 +87,12 @@ fn try_update_game_state(
             "{player} must gain their Minister of Antiques relic first"
         );
     }
+    if !game_state.rapid_mobilization.is_empty() {
+        ensure!(
+            matches!(event, Event::ResolveRapidMobilization { .. }),
+            "Rapid Mobilization must be resolved first"
+        );
+    }
 
     match event {
         Event::SetSettings { settings } => {
@@ -494,6 +500,18 @@ fn try_update_game_state(
                 if let Some(firmament) = firmament {
                     game_state.set_relic_owner(Relic::TheObsidian, Some(firmament))?;
                 }
+            }
+
+            if game_state
+                .galactic_events
+                .contains(&GalacticEvent::RapidMobilization)
+            {
+                game_state.fracture_in_play = true;
+                let players = game_state.players.keys().cloned().collect::<Vec<_>>();
+                for player in &players {
+                    game_state.gain_breakthrough(player)?;
+                }
+                game_state.rapid_mobilization = players.into_iter().collect();
             }
 
             let with_breakthrough = (game_state.players.iter())
@@ -2631,6 +2649,54 @@ fn try_update_game_state(
                 game_state.set_relic_owner(relic, Some(player))?;
             }
             game_state.minister_of_antiques_relic = None;
+        }
+        Event::ResolveRapidMobilization {
+            player,
+            planets,
+            technologies,
+        } => {
+            ensure!(
+                game_state.rapid_mobilization.contains(&player),
+                "{player} has no Rapid Mobilization to resolve"
+            );
+            for planet in &planets {
+                game_state.assert_enabled(planet)?;
+                ensure!(
+                    game_state.is_rapid_mobilization_planet(planet),
+                    "{} isn't an unowned non-home planet on the board",
+                    planet.info().name
+                );
+            }
+            let researcher = game_state
+                .players
+                .get(&player)
+                .context("Player doesn't exist")?;
+            let count = researcher.faction.rapid_mobilization_research_count();
+            ensure!(
+                technologies.len() == count,
+                "{player} researches {count} technologies with Rapid Mobilization"
+            );
+            for tech in &technologies {
+                game_state.assert_enabled(tech)?;
+                researcher.assert_can_research(tech)?;
+                ensure!(
+                    !researcher.has_tech(tech),
+                    "{player} already owns {}",
+                    tech.info().name
+                );
+            }
+
+            for planet in planets {
+                game_state.set_planet_owner(planet, Some(player.clone()))?;
+            }
+            let p = game_state
+                .players
+                .get_mut(&player)
+                .context("Player doesn't exist")?;
+            for tech in technologies {
+                p.research_tech(tech)?;
+            }
+            game_state.rapid_mobilization.remove(&player);
         }
     }
 

@@ -379,6 +379,15 @@ impl Faction {
             _ => 0,
         }
     }
+
+    /// The number of technologies the faction researches with Rapid Mobilization.
+    pub fn rapid_mobilization_research_count(&self) -> usize {
+        match self {
+            Faction::Nomad => 2,
+            Faction::NekroVirus => 0,
+            _ => 1,
+        }
+    }
 }
 
 impl PartialOrd for Faction {

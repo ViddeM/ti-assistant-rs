@@ -140,5 +140,6 @@ fractureInPlay: false
 fractureRoll: ~
 bookOfLatviniaResearch: ~
 ministerOfAntiquesRelic: ~
+rapidMobilization: []
 stellarAtomicsUsed: []
 monuments: {}

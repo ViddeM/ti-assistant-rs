@@ -102,7 +102,7 @@ Synergy needs **no logic**: the app never validates tech prerequisites or object
 | Task | Verdict | Plan | P / Effort |
 |---|---|---|---|
 | B1 Data | Track | Tiles 125–127 and Styx 4/0 (E1). Optionally model the egress systems. | P1 / S |
-| B2 "Fracture in play" flag | Track (light) | `fracture_in_play: bool` in `GameState` plus `SetFractureInPlay { in_play }` (any phase, admin). Set automatically by A8, Plane Splitter (tech gain; flip/gate), The Silver Flame (TE-D2) and Rapid Mobilization (§5). ✅ Until it's set, `planet_location` keeps Cocytus, Lethe, Phlegethon and Styx off the board, so tactical actions and Mercenary Contract reject them. `SetFractureInPlay` is on the Thunder's Edge page, and A8 sets it; Plane Splitter, The Silver Flame and Rapid Mobilization don't yet. The admin `SetPlanetOwner` isn't restricted. | P2 / S |
+| B2 "Fracture in play" flag | Track (light) | `fracture_in_play: bool` in `GameState` plus `SetFractureInPlay { in_play }` (any phase, admin). Set automatically by A8, Plane Splitter (tech gain; flip/gate), The Silver Flame (TE-D2) and Rapid Mobilization (§5). ✅ Until it's set, `planet_location` keeps Cocytus, Lethe, Phlegethon and Styx off the board, so tactical actions and Mercenary Contract reject them. `SetFractureInPlay` is on the Thunder's Edge page, and A8 and Rapid Mobilization set it; Plane Splitter and The Silver Flame don't yet. The admin `SetPlanetOwner` isn't restricted. | P2 / S |
 | B3 "Roll for the Fracture" prompt | Assist | When E2 reports a new breakthrough and the Fracture isn't in play, show "Roll 1 die. 1 or 10 → the Fracture enters play" with buttons **[It entered play]** (sends B2) and **[No]** (dismiss, UI only). Players forget this roll all the time, so the reminder is worth having. ✅ The roll is forced: `GameState::fracture_roll` holds the player who gained their breakthrough while the Fracture wasn't in play (the Crimson Rebellion from `StartGame`), and every other event is rejected until they answer with `RollForTheFracture { player, entered_play }`. Meanwhile the game view shows the roll instead of the phase, with the buttons for that player, and the Thunder's Edge page can't toggle the Fracture. Undo still works. Admin events only give a roll when gaining the breakthrough is their point (`SetBreakthrough`, giving The Quantumcore). | P2 / S |
 | B4 Relic for Fracture planets | Assist | Through E3: a Fracture planet with no previous owner (it came from the planet deck) → "Gain 1 relic" prompt with a relic picker → E4. | P2 / S |
 | B5 Hide Fracture planets from pickers until in play | Assist | UI filter in the planet dropdowns and the unclaimed planets table. 🚱 Through B2, the tactical action and action card pickers hide them; the unclaimed planets table and the admin planet dropdown still show them. | P3 / S |
@@ -284,7 +284,7 @@ Paths: handler = `libs/game_logic/src/gameplay/game_event_handler.rs`, state = `
 | 2 | Cultural Exchange Program | TE | 2 | Track | ✅ Players use a drawn faction's leaders (E8); the Firmament gets The Obsidian | P2 / M |
 | 3 | Monuments to the Ages | TE | 2 | Track | ✅ Monuments with derived commodities → VP | P2 / M |
 | 4 | Age of Exploration | CIV (PoK) | 2 | Track | ✅ "Dark Energy Tap" action that places the drawn tile on the milty map (tile, ring and position dropdowns; a hex neighbour helper) | P2 / M |
-| 5 | Rapid Mobilization | TE | 1 | Track | Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
+| 5 | Rapid Mobilization | TE | 1 | Track | ✅ Breakthroughs and the Fracture at `StartGame`; a per-player planets and research step | P2 / M |
 | 6 | Minor Factions | CIV (PoK) | 2 | Track | Pick minor factions; their planets gain all 3 traits everywhere traits are read; alliance reminder | P2 / M |
 
 ### 5.2 Per-event plans
@@ -514,8 +514,13 @@ Every event ACTION (Total War, Mercenaries for Hire, Stellar Atomics, Convention
    - The frontier token stays at the table, since the map doesn't draw frontier tokens.
    - The 2-fragment relic rules stay at the table, since fragments aren't tracked and `GainRelicAction` doesn't check them.
 
-##### 5. Rapid Mobilization (TE, complexity 1): Track (setup)
+##### 5. Rapid Mobilization (TE, complexity 1): Track ✅
 > After setup the Fracture enters play. Each player: (1) places 1 infantry on, gains and readies each planet adjacent to their home system (or the Creuss Gate / The Sorrow); (2) places a space dock and their flagship + 3 fighters; (3) **gains their breakthrough**; (4) **researches 1 technology** (Nomad: 2).
+
+✅ Done (`galactic_events_rapid_mobilization` scenario), with these changes:
+- The per-player step runs after `StartGame`, as a blocking prompt like the roll for the Fracture (`GameState::rapid_mobilization`, `ResolveRapidMobilization`), instead of a setup step. So `player_initialization_finished` is unchanged.
+- The player picks the planets. Nothing is inferred from the map: the planets only have to be unowned, outside the home systems and on the board.
+- The Nekro Virus researches no technology.
 
 1. At `StartGame`: set `fracture_in_play` first (so there's no roll), then `gain_breakthrough` for everyone, which applies the I.I.H.Q. and Stellar Genesis effects.
 2. The planets and the research (1 tech, Nomad 2) need a per-player step after the faction setup. `player_initialization_finished` counts total techs, so that check has to change first.
@@ -595,7 +600,7 @@ Source: Codex IV rules PDF, pages 17–18 ("Pax Magnifica"). The wiki page is on
    - ✅ J1 Thunder's Edge on the map, G1 space stations in agendas.
 5. **The large events (§5.2.3), in order.**
    - ✅ Civilized Society without its game end rule (P1).
-   - ✅ Cultural Exchange Program, Monuments to the Ages and Age of Exploration, then Rapid Mobilization, Minor Factions (P2).
+   - ✅ Cultural Exchange Program, Monuments to the Ages, Age of Exploration and Rapid Mobilization, then Minor Factions (P2).
    - F2 Firmament plots.
 6. **Optional (P3).**
    - ✅ Crisis/Puppets on a String, Radical Advancement, legendary ability texts, The Triad badge.

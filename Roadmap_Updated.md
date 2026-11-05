@@ -349,7 +349,7 @@
    - ✅ Monuments to the Ages (monuments → VP)
    - ✅ Cultural Exchange Program (use another faction's leaders; Firmament gets The Obsidian)
    - ✅ Age of Exploration (Dark Energy Tap: place the drawn tile on the milty map)
-   - ❌ Rapid Mobilization (setup planets, breakthroughs, techs; the Fracture enters play)
+   - ✅ Rapid Mobilization (the Fracture and breakthroughs at Start Game; each player picks planets and researches)
  - Assisted
    - ❌ Minor Factions (minor faction planets have all traits, alliance reminder)
    - ✅ Dangerous Wilds (tech prompt for unowned hazardous planets)

@@ -637,6 +637,17 @@ pub enum Event {
         relic: Option<Relic>,
     },
 
+    /// A player resolving Rapid Mobilization: they gain control of the planets adjacent to their
+    /// home system and research their technologies.
+    ResolveRapidMobilization {
+        /// The player resolving Rapid Mobilization.
+        player: PlayerId,
+        /// The planets they place infantry on and gain control of.
+        planets: BTreeSet<Planet>,
+        /// The technologies they research: 1, 2 for the Nomad and none for the Nekro Virus.
+        technologies: BTreeSet<Technology>,
+    },
+
     /// Set a breakthrough for a player.
     SetBreakthrough {
         /// The player for whom the breakthrough is being set.

@@ -156,6 +156,9 @@ pub struct GameState {
     /// anything else can happen.
     pub minister_of_antiques_relic: Option<PlayerId>,
 
+    /// The players who still have to resolve Rapid Mobilization, before anything else can happen.
+    pub rapid_mobilization: BTreeSet<PlayerId>,
+
     /// The players who have discarded their Stellar Atomics token. It can't be derived, since the
     /// event history isn't in [GameState].
     pub stellar_atomics_used: BTreeSet<PlayerId>,
@@ -661,6 +664,17 @@ impl GameState {
             }
             _ => PlanetLocation::NotOnBoard,
         }
+    }
+
+    /// Whether `planet` can be taken with Rapid Mobilization: a planet on a system tile on the
+    /// board, outside the home systems, that no player controls.
+    pub fn is_rapid_mobilization_planet(&self, planet: &Planet) -> bool {
+        self.planet_location(planet) == PlanetLocation::SystemTile
+            && !planet.is_in_home_system()
+            && !self
+                .players
+                .values()
+                .any(|p| p.planets.contains_key(planet))
     }
 
     /// Give `planet` and its attachments to `owner`, or to nobody, returning the previous owner.

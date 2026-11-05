@@ -22,6 +22,7 @@ scenarios![
     galactic_events_cultural_exchange_program,
     galactic_events_monuments_to_the_ages,
     galactic_events_age_of_exploration,
+    galactic_events_rapid_mobilization,
     galactic_events_admin,
 ];
 
@@ -857,6 +858,115 @@ pub fn galactic_events_age_of_exploration() -> TestGame {
     g
 }
 
+/// Rapid Mobilization: Start Game puts the Fracture into play and gives everyone their
+/// breakthrough. Then each player gains control of the planets they pick, unowned non-home planets
+/// on the board, and researches 1 technology: 2 for the Nomad and none for the Nekro Virus.
+pub fn galactic_events_rapid_mobilization() -> TestGame {
+    let mut g = TestGame::builder()
+        .pok()
+        .thunders_edge()
+        .player("Alice", Faction::Nomad)
+        .player("Bob", Faction::NekroVirus)
+        .player("Carol", Faction::EmbersOfMuaat)
+        .galactic_events([GalacticEvent::RapidMobilization])
+        .start();
+    let state = g.state();
+    assert!(state.fracture_in_play);
+    assert_eq!(state.fracture_roll, None);
+    for player in ["Alice", "Bob", "Carol"] {
+        assert!(g.player(player).breakthrough.is_some());
+    }
+    assert!(g.player("Carol").planets.contains_key(&Planet::Avernus));
+    assert_eq!(
+        g.state().rapid_mobilization,
+        BTreeSet::from([p("Alice"), p("Bob"), p("Carol")])
+    );
+
+    let resolve = |player: &str, planets: &[Planet], technologies: &[Technology]| {
+        Event::ResolveRapidMobilization {
+            player: p(player),
+            planets: planets.iter().cloned().collect(),
+            technologies: technologies.iter().cloned().collect(),
+        }
+    };
+
+    g.expect_rejected(
+        Event::TakeStrategyCard {
+            player: p("Alice"),
+            card: StrategyCard::Leadership,
+        },
+        "Rapid Mobilization must be resolved first",
+    )
+    .expect_rejected(
+        resolve("Alice", &[Planet::Abyz], &[Technology::GravityDrive]),
+        "Alice researches 2 technologies with Rapid Mobilization",
+    )
+    .expect_rejected(
+        resolve("Bob", &[Planet::Lodor], &[Technology::GravityDrive]),
+        "Bob researches 0 technologies with Rapid Mobilization",
+    )
+    .expect_rejected(
+        resolve("Carol", &[Planet::Jord], &[Technology::GravityDrive]),
+        "Jord isn't an unowned non-home planet on the board",
+    )
+    .expect_rejected(
+        resolve("Carol", &[Planet::Mirage], &[Technology::GravityDrive]),
+        "Mirage isn't an unowned non-home planet on the board",
+    )
+    .expect_rejected(
+        resolve(
+            "Alice",
+            &[Planet::Abyz],
+            &[Technology::SlingRelay, Technology::GravityDrive],
+        ),
+        "Alice already owns Sling Relay",
+    )
+    .apply(resolve(
+        "Carol",
+        &[Planet::Quann],
+        &[Technology::AntimassDeflectors],
+    ))
+    .expect_rejected(
+        resolve("Carol", &[], &[Technology::GravityDrive]),
+        "Carol has no Rapid Mobilization to resolve",
+    )
+    .expect_rejected(
+        resolve(
+            "Alice",
+            &[Planet::Quann],
+            &[Technology::GravityDrive, Technology::NeuralMotivator],
+        ),
+        "Quann isn't an unowned non-home planet on the board",
+    )
+    .apply(resolve(
+        "Alice",
+        &[Planet::Abyz, Planet::Fria],
+        &[Technology::GravityDrive, Technology::NeuralMotivator],
+    ))
+    .apply(resolve("Bob", &[Planet::Lodor, Planet::MeharXull], &[]));
+
+    let owns =
+        |g: &TestGame, player: &str, planet: Planet| g.player(player).planets.contains_key(&planet);
+    assert!(owns(&g, "Alice", Planet::Abyz));
+    assert!(owns(&g, "Alice", Planet::Fria));
+    assert!(owns(&g, "Bob", Planet::Lodor));
+    assert!(owns(&g, "Bob", Planet::MeharXull));
+    assert!(owns(&g, "Carol", Planet::Quann));
+    let alice = &g.player("Alice").technologies;
+    assert!(alice.contains(&Technology::GravityDrive));
+    assert!(alice.contains(&Technology::NeuralMotivator));
+    assert!(
+        g.player("Carol")
+            .technologies
+            .contains(&Technology::AntimassDeflectors)
+    );
+    assert!(g.state().rapid_mobilization.is_empty());
+
+    g.strategy_phase(SIMPLE_PICKS);
+    assert_eq!(g.phase(), Phase::Action);
+    g
+}
+
 /// The admin events fix the tracked state of the galactic events in play, in any phase: a used
 /// Stellar Atomics token (the player can't vote while it's used), the Zealous Orthodoxy holder and
 /// the Total War points. Each needs an existing player and a change.
@@ -1041,6 +1151,21 @@ fn monuments_to_the_ages_needs_the_event() {
             commodities: 1,
         },
         "Monuments to the Ages isn't in play",
+    );
+}
+
+#[test]
+fn rapid_mobilization_needs_the_event() {
+    let mut g = three_players().pok().thunders_edge().start();
+    assert!(!g.state().fracture_in_play);
+    assert!(g.state().rapid_mobilization.is_empty());
+    g.expect_rejected(
+        Event::ResolveRapidMobilization {
+            player: p("Alice"),
+            planets: BTreeSet::from([Planet::Abyz]),
+            technologies: BTreeSet::from([Technology::GravityDrive]),
+        },
+        "Alice has no Rapid Mobilization to resolve",
     );
 }
 

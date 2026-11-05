@@ -175,6 +175,7 @@ fractureInPlay: false
 fractureRoll: ~
 bookOfLatviniaResearch: ~
 ministerOfAntiquesRelic: ~
+rapidMobilization: []
 stellarAtomicsUsed:
   - Alice
 monuments: {}

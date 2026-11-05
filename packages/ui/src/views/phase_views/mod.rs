@@ -7,6 +7,7 @@ pub mod end_action_phase;
 pub mod faction_setup_views;
 pub mod fracture_roll;
 pub mod minister_of_antiques;
+pub mod rapid_mobilization;
 pub mod relic_card;
 pub mod relics_phase;
 pub mod setup_phase;
