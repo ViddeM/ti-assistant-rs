@@ -61,7 +61,7 @@
      - ✅ Shard of the Throne (Player with this card has 1 extra VP)
      - ✅ Crown of Emphidia (Purge to gain 1 VP)
      - ✅ Book of Latvinia (Codex IV)
-   - ❌ Winning the game (when reaching the winning score) (lowest priority: game end is handled at the table).
+   - ❌ Winning the game (when reaching the configured score; the target is hard-coded to 10 and nothing reads it yet) (lowest priority: game end is handled at the table).
  - ❌ Action cards
    - ✅ Actions
    - ❌ Other relevant ones
