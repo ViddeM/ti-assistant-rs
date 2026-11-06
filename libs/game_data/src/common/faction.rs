@@ -173,7 +173,6 @@ impl Faction {
 
     /// Returns a set of the planets the faction starts with.
     pub fn get_starting_planets(&self) -> HashSet<Planet> {
-        // TODO: Handle Council Keleres (they get to chose one from the Mentak/XXcha/Argent Flights starting systems)
         systems()
             .values()
             .filter(|s| match &s.system_type {
