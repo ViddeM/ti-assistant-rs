@@ -24,7 +24,6 @@ pub enum WormHoleType {
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[allow(missing_docs)]
 pub enum SystemType {
-    Anomaly(Vec<AnomalyType>),
     Hyperlane,
     Normal,
     HomeSystem(Faction),
@@ -54,6 +53,8 @@ pub struct System {
     pub id: SystemId,
     /// What type of system this is.
     pub system_type: SystemType,
+    /// Which anomalies this system is.
+    pub anomalies: Vec<AnomalyType>,
     /// What expansion this system belongs to.
     pub expansion: Expansion,
     /// Which planets exist in this system.
@@ -86,14 +87,16 @@ impl System {
         systems()
             .into_iter()
             .filter(|(_, s)| s.planets.is_empty())
-            .filter(|(_, s)| match &s.system_type {
-                SystemType::Anomaly(anomaly_types) => {
-                    !anomaly_types.contains(&AnomalyType::TheFracture)
-                        && !anomaly_types.contains(&AnomalyType::Supernova)
-                        && !anomaly_types.contains(&AnomalyType::MuaatSupernova)
-                }
-                SystemType::Hyperlane => false,
-                _ => true,
+            .filter(|(_, s)| s.system_type != SystemType::Hyperlane)
+            .filter(|(_, s)| {
+                !s.anomalies.iter().any(|anomaly| {
+                    matches!(
+                        anomaly,
+                        AnomalyType::TheFracture
+                            | AnomalyType::Supernova
+                            | AnomalyType::MuaatSupernova
+                    )
+                })
             })
             .filter(|(_, s)| s.wormholes.is_empty())
             .map(|(id, _)| id)
@@ -108,12 +111,18 @@ impl Component for System {
 }
 
 macro_rules! s {
+    ($id:literal, [$($anomaly:ident),+], $system_type:expr, $($rest:tt)*) => {{
+        let (id, mut system) = s!($id, $system_type, $($rest)*);
+        system.anomalies = vec![$(AnomalyType::$anomaly),+];
+        (id, system)
+    }};
     ($id:literal, $system_type:expr, $expansion:expr) => {
         (
             String::from($id),
             System {
                 id: String::from($id),
                 system_type: $system_type,
+                anomalies: vec![],
                 expansion: $expansion,
                 planets: vec![],
                 wormholes: vec![],
@@ -126,6 +135,7 @@ macro_rules! s {
             System {
                 id: String::from($id),
                 system_type: $system_type,
+                anomalies: vec![],
                 expansion: $expansion,
                 planets: $planets,
                 wormholes: vec![],
@@ -138,6 +148,7 @@ macro_rules! s {
             System {
                 id: String::from($id),
                 system_type: $system_type,
+                anomalies: vec![],
                 expansion: $expansion,
                 planets: $planets,
                 wormholes: $wormholes,
@@ -395,31 +406,11 @@ pub fn systems() -> HashMap<SystemId, System> {
             vec![WormHoleType::Beta],
             Expansion::Base
         ),
-        s!(
-            "41",
-            SystemType::Anomaly(vec![AnomalyType::GravityRift]),
-            Expansion::Base
-        ),
-        s!(
-            "42",
-            SystemType::Anomaly(vec![AnomalyType::Nebula]),
-            Expansion::Base
-        ),
-        s!(
-            "43",
-            SystemType::Anomaly(vec![AnomalyType::Supernova]),
-            Expansion::Base
-        ),
-        s!(
-            "44",
-            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
-            Expansion::Base
-        ),
-        s!(
-            "45",
-            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
-            Expansion::Base
-        ),
+        s!("41", [GravityRift], SystemType::Normal, Expansion::Base),
+        s!("42", [Nebula], SystemType::Normal, Expansion::Base),
+        s!("43", [Supernova], SystemType::Normal, Expansion::Base),
+        s!("44", [AsteroidField], SystemType::Normal, Expansion::Base),
+        s!("45", [AsteroidField], SystemType::Normal, Expansion::Base),
         s!("46", SystemType::Normal, Expansion::Base),
         s!("47", SystemType::Normal, Expansion::Base),
         s!("48", SystemType::Normal, Expansion::Base),
@@ -458,6 +449,7 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "56",
+            [Nebula],
             SystemType::HomeSystem(Faction::Empyrean),
             vec![Planet::TheDark],
             Expansion::ProphecyOfKings
@@ -525,13 +517,15 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "67",
-            SystemType::Anomaly(vec![AnomalyType::GravityRift]),
+            [GravityRift],
+            SystemType::Normal,
             vec![Planet::Cormund],
             Expansion::ProphecyOfKings
         ),
         s!(
             "68",
-            SystemType::Anomaly(vec![AnomalyType::Nebula]),
+            [Nebula],
+            SystemType::Normal,
             vec![Planet::Everra],
             Expansion::ProphecyOfKings
         ),
@@ -587,19 +581,22 @@ pub fn systems() -> HashMap<SystemId, System> {
         s!("78", SystemType::Normal, Expansion::ProphecyOfKings),
         s!(
             "79",
-            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
+            [AsteroidField],
+            SystemType::Normal,
             vec![],
             vec![WormHoleType::Alpha],
             Expansion::ProphecyOfKings
         ),
         s!(
             "80",
-            SystemType::Anomaly(vec![AnomalyType::Supernova]),
+            [Supernova],
+            SystemType::Normal,
             Expansion::ProphecyOfKings
         ),
         s!(
             "81",
-            SystemType::Anomaly(vec![AnomalyType::MuaatSupernova]),
+            [MuaatSupernova],
+            SystemType::Normal,
             Expansion::ProphecyOfKings
         ),
         s!(
@@ -629,6 +626,7 @@ pub fn systems() -> HashMap<SystemId, System> {
         s!("91B", SystemType::Hyperlane, Expansion::ProphecyOfKings),
         s!(
             "92",
+            [Nebula],
             SystemType::HomeSystem(Faction::LastBastion),
             vec![Planet::Ordinian, Planet::Revelation],
             vec![],
@@ -769,32 +767,37 @@ pub fn systems() -> HashMap<SystemId, System> {
         ),
         s!(
             "113",
-            SystemType::Anomaly(vec![AnomalyType::GravityRift]),
+            [GravityRift],
+            SystemType::Normal,
             vec![],
             vec![WormHoleType::Beta],
             Expansion::ThundersEdge
         ),
         s!(
             "114",
-            SystemType::Anomaly(vec![AnomalyType::EntropicScar]),
+            [EntropicScar],
+            SystemType::Normal,
             vec![],
             Expansion::ThundersEdge
         ),
         s!(
             "115",
-            SystemType::Anomaly(vec![AnomalyType::AsteroidField]),
+            [AsteroidField],
+            SystemType::Normal,
             vec![Planet::Industrex],
             Expansion::ThundersEdge
         ),
         s!(
             "116",
-            SystemType::Anomaly(vec![AnomalyType::EntropicScar]),
+            [EntropicScar],
+            SystemType::Normal,
             vec![Planet::Lemox],
             Expansion::ThundersEdge
         ),
         s!(
             "117",
-            SystemType::Anomaly(vec![AnomalyType::GravityRift, AnomalyType::AsteroidField]),
+            [GravityRift, AsteroidField],
+            SystemType::Normal,
             vec![Planet::TheWatchtower],
             Expansion::ThundersEdge
         ),
@@ -819,19 +822,22 @@ pub fn systems() -> HashMap<SystemId, System> {
         s!("124B", SystemType::Hyperlane, Expansion::ThundersEdge),
         s!(
             "125",
-            SystemType::Anomaly(vec![AnomalyType::TheFracture]),
+            [TheFracture],
+            SystemType::Normal,
             vec![Planet::Cocytus],
             Expansion::ThundersEdge
         ),
         s!(
             "126",
-            SystemType::Anomaly(vec![AnomalyType::TheFracture]),
+            [TheFracture],
+            SystemType::Normal,
             vec![Planet::Lethe, Planet::Phlegethon],
             Expansion::ThundersEdge
         ),
         s!(
             "127",
-            SystemType::Anomaly(vec![AnomalyType::TheFracture]),
+            [TheFracture],
+            SystemType::Normal,
             vec![Planet::Styx],
             Expansion::ThundersEdge
         ),
@@ -869,6 +875,16 @@ mod tests {
             })
             .collect::<Vec<_>>();
         assert!(failures.is_empty(), "{failures:#?}");
+    }
+
+    #[test]
+    fn some_home_systems_are_nebulae() {
+        let systems = systems();
+        for (id, faction) in [("56", Faction::Empyrean), ("92", Faction::LastBastion)] {
+            let system = &systems[id];
+            assert_eq!(system.system_type, SystemType::HomeSystem(faction), "{id}");
+            assert_eq!(system.anomalies, [AnomalyType::Nebula], "{id}");
+        }
     }
 
     #[test]

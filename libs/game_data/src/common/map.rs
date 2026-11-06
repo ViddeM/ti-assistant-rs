@@ -243,12 +243,9 @@ impl HexMap {
             .filter(|tile| matches!(&tile.position, HexPosition::Pos(coord) if coord.ring >= 1))
             .filter(|tile| !gates.contains(&tile.system) && !mecatol_rex.contains(&tile.system))
             .filter(|tile| {
-                systems.get(&tile.system).is_some_and(|system| {
-                    matches!(
-                        system.system_type,
-                        SystemType::Normal | SystemType::Anomaly(_)
-                    )
-                })
+                systems
+                    .get(&tile.system)
+                    .is_some_and(|system| system.system_type == SystemType::Normal)
             })
             .map(|tile| tile.system.clone())
             .collect::<Vec<_>>();
@@ -335,10 +332,8 @@ impl HexMap {
             .contains(&id)
             || Self::THE_FRACTURE.contains(&id);
 
-        matches!(
-            system.system_type,
-            SystemType::Normal | SystemType::Anomaly(_)
-        ) && !is_special
+        system.system_type == SystemType::Normal
+            && !is_special
             && !self.tiles.iter().any(|tile| tile.system == system.id)
     }
 
@@ -346,10 +341,9 @@ impl HexMap {
     pub fn has_anomaly(&self, anomaly: &AnomalyType) -> bool {
         let systems = systems();
         self.tiles.iter().any(|tile| {
-            matches!(
-                systems.get(&tile.system).map(|system| &system.system_type),
-                Some(SystemType::Anomaly(types)) if types.contains(anomaly)
-            )
+            systems
+                .get(&tile.system)
+                .is_some_and(|system| system.anomalies.contains(anomaly))
         })
     }
 
@@ -375,7 +369,7 @@ impl HexMap {
                     .is_some_and(|system| match &system.system_type {
                         SystemType::HomeSystem(faction) => minor_factions.contains(faction),
                         SystemType::Hyperlane => false,
-                        SystemType::Normal | SystemType::Anomaly(_) => true,
+                        SystemType::Normal => true,
                     })
             })
             .map(|(_, slot)| *slot)
@@ -634,7 +628,7 @@ mod test {
 
     use crate::{
         common::faction::Faction,
-        components::system::{AnomalyType, SystemType, systems},
+        components::system::{AnomalyType, systems},
     };
 
     use super::{Coordinate, HexMap, HexPosition, MiltySystemId, Tile};
@@ -1087,8 +1081,8 @@ mod test {
         let systems = systems();
         for system in HexMap::THE_FRACTURE {
             assert_eq!(
-                systems.get(system).map(|system| &system.system_type),
-                Some(&SystemType::Anomaly(vec![AnomalyType::TheFracture])),
+                systems.get(system).map(|system| &system.anomalies),
+                Some(&vec![AnomalyType::TheFracture]),
                 "{system}"
             );
         }
