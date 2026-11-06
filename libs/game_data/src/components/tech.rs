@@ -1140,7 +1140,7 @@ impl Technology {
                 &["When 1 of your units uses Sustain Damage, cancel 2 hits instead of 1."],
             ),
             Technology::MagmusReactor => t!(
-                "Magmus Reactor/ Magmus Reactor Ω",
+                "Magmus Reactor",
                 TechType::Category(TechCategory::Warfare),
                 TechOrigin::Faction(Faction::EmbersOfMuaat),
                 tr!([(TechCategory::Warfare, 2)]),
