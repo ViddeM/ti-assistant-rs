@@ -211,8 +211,8 @@ impl PlanetAttachment {
             PlanetAttachment::LasaxSurvivors => {
                 a!("Lasax Survivors", ProphecyOfKings, Hazardous, 1, 2)
             }
-            PlanetAttachment::MiningWorld => a!("Mining world", ProphecyOfKings, Hazardous, 2, 0),
-            PlanetAttachment::RichWorld => a!("Rich world", ProphecyOfKings, Hazardous, 1, 0),
+            PlanetAttachment::MiningWorld => a!("Mining World", ProphecyOfKings, Hazardous, 2, 0),
+            PlanetAttachment::RichWorld => a!("Rich World", ProphecyOfKings, Hazardous, 1, 0),
             // Note, provides resources & influence (1, 1) if the planet it is attached to already have the planet trait.
             PlanetAttachment::WarfareResearchFacility => {
                 a!(
