@@ -5,7 +5,10 @@ pub mod secret;
 
 use std::{cmp::Ordering, fmt::Display, str::FromStr};
 
-use crate::common::{component::Component, expansions::Expansion};
+use crate::common::{
+    component::{Component, replacements},
+    expansions::Expansion,
+};
 use serde::{Deserialize, Serialize};
 
 use self::{public::PublicObjective, secret::SecretObjective};
@@ -111,6 +114,15 @@ impl Objective {
 }
 
 impl Component for Objective {
+    replacements! {
+        Secret(SecretObjective::MakeAnExampleOfTheirWorld)
+            -> Secret(SecretObjective::MakeAnExampleOfTheirWorldOmega),
+        Secret(SecretObjective::TurnTheirFleetsToDust)
+            -> Secret(SecretObjective::TurnTheirFleetsToDustOmega),
+        Secret(SecretObjective::FightWithPrecision)
+            -> Secret(SecretObjective::FightWithPrecisionOmega),
+    }
+
     fn expansion(&self) -> Expansion {
         self.info().expansion
     }

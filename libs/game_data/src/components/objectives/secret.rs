@@ -70,9 +70,12 @@ pub enum SecretObjective {
     // Agenda phase cards
     DictatePolicy,
     DriveTheDebate,
+    // Codex III updates
+    MakeAnExampleOfTheirWorldOmega,
+    TurnTheirFleetsToDustOmega,
+    FightWithPrecisionOmega,
 }
 
-// TODO: Look over codex updates for these.
 impl SecretObjective {
     /// Get the [ObjectiveInfo] for this secret objective.
     pub fn info(&self) -> ObjectiveInfo {
@@ -316,6 +319,24 @@ impl SecretObjective {
                 "Drive the Debate",
                 "You or a planet you control are elected by an agenda.",
                 Expansion::ProphecyOfKings
+            ),
+            SecretObjective::MakeAnExampleOfTheirWorldOmega => s!(
+                Phase::Action,
+                "Make an Example of Their World Ω",
+                "Destroy the last of a player's ground forces on a planet during the bombardment step.",
+                Expansion::CodexIII
+            ),
+            SecretObjective::TurnTheirFleetsToDustOmega => s!(
+                Phase::Action,
+                "Turn Their Fleets to Dust Ω",
+                "Destroy the last of a player's non-fighter ships in the active system during the space cannon offense step.",
+                Expansion::CodexIII
+            ),
+            SecretObjective::FightWithPrecisionOmega => s!(
+                Phase::Action,
+                "Fight With Precision Ω",
+                "Destroy the last of a player's fighters in the active system during the anti-fighter barrage step.",
+                Expansion::CodexIII
             ),
         }
     }

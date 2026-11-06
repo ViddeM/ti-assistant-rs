@@ -106,7 +106,7 @@ mod tests {
 
     use crate::components::{
         action_card::ActionCard, agenda::Agenda, frontier_card::FrontierCard, leaders::Leader,
-        planet::Planet, planet_attachment::PlanetAttachment, relic::Relic,
+        objectives::Objective, planet::Planet, planet_attachment::PlanetAttachment, relic::Relic,
         strategy_card::StrategyCardVersion, tech::Technology,
     };
 
@@ -210,5 +210,10 @@ mod tests {
     #[test]
     fn planet_attachment_versions_are_consistent() {
         check_versions::<PlanetAttachment>();
+    }
+
+    #[test]
+    fn objective_versions_are_consistent() {
+        check_versions::<Objective>();
     }
 }

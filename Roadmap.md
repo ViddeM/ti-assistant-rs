@@ -228,7 +228,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
 
 ### Codex III
 - ✅ Council Keleres faction
-- ❌ Updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
+- ✅ Updated secret objectives (fight with precision, make an example of their world, turn their fleets to dust)
 - ❌ Agenda phase extras (nice to have)
   - ❌ The Council Keleres Promissory (takes away votes; GUI only: reminder to perform effect)
 
