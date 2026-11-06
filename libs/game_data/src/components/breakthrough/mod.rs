@@ -319,7 +319,7 @@ impl Breakthrough {
             },
             Breakthrough::NorrSupremacy => info! {
                 tag: NorrSupremacy,
-                name: "Norr Supremacy",
+                name: "N'orr Supremacy",
                 faction: SardakkNorr,
                 expansion: ThundersEdge,
                 syn_a: Propulsion,
