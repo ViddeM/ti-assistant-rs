@@ -259,6 +259,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Ben:
     name: Ben
     faction: NaazRokhaAlliance
@@ -275,6 +276,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Cid:
     name: Cid
     faction: RalNelConsortium
@@ -290,6 +292,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Dee:
     name: Dee
     faction: DeepwroughtScholarate
@@ -304,6 +307,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Eve:
     name: Eve
     faction: FirmamentObsidian
@@ -320,6 +324,7 @@ players:
         side: Firmament
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
 speaker: Ben
 tableOrder:
   - Ben

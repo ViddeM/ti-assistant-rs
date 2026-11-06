@@ -34,6 +34,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Bob:
     name: Bob
     faction: Winnu
@@ -48,6 +49,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Carol:
     name: Carol
     faction: FederationOfSol
@@ -63,6 +65,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
 speaker: Alice
 tableOrder:
   - Alice

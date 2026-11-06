@@ -33,6 +33,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -52,6 +53,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Carol:
     name: Carol
     faction: NekroVirus
@@ -65,6 +67,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
 speaker: Alice
 tableOrder:
   - Alice

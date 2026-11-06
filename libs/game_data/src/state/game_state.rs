@@ -777,7 +777,7 @@ impl GameState {
         let moves_shard = (previous_owner.as_ref())
             .and_then(|previous| self.players.get_mut(previous))
             .is_some_and(|previous| {
-                (legendary || planet.is_in_home_system_of(previous.faction))
+                (legendary || planet.is_in_home_system_of(previous.home_system_faction()))
                     && previous.relics.remove(&Relic::ShardOfTheThrone)
             });
 

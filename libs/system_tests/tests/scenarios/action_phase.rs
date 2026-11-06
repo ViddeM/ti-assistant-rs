@@ -14,6 +14,7 @@ scenarios![
     action_leaders,
     action_frontier_cards,
     action_relics,
+    action_relics_keleres_home,
 ];
 
 fn primary(player: &str, action: StrategicPrimaryAction) -> Event {
@@ -805,5 +806,36 @@ pub fn action_relics() -> TestGame {
         .end_turn();
     assert!(g.player("Alice").relics.contains(&Relic::ShardOfTheThrone));
     assert_eq!(g.state().score.shard_of_the_throne, Some(p("Alice")));
+    g
+}
+
+/// Shard of the Throne moves when another player takes a planet in the home system that The
+/// Council Keleres took with The Tribunii.
+pub fn action_relics_keleres_home() -> TestGame {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::CouncilKeleres)
+            .player("Bob", Faction::EmbersOfMuaat)
+            .player("Carol", Faction::XxchaKingdom)
+            .tribunii(Faction::ArgentFlight)
+            .pok()
+            .codex(),
+    );
+    assert_eq!(
+        g.player("Alice").home_system_from,
+        Some(Faction::ArgentFlight)
+    );
+
+    g.turn("Alice")
+        .gain_relic(Relic::ShardOfTheThrone)
+        .end_turn();
+    assert_eq!(g.state().score.shard_of_the_throne, Some(p("Alice")));
+
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Bob")),
+        planet: Planet::Avar,
+    });
+    assert!(g.player("Bob").relics.contains(&Relic::ShardOfTheThrone));
+    assert_eq!(g.state().score.shard_of_the_throne, Some(p("Bob")));
     g
 }

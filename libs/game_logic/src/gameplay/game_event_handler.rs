@@ -318,6 +318,7 @@ fn try_update_game_state(
             for planet in faction.get_starting_planets().into_iter() {
                 player.planets.insert(planet, BTreeSet::new());
             }
+            player.home_system_from = Some(faction);
 
             if let Some(milty) = game_state.map_data.milty_information.as_mut() {
                 let home_system = systems()

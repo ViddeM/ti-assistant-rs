@@ -1,0 +1,140 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: true
+    codex2: true
+    codex3: true
+    codex4: true
+    thundersEdge: false
+galacticEvents: []
+phase: Action
+mapData:
+  miltyInformation: ~
+  destroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: CouncilKeleres
+    color: Pink
+    planets:
+      Valk: []
+      Ylir: []
+    technologies:
+      - GravitonLaserSystem
+      - PlasmaScoring
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ArgentFlight
+  Bob:
+    name: Bob
+    faction: EmbersOfMuaat
+    color: Orange
+    planets:
+      Muaat: []
+      Avar: []
+    technologies:
+      - PlasmaScoring
+    relics:
+      - ShardOfTheThrone
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Politics: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+currentPlayer: Bob
+spentStrategyCards: []
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 1
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: Bob
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+  galacticEvents:
+    zealousOrthodoxy: ~
+    totalWar: {}
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob:
+    - Umbat
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 300
+    nanos: 0
+  Bob:
+    secs: 120
+    nanos: 0
+  Carol:
+    secs: 120
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:18:00Z"
+naaluTelepathy: ~
+teExpedition: ~
+fractureInPlay: false
+fractureRoll: ~
+bookOfLatviniaResearch: ~
+ministerOfAntiquesRelic: ~
+rapidMobilization: []
+stellarAtomicsUsed: []
+monuments: {}

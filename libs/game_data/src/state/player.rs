@@ -57,6 +57,8 @@ pub struct Player {
     /// The faction whose home system the player was dealt as a minor faction system ('Minor
     /// Factions').
     pub minor_faction: Option<Faction>,
+    /// The faction whose home system the player took as their own ('The Tribunii').
+    pub home_system_from: Option<Faction>,
 }
 
 impl NewPlayer {
@@ -89,6 +91,7 @@ impl NewPlayer {
             faction_state: Arc::new(faction_state),
             leaders_from: None,
             minor_faction: None,
+            home_system_from: None,
         }
     }
 }
@@ -97,6 +100,12 @@ impl Player {
     /// The faction whose leaders the player holds, see [Player::leaders_from].
     pub fn leader_faction(&self) -> Faction {
         self.leaders_from.unwrap_or(self.faction)
+    }
+
+    /// The faction whose home system is the player's home system, see
+    /// [Player::home_system_from].
+    pub fn home_system_faction(&self) -> Faction {
+        self.home_system_from.unwrap_or(self.faction)
     }
 
     /// Which side of the Firmament / The Obsidian the player is playing, if they play that faction.

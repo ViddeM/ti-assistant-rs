@@ -33,6 +33,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Bob:
     name: Bob
     faction: UniversitiesOfJolNar
@@ -53,6 +54,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Carol:
     name: Carol
     faction: NekroVirus
@@ -67,6 +69,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Dave:
     name: Dave
     faction: Winnu
@@ -82,6 +85,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Erin:
     name: Erin
     faction: ArgentFlight
@@ -98,6 +102,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Finn:
     name: Finn
     faction: CouncilKeleres
@@ -117,6 +122,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: MentakCoalition
 speaker: Erin
 tableOrder:
   - Alice

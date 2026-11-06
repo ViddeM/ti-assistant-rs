@@ -33,6 +33,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Kel:
     name: Kel
     faction: CouncilKeleres
@@ -48,6 +49,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: XxchaKingdom
   Wendy:
     name: Wendy
     faction: Winnu
@@ -61,6 +63,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
 speaker: Kel
 tableOrder:
   - Wendy

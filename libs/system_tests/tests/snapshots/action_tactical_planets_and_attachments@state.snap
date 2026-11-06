@@ -34,6 +34,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -53,6 +54,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
   Carol:
     name: Carol
     faction: XxchaKingdom
@@ -67,6 +69,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: ~
+    homeSystemFrom: ~
 speaker: Alice
 tableOrder:
   - Alice

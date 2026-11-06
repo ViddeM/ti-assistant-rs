@@ -257,6 +257,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: MentakCoalition
+    homeSystemFrom: ~
   Ben:
     name: Ben
     faction: NaazRokhaAlliance
@@ -272,6 +273,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: GhostsOfCreuss
+    homeSystemFrom: ~
   Cid:
     name: Cid
     faction: RalNelConsortium
@@ -286,6 +288,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: CrimsonRebellion
+    homeSystemFrom: ~
   Dee:
     name: Dee
     faction: DeepwroughtScholarate
@@ -300,6 +303,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: BaronyOfLetnev
+    homeSystemFrom: ~
   Eve:
     name: Eve
     faction: FirmamentObsidian
@@ -316,6 +320,7 @@ players:
         side: Firmament
     leadersFrom: ~
     minorFaction: ClanOfSaar
+    homeSystemFrom: ~
 speaker: Ben
 tableOrder:
   - Ben

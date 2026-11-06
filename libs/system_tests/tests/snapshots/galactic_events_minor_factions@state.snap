@@ -35,6 +35,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: MentakCoalition
+    homeSystemFrom: ~
   Bob:
     name: Bob
     faction: EmiratesOfHacan
@@ -53,6 +54,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: NaaluCollective
+    homeSystemFrom: ~
   Carol:
     name: Carol
     faction: CouncilKeleres
@@ -68,6 +70,7 @@ players:
     factionState: None
     leadersFrom: ~
     minorFaction: BaronyOfLetnev
+    homeSystemFrom: XxchaKingdom
 speaker: Alice
 tableOrder:
   - Alice
