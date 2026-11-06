@@ -223,7 +223,7 @@ The secrets now split 20 Base / 20 PoK.
 - **Codex I swaps:** The 5 Codex I swaps (Magen, X-89, Magmus, Wormhole Generator, Yin Spinner) are correct.
 - **Codex IV / 4.5 ΩΩ swaps:** The ΩΩ swaps (Magen, X-89) are correct. Strictly these came with "Codex 4.5" (13 June 2025), but tying them to `codex_4` is fine.
 - **Thunder's Edge swaps:** I.I.H.Q. Modernization → Executive Order and Agency Supply Network → Agency Supply Network Ω. Like the Keleres faction, both need Codex III.
-- **Design question:** The Thunder's Edge box includes "74 cards from the Twilight Codices". Should enabling Thunder's Edge imply the Codex content (or at least default the codex toggles to on)? See `roadmap_analysis.md`.
+- **Thunder's Edge and the codices:** The Thunder's Edge box includes "74 cards from the Twilight Codices", but ticking Thunder's Edge doesn't tick Codex I–IV. Decided 2026-11-05.
 
 ### Verified OK
 - **Generic techs:** All 24 match on name, colour, prerequisites and expansion. Their text matches apart from the rows above.
