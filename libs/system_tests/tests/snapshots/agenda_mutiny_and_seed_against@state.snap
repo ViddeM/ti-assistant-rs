@@ -148,6 +148,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: Against
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: Against
@@ -180,6 +181,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: Against
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: Against

@@ -85,6 +85,7 @@ Base-game features, whichever expansions are enabled.
   - ❌ Show available votes (soft limit)
   - ❌ Show voting order (but allow votes in any order)
   - ✅ Veto (can be solved with Undo, but messes up time tracking)
+  - ✅ Covert Legislation (the speaker enters the agenda drawn in secret; players vote on its outcomes and it resolves in its place)
 
 #### Extras (nice to have)
 The expansions list their own extras under "Agenda phase extras", tagged with these categories.

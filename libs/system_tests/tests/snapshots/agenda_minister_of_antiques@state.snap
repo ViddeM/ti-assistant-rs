@@ -147,6 +147,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: Player
         value: Bob
+      covert: false
     outcome:
       electKind: Player
       value: Bob
@@ -184,6 +185,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: For
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: For
@@ -202,6 +204,7 @@ agendaVoteHistory:
       playerVotes: {}
       outcomesByVotes: []
       expectedOutcome: ~
+      covert: false
     outcome:
       electKind: Player
       value: Carol

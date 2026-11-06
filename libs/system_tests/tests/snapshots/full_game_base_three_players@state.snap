@@ -182,6 +182,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: For
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: For
@@ -223,6 +224,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: Against
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: Against
@@ -260,6 +262,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: For
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: For
@@ -303,6 +306,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: Player
         value: Alice
+      covert: false
     outcome:
       electKind: Player
       value: Alice
@@ -340,6 +344,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: Against
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: Against
@@ -377,6 +382,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: For
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: For
@@ -414,6 +420,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: For
+      covert: false
     outcome:
       electKind: ForOrAgainst
       value: For
@@ -453,6 +460,7 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: Player
         value: Carol
+      covert: false
     outcome:
       electKind: Player
       value: Carol

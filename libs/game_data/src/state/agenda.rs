@@ -96,6 +96,9 @@ pub struct VoteState {
     /// If the expected outcome can't be determined (i.e. in case of a tie), this is `None`.
     /// Calculated by calling [VoteState::tally_votes].
     pub expected_outcome: Option<AgendaElect>,
+
+    /// Whether [VoteState::agenda] was drawn in secret for Covert Legislation.
+    pub covert: bool,
 }
 
 impl VoteState {
@@ -199,7 +202,22 @@ impl VoteState {
             player_votes: Default::default(),
             outcomes_by_votes: Default::default(),
             expected_outcome: None,
+            covert: false,
         })
+    }
+
+    /// The agendas this vote used up: the agenda, and Covert Legislation if it was drawn for it.
+    pub fn used_agendas(&self) -> Vec<Agenda> {
+        if self.covert {
+            vec![Agenda::CovertLegislation, self.agenda]
+        } else {
+            vec![self.agenda]
+        }
+    }
+
+    /// Whether this is Covert Legislation, before the speaker has drawn its secret agenda.
+    pub fn awaits_covert_agenda(&self) -> bool {
+        self.agenda == Agenda::CovertLegislation
     }
 
     /// Compute [VoteState::outcome_by_votes] and [VoteState::expected_outcome].
