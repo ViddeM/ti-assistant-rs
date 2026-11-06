@@ -141,6 +141,9 @@ pub enum Technology {
     StrikeWingAlphaII,
     HybridCrystalFighterII,
     HelTitanII,
+    HeliosV2,
+    LinkshipII,
+    ExileII,
     // Faction techs - Biotic
     Voidwatch,
     InstinctTraining,
@@ -819,6 +822,41 @@ impl Technology {
                     "SPACE CANNON 5",
                     "SUSTAIN DAMAGE",
                     "PRODUCTION 1",
+                ],
+            ),
+            Technology::HeliosV2 => t!(
+                "4X41C \"Helios\" V2",
+                TechType::UnitUpgrade,
+                TechOrigin::Faction(Faction::LastBastion),
+                tr!([(TechCategory::Cybernetic, 2)]),
+                Expansion::ThundersEdge,
+                &[
+                    "This unit's PRODUCTION value is equal to 4 more than the resource value of this planet.",
+                    "The resource value of this planet is increased by 2.",
+                    "Up to 3 fighters in this system do not count against your ships' capacity.",
+                    "PRODUCTION X",
+                ],
+            ),
+            Technology::LinkshipII => t!(
+                "Linkship II",
+                TechType::UnitUpgrade,
+                TechOrigin::Faction(Faction::RalNelConsortium),
+                tr!([(TechCategory::Warfare, 2)]),
+                Expansion::ThundersEdge,
+                &[
+                    "This unit can use the SPACE CANNON ability of one of your structures in its space area; each linkship can trigger the same structure.",
+                    "ANTI-FIGHTER BARRAGE 6 (x3)",
+                ],
+            ),
+            Technology::ExileII => t!(
+                "Exile II",
+                TechType::UnitUpgrade,
+                TechOrigin::Faction(Faction::CrimsonRebellion),
+                tr!([(TechCategory::Warfare, 2)]),
+                Expansion::ThundersEdge,
+                &[
+                    "At the end of any player's combat in this unit's system or up to 2 systems away, you may place 1 active or inactive breach in that system.",
+                    "ANTI-FIGHTER BARRAGE 6 (x3)",
                 ],
             ),
             Technology::Voidwatch => t!(

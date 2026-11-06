@@ -279,7 +279,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
   - ❌ Firmament "Plots within Plots" (plots instead of VP for another player's secret; Sharsiss edits them)
   - ❌ Deepwrought "Radical Advancement" (swap a tech in the status phase)
   - ❌ Deepwrought ocean cards (resource/influence counter)
-  - ❌ Unit upgrades: Helios V2, Linkship II, Exile II (data)
+  - ✅ Unit upgrades: Helios V2, Linkship II, Exile II (text only)
 - ✅ New planets
   - ✅ Map: planet positions on their tiles
 - 🚱 The Fracture
