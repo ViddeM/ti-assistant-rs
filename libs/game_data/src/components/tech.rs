@@ -1044,7 +1044,7 @@ impl Technology {
                 tr!([(TechCategory::Cybernetic, 2)]),
                 Expansion::Base,
                 &[
-                    "Exhaust this card when 1 or more of your units use PRODUCTION; swap the resource and influence values of 1 planet you control until the end of your turn."
+                    "Exhaust this card when 1 or more of your units use PRODUCTION; swap the resource and influence values of 1 planet you control during that use of PRODUCTION."
                 ],
             ),
             Technology::NullificationField => t!(
