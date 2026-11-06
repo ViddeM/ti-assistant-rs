@@ -129,7 +129,7 @@ impl PublicObjective {
                 o!(
                     StageI,
                     "Intimidate Council",
-                    "Have 1 or more ships in 2 systems that are adjacent to Mectrol Rex's System.",
+                    "Have 1 or more ships in 2 systems that are adjacent to Mecatol Rex's System.",
                     Expansion::Base
                 )
             }
