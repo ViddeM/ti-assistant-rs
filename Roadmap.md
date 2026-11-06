@@ -189,7 +189,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
 - ✅ Increases player limit to 8
 - ✅ 31 new systems
 - ✅ 8 new techs (psychoarchaeology, bio-stims, dark energy tap, sling relay, scanlink drone network, predictive intelligence, ai dev algorithm, self assembly routines)
-  - ❌ Second clauses missing for Predictive Intelligence, AI Development Algorithm, Self Assembly Routines (data)
+  - ✅ Second clauses for Predictive Intelligence, AI Development Algorithm, Self Assembly Routines (text only)
 - ✅ 40 new objectives
 - ✅ 20 new action cards
 - ✅ 13 agendas removed

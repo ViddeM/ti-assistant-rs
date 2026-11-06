@@ -452,7 +452,8 @@ impl Technology {
                 tr!([(TechCategory::Cybernetic, 1)]),
                 Expansion::ProphecyOfKings,
                 &[
-                    "At the end of your turn, you may exhaust this card to redistribute your command tokens."
+                    "At the end of your turn, you may exhaust this card to redistribute your command tokens.",
+                    "When you cast votes during the agenda phase, you may cast 3 additional votes; if you do, and the outcome you voted for is not resolved, exhaust this card.",
                 ],
             ),
             Technology::TransitDiodes => t!(
@@ -492,7 +493,8 @@ impl Technology {
                 tr!(),
                 Expansion::ProphecyOfKings,
                 &[
-                    "When you research a unit upgrade technology, you may exhaust this card to ignore any 1 prerequisite."
+                    "When you research a unit upgrade technology, you may exhaust this card to ignore any 1 prerequisite.",
+                    "When 1 or more of your units use PRODUCTION, you may exhaust this card to reduce the combined cost of the produced units by the number of unit upgrade technologies that you own.",
                 ],
             ),
             Technology::MagenDefenceGrid => t!(
@@ -533,7 +535,8 @@ impl Technology {
                 tr!([(TechCategory::Warfare, 1)]),
                 Expansion::ProphecyOfKings,
                 &[
-                    "After 1 or more of your units use PRODUCTION, you may exhaust this card to place 1 mech from your reinforcements on a planet you control in that system."
+                    "After 1 or more of your units use PRODUCTION, you may exhaust this card to place 1 mech from your reinforcements on a planet you control in that system.",
+                    "After 1 of your mechs is destroyed, gain 1 trade good.",
                 ],
             ),
             Technology::DuraniumArmor => t!(
