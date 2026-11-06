@@ -566,7 +566,7 @@ impl Technology {
                 tr!([(TechCategory::Biotic, 2)]),
                 Expansion::Base,
                 &[
-                    "Upgraded infantry are more effective at ground combat and gain the ability to return to home system at the next turn when destroyed."
+                    "After this unit is destroyed, roll 1 die. If the result is 6 or greater, place the unit on this card. At the start of your next turn, place each unit that is on this card on a planet you control in your home system.",
                 ],
             ),
             Technology::DreadnoughtII => t!(
@@ -576,7 +576,9 @@ impl Technology {
                 tr!([(TechCategory::Propulsion, 2), (TechCategory::Cybernetic, 1)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Dreadnoughts are faster and cannot be targeted by Direct Hit action cards."
+                    "This unit cannot be destroyed by \"Direct Hit\" action cards.",
+                    "SUSTAIN DAMAGE",
+                    "BOMBARDMENT 5",
                 ],
             ),
             Technology::CarrierII => t!(
@@ -585,7 +587,6 @@ impl Technology {
                 TechOrigin::Base,
                 tr!([(TechCategory::Propulsion, 2)]),
                 Expansion::Base,
-                &["Upgraded Carriers are faster and have larger capacity."],
             ),
             Technology::CruiserII => t!(
                 "Cruiser II",
@@ -597,7 +598,6 @@ impl Technology {
                     (TechCategory::Warfare, 1)
                 ]),
                 Expansion::Base,
-                &["Upgraded Cruisers are faster, perform better in combat and gain capacity."],
             ),
             Technology::SpaceDockII => t!(
                 "Space Dock II",
@@ -606,7 +606,9 @@ impl Technology {
                 tr!([(TechCategory::Cybernetic, 2)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Space Docks have a higher production value and allow up to 3 fighters (per space dock) to remain with them in excess of the system's capacity."
+                    "This unit's PRODUCTION value is equal to 4 more than the resource value of this planet.",
+                    "Up to 3 fighters in this system do not count against your ships' capacity.",
+                    "PRODUCTION X",
                 ],
             ),
             Technology::WarSun => t!(
@@ -615,7 +617,11 @@ impl Technology {
                 TechOrigin::Base,
                 tr!([(TechCategory::Cybernetic, 1), (TechCategory::Warfare, 3)]),
                 Expansion::Base,
-                &["Allows the construction of War Suns"],
+                &[
+                    "Other players' units in this system lose their PLANETARY SHIELD ability.",
+                    "SUSTAIN DAMAGE",
+                    "BOMBARDMENT 3 (x3)",
+                ],
             ),
             Technology::DestroyerII => t!(
                 "Destroyer II",
@@ -623,9 +629,7 @@ impl Technology {
                 TechOrigin::Base,
                 tr!([(TechCategory::Warfare, 2)]),
                 Expansion::Base,
-                &[
-                    "Upgraded Destroyers are better in combat and have significantly improved Anti-Fighter Barrage."
-                ],
+                &["ANTI-FIGHTER BARRAGE 6 (x3)",],
             ),
             Technology::FighterII => t!(
                 "Fighter II",
@@ -634,7 +638,8 @@ impl Technology {
                 tr!([(TechCategory::Biotic, 1), (TechCategory::Propulsion, 1)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Fighters are better in combat and gain the ability to move without being transported."
+                    "This unit may move without being transported.",
+                    "Fighters in excess of your ships' capacity count against your fleet pool.",
                 ],
             ),
             Technology::PdsII => t!(
@@ -644,7 +649,9 @@ impl Technology {
                 tr!([(TechCategory::Cybernetic, 1), (TechCategory::Warfare, 1)]),
                 Expansion::Base,
                 &[
-                    "Upgraded PDS have improved Space Cannon and are able to fire into adjacent systems."
+                    "You may use this unit's SPACE CANNON against ships that are adjacent to this unit's system.",
+                    "PLANETARY SHIELD",
+                    "SPACE CANNON 5",
                 ],
             ),
             Technology::SpecOpsII => t!(
@@ -654,7 +661,7 @@ impl Technology {
                 tr!([(TechCategory::Biotic, 2)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Sol Infantry are stronger than regular upgraded infantry and have a higher likelihood of returning back to the home system."
+                    "After this unit is destroyed, roll 1 die. If the result is 5 or greater, place the unit on this card. At the start of your next turn, place each unit that is on this card on a planet you control in your home system.",
                 ],
             ),
             Technology::LetaniWarriorII => t!(
@@ -664,7 +671,8 @@ impl Technology {
                 tr!([(TechCategory::Biotic, 2)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Arborec Infantry gain an extra production value and are better in combat compared to the non-upgraded variant."
+                    "After this unit is destroyed, roll 1 die. If the result is 6 or greater, place the unit on this card. At the start of your next turn, place each unit that is on this card on a planet you control in your home system.",
+                    "PRODUCTION 2",
                 ],
             ),
             Technology::SaturnEngineII => t!(
@@ -677,9 +685,7 @@ impl Technology {
                     (TechCategory::Warfare, 1)
                 ]),
                 Expansion::ProphecyOfKings,
-                &[
-                    "Upgraded Titans of Ul Cruisers have more capacity compared to regular upgraded cruisers and gain Sustain Damage."
-                ],
+                &["SUSTAIN DAMAGE",],
             ),
             Technology::SuperDreadnoughtII => t!(
                 "Super-Dreadnought II",
@@ -688,7 +694,9 @@ impl Technology {
                 tr!([(TechCategory::Propulsion, 2), (TechCategory::Cybernetic, 1)]),
                 Expansion::Base,
                 &[
-                    "Upgraded L1Z1X Dreadnoughts are stronger than regular Dreadnoughts, have greater capacity and better Bombardment."
+                    "This unit cannot be destroyed by \"Direct Hit\" action cards.",
+                    "SUSTAIN DAMAGE",
+                    "BOMBARDMENT 4",
                 ],
             ),
             Technology::ExotriremeII => t!(
@@ -698,7 +706,10 @@ impl Technology {
                 tr!([(TechCategory::Propulsion, 2), (TechCategory::Cybernetic, 1)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Sardakk N'orr Dreadnoughts have better bombardment than all other Dreadnoughts and gain the ability to directly destroy ships after a round of space combat."
+                    "This unit cannot be destroyed by \"Direct Hit\" action cards.",
+                    "After a round of space combat, you may destroy this unit to destroy up to 2 ships in this system.",
+                    "SUSTAIN DAMAGE",
+                    "BOMBARDMENT 4 (x2)",
                 ],
             ),
             Technology::AdvancedCarrierII => t!(
@@ -707,9 +718,7 @@ impl Technology {
                 TechOrigin::Faction(Faction::FederationOfSol),
                 tr!([(TechCategory::Propulsion, 2)]),
                 Expansion::Base,
-                &[
-                    "Upgraded Sol Carriers have greater capacity compared to regular upgraded carriers and gain Sustain Damage."
-                ],
+                &["SUSTAIN DAMAGE",],
             ),
             Technology::CrimsonLegionnaireII => t!(
                 "Crimson Legionnaire II",
@@ -718,7 +727,7 @@ impl Technology {
                 tr!([(TechCategory::Biotic, 2)]),
                 Expansion::ProphecyOfKings,
                 &[
-                    "Upgraded Mahact Infantry automatically return to the home system the next turn after being destroyed."
+                    "After this unit is destroyed, gain 1 commodity or convert 1 of your commodities to a trade good. Then, place the unit on this card. At the start of your next turn, place each unit that is on this card on a planet you control in your home system.",
                 ],
             ),
             Technology::FloatingFactoryII => t!(
@@ -728,7 +737,10 @@ impl Technology {
                 tr!([(TechCategory::Cybernetic, 2)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Saar space docks are faster, have more capacity, and are able to produce more units."
+                    "This unit is placed in the space area instead of on a planet.",
+                    "This unit can move and retreat as if it were a ship.",
+                    "If this unit is blockaded, it is destroyed.",
+                    "PRODUCTION 7",
                 ],
             ),
             Technology::DimensionalTearII => t!(
@@ -738,7 +750,10 @@ impl Technology {
                 tr!([(TechCategory::Cybernetic, 2)]),
                 Expansion::ProphecyOfKings,
                 &[
-                    "Upgraded Vuil'Raith Space Docks have increased production and allow double the amount of fighters in the system to be in excess of capacity."
+                    "This system is a gravity rift; your ships do not roll for this gravity rift.",
+                    "Place a dimensional tear token beneath this unit as a reminder.",
+                    "Up to 12 fighters in this system do not count against your ships' capacity.",
+                    "PRODUCTION 7",
                 ],
             ),
             Technology::MemoriaII => t!(
@@ -752,7 +767,9 @@ impl Technology {
                 ]),
                 Expansion::ProphecyOfKings,
                 &[
-                    "The Nomad is the only faction capable of upgrading their Flagship. When upgraded, it gains improved speed, combat performance and capacity as well as improved anti-fighter barrage."
+                    "You may treat this unit as if it were adjacent to systems that contain one or more of your mechs.",
+                    "SUSTAIN DAMAGE",
+                    "ANTI-FIGHTER BARRAGE 5 (x3)",
                 ],
             ),
             Technology::PrototypeWarSunII => t!(
@@ -761,7 +778,11 @@ impl Technology {
                 TechOrigin::Faction(Faction::EmbersOfMuaat),
                 tr!([(TechCategory::Cybernetic, 1), (TechCategory::Warfare, 3)]),
                 Expansion::Base,
-                &["Upgraded Muaat War Suns are faster and cheaper than regular War Suns."],
+                &[
+                    "Other players' units in this system lose their PLANETARY SHIELD ability.",
+                    "SUSTAIN DAMAGE",
+                    "BOMBARDMENT 3 (x3)",
+                ],
             ),
             Technology::StrikeWingAlphaII => t!(
                 "Strike Wing Alpha II",
@@ -769,6 +790,10 @@ impl Technology {
                 TechOrigin::Faction(Faction::ArgentFlight),
                 tr!([(TechCategory::Warfare, 2)]),
                 Expansion::ProphecyOfKings,
+                &[
+                    "When this unit uses ANTI-FIGHTER BARRAGE, each result of 9 or 10 also destroys 1 of your opponent's infantry in the space area of the active system.",
+                    "ANTI-FIGHTER BARRAGE 6 (x3)",
+                ],
             ),
             Technology::HybridCrystalFighterII => t!(
                 "Hybrid Crystal Fighter II",
@@ -777,7 +802,8 @@ impl Technology {
                 tr!([(TechCategory::Biotic, 1), (TechCategory::Propulsion, 1)]),
                 Expansion::Base,
                 &[
-                    "Upgraded Naalu Fighters are better in combat compared to regular upgraded Fighters and only count as 1/2 to the fleet supply if not carried."
+                    "This unit may move without being transported.",
+                    "Each fighter in excess of your ships' capacity counts as 1/2 of a ship against your fleet pool.",
                 ],
             ),
             Technology::HelTitanII => t!(
@@ -787,7 +813,12 @@ impl Technology {
                 tr!([(TechCategory::Cybernetic, 1), (TechCategory::Warfare, 1)]),
                 Expansion::ProphecyOfKings,
                 &[
-                    "Upgraded Titans of Ul PDS have improved Space cannon and are able to fire into adjacent systems."
+                    "This unit is treated as both a structure and a ground force. It cannot be transported.",
+                    "You may use this unit's SPACE CANNON against ships that are adjacent to this unit's system.",
+                    "PLANETARY SHIELD",
+                    "SPACE CANNON 5",
+                    "SUSTAIN DAMAGE",
+                    "PRODUCTION 1",
                 ],
             ),
             Technology::Voidwatch => t!(
