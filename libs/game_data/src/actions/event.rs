@@ -85,6 +85,9 @@ pub enum Event {
         player: PlayerId,
         /// The dealt faction, or none to put the card back.
         faction: Option<Faction>,
+        /// The system on the map that the minor faction system replaces, set exactly when the
+        /// game has a milty map.
+        replaced_system: Option<SystemId>,
     },
 
     /// Faction-specific technology selection for a player.

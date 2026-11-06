@@ -681,6 +681,13 @@ impl GameState {
                 .any(|p| p.planets.contains_key(planet))
     }
 
+    /// The minor factions dealt to the players ('Minor Factions').
+    pub fn minor_factions(&self) -> BTreeSet<Faction> {
+        (self.players.values())
+            .filter_map(|player| player.minor_faction)
+            .collect()
+    }
+
     /// The minor faction whose home system holds `planet`, if a player was dealt that faction
     /// ('Minor Factions').
     pub fn minor_faction_of(&self, planet: &Planet) -> Option<Faction> {

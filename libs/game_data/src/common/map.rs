@@ -6,7 +6,10 @@ use std::{
 
 use serde::{Deserialize, Serialize};
 
-use crate::components::system::{AnomalyType, System, SystemId, SystemType, systems};
+use crate::{
+    common::faction::Faction,
+    components::system::{AnomalyType, System, SystemId, SystemType, systems},
+};
 
 pub type HexMapResult<T> = Result<T, HexMapError>;
 
@@ -114,29 +117,28 @@ impl HexMap {
             position: HexPosition::OutsideGalaxy,
         });
 
-        if map.contains(&MiltySystemId::Standard {
-            number: Self::CREUSS_WORMHILE_ID,
-            variant: None,
-        }) {
-            let creuss_home_system = systems
-                .get(Self::CREUSS_HOME_SYSTEM)
-                .ok_or(HexMapError::SystemDoesntExist("Creuss homesystem"))?;
-
-            tiles.push(Tile {
-                system: creuss_home_system.id.clone(),
-                position: HexPosition::OutsideGalaxy,
-            });
-        }
-
         let mut hex_map = HexMap {
             tiles,
             ring_count: ring,
         };
+        hex_map.place_creuss_home_system();
         hex_map.place_crimson_rebellion_home_system();
         if use_te_tiles {
             hex_map.place_the_fracture();
         }
         Ok(hex_map)
+    }
+
+    /// Places the Creuss home system outside the galaxy if the Creuss gate is on the map.
+    pub fn place_creuss_home_system(&mut self) {
+        let gate = Self::CREUSS_WORMHILE_ID.to_string();
+        let has_system = |id: &str| self.tiles.iter().any(|tile| tile.system == id);
+        if has_system(&gate) && !has_system(Self::CREUSS_HOME_SYSTEM) {
+            self.tiles.push(Tile {
+                system: Self::CREUSS_HOME_SYSTEM.to_string(),
+                position: HexPosition::OutsideGalaxy,
+            });
+        }
     }
 
     /// Places the Crimson Rebellion home system outside the galaxy if its gate is on the map.
@@ -203,6 +205,76 @@ impl HexMap {
             system,
             position: HexPosition::Pos(slot),
         });
+    }
+
+    /// The system a minor faction puts in the galaxy: the Creuss gate for the Ghosts of Creuss, the
+    /// Crimson Rebellion gate for the Crimson Rebellion, and the home system for the others (the
+    /// Firmament side for the Firmament / The Obsidian). None for a faction without a home system
+    /// of its own.
+    pub fn minor_faction_system(faction: Faction) -> Option<SystemId> {
+        match faction {
+            Faction::GhostsOfCreuss => Some(Self::CREUSS_WORMHILE_ID.to_string()),
+            Faction::CrimsonRebellion => Some(Self::CRIMSON_REBELLION_GATE.to_string()),
+            _ => systems()
+                .into_values()
+                .find(|system| {
+                    system.system_type == SystemType::HomeSystem(faction) && system.id != "96B"
+                })
+                .map(|system| system.id),
+        }
+    }
+
+    /// The systems in the galaxy that a minor faction system can replace: every system around
+    /// Mecatol Rex except home systems, hyperlanes and the Creuss and Crimson Rebellion gates,
+    /// sorted by number.
+    pub fn minor_faction_slots(&self) -> Vec<SystemId> {
+        let systems = systems();
+        let gates = [
+            Self::CREUSS_WORMHILE_ID.to_string(),
+            Self::CRIMSON_REBELLION_GATE.to_string(),
+        ];
+        let mecatol_rex = [
+            Self::MECATOL_REX_ID.to_string(),
+            Self::MECATOL_REX_OMEGA_ID.to_string(),
+        ];
+        let mut slots = self
+            .tiles
+            .iter()
+            .filter(|tile| matches!(&tile.position, HexPosition::Pos(coord) if coord.ring >= 1))
+            .filter(|tile| !gates.contains(&tile.system) && !mecatol_rex.contains(&tile.system))
+            .filter(|tile| {
+                systems.get(&tile.system).is_some_and(|system| {
+                    matches!(
+                        system.system_type,
+                        SystemType::Normal | SystemType::Anomaly(_)
+                    )
+                })
+            })
+            .map(|tile| tile.system.clone())
+            .collect::<Vec<_>>();
+        slots.sort_by_key(|id| id.parse::<u32>().unwrap_or(u32::MAX));
+        slots
+    }
+
+    /// Replaces the system `replaced` in the galaxy with the system of the minor faction `faction`
+    /// (see [Self::minor_faction_system]), and places the Creuss and Crimson Rebellion home
+    /// systems outside the galaxy if their gates are on the map.
+    pub fn place_minor_faction_system(&mut self, faction: Faction, replaced: &str) {
+        let Some(system) = Self::minor_faction_system(faction) else {
+            return;
+        };
+
+        for tile in &mut self.tiles {
+            if let HexPosition::Pos(coord) = &mut tile.position
+                && tile.system == replaced
+            {
+                coord.rotation = 0;
+                tile.system = system.clone();
+            }
+        }
+
+        self.place_creuss_home_system();
+        self.place_crimson_rebellion_home_system();
     }
 
     /// The coordinate just outside the galaxy where a tile that is outside the galaxy belongs, if it
@@ -282,8 +354,9 @@ impl HexMap {
     }
 
     /// The empty coordinates that touch at least 2 tiles that aren't home systems or hyperlanes,
-    /// where a tile drawn for Age of Exploration can be placed, sorted by ring and position.
-    pub fn exploration_positions(&self) -> Vec<Coordinate> {
+    /// where a tile drawn for Age of Exploration can be placed, sorted by ring and position. The
+    /// home systems of `minor_factions` are minor faction systems, so they count.
+    pub fn exploration_positions(&self, minor_factions: &BTreeSet<Faction>) -> Vec<Coordinate> {
         let systems = systems();
         let galaxy = self
             .tiles
@@ -297,12 +370,13 @@ impl HexMap {
         let counting = galaxy
             .iter()
             .filter(|(tile, _)| {
-                systems.get(&tile.system).is_some_and(|system| {
-                    !matches!(
-                        system.system_type,
-                        SystemType::HomeSystem(_) | SystemType::Hyperlane
-                    )
-                })
+                systems
+                    .get(&tile.system)
+                    .is_some_and(|system| match &system.system_type {
+                        SystemType::HomeSystem(faction) => minor_factions.contains(faction),
+                        SystemType::Hyperlane => false,
+                        SystemType::Normal | SystemType::Anomaly(_) => true,
+                    })
             })
             .map(|(_, slot)| *slot)
             .collect::<HashSet<_>>();
@@ -558,7 +632,10 @@ struct HyperLaneTile {
 mod test {
     use std::collections::BTreeSet;
 
-    use crate::components::system::{AnomalyType, SystemType, systems};
+    use crate::{
+        common::faction::Faction,
+        components::system::{AnomalyType, SystemType, systems},
+    };
 
     use super::{Coordinate, HexMap, HexPosition, MiltySystemId, Tile};
 
@@ -636,8 +713,21 @@ mod test {
     #[test]
     fn exploration_positions_touch_two_systems() {
         assert_eq!(
-            slots(&mecatol_rex_and_ring_one(Some("20")).exploration_positions()),
+            slots(&mecatol_rex_and_ring_one(Some("20")).exploration_positions(&BTreeSet::new())),
             [(2, 1), (2, 3), (2, 5), (2, 7), (2, 9), (2, 11)]
+        );
+    }
+
+    #[test]
+    fn minor_faction_systems_count_for_exploration_positions() {
+        let hex_map = mecatol_rex_and_ring_one(Some("5"));
+        assert_eq!(
+            slots(&hex_map.exploration_positions(&BTreeSet::from([Faction::Arborec]))),
+            [(2, 1), (2, 3), (2, 5), (2, 7), (2, 9), (2, 11)]
+        );
+        assert_eq!(
+            slots(&hex_map.exploration_positions(&BTreeSet::from([Faction::FederationOfSol]))),
+            [(2, 3), (2, 5), (2, 7), (2, 9)]
         );
     }
 
@@ -645,7 +735,9 @@ mod test {
     fn home_systems_and_hyperlanes_dont_count_for_exploration_positions() {
         for system in ["1", "83A"] {
             assert_eq!(
-                slots(&mecatol_rex_and_ring_one(Some(system)).exploration_positions()),
+                slots(
+                    &mecatol_rex_and_ring_one(Some(system)).exploration_positions(&BTreeSet::new())
+                ),
                 [(2, 3), (2, 5), (2, 7), (2, 9)],
                 "with {system} in ring 1"
             );
@@ -655,7 +747,7 @@ mod test {
     #[test]
     fn a_gap_in_the_galaxy_is_an_exploration_position() {
         assert_eq!(
-            slots(&mecatol_rex_and_ring_one(None).exploration_positions()),
+            slots(&mecatol_rex_and_ring_one(None).exploration_positions(&BTreeSet::new())),
             [(1, 0), (2, 3), (2, 5), (2, 7), (2, 9)]
         );
     }
@@ -712,6 +804,65 @@ mod test {
         hex_map.place_keleres_home_system("14".to_string());
 
         assert_eq!(hex_map, before);
+    }
+
+    fn positions(hex_map: &HexMap, system: &str) -> Vec<HexPosition> {
+        hex_map
+            .tiles
+            .iter()
+            .filter(|tile| tile.system == system)
+            .map(|tile| tile.position.clone())
+            .collect()
+    }
+
+    #[test]
+    fn minor_faction_slots_are_the_replaceable_systems_in_the_galaxy() {
+        let hex_map = HexMap::from_milty_string("41 17 94 1 83A0 26 18", true).expect("to parse");
+        assert!(positions(&hex_map, "82").contains(&HexPosition::OutsideGalaxy));
+        assert!(positions(&hex_map, "125").contains(&HexPosition::OutsideGalaxy));
+
+        assert_eq!(hex_map.minor_faction_slots(), ["26", "41"]);
+    }
+
+    #[test]
+    fn a_minor_faction_system_replaces_a_system() {
+        let mut hex_map = HexMap::from_milty_string("26 27 28 29 30 31", true).expect("to parse");
+
+        hex_map.place_minor_faction_system(Faction::Arborec, "27");
+
+        assert_eq!(
+            positions(&hex_map, "5"),
+            [HexPosition::Pos(coordinate(1, 1))]
+        );
+        assert_eq!(positions(&hex_map, "27"), []);
+    }
+
+    #[test]
+    fn minor_faction_systems() {
+        for (faction, system, outside_galaxy) in [
+            (Faction::GhostsOfCreuss, "17", Some("51")),
+            (Faction::CrimsonRebellion, "94", Some("118")),
+            (Faction::FirmamentObsidian, "96A", None),
+        ] {
+            let mut hex_map =
+                HexMap::from_milty_string("26 27 28 29 30 31", true).expect("to parse");
+
+            hex_map.place_minor_faction_system(faction, "27");
+
+            assert_eq!(
+                positions(&hex_map, system),
+                [HexPosition::Pos(coordinate(1, 1))],
+                "{faction:?}"
+            );
+            if let Some(outside_galaxy) = outside_galaxy {
+                assert_eq!(
+                    positions(&hex_map, outside_galaxy),
+                    [HexPosition::OutsideGalaxy],
+                    "{faction:?}"
+                );
+            }
+        }
+        assert_eq!(HexMap::minor_faction_system(Faction::CouncilKeleres), None);
     }
 
     #[test]

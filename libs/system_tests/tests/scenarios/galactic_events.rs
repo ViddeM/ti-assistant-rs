@@ -27,6 +27,7 @@ scenarios![
     galactic_events_age_of_exploration,
     galactic_events_rapid_mobilization,
     galactic_events_minor_factions,
+    galactic_events_minor_factions_on_a_milty_map,
     galactic_events_admin,
 ];
 
@@ -988,6 +989,7 @@ pub fn galactic_events_minor_factions() -> TestGame {
     let deal = |player: &str, faction: Option<Faction>| Event::SetupMinorFaction {
         player: p(player),
         faction,
+        replaced_system: None,
     };
     let minor_faction = |g: &TestGame, player: &str| g.player(player).minor_faction;
     let alliance =
@@ -1000,6 +1002,14 @@ pub fn galactic_events_minor_factions() -> TestGame {
     .expect_rejected(
         deal("Alice", Some(Faction::CouncilKeleres)),
         "The Council Keleres can't be Alice's minor faction",
+    )
+    .expect_rejected(
+        Event::SetupMinorFaction {
+            player: p("Alice"),
+            faction: Some(Faction::MentakCoalition),
+            replaced_system: Some("19".into()),
+        },
+        "Only games imported from milty have a map",
     )
     .apply(deal("Alice", Some(Faction::MentakCoalition)))
     .expect_rejected(
@@ -1113,6 +1123,109 @@ pub fn galactic_events_minor_factions() -> TestGame {
         alliance(&g, "Bob", Planet::Maaluuk),
         Some(Faction::NaaluCollective)
     );
+    g
+}
+
+/// Minor Factions on a milty map: the minor faction system replaces a system on the map that isn't
+/// Mecatol Rex, a home system, a hyperlane or a gate, and only Undo changes it. The Ghosts of Creuss
+/// put the Creuss gate on the map and the Crimson Rebellion put their gate on the map, with their
+/// home systems outside the galaxy.
+pub fn galactic_events_minor_factions_on_a_milty_map() -> TestGame {
+    let mut g = TestGame::builder()
+        .milty(five_player_draft())
+        .galactic_events([GalacticEvent::MinorFactions])
+        .setup();
+    let deal =
+        |player: &str, faction: Option<Faction>, replaced: Option<&str>| Event::SetupMinorFaction {
+            player: p(player),
+            faction,
+            replaced_system: replaced.map(String::from),
+        };
+    let positions = |g: &TestGame, system: &str| {
+        (g.state().map_data.milty_information.as_ref())
+            .expect("a milty map")
+            .hex_map
+            .tiles
+            .iter()
+            .filter(|tile| tile.system == system)
+            .map(|tile| tile.position.clone())
+            .collect::<Vec<_>>()
+    };
+    let mehar_xull = positions(&g, "24");
+    let tequran_torkan = positions(&g, "28");
+    let dal_bootha_xxehan = positions(&g, "32");
+    let centauri_gral = positions(&g, "34");
+    for system in [
+        &mehar_xull,
+        &tequran_torkan,
+        &dal_bootha_xxehan,
+        &centauri_gral,
+    ] {
+        assert_eq!(system.len(), 1);
+    }
+
+    let not_replaceable = "isn't a system on the map that a minor faction system can replace";
+    g.expect_rejected(
+        deal("Ann", Some(Faction::MentakCoalition), None),
+        "Choose the minor faction and the system it replaces on the map",
+    )
+    .expect_rejected(
+        deal("Ann", None, Some("24")),
+        "Choose the minor faction and the system it replaces on the map",
+    )
+    .expect_rejected(
+        deal("Ann", Some(Faction::MentakCoalition), Some("112")),
+        not_replaceable,
+    )
+    .expect_rejected(
+        deal("Ann", Some(Faction::MentakCoalition), Some("85A")),
+        not_replaceable,
+    )
+    .expect_rejected(
+        deal("Ann", Some(Faction::MentakCoalition), Some("95")),
+        not_replaceable,
+    )
+    .expect_rejected(
+        deal("Ann", Some(Faction::MentakCoalition), Some("26")),
+        not_replaceable,
+    )
+    .apply(deal("Ann", Some(Faction::MentakCoalition), Some("24")))
+    .expect_rejected(
+        deal("Ann", Some(Faction::NaaluCollective), Some("28")),
+        "The Mentak Coalition is already on the map as Ann's minor faction, use Undo to change it",
+    )
+    .expect_rejected(
+        deal("Ann", None, None),
+        "Choose the minor faction and the system it replaces on the map",
+    )
+    .expect_rejected(
+        deal("Ben", Some(Faction::NaaluCollective), Some("2")),
+        not_replaceable,
+    )
+    .apply(deal("Ben", Some(Faction::GhostsOfCreuss), Some("28")))
+    .expect_rejected(
+        deal("Cid", Some(Faction::NaaluCollective), Some("17")),
+        not_replaceable,
+    )
+    .apply(deal("Cid", Some(Faction::CrimsonRebellion), Some("32")));
+
+    assert_eq!(positions(&g, "2"), mehar_xull);
+    assert_eq!(positions(&g, "24"), vec![]);
+    assert_eq!(positions(&g, "17"), tequran_torkan);
+    assert_eq!(positions(&g, "28"), vec![]);
+    assert_eq!(positions(&g, "51"), vec![HexPosition::OutsideGalaxy]);
+    assert_eq!(positions(&g, "94"), dal_bootha_xxehan);
+    assert_eq!(positions(&g, "32"), vec![]);
+    assert_eq!(positions(&g, "118"), vec![HexPosition::OutsideGalaxy]);
+    for planet in [Planet::MollPrimus, Planet::Creuss, Planet::AhkCreuxx] {
+        assert!(!g.state().is_home_planet(&planet), "{planet:?}");
+    }
+
+    g.auto_setup().start_game();
+    assert_eq!(g.phase(), Phase::Strategy);
+    assert_eq!(g.player("Dee").minor_faction, Some(Faction::BaronyOfLetnev));
+    assert_eq!(positions(&g, "10"), centauri_gral);
+    assert_eq!(positions(&g, "34"), vec![]);
     g
 }
 
@@ -1285,6 +1398,7 @@ fn minor_factions_needs_the_event() {
         Event::SetupMinorFaction {
             player: p("Alice"),
             faction: Some(Faction::MentakCoalition),
+            replaced_system: None,
         },
         "Minor Factions isn't in play",
     );

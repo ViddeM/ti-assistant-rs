@@ -165,7 +165,8 @@ impl TestGame {
     /// - Cultural Exchange Program: each player except the Firmament draws the faction of the next
     ///   such player in table order, wrapping around.
     /// - Minor Factions: each player without a minor faction, in table order, is dealt the first
-    ///   enabled faction (in declaration order) that is available as one.
+    ///   enabled faction (in declaration order) that is available as one. On a milty map its
+    ///   system replaces the first (by number) system that a minor faction system can replace.
     #[track_caller]
     pub fn auto_setup(&mut self) -> &mut Self {
         let setup = self.setup.clone();
@@ -298,9 +299,15 @@ impl TestGame {
                             && self.state().is_minor_faction_available(player, *f)
                     })
                     .expect("no faction available as a minor faction");
+                let replaced_system =
+                    (self.state().map_data.milty_information.as_ref()).map(|milty| {
+                        (milty.hex_map.minor_faction_slots().into_iter().next())
+                            .expect("no system on the map that a minor faction system can replace")
+                    });
                 self.apply(Event::SetupMinorFaction {
                     player: player.clone(),
                     faction: Some(faction),
+                    replaced_system,
                 });
             }
         }

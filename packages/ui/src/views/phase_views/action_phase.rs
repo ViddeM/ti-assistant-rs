@@ -696,8 +696,9 @@ fn AgeOfExplorationForm(player: PlayerId) -> Element {
     });
 
     let spots = use_memo(move || {
+        let minor_factions = gc.game_state().minor_factions();
         hex_map()
-            .map(|hex_map| hex_map.exploration_positions())
+            .map(|hex_map| hex_map.exploration_positions(&minor_factions))
             .unwrap_or_default()
     });
     let rings = use_memo(move || {

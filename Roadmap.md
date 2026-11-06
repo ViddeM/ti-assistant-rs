@@ -247,7 +247,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
   - ✅ Total War (action: +1 VP)
   - ✅ Age of Exploration (Dark Energy Tap: place the drawn tile on the milty map)
 - Galactic events, assisted
-  - ✅ Minor Factions (minor faction planets have all traits, alliance reminder)
+  - ✅ Minor Factions (minor faction planets have all traits, alliance reminder, systems placed on the milty map)
 - Galactic events, info only
   - ✅ Age of Commerce (share a tech by toggling it in the tech view)
 - 👺 Liberation of Ordinian scenario

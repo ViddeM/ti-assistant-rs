@@ -23,7 +23,7 @@ use ti_helper_game_data::{
         expansions::Expansion,
         faction::Faction,
         game_settings::GameSettings,
-        map::{Coordinate, HexPosition, Tile},
+        map::{Coordinate, HexMap, HexPosition, Tile},
         milty_data::MiltyPlayer,
         player_id::PlayerId,
     },
@@ -333,7 +333,11 @@ fn try_update_game_state(
             };
             player.leaders_from = faction;
         }
-        Event::SetupMinorFaction { player, faction } => {
+        Event::SetupMinorFaction {
+            player,
+            faction,
+            replaced_system,
+        } => {
             game_state.assert_phase(Phase::Setup)?;
             game_state.assert_galactic_event(&GalacticEvent::MinorFactions)?;
             ensure!(
@@ -348,6 +352,49 @@ fn try_update_game_state(
                     "{} can't be {player}'s minor faction: it has to be out of play, not another player's minor faction and have a home system with no controlled planets",
                     faction.name()
                 );
+            }
+
+            let current = game_state
+                .players
+                .get(&player)
+                .and_then(|p| p.minor_faction);
+            match (
+                game_state.map_data.milty_information.as_mut(),
+                faction,
+                replaced_system,
+            ) {
+                (Some(milty), Some(faction), Some(replaced_system)) => {
+                    if let Some(current) = current {
+                        bail!(
+                            "{} is already on the map as {player}'s minor faction, use Undo to change it",
+                            current.name()
+                        );
+                    }
+                    ensure!(
+                        milty
+                            .hex_map
+                            .minor_faction_slots()
+                            .contains(&replaced_system),
+                        "System {replaced_system} isn't a system on the map that a minor faction system can replace"
+                    );
+                    ensure!(
+                        HexMap::minor_faction_system(faction).is_some(),
+                        "{} has no system to put on the map",
+                        faction.name()
+                    );
+                    milty
+                        .hex_map
+                        .place_minor_faction_system(faction, &replaced_system);
+                }
+                (Some(_), _, _) => {
+                    bail!("Choose the minor faction and the system it replaces on the map")
+                }
+                (None, _, Some(_)) => {
+                    bail!(
+                        "Only games imported from milty have a map to place the minor faction system on"
+                    )
+                }
+                (None, _, None) => {}
             }
 
             let Some(player) = game_state.players.get_mut(&player) else {
@@ -1147,6 +1194,7 @@ fn try_update_game_state(
                             .is_some_and(|p| p.has_tech(&Technology::DarkEnergyTap)),
                         "{player} doesn't own Dark Energy Tap"
                     );
+                    let minor_factions = game_state.minor_factions();
                     match (game_state.map_data.milty_information.as_mut(), tile) {
                         (Some(milty), Some((system, coord))) => {
                             ensure!(
@@ -1161,7 +1209,10 @@ fn try_update_game_state(
                                 ..coord
                             };
                             ensure!(
-                                milty.hex_map.exploration_positions().contains(&coord),
+                                milty
+                                    .hex_map
+                                    .exploration_positions(&minor_factions)
+                                    .contains(&coord),
                                 "Ring {}, position {} isn't an empty spot touching at least 2 \
                                  non-home systems",
                                 coord.ring,

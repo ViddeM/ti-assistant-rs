@@ -7,6 +7,7 @@ use ti_helper_game_data::{
     components::{
         galactic_event::GalacticEvent,
         objectives::{Objective, ObjectiveKind, PUBLIC_OBJECTIVES_PER_STAGE},
+        system::SystemId,
     },
     state::player::Player,
 };
@@ -19,7 +20,7 @@ use crate::views::phase_views::faction_setup_views::{
 use crate::{
     components::{
         button::Button,
-        dropdown::{FactionDropdown, ObjectiveDropdown},
+        dropdown::{FactionDropdown, ObjectiveDropdown, SystemDropdown},
         faction_icon::FactionIcon,
     },
     data::{event_context::EventContext, game_context::GameContext},
@@ -288,19 +289,73 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
         factions
     });
 
+    let has_milty_map = use_memo(move || gc.game_state().map_data.milty_information.is_some());
+    let replaceable_systems = use_memo(move || {
+        (gc.game_state().map_data.milty_information.as_ref())
+            .map(|milty| milty.hex_map.minor_faction_slots())
+            .unwrap_or_default()
+    });
+    let mut selected_faction: Signal<Option<Faction>> = use_signal(|| None);
+    let mut selected_system: Signal<Option<SystemId>> = use_signal(|| None);
+    let can_place = use_memo(move || {
+        selected_faction().is_some_and(|faction| options().contains(&faction))
+            && selected_system().is_some_and(|system| replaceable_systems().contains(&system))
+    });
+
+    if !has_milty_map() {
+        return rsx! {
+            div { class: "setup-column",
+                label { "Minor faction" }
+                FactionDropdown {
+                    value: minor_faction,
+                    options: options(),
+                    on_select: move |faction| {
+                        event
+                            .send_event(Event::SetupMinorFaction {
+                                player: Arc::clone(&player_id),
+                                faction,
+                                replaced_system: None,
+                            })
+                    },
+                }
+            }
+        };
+    }
+
+    if let Some(faction) = minor_faction() {
+        return rsx! {
+            div { class: "setup-column",
+                label { "Minor faction" }
+                p { "{faction.name()}" }
+            }
+        };
+    }
+
     rsx! {
         div { class: "setup-column",
             label { "Minor faction" }
             FactionDropdown {
-                value: minor_faction,
+                value: selected_faction,
                 options: options(),
-                on_select: move |faction| {
+                on_select: move |faction| selected_faction.set(faction),
+            }
+            label { "Replaces" }
+            SystemDropdown {
+                value: selected_system,
+                options: replaceable_systems,
+                on_select: move |system| selected_system.set(system),
+            }
+            Button {
+                disabled: !can_place(),
+                onclick: move |_| {
                     event
                         .send_event(Event::SetupMinorFaction {
                             player: Arc::clone(&player_id),
-                            faction,
+                            faction: selected_faction(),
+                            replaced_system: selected_system(),
                         })
                 },
+                "Place"
             }
         }
     }
