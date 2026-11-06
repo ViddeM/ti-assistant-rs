@@ -234,7 +234,7 @@ impl PlanetAttachment {
                 )
             }
             PlanetAttachment::Geoform => {
-                a!("UI, the Progenitor (Geoform)", ProphecyOfKings, 3, 3)
+                a!("Ul, the Progenitor (Geoform)", ProphecyOfKings, 3, 3)
             }
             PlanetAttachment::Terraform => a!(
                 "Terraform",
