@@ -189,6 +189,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
 - 👺 Alliances (use other players' commanders; alliance abilities aren't tracked)
 - ✅ Increases player limit to 8
 - ✅ 31 new systems
+  - ❌ Map: Wormhole Nexus inactive side (82A: γ wormhole only, no Mallice) and flipping it
 - ✅ 8 new techs (psychoarchaeology, bio-stims, dark energy tap, sling relay, scanlink drone network, predictive intelligence, ai dev algorithm, self assembly routines)
   - ✅ Second clauses for Predictive Intelligence, AI Development Algorithm, Self Assembly Routines (text only)
 - ✅ 40 new objectives
