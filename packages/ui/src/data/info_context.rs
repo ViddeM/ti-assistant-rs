@@ -103,7 +103,7 @@ impl Info {
         }
     }
 
-    pub fn description(&self, expansions: &Expansions) -> InfoDescription {
+    pub fn description(&self, expansions: &Expansions, obsidian_in_play: bool) -> InfoDescription {
         match self {
             Info::Agenda(agenda) => InfoDescription::Description(agenda.info().description),
             Info::Leader(leader) => InfoDescription::Description(match leader {
@@ -119,7 +119,11 @@ impl Info {
                 }
             }),
             Info::Tech(technology) => {
-                let effects = technology.info().effects;
+                let effects = technology
+                    .obsidian_info()
+                    .filter(|_| obsidian_in_play)
+                    .unwrap_or_else(|| technology.info())
+                    .effects;
                 InfoDescription::Custom(rsx! {
                     for effect in effects {
                         p { "{effect}" }

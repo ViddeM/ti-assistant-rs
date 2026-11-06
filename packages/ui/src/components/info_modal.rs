@@ -13,6 +13,7 @@ pub fn InfoModal() -> Element {
     let mut info = use_context::<InfoContext>();
 
     let expansions = use_memo(move || gc.game_state().game_settings.expansions.clone());
+    let obsidian_in_play = use_memo(move || gc.game_state().obsidian_in_play());
 
     let Some(i) = info.get()() else {
         return rsx! {};
@@ -38,7 +39,7 @@ pub fn InfoModal() -> Element {
                         Complexity { complexity }
                     }
                 }
-                {i.description(&expansions()).to_element()}
+                {i.description(&expansions(), obsidian_in_play()).to_element()}
             }
         }
     }

@@ -912,7 +912,7 @@ impl GameState {
     }
 
     /// Whether the Firmament has flipped to The Obsidian.
-    fn obsidian_in_play(&self) -> bool {
+    pub fn obsidian_in_play(&self) -> bool {
         self.players
             .values()
             .any(|p| p.firmament_side() == Some(FirmamentSide::Obsidian))

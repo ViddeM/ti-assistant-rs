@@ -1350,6 +1350,36 @@ impl Technology {
             ),
         }
     }
+
+    /// The [TechInfo] of the side the tech is flipped to once the Obsidian is in play, for the
+    /// Firmament techs that have one.
+    pub fn obsidian_info(&self) -> Option<TechInfo> {
+        match self {
+            Technology::NeuralParasite => Some(t!(
+                "Neural Parasite",
+                TechType::Category(TechCategory::Biotic),
+                TechOrigin::Faction(Faction::FirmamentObsidian),
+                tr!(),
+                Expansion::ThundersEdge,
+                &[
+                    "At the start of your turn, destroy 1 of another player's infantry in or adjacent to a system that contains your infantry.",
+                    "This technology cannot be researched.",
+                ],
+            )),
+            Technology::PlaneSplitter => Some(t!(
+                "Plane Splitter",
+                TechType::Category(TechCategory::Cybernetic),
+                TechOrigin::Faction(Faction::FirmamentObsidian),
+                tr!(),
+                Expansion::ThundersEdge,
+                &[
+                    "At the start of your strategic actions, you may move an ingress token into a system that contains or is adjacent to your units.",
+                    "This technology cannot be researched.",
+                ],
+            )),
+            _ => None,
+        }
+    }
 }
 
 #[cfg(test)]
