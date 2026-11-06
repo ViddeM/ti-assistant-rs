@@ -2,7 +2,10 @@ use serde::{Deserialize, Serialize};
 use strum::{Display, EnumString};
 use strum_macros::EnumIter;
 
-use crate::common::{component::Component, expansions::Expansion};
+use crate::common::{
+    component::{Component, replacements},
+    expansions::Expansion,
+};
 
 #[derive(
     Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq, EnumIter, EnumString, Display,
@@ -33,6 +36,8 @@ pub enum Relic {
     MetaliVoidShielding,
     TheTriad,
     HeartOfIxth,
+    DynamisCoreOmega,
+    NanoForgeOmega,
     /* Codex IV */
     CircletOfTheVoid,
     BookOfLatvinia,
@@ -41,6 +46,11 @@ pub enum Relic {
 
 impl Component for Relic {
     const REQUIRES: Expansion = Expansion::ProphecyOfKings;
+
+    replacements! {
+        DynamisCore -> DynamisCoreOmega,
+        NanoForge -> NanoForgeOmega,
+    }
 
     fn expansion(&self) -> Expansion {
         self.info().expansion
@@ -158,6 +168,10 @@ impl Relic {
             }
             Relic::TheTriad => ri!(TheTriad, "The Triad", ThundersEdge),
             Relic::HeartOfIxth => ri!(HeartOfIxth, "Heart of Ixth", ThundersEdge),
+            Relic::DynamisCoreOmega => {
+                ri!(DynamisCoreOmega, "Dynamis Core Ω", ThundersEdge, Action)
+            }
+            Relic::NanoForgeOmega => ri!(NanoForgeOmega, "Nano-Forge Ω", ThundersEdge, Action),
             Relic::CircletOfTheVoid => {
                 ri!(CircletOfTheVoid, "Circlet of the Void", CodexIV, Action)
             }

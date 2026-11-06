@@ -888,7 +888,9 @@ pub enum RelicAction {
 pub fn action_matches_relic(action: &Option<RelicAction>, relic: &Relic) -> bool {
     match relic {
         Relic::StellarConverter => matches!(action, Some(RelicAction::StellarConverter { .. })),
-        Relic::NanoForge => matches!(action, Some(RelicAction::NanoForge { .. })),
+        Relic::NanoForge | Relic::NanoForgeOmega => {
+            matches!(action, Some(RelicAction::NanoForge { .. }))
+        }
         _ => action.is_none(),
     }
 }

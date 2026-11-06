@@ -315,7 +315,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
   - ✅ The Quantumcore (gaining it gains the breakthrough)
   - ❌ The Silver Flame (roll: a 10 gives +1 VP, otherwise purge your home system and you can't score public objectives; the Fracture enters play)
   - ❌ The Triad ("3 + X" badge in the resources; relic fragments aren't tracked)
-  - ❌ Dynamis Core / Nano-Forge: TE wording
+  - ✅ Dynamis Core / Nano-Forge: TE wording (Ω versions replace the Codex II cards)
   - 👺 The Obsidian (the secret objective cap isn't tracked, nothing to do)
 - ❌ New legendary planet abilities
   - ✅ Thunder's Edge (gaining it gains the breakthrough; "take 1 more action" button at end of turn)

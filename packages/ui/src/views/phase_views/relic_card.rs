@@ -67,7 +67,7 @@ fn RelicProgressView(card: Relic) -> Element {
         Relic::StellarConverter => rsx! {
             StellarConvertersView {}
         },
-        Relic::NanoForge => rsx! {
+        Relic::NanoForge | Relic::NanoForgeOmega => rsx! {
             NanoForgeView {}
         },
         Relic::BookOfLatvinia => rsx! {
