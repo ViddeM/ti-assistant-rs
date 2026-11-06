@@ -1085,7 +1085,7 @@ pub fn galactic_events_minor_factions() -> TestGame {
         .expect("Colonial Redistribution to be in progress")
         .vote_state
         .candidates;
-    assert!(candidates.contains(&AgendaElect::PlanetWithTrait(Planet::MollPrimus)));
+    assert!(candidates.contains(&AgendaElect::NonHomePlanet(Planet::MollPrimus)));
     g.apply(Event::AddAgendaCancel);
 
     g.turn("Bob")

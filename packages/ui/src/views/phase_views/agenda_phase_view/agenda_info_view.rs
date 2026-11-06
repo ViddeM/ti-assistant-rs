@@ -64,7 +64,7 @@ fn PreviousVoteDisplay(record: ReadSignal<AgendaRecord>) -> Element {
                 AgendaElect::Law(agenda) => agenda.to_string(),
                 AgendaElect::SecretObjective(secret_objective) => secret_objective.to_string(),
                 AgendaElect::Planet(planet) => planet.to_string(),
-                AgendaElect::PlanetWithTrait(planet) => planet.to_string(),
+                AgendaElect::NonHomePlanet(planet) => planet.to_string(),
                 AgendaElect::CulturalPlanet(planet) => planet.to_string(),
                 AgendaElect::HazardousPlanet(planet) => planet.to_string(),
                 AgendaElect::IndustrialPlanet(planet) => planet.to_string(),

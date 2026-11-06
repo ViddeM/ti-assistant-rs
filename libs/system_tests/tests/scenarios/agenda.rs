@@ -13,6 +13,7 @@ scenarios![
     agenda_classified_document_leaks,
     agenda_override_outside_agenda_phase,
     agenda_elect_planet_with_trait,
+    agenda_elect_non_home_planet,
     agenda_minister_of_antiques,
 ];
 
@@ -318,6 +319,36 @@ fn candidates(g: &TestGame) -> Vec<AgendaElect> {
         .expect("no agenda is revealed")
         .candidates
         .clone()
+}
+
+/// Colonial Redistribution elects any controlled non-home planet other than Mecatol Rex, with or
+/// without a trait.
+pub fn agenda_elect_non_home_planet() -> TestGame {
+    let mut g = action_phase(three_players().pok().codex().thunders_edge());
+    for (player, planet) in [
+        ("Alice", Planet::MecatolRexOmega),
+        ("Bob", Planet::Styx),
+        ("Carol", Planet::Lodor),
+    ] {
+        g.apply(Event::SetPlanetOwner {
+            player: Some(p(player)),
+            planet,
+        });
+    }
+
+    g.apply(Event::AddAgendaBegin {
+        agenda: Agenda::ColonialRedistribution,
+    });
+    let candidates = &(g.state().agenda_override_state.as_ref())
+        .expect("Colonial Redistribution to be in progress")
+        .vote_state
+        .candidates;
+    assert!(candidates.contains(&AgendaElect::NonHomePlanet(Planet::Styx)));
+    assert!(candidates.contains(&AgendaElect::NonHomePlanet(Planet::Lodor)));
+    assert!(!candidates.contains(&AgendaElect::NonHomePlanet(Planet::MecatolRexOmega)));
+    assert!(!candidates.contains(&AgendaElect::NonHomePlanet(Planet::Jord)));
+    g.apply(Event::AddAgendaCancel);
+    g
 }
 
 /// Agendas that elect a planet with a trait only offer planets with that trait, including traits

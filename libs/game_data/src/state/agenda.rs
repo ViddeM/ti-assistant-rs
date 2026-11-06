@@ -1,6 +1,6 @@
 use std::{
     cmp::Reverse,
-    collections::{BTreeMap, BTreeSet, HashMap},
+    collections::{BTreeMap, HashMap},
 };
 
 use anyhow::{bail, ensure};
@@ -105,16 +105,14 @@ impl VoteState {
     pub fn new(agenda: Agenda, game: &GameState) -> anyhow::Result<Self> {
         let info = agenda.info();
 
-        // list eligible planets for the vote, given the provided trait filter
-        let planets = |trait_filter: fn(BTreeSet<PlanetTrait>) -> bool,
-                       to_elect: fn(Planet) -> AgendaElect| {
+        // list eligible planets for the vote, given the provided filter
+        let planets = |filter: &dyn Fn(&Planet) -> bool, to_elect: fn(Planet) -> AgendaElect| {
             let eligible_planets: Vec<_> = Planet::iter()
                 // Filter to planets that are held by a player.
                 .filter(|p| (game.players.values()).any(|player| player.planets.contains_key(p)))
                 // Filter away space stations as they cannot be elected.
                 .filter(|p| p.info().body_type != OrbitalBodyType::SpaceStation)
-                // Filter to only include planets with the relevant traits.
-                .filter(|planet| trait_filter(game.planet_traits(planet)))
+                .filter(|planet| filter(planet))
                 .map(to_elect)
                 .collect();
 
@@ -160,20 +158,24 @@ impl VoteState {
 
                 eligible_objectives
             }
-            AgendaElectKind::Planet => planets(|_| true, AgendaElect::Planet)?,
-            AgendaElectKind::PlanetWithTrait => {
-                planets(|t| !t.is_empty(), AgendaElect::PlanetWithTrait)?
-            }
+            AgendaElectKind::Planet => planets(&|_| true, AgendaElect::Planet)?,
+            AgendaElectKind::NonHomePlanet => planets(
+                &|planet| !game.is_home_planet(planet) && !planet.is_mecatol_rex(),
+                AgendaElect::NonHomePlanet,
+            )?,
             AgendaElectKind::CulturalPlanet => planets(
-                |t| t.contains(&PlanetTrait::Cultural),
+                &|planet| game.planet_traits(planet).contains(&PlanetTrait::Cultural),
                 AgendaElect::CulturalPlanet,
             )?,
             AgendaElectKind::HazardousPlanet => planets(
-                |t| t.contains(&PlanetTrait::Hazardous),
+                &|planet| game.planet_traits(planet).contains(&PlanetTrait::Hazardous),
                 AgendaElect::HazardousPlanet,
             )?,
             AgendaElectKind::IndustrialPlanet => planets(
-                |t| t.contains(&PlanetTrait::Industrial),
+                &|planet| {
+                    game.planet_traits(planet)
+                        .contains(&PlanetTrait::Industrial)
+                },
                 AgendaElect::IndustrialPlanet,
             )?,
 

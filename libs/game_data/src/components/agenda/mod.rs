@@ -105,8 +105,8 @@ pub enum AgendaElect {
     /// Elect a planet.
     Planet(Planet),
 
-    /// Elect a non-home planet except Mecatol Rex.
-    PlanetWithTrait(Planet),
+    /// Elect a non-home planet other than Mecatol Rex.
+    NonHomePlanet(Planet),
 
     /// Elect a cultural planet.
     CulturalPlanet(Planet),
@@ -125,7 +125,7 @@ impl AgendaElect {
             AgendaElect::Law(agenda) => agenda.info().name,
             AgendaElect::SecretObjective(secret_objective) => secret_objective.info().name,
             AgendaElect::Planet(planet) => planet.info().name,
-            AgendaElect::PlanetWithTrait(planet) => planet.info().name,
+            AgendaElect::NonHomePlanet(planet) => planet.info().name,
             AgendaElect::CulturalPlanet(planet) => planet.info().name,
             AgendaElect::HazardousPlanet(planet) => planet.info().name,
             AgendaElect::IndustrialPlanet(planet) => planet.info().name,
@@ -142,7 +142,7 @@ impl AgendaElect {
     const LAW: &'static str = "agenda";
     const SECRET_OBJECTIVE: &'static str = "secret_objective";
     const PLANET: &'static str = "planet";
-    const PLANET_WITH_TRAIT: &'static str = "planet_with_trait";
+    const NON_HOME_PLANET: &'static str = "non_home_planet";
     const CULTURAL_PLANET: &'static str = "cultural_planet";
     const HAZARDOUS_PLANET: &'static str = "hazardous_planet";
     const INDUSTRIAL_PLANET: &'static str = "industrial_planet";
@@ -161,7 +161,7 @@ impl AgendaElect {
                 (Self::SECRET_OBJECTIVE, secret_objective.to_string())
             }
             AgendaElect::Planet(planet) => (Self::PLANET, planet.to_string()),
-            AgendaElect::PlanetWithTrait(planet) => (Self::PLANET_WITH_TRAIT, planet.to_string()),
+            AgendaElect::NonHomePlanet(planet) => (Self::NON_HOME_PLANET, planet.to_string()),
             AgendaElect::CulturalPlanet(planet) => (Self::CULTURAL_PLANET, planet.to_string()),
             AgendaElect::HazardousPlanet(planet) => (Self::HAZARDOUS_PLANET, planet.to_string()),
             AgendaElect::IndustrialPlanet(planet) => (Self::INDUSTRIAL_PLANET, planet.to_string()),
@@ -188,11 +188,11 @@ impl AgendaElect {
                 SecretObjective::from_str(v).context("Invalid secret objective")?,
             ),
             Self::PLANET => Self::Planet(Planet::from_str(v).context("Invalid planet")?),
+            Self::NON_HOME_PLANET => {
+                Self::NonHomePlanet(Planet::from_str(v).context("Invalid planet")?)
+            }
             // Attachments can add traits, so whether the planet has the right trait is decided
             // when the candidates are listed (see `VoteState::new`), not here.
-            Self::PLANET_WITH_TRAIT => {
-                Self::PlanetWithTrait(Planet::from_str(v).context("Invalid planet")?)
-            }
             Self::CULTURAL_PLANET => {
                 Self::CulturalPlanet(Planet::from_str(v).context("Invalid planet")?)
             }
@@ -216,7 +216,7 @@ impl AgendaElectKind {
             AgendaElectKind::Law => "Law",
             AgendaElectKind::SecretObjective => "Secret Objective",
             AgendaElectKind::Planet
-            | AgendaElectKind::PlanetWithTrait
+            | AgendaElectKind::NonHomePlanet
             | AgendaElectKind::CulturalPlanet
             | AgendaElectKind::HazardousPlanet
             | AgendaElectKind::IndustrialPlanet => "Planet",
@@ -544,7 +544,7 @@ impl Agenda {
             Agenda::ColonialRedistribution => base_directive! {
                 ident: ColonialRedistribution,
                 name: "Colonial Redistribution",
-                elect: PlanetWithTrait,
+                elect: NonHomePlanet,
             },
             Agenda::CompensatedDisarmament => base_directive! {
                 ident: CompensatedDisarmament,
