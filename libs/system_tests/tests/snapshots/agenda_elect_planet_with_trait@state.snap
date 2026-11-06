@@ -145,7 +145,6 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: CulturalPlanet
         value: Quann
-      covert: false
     outcome:
       electKind: CulturalPlanet
       value: Quann
@@ -173,7 +172,6 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: IndustrialPlanet
         value: Wellon
-      covert: false
     outcome:
       electKind: IndustrialPlanet
       value: Wellon

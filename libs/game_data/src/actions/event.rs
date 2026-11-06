@@ -414,14 +414,6 @@ pub enum Event {
         agenda: Agenda,
     },
 
-    /// Select the agenda drawn for Covert Legislation (once it's public, after the table has
-    /// voted); it's voted on and resolved in place of Covert Legislation without using up an
-    /// agenda round.
-    DrawCovertAgenda {
-        /// The agenda drawn for Covert Legislation.
-        agenda: Agenda,
-    },
-
     /// Discard the current agenda without voting.
     ///
     /// This does not increment agenda round number, so another agenda must be revealed using

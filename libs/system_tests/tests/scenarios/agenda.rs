@@ -15,7 +15,6 @@ scenarios![
     agenda_elect_planet_with_trait,
     agenda_elect_non_home_planet,
     agenda_minister_of_antiques,
-    agenda_covert_legislation,
 ];
 
 fn vote(player: &str, outcome: AgendaElect, votes: u16) -> Event {
@@ -477,44 +476,5 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     .apply(gain("Carol", None));
     assert_eq!(g.state().minister_of_antiques_relic, None);
     assert_eq!(g.player("Carol").relics, carol_relics);
-    g
-}
-
-/// Covert Legislation: once the table has voted, the speaker selects the agenda that was drawn,
-/// which is voted on and resolved in its place without using up an agenda round. Both count as
-/// used.
-pub fn agenda_covert_legislation() -> TestGame {
-    let mut g = agenda_phase(three_players().pok());
-    let draw = |agenda| Event::DrawCovertAgenda { agenda };
-
-    g.agenda(Agenda::CovertLegislation)
-        .expect_rejected(vote("Bob", FOR, 1), "select the agenda drawn")
-        .expect_rejected(
-            Event::ResolveAgenda { outcome: Some(FOR) },
-            "select the agenda drawn",
-        )
-        .expect_rejected(draw(Agenda::CovertLegislation), "can't be drawn for itself")
-        .apply(draw(Agenda::ImperialArbiter))
-        .expect_rejected(draw(Agenda::Mutiny), "only drawn for Covert Legislation")
-        .expect_rejected(vote("Bob", FOR, 1), "invalid vote kind")
-        .vote_all(elect("Bob"), 1)
-        .resolve(Some(elect("Bob")));
-    assert_eq!(
-        g.state().laws.get(&Agenda::ImperialArbiter),
-        Some(&elect("Bob"))
-    );
-    let record = g.state().agenda_vote_history.last().expect("a vote");
-    assert!(record.vote.covert);
-    assert_eq!(
-        record.vote.used_agendas(),
-        [Agenda::CovertLegislation, Agenda::ImperialArbiter]
-    );
-
-    g.agenda(Agenda::Mutiny)
-        .expect_rejected(
-            draw(Agenda::ArmsReduction),
-            "only drawn for Covert Legislation",
-        )
-        .veto();
     g
 }

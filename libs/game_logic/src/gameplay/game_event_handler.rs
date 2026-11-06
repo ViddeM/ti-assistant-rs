@@ -29,7 +29,7 @@ use ti_helper_game_data::{
     },
     components::{
         action_card::{ActionCard, ActionCardPlay},
-        agenda::{Agenda, AgendaElectKind, AgendaKind},
+        agenda::{AgendaElectKind, AgendaKind},
         frontier_card::FrontierCardType,
         galactic_event::{GalacticEvent, MAX_MONUMENTS},
         leaders::LeaderAbilityKind,
@@ -2031,28 +2031,6 @@ fn try_update_game_state(
 
             state.vote = Some(vote);
         }
-        Event::DrawCovertAgenda { agenda } => {
-            game_state.assert_phase(Phase::Agenda)?;
-            game_state.assert_enabled(&agenda)?;
-            ensure!(
-                agenda != Agenda::CovertLegislation,
-                "Covert Legislation can't be drawn for itself"
-            );
-            let mut covert_vote = VoteState::new(agenda, game_state)?;
-            covert_vote.covert = true;
-            let Some(state) = &mut game_state.agenda else {
-                bail!("agenda state not initialized, this is a bug.");
-            };
-            ensure!(
-                state
-                    .vote
-                    .as_ref()
-                    .is_some_and(VoteState::awaits_covert_agenda),
-                "another agenda is only drawn for Covert Legislation"
-            );
-
-            state.vote = Some(covert_vote);
-        }
         Event::VetoAgenda => {
             game_state.assert_phase(Phase::Agenda)?;
             let Some(state) = &mut game_state.agenda else {
@@ -2083,10 +2061,6 @@ fn try_update_game_state(
             let Some(vote) = &mut state.vote else {
                 bail!("no agenda has been revealed yet");
             };
-            ensure!(
-                !vote.awaits_covert_agenda(),
-                "select the agenda drawn for Covert Legislation first"
-            );
 
             if let Some(outcome) = outcome {
                 let kind = AgendaElectKind::from(&outcome);
@@ -2112,10 +2086,6 @@ fn try_update_game_state(
             let Some(vote) = state.vote.as_ref() else {
                 bail!("no agenda has been revealed yet");
             };
-            ensure!(
-                !vote.awaits_covert_agenda(),
-                "select the agenda drawn for Covert Legislation first"
-            );
 
             let vote = vote.clone();
 

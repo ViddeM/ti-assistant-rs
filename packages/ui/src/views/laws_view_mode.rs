@@ -115,7 +115,7 @@ fn AddLawForm() -> Element {
         gc.game_state()
             .agenda_vote_history
             .iter()
-            .flat_map(|a| a.vote.used_agendas())
+            .map(|a| a.vote.agenda)
             .collect::<Vec<_>>()
     });
     let available_agendas = use_memo(move || {

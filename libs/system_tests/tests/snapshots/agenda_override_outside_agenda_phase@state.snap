@@ -134,7 +134,6 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: Player
         value: Bob
-      covert: false
     outcome:
       electKind: Player
       value: Bob

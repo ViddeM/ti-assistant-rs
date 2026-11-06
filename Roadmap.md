@@ -85,7 +85,6 @@ Base-game features, whichever expansions are enabled.
   - ❌ Show available votes (soft limit)
   - ❌ Show voting order (but allow votes in any order)
   - ✅ Veto (can be solved with Undo, but messes up time tracking)
-  - ✅ Covert Legislation (once the table has voted, the speaker selects the drawn agenda, which is voted on and resolved in its place without using up an agenda round)
 
 #### Extras (nice to have)
 The expansions list their own extras under "Agenda phase extras", tagged with these categories.
@@ -203,6 +202,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
   - ❌ Technology 'Predictive Intelligence' (extra votes)
   - ❌ Action Card 'Deadly Plot' (takes away votes, changes the outcome)
   - ❌ Action Card 'Confounding Legal Text' (changes the outcome)
+  - ❌ Agenda 'Covert Legislation' (_once the vote is over, reveal the drawn agenda directly instead_)
   - ❌ Relic 'Maw of Worlds' (takes away votes)
   - ❌ The Mahact Gene Sorcerers 'Genetic Recombination' (GUI only: the affected player just casts votes normally)
   - ❌ The Nomad 'Future Sight' (GUI only: reminder to take 1 trade good)

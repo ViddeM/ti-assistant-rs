@@ -54,7 +54,6 @@ pub fn AgendaInfoView(state: ReadSignal<AgendaState>) -> Element {
 #[component]
 fn PreviousVoteDisplay(record: ReadSignal<AgendaRecord>) -> Element {
     let agenda = use_memo(move || record().vote.agenda);
-    let covert = use_memo(move || record().vote.covert);
     let elect_display = use_memo(move || record().vote.elect.display());
     let outcome = use_memo(move || {
         {
@@ -77,11 +76,7 @@ fn PreviousVoteDisplay(record: ReadSignal<AgendaRecord>) -> Element {
     rsx! {
         div { key: "{agenda()}",
             div { class: "agenda-info-row",
-                if covert() {
-                    h6 { "{agenda().info().name} (Covert Legislation)" }
-                } else {
-                    h6 { "{agenda().info().name}" }
-                }
+                h6 { "{agenda().info().name}" }
                 InfoButton { info: Info::Agenda(agenda()) }
             }
             p { "{elect_display()}: {outcome()}" }
@@ -92,16 +87,11 @@ fn PreviousVoteDisplay(record: ReadSignal<AgendaRecord>) -> Element {
 #[component]
 fn CurrentVoteDisplay(state: ReadSignal<VoteState>) -> Element {
     let agenda = use_memo(move || state().agenda);
-    let covert = use_memo(move || state().covert);
 
     rsx! {
         div {
             div { class: "agenda-info-row",
-                if covert() {
-                    h6 { "{agenda().info().name} (Covert Legislation)" }
-                } else {
-                    h6 { "{agenda().info().name}" }
-                }
+                h6 { "{agenda().info().name}" }
                 InfoButton { info: Info::Agenda(agenda()) }
             }
             p { "Votes" }

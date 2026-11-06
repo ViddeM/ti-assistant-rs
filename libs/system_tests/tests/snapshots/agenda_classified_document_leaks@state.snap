@@ -142,7 +142,6 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: SecretObjective
         value: DestroyTheirGreatestShip
-      covert: false
     outcome:
       electKind: SecretObjective
       value: DestroyTheirGreatestShip
@@ -180,7 +179,6 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: Against
-      covert: false
     outcome:
       electKind: ForOrAgainst
       value: Against

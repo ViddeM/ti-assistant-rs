@@ -137,7 +137,6 @@ agendaVoteHistory:
       expectedOutcome:
         electKind: ForOrAgainst
         value: Against
-      covert: false
     outcome:
       electKind: ForOrAgainst
       value: Against
@@ -156,7 +155,6 @@ agendaVoteHistory:
       playerVotes: {}
       outcomesByVotes: []
       expectedOutcome: ~
-      covert: false
     outcome: ~
 laws: {}
 agendaOverrideState: ~

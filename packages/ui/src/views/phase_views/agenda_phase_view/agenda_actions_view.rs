@@ -2,10 +2,7 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::{
-        agenda::{Agenda, AgendaElect},
-        galactic_event::GalacticEvent,
-    },
+    components::{agenda::AgendaElect, galactic_event::GalacticEvent},
     state::agenda::{AgendaRound, AgendaState, VoteState},
 };
 
@@ -56,7 +53,23 @@ fn RevealAgendaView() -> Element {
 
     let mut current_agenda = use_signal(|| None);
 
-    let available_agendas = use_memo(move || unused_agendas(gc));
+    let all_agendas = use_memo(move || gc.game_options().agendas.to_vec());
+    let used_agendas = use_memo(move || {
+        gc.game_state()
+            .agenda_vote_history
+            .iter()
+            .map(|a| a.vote.agenda)
+            .collect::<Vec<_>>()
+    });
+    let available_agendas = use_memo(move || {
+        let mut agendas = all_agendas()
+            .iter()
+            .filter(|&a| !used_agendas().contains(a))
+            .cloned()
+            .collect::<Vec<_>>();
+        agendas.sort();
+        agendas
+    });
 
     rsx! {
         div {
@@ -100,15 +113,7 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
     let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
-    let agenda = use_memo(move || {
-        let vote = state();
-        let name = vote.agenda.info().name;
-        if vote.covert {
-            format!("{name} (Covert Legislation)")
-        } else {
-            name
-        }
-    });
+    let agenda = use_memo(move || state().agenda.info().name);
 
     let speaker = use_memo(move || {
         gc.game_state()
@@ -136,97 +141,31 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
                     Button { onclick: move |_| event.send_event(Event::VetoAgenda), "Veto" }
                 }
                 li { "After agenda is revealed" }
-                if state().awaits_covert_agenda() {
-                    if view.is_global_or_speaker() {
-                        li { DrawCovertAgendaView {} }
-                    } else {
-                        li { "Waiting for speaker ({speaker()}) to select the drawn agenda" }
+                li {
+                    "Vote: "
+                    if hidden_agenda() {
+                        p { class: "warning-text",
+                            "Hidden Agenda: enter the votes when the speaker reads them out, not when they are cast. Everyone can see them here."
+                        }
+                    }
+                    for player in players().iter() {
+                        PlayerVoteView {
+                            key: "{player}",
+                            player_id: player.clone(),
+                            state,
+                        }
+                    }
+                }
+                if view.is_global_or_speaker() {
+                    li {
+                        ResolveOutcome { state }
                     }
                 } else {
-                    li {
-                        "Vote: "
-                        if hidden_agenda() {
-                            p { class: "warning-text",
-                                "Hidden Agenda: enter the votes when the speaker reads them out, not when they are cast. Everyone can see them here."
-                            }
-                        }
-                        for player in players().iter() {
-                            PlayerVoteView {
-                                key: "{player}",
-                                player_id: player.clone(),
-                                state,
-                            }
-                        }
-                    }
-                    if view.is_global_or_speaker() {
-                        li {
-                            ResolveOutcome { state }
-                        }
-                    } else {
-                        li { "Waiting for speaker ({speaker()}) to resolve outcome" }
-                    }
+                    li { "Waiting for speaker ({speaker()}) to resolve outcome" }
                 }
             }
         }
     }
-}
-
-#[component]
-fn DrawCovertAgendaView() -> Element {
-    let gc = use_context::<GameContext>();
-    let event = use_context::<EventContext>();
-
-    let mut drawn_agenda = use_signal(|| None);
-
-    let available_agendas = use_memo(move || {
-        unused_agendas(gc)
-            .into_iter()
-            .filter(|agenda| *agenda != Agenda::CovertLegislation)
-            .collect::<Vec<_>>()
-    });
-
-    rsx! {
-        div { class: "reveal-agenda-box",
-            label { r#for: "draw-covert-agenda-dropdown",
-                "After the vote, select the agenda drawn for Covert Legislation"
-            }
-            AgendaDropdown {
-                id: "draw-covert-agenda-dropdown",
-                value: drawn_agenda,
-                options: available_agendas(),
-                on_select: move |agenda| drawn_agenda.set(agenda),
-            }
-            Button {
-                disabled: drawn_agenda().is_none(),
-                onclick: move |_| {
-                    event
-                        .send_event(Event::DrawCovertAgenda {
-                            agenda: drawn_agenda().expect("Drawn agenda to be set"),
-                        })
-                },
-                "Select"
-            }
-        }
-    }
-}
-
-/// The agendas that haven't been voted on yet this game, sorted.
-fn unused_agendas(gc: GameContext) -> Vec<Agenda> {
-    let used = gc
-        .game_state()
-        .agenda_vote_history
-        .iter()
-        .flat_map(|record| record.vote.used_agendas())
-        .collect::<Vec<_>>();
-    let mut agendas = gc
-        .game_options()
-        .agendas
-        .iter()
-        .filter(|agenda| !used.contains(agenda))
-        .cloned()
-        .collect::<Vec<_>>();
-    agendas.sort();
-    agendas
 }
 
 #[component]
