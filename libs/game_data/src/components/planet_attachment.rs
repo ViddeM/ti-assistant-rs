@@ -40,7 +40,7 @@ pub enum PlanetAttachment {
     CyberneticResearchFacilityResources,
     PropulsionResearchFacilityResources,
     WarfareResearchFacilityResources,
-    LasaxSurvivors,
+    LazaxSurvivors,
     MiningWorld,
     RichWorld,
     Geoform,
@@ -208,8 +208,8 @@ impl PlanetAttachment {
                 1,
                 1
             ),
-            PlanetAttachment::LasaxSurvivors => {
-                a!("Lasax Survivors", ProphecyOfKings, Hazardous, 1, 2)
+            PlanetAttachment::LazaxSurvivors => {
+                a!("Lazax Survivors", ProphecyOfKings, Hazardous, 1, 2)
             }
             PlanetAttachment::MiningWorld => a!("Mining World", ProphecyOfKings, Hazardous, 2, 0),
             PlanetAttachment::RichWorld => a!("Rich World", ProphecyOfKings, Hazardous, 1, 0),

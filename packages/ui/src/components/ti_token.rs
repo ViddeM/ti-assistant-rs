@@ -17,7 +17,7 @@ const PROPULSION_RESOURCES_TOKEN: Asset =
     asset!("/assets/icons/tokens/webp/propulsion_resources_token.webp");
 const WARFARE_RESOURCES_TOKEN: Asset =
     asset!("/assets/icons/tokens/webp/warfare_resources_token.webp");
-const LASAX_SURVIVORS: Asset = asset!("/assets/icons/tokens/webp/lasax_survivors_token.webp");
+const LAZAX_SURVIVORS: Asset = asset!("/assets/icons/tokens/webp/lazax_survivors_token.webp");
 const MINING_WORLD: Asset = asset!("/assets/icons/tokens/webp/mining_world_token.webp");
 const RICH_WORLD: Asset = asset!("/assets/icons/tokens/webp/rich_world_token.webp");
 const GEOFORM: Asset = asset!("/assets/icons/tokens/webp/geoform_token.webp");
@@ -41,7 +41,7 @@ pub enum TiToken {
     CyberneticResearchFacilityResources,
     PropulsionResearchFacilityResources,
     WarfareResearchFacilityResources,
-    LasaxSurvivors,
+    LazaxSurvivors,
     MiningWorld,
     RichWorld,
     Geoform,
@@ -67,7 +67,7 @@ impl TiToken {
             TiToken::CyberneticResearchFacilityResources => CYBERNETIC_RESOURCES_TOKEN,
             TiToken::PropulsionResearchFacilityResources => PROPULSION_RESOURCES_TOKEN,
             TiToken::WarfareResearchFacilityResources => WARFARE_RESOURCES_TOKEN,
-            TiToken::LasaxSurvivors => LASAX_SURVIVORS,
+            TiToken::LazaxSurvivors => LAZAX_SURVIVORS,
             TiToken::MiningWorld => MINING_WORLD,
             TiToken::RichWorld => RICH_WORLD,
             TiToken::Geoform => GEOFORM,
@@ -103,7 +103,7 @@ impl From<&PlanetAttachment> for TiToken {
             PlanetAttachment::WarfareResearchFacilityResources => {
                 TiToken::WarfareResearchFacilityResources
             }
-            PlanetAttachment::LasaxSurvivors => TiToken::LasaxSurvivors,
+            PlanetAttachment::LazaxSurvivors => TiToken::LazaxSurvivors,
             PlanetAttachment::MiningWorld => TiToken::MiningWorld,
             PlanetAttachment::RichWorld => TiToken::RichWorld,
             PlanetAttachment::Geoform => TiToken::Geoform,
