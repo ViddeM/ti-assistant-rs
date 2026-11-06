@@ -982,7 +982,7 @@ impl Technology {
                 ],
             ),
             Technology::IIHQModernization => t!(
-                "I.I.H.Q Modernization",
+                "I.I.H.Q. Modernization",
                 TechType::Category(TechCategory::Cybernetic),
                 TechOrigin::Faction(Faction::CouncilKeleres),
                 tr!([(TechCategory::Cybernetic, 1)]),
