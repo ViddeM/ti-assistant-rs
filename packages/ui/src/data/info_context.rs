@@ -119,7 +119,12 @@ impl Info {
                 }
             }),
             Info::Tech(technology) => {
-                InfoDescription::Description(technology.info().effects.join("\n"))
+                let effects = technology.info().effects;
+                InfoDescription::Custom(rsx! {
+                    for effect in effects {
+                        p { "{effect}" }
+                    }
+                })
             }
             Info::Relic(relic) => InfoDescription::Description(relic.info().description),
             Info::GalacticEvent(galactic_event) => {
