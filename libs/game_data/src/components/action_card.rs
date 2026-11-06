@@ -1017,7 +1017,7 @@ impl ActionCard {
                 1,
                 r#"During the agenda phase, when an outcome would be resolved:"#,
                 ActionCardPlay::Agenda(AgendaStagePlay::WhenOutcomeResolve),
-                r#"If you voted for or predicted another outcome, discard the agenda instead; the agenda is resolved with no effect and it is not replaced.Then, exhaust all of your planets."#,
+                r#"If you voted for or predicted another outcome, discard the agenda instead; the agenda is resolved with no effect and it is not replaced. Then, exhaust all of your planets."#,
                 r#"The hooded envoy erupted into a nightmare of black metal, lunging at the shocked diplomats."#
             ),
             ActionCard::DecoyOperation => ai!(
