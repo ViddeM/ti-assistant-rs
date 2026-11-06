@@ -411,7 +411,7 @@ impl Agenda {
             },
             Agenda::HomelandDefenseAct => base_law! {
                 ident: HomelandDefenseAct,
-                name: "Homeland Defence Act",
+                name: "Homeland Defense Act",
                 elect: ForOrAgainst,
             },
             Agenda::ImperialArbiter => base_law! {
