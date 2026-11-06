@@ -904,6 +904,18 @@ impl GameState {
         Ok(())
     }
 
+    /// Apply the effects of `player` gaining `tech`.
+    pub fn apply_tech_gained(
+        &mut self,
+        player: &PlayerId,
+        tech: &Technology,
+    ) -> anyhow::Result<()> {
+        if *tech == Technology::IIHQModernization {
+            self.set_planet_owner(Planet::CustodiaVigilia, Some(player.clone()))?;
+        }
+        Ok(())
+    }
+
     /// Have `player` roll for the Fracture, unless it's already in play.
     pub fn roll_for_the_fracture(&mut self, player: &PlayerId) {
         if !self.fracture_in_play {

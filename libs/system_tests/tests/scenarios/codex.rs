@@ -1,14 +1,43 @@
-//! Codex components, currently the Codex IV relics.
+//! Codex components: the Codex III I.I.H.Q. Modernization tech and the Codex IV relics.
 
 use ti_helper_system_tests::prelude::*;
 
 use crate::fixtures::{SIMPLE_PICKS, action_phase, three_players};
 
 scenarios![
+    codex_iii_iihq_modernization,
     codex_iv_book_of_latvinia,
     codex_iv_book_of_latvinia_research,
     codex_iv_neuraloop,
 ];
+
+/// Gaining the Codex III I.I.H.Q. Modernization tech gives the Keleres Custodia Vigilia.
+pub fn codex_iii_iihq_modernization() -> TestGame {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::CouncilKeleres)
+            .player("Bob", Faction::EmbersOfMuaat)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .codex(),
+    );
+    assert!(
+        !g.player("Alice")
+            .planets
+            .contains_key(&Planet::CustodiaVigilia)
+    );
+
+    g.apply(Event::AddTechToPlayer {
+        player: p("Alice"),
+        tech: Technology::IIHQModernization,
+    });
+    assert!(
+        g.player("Alice")
+            .planets
+            .contains_key(&Planet::CustodiaVigilia)
+    );
+    g
+}
 
 /// Book of Latvinia gives a point to a player that controls all 4 technology specialties, and
 /// the speaker token to anyone else. The point can also be moved or removed by hand.

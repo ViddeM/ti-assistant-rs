@@ -65,8 +65,33 @@ pub fn update_game_state(
     let mut new_game_state = game_state.clone();
 
     try_update_game_state(&mut new_game_state, event, timestamp)?;
+    apply_techs_gained(game_state, &mut new_game_state)?;
 
     *game_state = new_game_state;
+    Ok(())
+}
+
+/// Apply the on-gain effects of the techs that players have in `after` but not in `before`.
+fn apply_techs_gained(before: &GameState, after: &mut GameState) -> Result<(), GameError> {
+    let gained = after
+        .players
+        .iter()
+        .flat_map(|(id, player)| {
+            player
+                .technologies
+                .iter()
+                .filter(|tech| {
+                    !before
+                        .players
+                        .get(id)
+                        .is_some_and(|p| p.technologies.contains(tech))
+                })
+                .map(|tech| (id.clone(), tech.clone()))
+        })
+        .collect::<Vec<_>>();
+    for (player, tech) in gained {
+        after.apply_tech_gained(&player, &tech)?;
+    }
     Ok(())
 }
 
