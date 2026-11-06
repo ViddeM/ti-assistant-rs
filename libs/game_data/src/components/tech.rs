@@ -965,7 +965,9 @@ impl Technology {
                 TechOrigin::Faction(Faction::ArgentFlight),
                 tr!([(TechCategory::Cybernetic, 1)]),
                 Expansion::ProphecyOfKings,
-                &["Other players cannot move ships through systems that contain your structures"],
+                &[
+                    "Other players cannot move ships through systems that contain your structures. Each planet that contains 1 or more of your structures gains the PRODUCTION 1 ability as if it were a unit."
+                ],
             ),
             Technology::L4Disruptors => t!(
                 "L4 Disruptors",
