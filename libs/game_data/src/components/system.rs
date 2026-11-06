@@ -90,6 +90,7 @@ impl System {
                 SystemType::Anomaly(anomaly_types) => {
                     !anomaly_types.contains(&AnomalyType::TheFracture)
                         && !anomaly_types.contains(&AnomalyType::Supernova)
+                        && !anomaly_types.contains(&AnomalyType::MuaatSupernova)
                 }
                 SystemType::Hyperlane => false,
                 _ => true,
@@ -868,5 +869,13 @@ mod tests {
             })
             .collect::<Vec<_>>();
         assert!(failures.is_empty(), "{failures:#?}");
+    }
+
+    #[test]
+    fn thunders_edge_is_not_placed_in_a_supernova() {
+        let valid = System::valid_thunders_edge_systems();
+        for supernova in ["43", "80", "81"] {
+            assert!(!valid.contains(supernova), "{supernova}");
+        }
     }
 }
