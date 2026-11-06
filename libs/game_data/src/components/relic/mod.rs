@@ -145,7 +145,7 @@ impl Relic {
                 ri!(TheProphetsTears, "The Prophet's Tears", ProphecyOfKings)
             }
             Relic::DynamisCore => ri!(DynamisCore, "Dynamis Core", CodexII, Action),
-            Relic::JrXs4550 => ri!(JrXs4550, "JR-XS455-0", CodexII, Action),
+            Relic::JrXs4550 => ri!(JrXs4550, "JR-XS455-O", CodexII, Action),
             Relic::NanoForge => ri!(NanoForge, "Nano-Forge", CodexII, Action),
             Relic::MetaliVoidArmaments => {
                 ri!(MetaliVoidArmaments, "Metali Void Armaments", ThundersEdge)
