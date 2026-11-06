@@ -14,12 +14,13 @@ use crate::{
 };
 
 const SELECT_TECH_SCSS: Asset = asset!("/assets/styling/views/select_tech.scss");
-const ALL_TECH_TYPES: [TechType; 5] = [
+const ALL_TECH_TYPES: [TechType; 6] = [
     TechType::Category(TechCategory::Biotic),
     TechType::Category(TechCategory::Cybernetic),
     TechType::Category(TechCategory::Propulsion),
     TechType::Category(TechCategory::Warfare),
     TechType::UnitUpgrade,
+    TechType::Colorless,
 ];
 
 #[component]
