@@ -687,7 +687,7 @@ impl ActionCard {
                 1,
                 r#"As an Action"#,
                 ActionCardPlay::Action,
-                r#"Chose 1 non-home system that contains or is adjacent to 1 of your ships. Place a command token from another player's reinforcements in that system."#,
+                r#"Choose 1 non-home system that contains or is adjacent to 1 of your ships. Place a command token from another player's reinforcements in that system."#,
                 r#"Meian was practically aglow, wisps of her ether crackling with delight. It was amazing what could be achieved with a well-timed electromagnetic discharge."#
             ),
             ActionCard::SkilledRetreat => ai!(
