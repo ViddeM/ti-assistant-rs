@@ -1063,7 +1063,7 @@ impl Planet {
                 planet!("Ahk Creuxx", vec![], vec![], 4, 2, Expansion::ThundersEdge)
             }
             Planet::Elnath => planet!(
-                "Elnath",
+                "El'Nath",
                 vec![PlanetTrait::Hazardous],
                 vec![],
                 2,
