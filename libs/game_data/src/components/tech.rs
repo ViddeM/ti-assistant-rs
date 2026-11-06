@@ -1132,7 +1132,7 @@ impl Technology {
                 ],
             ),
             Technology::NonEuclidianShielding => t!(
-                "Non-Euclidian Shielding",
+                "Non-Euclidean Shielding",
                 TechType::Category(TechCategory::Warfare),
                 TechOrigin::Faction(Faction::BaronyOfLetnev),
                 tr!([(TechCategory::Warfare, 2)]),
