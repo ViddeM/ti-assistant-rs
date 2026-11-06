@@ -1,12 +1,12 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    components::agenda::{Agenda, AgendaElect},
+    components::agenda::AgendaElect,
     state::agenda::{AgendaRecord, AgendaState, VoteState},
 };
 
 use crate::{
     components::info_button::InfoButton,
-    data::{game_context::GameContext, info_context::Info, player_view::PlayerViewContext},
+    data::{game_context::GameContext, info_context::Info},
 };
 
 #[component]
@@ -91,21 +91,17 @@ fn PreviousVoteDisplay(record: ReadSignal<AgendaRecord>) -> Element {
 
 #[component]
 fn CurrentVoteDisplay(state: ReadSignal<VoteState>) -> Element {
-    let view = use_context::<PlayerViewContext>();
-
-    let agenda = use_memo(move || {
-        let vote = state();
-        if vote.covert && !view.is_global_or_speaker() {
-            Agenda::CovertLegislation
-        } else {
-            vote.agenda
-        }
-    });
+    let agenda = use_memo(move || state().agenda);
+    let covert = use_memo(move || state().covert);
 
     rsx! {
         div {
             div { class: "agenda-info-row",
-                h6 { "{agenda().info().name}" }
+                if covert() {
+                    h6 { "{agenda().info().name} (Covert Legislation)" }
+                } else {
+                    h6 { "{agenda().info().name}" }
+                }
                 InfoButton { info: Info::Agenda(agenda()) }
             }
             p { "Votes" }

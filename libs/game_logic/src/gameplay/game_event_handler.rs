@@ -2036,7 +2036,7 @@ fn try_update_game_state(
             game_state.assert_enabled(&agenda)?;
             ensure!(
                 agenda != Agenda::CovertLegislation,
-                "Covert Legislation can't be its own secret agenda"
+                "Covert Legislation can't be drawn for itself"
             );
             let mut covert_vote = VoteState::new(agenda, game_state)?;
             covert_vote.covert = true;
@@ -2048,7 +2048,7 @@ fn try_update_game_state(
                     .vote
                     .as_ref()
                     .is_some_and(VoteState::awaits_covert_agenda),
-                "a secret agenda is only drawn for Covert Legislation"
+                "another agenda is only drawn for Covert Legislation"
             );
 
             state.vote = Some(covert_vote);
@@ -2085,7 +2085,7 @@ fn try_update_game_state(
             };
             ensure!(
                 !vote.awaits_covert_agenda(),
-                "the speaker must draw the secret agenda for Covert Legislation first"
+                "select the agenda drawn for Covert Legislation first"
             );
 
             if let Some(outcome) = outcome {
@@ -2114,7 +2114,7 @@ fn try_update_game_state(
             };
             ensure!(
                 !vote.awaits_covert_agenda(),
-                "the speaker must draw the secret agenda for Covert Legislation first"
+                "select the agenda drawn for Covert Legislation first"
             );
 
             let vote = vote.clone();

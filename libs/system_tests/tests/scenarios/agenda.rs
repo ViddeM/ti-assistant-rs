@@ -480,22 +480,20 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     g
 }
 
-/// Covert Legislation: the speaker draws the next agenda in secret, players vote on its outcomes,
-/// and it's resolved in place of Covert Legislation. Both count as used.
+/// Covert Legislation: once the table has voted, the speaker selects the agenda that was drawn,
+/// which is voted on and resolved in its place without using up an agenda round. Both count as
+/// used.
 pub fn agenda_covert_legislation() -> TestGame {
     let mut g = agenda_phase(three_players().pok());
     let draw = |agenda| Event::DrawCovertAgenda { agenda };
 
     g.agenda(Agenda::CovertLegislation)
-        .expect_rejected(vote("Bob", FOR, 1), "draw the secret agenda")
+        .expect_rejected(vote("Bob", FOR, 1), "select the agenda drawn")
         .expect_rejected(
             Event::ResolveAgenda { outcome: Some(FOR) },
-            "draw the secret agenda",
+            "select the agenda drawn",
         )
-        .expect_rejected(
-            draw(Agenda::CovertLegislation),
-            "can't be its own secret agenda",
-        )
+        .expect_rejected(draw(Agenda::CovertLegislation), "can't be drawn for itself")
         .apply(draw(Agenda::ImperialArbiter))
         .expect_rejected(draw(Agenda::Mutiny), "only drawn for Covert Legislation")
         .expect_rejected(vote("Bob", FOR, 1), "invalid vote kind")

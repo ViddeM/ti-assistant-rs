@@ -414,10 +414,11 @@ pub enum Event {
         agenda: Agenda,
     },
 
-    /// The speaker draws the next agenda in secret for Covert Legislation; players vote on its
-    /// outcomes and it's resolved in place of Covert Legislation.
+    /// Select the agenda drawn for Covert Legislation (once it's public, after the table has
+    /// voted); it's voted on and resolved in place of Covert Legislation without using up an
+    /// agenda round.
     DrawCovertAgenda {
-        /// The agenda drawn in secret.
+        /// The agenda drawn for Covert Legislation.
         agenda: Agenda,
     },
 

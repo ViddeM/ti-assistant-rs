@@ -103,10 +103,10 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
     let agenda = use_memo(move || {
         let vote = state();
         let name = vote.agenda.info().name;
-        match (vote.covert, view.is_global_or_speaker()) {
-            (false, _) => name,
-            (true, true) => format!("Covert Legislation: {name}"),
-            (true, false) => "Covert Legislation".to_string(),
+        if vote.covert {
+            format!("{name} (Covert Legislation)")
+        } else {
+            name
         }
     });
 
@@ -140,7 +140,7 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
                     if view.is_global_or_speaker() {
                         li { DrawCovertAgendaView {} }
                     } else {
-                        li { "Waiting for speaker ({speaker()}) to draw the secret agenda" }
+                        li { "Waiting for speaker ({speaker()}) to select the drawn agenda" }
                     }
                 } else {
                     li {
@@ -187,7 +187,9 @@ fn DrawCovertAgendaView() -> Element {
 
     rsx! {
         div { class: "reveal-agenda-box",
-            label { r#for: "draw-covert-agenda-dropdown", "Draw the next agenda in secret" }
+            label { r#for: "draw-covert-agenda-dropdown",
+                "After the vote, select the agenda drawn for Covert Legislation"
+            }
             AgendaDropdown {
                 id: "draw-covert-agenda-dropdown",
                 value: drawn_agenda,
@@ -202,7 +204,7 @@ fn DrawCovertAgendaView() -> Element {
                             agenda: drawn_agenda().expect("Drawn agenda to be set"),
                         })
                 },
-                "Draw"
+                "Select"
             }
         }
     }

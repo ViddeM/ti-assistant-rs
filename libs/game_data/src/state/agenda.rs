@@ -97,7 +97,7 @@ pub struct VoteState {
     /// Calculated by calling [VoteState::tally_votes].
     pub expected_outcome: Option<AgendaElect>,
 
-    /// Whether [VoteState::agenda] was drawn in secret for Covert Legislation.
+    /// Whether [VoteState::agenda] was drawn for Covert Legislation.
     pub covert: bool,
 }
 
@@ -215,7 +215,7 @@ impl VoteState {
         }
     }
 
-    /// Whether this is Covert Legislation, before the speaker has drawn its secret agenda.
+    /// Whether this is Covert Legislation, before the agenda drawn for it is selected.
     pub fn awaits_covert_agenda(&self) -> bool {
         self.agenda == Agenda::CovertLegislation
     }
