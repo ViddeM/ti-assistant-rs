@@ -679,7 +679,7 @@ impl Technology {
                 ],
             ),
             Technology::SuperDreadnoughtII => t!(
-                "Super Dreadnought II",
+                "Super-Dreadnought II",
                 TechType::UnitUpgrade,
                 TechOrigin::Faction(Faction::L1Z1XMindnet),
                 tr!([(TechCategory::Propulsion, 2), (TechCategory::Cybernetic, 1)]),
