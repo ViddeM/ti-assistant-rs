@@ -155,7 +155,7 @@ impl PublicObjective {
             ),
             PublicObjective::AmassWealth => o!(
                 StageI,
-                "Amass wealth",
+                "Amass Wealth",
                 "Spend 3 influence, 3 resources, and 3 trade goods.",
                 Expansion::ProphecyOfKings
             ),
