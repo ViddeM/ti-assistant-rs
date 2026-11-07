@@ -2,11 +2,7 @@ use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::{
-        galactic_event::{GalacticEvent, MAX_MONUMENTS},
-        planet::Planet,
-    },
-    state::game_state::PlanetLocation,
+    components::{galactic_event::GalacticEvent, planet::Planet},
 };
 
 use crate::{
@@ -227,9 +223,6 @@ fn MonumentsToTheAges() -> Element {
             })
             .collect::<Vec<_>>()
     });
-    let full = use_memo(move || gc.game_state().monuments.len() >= MAX_MONUMENTS);
-    let max_commodities =
-        use_memo(move || i8::try_from(gc.game_state().status_phases_started()).unwrap_or(i8::MAX));
 
     let mut builder: Signal<Option<PlayerId>> = use_signal(|| None);
     let mut planet: Signal<Option<Planet>> = use_signal(|| None);
@@ -240,8 +233,6 @@ fn MonumentsToTheAges() -> Element {
             return Vec::new();
         };
         let mut planets = (player.planets.keys())
-            .filter(|p| !game_state.is_home_planet(p))
-            .filter(|p| game_state.planet_location(p) != PlanetLocation::NotOnBoard)
             .filter(|p| !game_state.monuments.contains_key(p))
             .cloned()
             .collect::<Vec<_>>();
@@ -273,7 +264,6 @@ fn MonumentsToTheAges() -> Element {
                                 td { class: "align-center",
                                     IncDecView {
                                         points: i8::try_from(commodities).unwrap_or(i8::MAX),
-                                        max: max_commodities(),
                                         change_points: {
                                             let planet = planet.clone();
                                             move |points| {
@@ -308,40 +298,36 @@ fn MonumentsToTheAges() -> Element {
                     }
                 }
             }
-            if full() {
-                p { class: "margin-top", "{MAX_MONUMENTS} monuments in play" }
-            } else {
-                PlayerDropdown {
-                    class: "margin-top full-width",
-                    value: builder,
-                    options: players(),
-                    on_select: move |player| {
-                        builder.set(player);
+            PlayerDropdown {
+                class: "margin-top full-width",
+                value: builder,
+                options: players(),
+                on_select: move |player| {
+                    builder.set(player);
+                    planet.set(None);
+                },
+            }
+            PlanetDropdown {
+                class: "margin-top full-width",
+                value: planet,
+                options: buildable(),
+                on_select: move |selected| planet.set(selected),
+                disabled: builder().is_none(),
+            }
+            Button {
+                class: "margin-top",
+                disabled: builder().is_none() || planet().is_none(),
+                onclick: move |_| {
+                    if let (Some(player), Some(selected)) = (builder(), planet()) {
+                        event
+                            .send_event(Event::BuildMonument {
+                                player,
+                                planet: selected,
+                            });
                         planet.set(None);
-                    },
-                }
-                PlanetDropdown {
-                    class: "margin-top full-width",
-                    value: planet,
-                    options: buildable(),
-                    on_select: move |selected| planet.set(selected),
-                    disabled: builder().is_none(),
-                }
-                Button {
-                    class: "margin-top",
-                    disabled: builder().is_none() || planet().is_none(),
-                    onclick: move |_| {
-                        if let (Some(player), Some(selected)) = (builder(), planet()) {
-                            event
-                                .send_event(Event::BuildMonument {
-                                    player,
-                                    planet: selected,
-                                });
-                            planet.set(None);
-                        }
-                    },
-                    "Build monument"
-                }
+                    }
+                },
+                "Build monument"
             }
         }
     }

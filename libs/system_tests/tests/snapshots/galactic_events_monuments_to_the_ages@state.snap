@@ -135,13 +135,13 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 2400
+    secs: 2640
     nanos: 0
   Bob:
     secs: 2340
     nanos: 0
   Carol:
-    secs: 2160
+    secs: 2280
     nanos: 0
 currentTurnStartTime: ~
 naaluTelepathy: ~

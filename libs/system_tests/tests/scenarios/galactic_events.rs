@@ -658,9 +658,10 @@ pub fn galactic_events_cultural_exchange_program() -> TestGame {
     g
 }
 
-/// Monuments to the Ages: up to 3 monuments on non-home planets. Each gets a commodity at the start
-/// of every status phase and gives 1 VP per 3 commodities to whoever controls its planet. The
-/// commodities can be fixed, and destroying the planet destroys its monument.
+/// Monuments to the Ages: monuments on planets the players control. Each gets a commodity at the
+/// start of every status phase and gives 1 VP per 3 commodities to whoever controls its planet.
+/// Building and the commodities aren't limited by the card's rules, so that any recorded state can
+/// be fixed. Destroying the planet destroys its monument.
 pub fn galactic_events_monuments_to_the_ages() -> TestGame {
     let mut g = action_phase(
         three_players()
@@ -677,30 +678,33 @@ pub fn galactic_events_monuments_to_the_ages() -> TestGame {
     };
     let commodities = |g: &TestGame, planet: Planet| g.state().monument_commodities(&planet);
 
-    g.expect_rejected(
-        build("Alice", Planet::Jord),
-        "Monuments can't be placed on home planets",
-    )
-    .expect_rejected(build("Alice", Planet::Abyz), "Alice doesn't control Abyz")
-    .expect_rejected(
-        build("Nobody", Planet::Abyz),
-        "Player doesn't exist 'Nobody'",
-    )
-    .expect_rejected(
-        Event::DestroyMonument {
-            planet: Planet::Abyz,
-        },
-        "Abyz has no monument",
-    )
-    .apply(Event::SetPlanetOwner {
-        player: Some(p("Alice")),
-        planet: Planet::ThundersEdge,
-    })
-    .expect_rejected(build("Alice", Planet::ThundersEdge), "isn't on the board")
-    .apply(Event::SetPlanetOwner {
-        player: None,
-        planet: Planet::ThundersEdge,
-    });
+    g.expect_rejected(build("Alice", Planet::Abyz), "Alice doesn't control Abyz")
+        .expect_rejected(
+            build("Nobody", Planet::Abyz),
+            "Player doesn't exist 'Nobody'",
+        )
+        .expect_rejected(
+            Event::DestroyMonument {
+                planet: Planet::Abyz,
+            },
+            "Abyz has no monument",
+        )
+        .apply(build("Alice", Planet::Jord))
+        .apply(Event::DestroyMonument {
+            planet: Planet::Jord,
+        })
+        .apply(Event::SetPlanetOwner {
+            player: Some(p("Alice")),
+            planet: Planet::ThundersEdge,
+        })
+        .apply(build("Alice", Planet::ThundersEdge))
+        .apply(Event::DestroyMonument {
+            planet: Planet::ThundersEdge,
+        })
+        .apply(Event::SetPlanetOwner {
+            player: None,
+            planet: Planet::ThundersEdge,
+        });
 
     g.turn("Alice")
         .tactical()
@@ -717,10 +721,10 @@ pub fn galactic_events_monuments_to_the_ages() -> TestGame {
     g.apply(build("Alice", Planet::Abyz))
         .apply(build("Alice", Planet::Fria))
         .apply(build("Bob", Planet::Arinam))
-        .expect_rejected(
-            build("Bob", Planet::Meer),
-            "There can only be 3 monuments in play",
-        )
+        .apply(build("Bob", Planet::Meer))
+        .apply(Event::DestroyMonument {
+            planet: Planet::Meer,
+        })
         .expect_rejected(build("Alice", Planet::Abyz), "Abyz already has a monument");
     assert_eq!(commodities(&g, Planet::Abyz), Some(0));
     assert_eq!(commodities(&g, Planet::Meer), None);
@@ -728,13 +732,12 @@ pub fn galactic_events_monuments_to_the_ages() -> TestGame {
     g.play_out_action_phase();
     assert_eq!(commodities(&g, Planet::Abyz), Some(1));
     assert_eq!(commodities(&g, Planet::Arinam), Some(1));
-    g.expect_rejected(
-        set_commodities(Planet::Abyz, 2),
-        "The monument on Abyz can have at most 1 commodities",
-    )
-    .expect_rejected(set_commodities(Planet::Abyz, 1), "No change")
-    .expect_rejected(set_commodities(Planet::Meer, 0), "Meer has no monument")
-    .apply(set_commodities(Planet::Fria, 0));
+    g.apply(set_commodities(Planet::Abyz, 5));
+    assert_eq!(commodities(&g, Planet::Abyz), Some(5));
+    g.apply(set_commodities(Planet::Abyz, 1))
+        .expect_rejected(set_commodities(Planet::Abyz, 1), "No change")
+        .expect_rejected(set_commodities(Planet::Meer, 0), "Meer has no monument")
+        .apply(set_commodities(Planet::Fria, 0));
     assert_eq!(commodities(&g, Planet::Fria), Some(0));
     g.status_phase()
         .reveal(PublicObjective::DiversifyResearch)

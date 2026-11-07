@@ -622,7 +622,7 @@ pub enum Event {
         points: i8,
     },
 
-    /// Place a monument on a non-home planet the player controls ('Monuments to the Ages').
+    /// Place a monument on a planet the player controls ('Monuments to the Ages').
     BuildMonument {
         /// The player who places the monument.
         player: PlayerId,
@@ -640,7 +640,7 @@ pub enum Event {
     SetMonumentCommodities {
         /// The planet with the monument.
         planet: Planet,
-        /// The commodities, at most one per status phase so far.
+        /// The commodities.
         commodities: u32,
     },
 

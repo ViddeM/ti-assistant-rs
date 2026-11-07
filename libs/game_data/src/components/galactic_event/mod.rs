@@ -8,9 +8,6 @@ use crate::common::{
     game_settings::Expansions,
 };
 
-/// How many monuments can be in play at once ('Monuments to the Ages').
-pub const MAX_MONUMENTS: usize = 3;
-
 /// Galactic events, which change the rules of the game.
 #[derive(
     Debug,

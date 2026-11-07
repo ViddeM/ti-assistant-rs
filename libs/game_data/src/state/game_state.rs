@@ -164,8 +164,10 @@ pub struct GameState {
     pub stellar_atomics_used: BTreeSet<PlayerId>,
 
     /// The planets with a monument ('Monuments to the Ages'), and the number of status phases
-    /// that had started when it was built, see [GameState::monument_commodities].
-    pub monuments: BTreeMap<Planet, u32>,
+    /// that had started when it had no commodities, see [GameState::monument_commodities]. That
+    /// is when it was built, unless its commodities have been set; it is negative if they have
+    /// been set above the number of status phases so far.
+    pub monuments: BTreeMap<Planet, i64>,
 }
 
 /// Where a planet is on the board, see [GameState::planet_location].
@@ -818,10 +820,10 @@ impl GameState {
     }
 
     /// The commodities beneath the monument on `planet`, if it has one: one per status phase
-    /// started since it was built.
+    /// started since it had none.
     pub fn monument_commodities(&self, planet: &Planet) -> Option<u32> {
-        let built = self.monuments.get(planet)?;
-        Some(self.status_phases_started().saturating_sub(*built))
+        let empty_at = self.monuments.get(planet)?;
+        Some(u32::try_from(i64::from(self.status_phases_started()) - empty_at).unwrap_or(0))
     }
 
     /// The victory points of the players who control a planet with a monument: 1 per 3
