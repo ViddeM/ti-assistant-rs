@@ -12,9 +12,9 @@ Minor Factions games: `1ac9a493` and `09d3557e` are regular (non-milty) games wi
 | ✅ | `20e0b4a1` | Stellar Atomics (action) | Action, Tux: Component → Galactic Event → Stellar Atomics |
 | ✅ | `942cbdd8` | Stellar Atomics (agenda) | Agenda phase, before "Reveal an agenda". Tux used his token in round 1, so once an agenda is revealed he can't vote |
 | ✅ | `ccc97b0b` | Conventions of War Abandoned (action) | Tux has X-89 ΩΩ: Component → Galactic Event → choose a planet. Vidde/Yoda should see "Requires X-89" |
-|  | `dc46c53a` | Age of Exploration (action) | Tux has Dark Energy Tap: Component → Galactic Event. The form offers Ring 4, positions 15 and 17 (next to systems 94 and 67) |
-|  | `03d042d0` | Wild, Wild Galaxy (Stellar Converter) | Tux owns Stellar Converter: Component → Play Relic |
-|  | `d4406362` | Dangerous Wilds (tactical action) | Tux: Tactical, take an unowned hazardous planet (Vefut II, Tequ'ran, Xanhact, Cormund, Sakulag, Olergodt) |
+| ✅ | `dc46c53a` | Age of Exploration (action) | Tux has Dark Energy Tap: Component → Galactic Event. The form offers Ring 4, positions 15 and 17 (next to systems 94 and 67) |
+| ✅ | `03d042d0` | Wild, Wild Galaxy (Stellar Converter) | Tux owns Stellar Converter: Component → Play Relic |
+| ✅ | `d4406362` | Dangerous Wilds (tactical action) | Tux: Tactical, take an unowned hazardous planet (Vefut II, Tequ'ran, Xanhact, Cormund, Sakulag, Olergodt) |
 |  | `63b0393b` | Monuments to the Ages (build) | Galactic Events page → Build monument. Tux owns Thibah and Accoen, Vidde owns Lazar and Torkan |
 |  | `d8bc49b5` | Zealous Orthodoxy (second secret) | Action. Tux and Vidde each have 1 secret scored; the next secret either of them scores should give the VP |
 |  | `0bc7835e` | Hidden Agenda (agenda) | Agenda phase, before Reveal |
