@@ -91,9 +91,7 @@ pub fn ActionPhaseView() -> Element {
         div { class: "card action-phase-view-container",
             h2 { "ACTION PHASE" }
             if let Some(_) = gc.game_state().interrupted_turn.as_ref() {
-                p { class: "info-text",
-                    "Puppets on a String: perform 1 action"
-                }
+                p { class: "info-text", "Puppets on a String: perform 1 action" }
             }
 
             if view.is_active() {
@@ -556,7 +554,7 @@ fn GalacticEventActionView() -> Element {
             fieldset { class: "play-action-card-container",
                 legend { "Play Galactic Event" }
                 div { class: "component-select-container",
-                    for (galactic_event, used) in events_with_action() {
+                    for (galactic_event , used) in events_with_action() {
                         Button {
                             key: "{galactic_event}",
                             disabled: used || selected() == Some(galactic_event),
@@ -776,15 +774,14 @@ fn AgeOfExplorationForm(player: PlayerId) -> Element {
 
     rsx! {
         div { class: "column",
-            SystemDropdown {
-                value: selected_system,
-                options: drawable_tiles,
-                on_select: move |s| selected_system.set(s),
+            p { class: "info-text column",
+                span { "Ring 0 is Mecatol Rex." }
+                span { "Each ring is numbered from 0 directly above Mecatol Rex, going clockwise." }
+                span { "(Ring N has 6 × N positions.)" }
             }
-            p {
-                "Ring 0 is Mecatol Rex. Ring N has 6 × N positions, numbered from 0 directly above Mecatol Rex, going clockwise."
-            }
+            p { class: "margin-top", "Spawns in:" }
             Dropdown {
+                class: "margin-top",
                 value: ring_value,
                 oninput: move |e: FormEvent| {
                     selected_ring.set(e.value().parse().ok());
@@ -796,6 +793,7 @@ fn AgeOfExplorationForm(player: PlayerId) -> Element {
                 }
             }
             Dropdown {
+                class: "margin-top",
                 value: position_value,
                 disabled: selected_ring().is_none(),
                 oninput: move |e: FormEvent| selected_position.set(e.value().parse().ok()),
@@ -805,7 +803,14 @@ fn AgeOfExplorationForm(player: PlayerId) -> Element {
                 }
             }
             if !next_to().is_empty() {
-                p { "Next to: {next_to().join(\", \")}" }
+                p { class: "margin-top", "Next to: {next_to().join(\", \")}" }
+            }
+            p { class: "margin-top", "Spawned system:" }
+            SystemDropdown {
+                class: "margin-top",
+                value: selected_system,
+                options: drawable_tiles,
+                on_select: move |s| selected_system.set(s),
             }
             Button {
                 class: "margin-top",
