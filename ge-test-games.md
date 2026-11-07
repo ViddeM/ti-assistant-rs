@@ -15,8 +15,8 @@ Minor Factions games: `1ac9a493` and `09d3557e` are regular (non-milty) games wi
 | ✅ | `dc46c53a` | Age of Exploration (action) | Tux has Dark Energy Tap: Component → Galactic Event. The form offers Ring 4, positions 15 and 17 (next to systems 94 and 67) |
 | ✅ | `03d042d0` | Wild, Wild Galaxy (Stellar Converter) | Tux owns Stellar Converter: Component → Play Relic |
 | ✅ | `d4406362` | Dangerous Wilds (tactical action) | Tux: Tactical, take an unowned hazardous planet (Vefut II, Tequ'ran, Xanhact, Cormund, Sakulag, Olergodt) |
-|  | `63b0393b` | Monuments to the Ages (build) | Galactic Events page → Build monument. Tux owns Thibah and Accoen, Vidde owns Lazar and Torkan |
-|  | `d8bc49b5` | Zealous Orthodoxy (second secret) | Action. Tux and Vidde each have 1 secret scored; the next secret either of them scores should give the VP |
+| ✅ | `63b0393b` | Monuments to the Ages (build) | Galactic Events page → Build monument. Tux owns Thibah and Accoen, Vidde owns Lazar and Torkan |
+| ✅ | `d8bc49b5` | Zealous Orthodoxy (second secret) | Action. Tux and Vidde each have 1 secret scored; the next secret either of them scores should give the VP |
 |  | `0bc7835e` | Hidden Agenda (agenda) | Agenda phase, before Reveal |
 |  | `185090c7` | Civilized Society (setup) | Setup: "Select all public objectives" |
 |  | `1aac2dae` | Civilized Society (status) | Status phase round 1, all 10 objectives revealed, nothing scored, no reveal step |
