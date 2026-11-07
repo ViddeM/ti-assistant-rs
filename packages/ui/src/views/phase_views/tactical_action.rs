@@ -307,14 +307,18 @@ fn DangerousWildsResearch(
 
     let resources = use_memo(move || planet().info().resources);
 
+    if !applies() {
+        return rsx! {};
+    }
+
     rsx! {
-        if applies() {
+        div { class: "margin-top",
             if let Some(tech) = tech() {
                 p { "Dangerous Wilds: researched {tech.info().name}" }
             } else if current_player_faction() == Faction::NekroVirus {
                 p { "Nekro virus cannot research techs" }
             } else {
-                p {
+                p { class: "margin-top info-text",
                     "Dangerous Wilds: you may research 1 technology, ignoring up to {resources()} prerequisites"
                 }
                 SelectTechView {
