@@ -24,8 +24,8 @@ use crate::{
     components::{
         button::Button,
         dropdown::{
-            ActionCardDropdown, Dropdown, FrontierCardDropdown, GalacticEventDropdown,
-            PlanetDropdown, RelicDropdown, SystemDropdown,
+            ActionCardDropdown, Dropdown, FrontierCardDropdown, PlanetDropdown, RelicDropdown,
+            SystemDropdown,
         },
         info_button::InfoButton,
     },
@@ -526,8 +526,9 @@ fn FrontierCardView() -> Element {
 #[component]
 fn GalacticEventActionView() -> Element {
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
 
-    let mut selected = use_signal(|| None);
+    let mut selected = use_signal(|| None::<GalacticEvent>);
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -537,11 +538,16 @@ fn GalacticEventActionView() -> Element {
     });
 
     let events_with_action = use_memo(move || {
-        gc.game_state()
+        let state = gc.game_state();
+        state
             .galactic_events
             .iter()
             .filter(|e| e.has_action())
-            .copied()
+            .map(|&e| {
+                let used = e == GalacticEvent::StellarAtomics
+                    && state.stellar_atomics_used.contains(&current_player());
+                (e, used)
+            })
             .collect::<Vec<_>>()
     });
 
@@ -549,10 +555,25 @@ fn GalacticEventActionView() -> Element {
         div {
             fieldset { class: "play-action-card-container",
                 legend { "Play Galactic Event" }
-                GalacticEventDropdown {
-                    value: selected,
-                    options: events_with_action(),
-                    on_select: move |e| selected.set(e),
+                div { class: "component-select-container",
+                    for (galactic_event, used) in events_with_action() {
+                        Button {
+                            key: "{galactic_event}",
+                            disabled: used || selected() == Some(galactic_event),
+                            title: if used { "Stellar Atomics token already used" },
+                            onclick: move |_| match immediate_galactic_event_action(galactic_event) {
+                                Some(action) => {
+                                    event
+                                        .send_event(Event::PlayGalacticEventAction {
+                                            player: current_player(),
+                                            action,
+                                        })
+                                }
+                                None => selected.set(Some(galactic_event)),
+                            },
+                            "{galactic_event.info().name}"
+                        }
+                    }
                 }
                 if let Some(galactic_event) = selected() {
                     GalacticEventActionForm { player: current_player(), galactic_event }
@@ -562,44 +583,25 @@ fn GalacticEventActionView() -> Element {
     }
 }
 
+fn immediate_galactic_event_action(galactic_event: GalacticEvent) -> Option<GalacticEventAction> {
+    match galactic_event {
+        GalacticEvent::TotalWar => Some(GalacticEventAction::TotalWar),
+        GalacticEvent::MercenariesForHire => Some(GalacticEventAction::MercenariesForHire),
+        GalacticEvent::StellarAtomics => Some(GalacticEventAction::StellarAtomics),
+        _ => None,
+    }
+}
+
 #[component]
 fn GalacticEventActionForm(player: PlayerId, galactic_event: GalacticEvent) -> Element {
-    let gc = use_context::<GameContext>();
-    let event = use_context::<EventContext>();
-
-    let action = match galactic_event {
-        GalacticEvent::TotalWar => GalacticEventAction::TotalWar,
-        GalacticEvent::MercenariesForHire => GalacticEventAction::MercenariesForHire,
-        GalacticEvent::StellarAtomics if gc.game_state().stellar_atomics_used.contains(&player) => {
-            return rsx! {
-                p { "Stellar Atomics token already used" }
-            };
-        }
-        GalacticEvent::StellarAtomics => GalacticEventAction::StellarAtomics,
-        GalacticEvent::ConventionsOfWarAbandoned => {
-            return rsx! {
-                ConventionsOfWarAbandonedForm { player }
-            };
-        }
-        GalacticEvent::AgeOfExploration => {
-            return rsx! {
-                AgeOfExplorationForm { player }
-            };
-        }
-        _ => return rsx! {},
-    };
-
-    rsx! {
-        Button {
-            onclick: move |_| {
-                event
-                    .send_event(Event::PlayGalacticEventAction {
-                        player: player.clone(),
-                        action: action.clone(),
-                    })
-            },
-            "Play"
-        }
+    match galactic_event {
+        GalacticEvent::ConventionsOfWarAbandoned => rsx! {
+            ConventionsOfWarAbandonedForm { player }
+        },
+        GalacticEvent::AgeOfExploration => rsx! {
+            AgeOfExplorationForm { player }
+        },
+        _ => rsx! {},
     }
 }
 
