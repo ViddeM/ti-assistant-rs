@@ -620,6 +620,7 @@ fn GalacticEventPointRows(
     }: GalacticEventPointRowsProps,
 ) -> Element {
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
     let zealous_orthodoxy = use_memo(move || {
         gc.game_state()
             .score
@@ -666,10 +667,22 @@ fn GalacticEventPointRows(
                 {
                     players
                         .iter()
+                        .cloned()
                         .map(|p| {
-                            let score = total_war().get(p).copied().unwrap_or(0);
+                            let score = total_war().get(&p).copied().unwrap_or(0);
                             rsx! {
-                                td { key: "{p}", class: "align-center", "{score}" }
+                                td { key: "{p}", class: "align-center",
+                                    IncDecView {
+                                        points: score,
+                                        change_points: move |points| {
+                                            event
+                                                .send_event(Event::SetTotalWarPoints {
+                                                    player: p.clone(),
+                                                    points,
+                                                })
+                                        },
+                                    }
+                                }
                             }
                         })
                 }
