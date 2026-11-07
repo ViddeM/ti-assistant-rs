@@ -35,6 +35,7 @@ use crate::{
     },
     views::{
         destroyed_planets::planets_on_board,
+        map_view_mode::RingNumbering,
         phase_views::breakthrough_action::BreakthroughActionView,
     },
 };
@@ -778,6 +779,10 @@ fn AgeOfExplorationForm(player: PlayerId) -> Element {
                 span { "Ring 0 is Mecatol Rex." }
                 span { "Each ring is numbered from 0 directly above Mecatol Rex, going clockwise." }
                 span { "(Ring N has 6 × N positions.)" }
+                RingNumbering {}
+                span {
+                    "Only spots touching at least 2 non-home systems are listed; hyperlanes don't count."
+                }
             }
             p { class: "margin-top", "Spawns in:" }
             Dropdown {

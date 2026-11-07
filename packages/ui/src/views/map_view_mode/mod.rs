@@ -12,7 +12,10 @@ use crate::{
 mod layout;
 mod outside_galaxy;
 mod planet_offset;
+mod ring_numbering;
 mod tile_images;
+
+pub use ring_numbering::RingNumbering;
 
 const MAP_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/map_view_mode.scss");
 
