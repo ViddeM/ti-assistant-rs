@@ -179,8 +179,12 @@ fn MainGameView(
 fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
     let mode = *view_mode.read();
     let gc = use_context::<GameContext>();
-    let show_sidebar =
-        use_memo(move || !matches!(gc.game_state().phase, Phase::Creation | Phase::Setup));
+    let show_sidebar = use_memo(move || {
+        !matches!(
+            gc.game_state().phase,
+            Phase::Creation | Phase::Setup | Phase::PostSetup
+        )
+    });
 
     let sidebar = if show_sidebar() {
         rsx! {
