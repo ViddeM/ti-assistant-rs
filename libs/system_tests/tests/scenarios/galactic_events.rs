@@ -901,9 +901,10 @@ pub fn galactic_events_age_of_exploration() -> TestGame {
     g
 }
 
-/// Rapid Mobilization: Start Game puts the Fracture into play and gives everyone their
-/// breakthrough. Then each player gains control of the planets they pick, unowned non-home planets
-/// on the board, and researches 1 technology: 2 for the Nomad and none for the Nekro Virus.
+/// Rapid Mobilization: Start Game puts the Fracture into play, gives everyone their breakthrough
+/// and starts the post-setup phase. There each player gains control of the planets they pick,
+/// unowned non-home planets on the board, and researches 1 technology: 2 for the Nomad and none
+/// for the Nekro Virus. Once everyone has resolved it, the strategy phase of round 1 starts.
 pub fn galactic_events_rapid_mobilization() -> TestGame {
     let mut g = TestGame::builder()
         .pok()
@@ -913,6 +914,7 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
         .player("Carol", Faction::EmbersOfMuaat)
         .galactic_events([GalacticEvent::RapidMobilization])
         .start();
+    assert_eq!(g.phase(), Phase::PostSetup);
     let state = g.state();
     assert!(state.fracture_in_play);
     assert_eq!(state.fracture_roll, None);
@@ -938,7 +940,11 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
             player: p("Alice"),
             card: StrategyCard::Leadership,
         },
-        "Rapid Mobilization must be resolved first",
+        "expected Strategy",
+    )
+    .expect_rejected(
+        Event::CompletePostSetupPhase,
+        "Not all players have resolved Rapid Mobilization",
     )
     .expect_rejected(
         resolve("Alice", &[Planet::Abyz], &[Technology::GravityDrive]),
@@ -1005,6 +1011,8 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
     );
     assert!(g.state().rapid_mobilization.is_empty());
 
+    g.apply(Event::CompletePostSetupPhase);
+    assert_eq!((g.round(), g.phase()), (1, Phase::Strategy));
     g.strategy_phase(SIMPLE_PICKS);
     assert_eq!(g.phase(), Phase::Action);
     g
@@ -1470,6 +1478,7 @@ fn monuments_to_the_ages_needs_the_event() {
 #[test]
 fn rapid_mobilization_needs_the_event() {
     let mut g = three_players().pok().thunders_edge().start();
+    assert_eq!(g.phase(), Phase::Strategy);
     assert!(!g.state().fracture_in_play);
     assert!(g.state().rapid_mobilization.is_empty());
     g.expect_rejected(
@@ -1478,8 +1487,9 @@ fn rapid_mobilization_needs_the_event() {
             planets: BTreeSet::from([Planet::Abyz]),
             technologies: BTreeSet::from([Technology::GravityDrive]),
         },
-        "Alice has no Rapid Mobilization to resolve",
-    );
+        "expected PostSetup",
+    )
+    .expect_rejected(Event::CompletePostSetupPhase, "expected PostSetup");
 }
 
 #[test]

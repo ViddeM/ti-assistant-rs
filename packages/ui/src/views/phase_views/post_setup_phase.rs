@@ -14,8 +14,9 @@ use crate::{
 };
 
 #[component]
-pub fn RapidMobilization() -> Element {
+pub fn PostSetupPhaseView() -> Element {
     let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
 
     let pending = use_memo(move || {
         let game_state = gc.game_state();
@@ -42,6 +43,12 @@ pub fn RapidMobilization() -> Element {
             }
             for player_id in pending() {
                 RapidMobilizationPlayer { key: "{player_id}", player_id }
+            }
+            Button {
+                class: "margin-top",
+                disabled: !pending().is_empty(),
+                onclick: move |_| event.send_event(Event::CompletePostSetupPhase),
+                "Start Strategy Phase"
             }
         }
     }

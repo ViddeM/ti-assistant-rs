@@ -12,6 +12,10 @@ pub enum Phase {
     /// Game setup, perform faction specific setup.
     Setup,
 
+    /// After setup and before the first strategy phase, when an effect resolves after setup
+    /// (Rapid Mobilization).
+    PostSetup,
+
     /// The Strategy phase.
     Strategy,
 
@@ -61,6 +65,7 @@ impl Display for Phase {
             match self {
                 Phase::Creation => "Creation",
                 Phase::Setup => "Setup",
+                Phase::PostSetup => "Post-Setup",
                 Phase::Strategy => "Strategy",
                 Phase::Action => "Action",
                 Phase::StrategicAction => "Strategic Action",

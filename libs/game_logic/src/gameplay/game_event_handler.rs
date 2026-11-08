@@ -112,12 +112,6 @@ fn try_update_game_state(
             "{player} must gain their Minister of Antiques relic first"
         );
     }
-    if !game_state.rapid_mobilization.is_empty() {
-        ensure!(
-            matches!(event, Event::ResolveRapidMobilization { .. }),
-            "Rapid Mobilization must be resolved first"
-        );
-    }
 
     match event {
         Event::SetSettings { settings } => {
@@ -631,7 +625,11 @@ fn try_update_game_state(
                 game_state.roll_for_the_fracture(&player);
             }
 
-            game_state.change_phase(Phase::Strategy, timestamp)?;
+            if game_state.has_post_setup_phase() {
+                game_state.phase = Phase::PostSetup;
+            } else {
+                game_state.change_phase(Phase::Strategy, timestamp)?;
+            }
         }
         Event::TakeStrategyCard { player, card } => {
             game_state.assert_phase(Phase::Strategy)?;
@@ -1975,6 +1973,14 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::EntropicScar)?;
             game_state.phase = Phase::Status;
         }
+        Event::CompletePostSetupPhase => {
+            game_state.assert_phase(Phase::PostSetup)?;
+            ensure!(
+                game_state.rapid_mobilization.is_empty(),
+                "Not all players have resolved Rapid Mobilization"
+            );
+            game_state.change_phase(Phase::Strategy, timestamp)?;
+        }
         Event::PlayCrownOfEmphidia { player } => {
             game_state.assert_phase(Phase::Relics)?;
 
@@ -2771,6 +2777,7 @@ fn try_update_game_state(
             planets,
             technologies,
         } => {
+            game_state.assert_phase(Phase::PostSetup)?;
             ensure!(
                 game_state.rapid_mobilization.contains(&player),
                 "{player} has no Rapid Mobilization to resolve"
@@ -3007,6 +3014,7 @@ fn should_track_time_in(phase: Phase) -> bool {
 
         Phase::Relics
         | Phase::Setup
+        | Phase::PostSetup
         | Phase::EntropicScar
         | Phase::Status
         | Phase::Agenda

@@ -10,7 +10,7 @@ use crate::{
             agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
             end_action_phase::EndActionPhaseView, entropic_scar_phase::EntropicScarPhaseView,
             fracture_roll::FractureRoll, minister_of_antiques::MinisterOfAntiques,
-            rapid_mobilization::RapidMobilization, relic_card::RelicCardView,
+            post_setup_phase::PostSetupPhaseView, relic_card::RelicCardView,
             relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
             status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
             strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
@@ -34,18 +34,15 @@ pub fn PhaseView() -> Element {
         };
     }
 
-    if !gc.game_state().rapid_mobilization.is_empty() {
-        return rsx! {
-            RapidMobilization {}
-        };
-    }
-
     match gc.game_state().phase {
         Phase::Creation => rsx! {
             CreationPhaseView {}
         },
         Phase::Setup => rsx! {
             SetupPhaseView {}
+        },
+        Phase::PostSetup => rsx! {
+            PostSetupPhaseView {}
         },
         Phase::Strategy => rsx! {
             StrategyPhaseView {}

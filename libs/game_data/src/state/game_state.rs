@@ -156,7 +156,7 @@ pub struct GameState {
     /// anything else can happen.
     pub minister_of_antiques_relic: Option<PlayerId>,
 
-    /// The players who still have to resolve Rapid Mobilization, before anything else can happen.
+    /// The players who still have to resolve Rapid Mobilization in the post-setup phase.
     pub rapid_mobilization: BTreeSet<PlayerId>,
 
     /// The players who have discarded their Stellar Atomics token. It can't be derived, since the
@@ -1031,6 +1031,13 @@ impl GameState {
     pub fn status_phase_scores_any_number_of_public_objectives(&self) -> bool {
         self.galactic_events
             .contains(&GalacticEvent::CivilizedSociety)
+    }
+
+    /// Whether the game has a post-setup phase between setup and the first strategy phase: when
+    /// Rapid Mobilization is in play.
+    pub fn has_post_setup_phase(&self) -> bool {
+        self.galactic_events
+            .contains(&GalacticEvent::RapidMobilization)
     }
 
     /// Returns true if an entropic scar can be in play: Thunder's Edge is enabled and the map, if

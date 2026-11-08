@@ -9,14 +9,15 @@ source: libs/system_tests/src/check.rs
    5 CreationDone                             r0 Setup              -
    6 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
    7 RevealInitialObjectives                  r0 Setup              -
-   8 StartGame                                r1 Strategy           Alice      order=[Alice Bob Carol]
-   9 ResolveRapidMobilization(Carol)          r1 Strategy           Alice
-  10 ResolveRapidMobilization(Alice)          r1 Strategy           Alice
-  11 ResolveRapidMobilization(Bob)            r1 Strategy           Alice
-  12 TakeStrategyCard(Alice)                  r1 Strategy           Bob
-  13 TakeStrategyCard(Bob)                    r1 Strategy           Carol
-  14 TakeStrategyCard(Carol)                  r1 Strategy           Alice
-  15 TakeStrategyCard(Alice)                  r1 Strategy           Bob
-  16 TakeStrategyCard(Bob)                    r1 Strategy           Carol
-  17 TakeStrategyCard(Carol)                  r1 Strategy           Alice
-  18 CompleteStrategyPhase                    r1 Action             Alice
+   8 StartGame                                r0 PostSetup          -
+   9 ResolveRapidMobilization(Carol)          r0 PostSetup          -
+  10 ResolveRapidMobilization(Alice)          r0 PostSetup          -
+  11 ResolveRapidMobilization(Bob)            r0 PostSetup          -
+  12 CompletePostSetupPhase                   r1 Strategy           Alice      order=[Alice Bob Carol]
+  13 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  14 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  15 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  16 TakeStrategyCard(Alice)                  r1 Strategy           Bob
+  17 TakeStrategyCard(Bob)                    r1 Strategy           Carol
+  18 TakeStrategyCard(Carol)                  r1 Strategy           Alice
+  19 CompleteStrategyPhase                    r1 Action             Alice

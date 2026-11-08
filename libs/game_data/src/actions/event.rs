@@ -391,6 +391,10 @@ pub enum Event {
     /// Complete the entropic scar phase and continue to the status phase.
     CompleteEntropicScarPhase,
 
+    /// Complete the post-setup phase and start the strategy phase of round 1. Every player must
+    /// have resolved Rapid Mobilization.
+    CompletePostSetupPhase,
+
     /// A player plays the Crown of Emphidia card.
     PlayCrownOfEmphidia {
         /// The player who plays the Crown of Emphidia card.
