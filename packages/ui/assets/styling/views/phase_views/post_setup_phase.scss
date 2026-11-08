@@ -1,0 +1,59 @@
+@import "../../vars.scss";
+
+.post-setup-phase-container {
+  display: flex;
+  flex-direction: column;
+
+  & > :first-child {
+    margin-bottom: $margin-large;
+  }
+
+  @media (min-width: 800px) {
+    flex-direction: row;
+    justify-content: space-between;
+
+    & > :first-child {
+      margin-right: $margin-large;
+    }
+  }
+}
+
+.post-setup-steps {
+  margin: $margin-large 0 0 0;
+  padding-left: 30px;
+
+  li {
+    margin-bottom: $margin;
+  }
+}
+
+.rapid-mobilization-fieldset {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: $margin;
+  border-width: 4px;
+  border-style: solid;
+  border-radius: $border-radius;
+
+  select.dropdown {
+    width: 100%;
+  }
+}
+
+.rapid-mobilization-legend {
+  border-radius: $border-radius;
+  border-width: 4px;
+  border-style: solid;
+  padding: 0 $padding-large;
+}
+
+.rapid-mobilization-label {
+  margin-top: $margin;
+  font-weight: bold;
+}
+
+.rapid-mobilization-done {
+  align-self: flex-end;
+  margin-top: $margin;
+}

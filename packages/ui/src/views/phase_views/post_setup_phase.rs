@@ -1,77 +1,99 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
-    common::{faction::Faction, player_id::PlayerId},
-    components::{planet::Planet, tech::Technology},
+    common::player_id::PlayerId,
+    components::{
+        planet::Planet,
+        tech::{TechOrigin, Technology},
+    },
 };
 
 use crate::{
-    components::{button::Button, dropdown::PlanetDropdown},
+    components::{
+        button::Button,
+        dropdown::{PlanetDropdown, TechDropdown},
+    },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
-    views::{destroyed_planets::planets_on_board, select_tech::SelectTechView},
+    views::destroyed_planets::planets_on_board,
 };
+
+const POST_SETUP_PHASE_SCSS: Asset =
+    asset!("/assets/styling/views/phase_views/post_setup_phase.scss");
 
 #[component]
 pub fn PostSetupPhaseView() -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
-    let pending = use_memo(move || {
-        let game_state = gc.game_state();
-        (game_state.table_order.iter())
-            .filter(|p| game_state.rapid_mobilization.contains(*p))
+    let players = use_memo(move || {
+        (gc.game_state().table_order.iter())
+            .filter(|p| view.display_for(p))
             .cloned()
             .collect::<Vec<_>>()
     });
+    let all_resolved = use_memo(move || gc.game_state().rapid_mobilization.is_empty());
 
     rsx! {
-        div { class: "column screen-container",
-            div { class: "card column full-width",
+        document::Stylesheet { href: POST_SETUP_PHASE_SCSS }
+
+        div { class: "post-setup-phase-container",
+            div { class: "card column",
                 h2 { "Rapid Mobilization" }
-                ol {
+                for player in players() {
+                    RapidMobilizationPlayer { key: "{player}", player }
+                }
+            }
+            div { class: "card column",
+                h2 { "Post-Setup" }
+                p { "The Fracture is in play and every player has their breakthrough. Each player:" }
+                ol { class: "post-setup-steps",
                     li {
                         "Place 1 infantry on each planet adjacent to your home system (or the Creuss Gate / The Sorrow). Gain control of and ready those planets, but don't explore them."
                     }
                     li {
                         "Place 1 space dock on a planet you control, and your flagship and 3 fighters in its system."
                     }
-                    li { "Gain your breakthrough (already done)." }
                     li { "Research 1 technology, or 2 for the Nomad." }
                 }
-            }
-            for player_id in pending() {
-                RapidMobilizationPlayer { key: "{player_id}", player_id }
-            }
-            Button {
-                class: "margin-top",
-                disabled: !pending().is_empty(),
-                onclick: move |_| event.send_event(Event::CompletePostSetupPhase),
-                "Start Strategy Phase"
+                Button {
+                    class: "margin-top",
+                    disabled: !all_resolved(),
+                    onclick: move |_| event.send_event(Event::CompletePostSetupPhase),
+                    "Start Strategy Phase"
+                }
             }
         }
     }
 }
 
 #[component]
-fn RapidMobilizationPlayer(player_id: PlayerId) -> Element {
+fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
     let gc = use_context::<GameContext>();
-    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
-    let mut planets: Signal<Vec<Planet>> = use_signal(Vec::new);
-    let mut technologies: Signal<Vec<Technology>> = use_signal(Vec::new);
-
-    let faction = use_memo({
-        let player_id = player_id.clone();
-        move || (gc.game_state().players.get(&player_id)).map(|p| p.faction)
+    let color = use_memo(move || {
+        gc.game_state()
+            .players
+            .get(&player())
+            .map(|p| p.color.name())
+            .unwrap_or_default()
     });
+    let resolved = use_memo(move || !gc.game_state().rapid_mobilization.contains(&player()));
     let research_count = use_memo(move || {
-        faction()
-            .map(|f| f.rapid_mobilization_research_count())
+        gc.game_state()
+            .players
+            .get(&player())
+            .map(|p| p.faction.rapid_mobilization_research_count())
             .unwrap_or(0)
     });
+
+    let mut planets: Signal<Vec<Planet>> = use_signal(Vec::new);
+    let mut technologies: Signal<Vec<Option<Technology>>> =
+        use_signal(move || vec![None; research_count()]);
+
     let available_planets = use_memo(move || {
         let game_state = gc.game_state();
         planets_on_board(&gc)
@@ -80,77 +102,98 @@ fn RapidMobilizationPlayer(player_id: PlayerId) -> Element {
             .filter(|p| !planets.read().contains(p))
             .collect::<Vec<_>>()
     });
-
-    if !view.display_for(&player_id) {
-        return rsx! {
-            div { class: "card column margin-top full-width",
-                h2 { "{player_id}" }
-                p { "Waiting for {player_id}." }
-            }
+    let researchable_techs = use_memo(move || {
+        let game_state = gc.game_state();
+        let Some(p) = game_state.players.get(&player()) else {
+            return Vec::new();
         };
-    }
+        let mut techs = (gc.game_options().technologies.iter())
+            .filter(|t| !p.has_tech(t))
+            .filter(|t| match t.info().origin {
+                TechOrigin::Base => true,
+                TechOrigin::Faction(faction) => faction == p.faction,
+            })
+            .cloned()
+            .collect::<Vec<_>>();
+        techs.sort();
+        techs
+    });
+    let tech_options = move |slot: usize| {
+        let picked = technologies();
+        researchable_techs()
+            .into_iter()
+            .filter(|t| {
+                (picked.iter().enumerate()).all(|(i, pick)| i == slot || pick.as_ref() != Some(t))
+            })
+            .collect::<Vec<_>>()
+    };
+    let all_picked = use_memo(move || technologies().iter().all(Option::is_some));
 
     rsx! {
-        div { class: "card column margin-top full-width",
-            h2 { "{player_id}" }
-            h3 { "Planets" }
-            for planet in planets() {
-                p { key: "{planet}", class: "margin-top", "{planet.info().name}" }
-            }
-            div { class: "margin-top full-width",
-                PlanetDropdown {
-                    key: "{planets().len()}",
-                    class: "full-width",
-                    value: None,
-                    options: available_planets(),
-                    on_select: move |p| {
-                        if let Some(p) = p {
-                            planets.write().push(p);
+        fieldset { class: "player-color-border-{color} rapid-mobilization-fieldset",
+            legend { class: "player-color-border-{color} rapid-mobilization-legend", "{player}" }
+            if resolved() {
+                p { "Resolved" }
+            } else {
+                p { class: "rapid-mobilization-label", "Planets" }
+                for planet in planets() {
+                    div { key: "{planet}", class: "row space-between",
+                        p { class: "margin-right", "{planet.info().name}" }
+                        Button {
+                            onclick: {
+                                let planet = planet.clone();
+                                move |_| planets.write().retain(|p| p != &planet)
+                            },
+                            "Remove"
                         }
-                    },
+                    }
                 }
-            }
-            Button {
-                class: "margin-top",
-                disabled: planets().is_empty(),
-                onclick: move |_| planets.set(Vec::new()),
-                "Clear"
-            }
-            h3 { class: "margin-top", "Technologies" }
-            if faction() == Some(Faction::NekroVirus) {
-                p { "The Nekro Virus can't research technology: gain 3 command tokens instead." }
-            }
-            for tech in technologies() {
-                p { key: "{tech}", class: "margin-top", "{tech.info().name}" }
-            }
-            if technologies().len() < research_count() {
-                SelectTechView {
-                    key: "{technologies().len()}",
-                    player_id: player_id.clone(),
-                    filtered_techs: technologies(),
-                    on_select: move |tech| technologies.write().push(tech),
+                div {
+                    PlanetDropdown {
+                        key: "{planets().len()}",
+                        value: None,
+                        options: available_planets(),
+                        on_select: move |p| {
+                            if let Some(p) = p {
+                                planets.write().push(p);
+                            }
+                        },
+                    }
                 }
-            }
-            if research_count() > 0 {
+                if research_count() == 0 {
+                    p { class: "rapid-mobilization-label",
+                        "Can't research technology: gain 3 command tokens."
+                    }
+                } else {
+                    p { class: "rapid-mobilization-label",
+                        if research_count() == 1 {
+                            "Research 1 technology"
+                        } else {
+                            "Research {research_count()} technologies"
+                        }
+                    }
+                    for slot in 0..research_count() {
+                        TechDropdown {
+                            key: "{slot}",
+                            value: technologies().get(slot).cloned().flatten(),
+                            options: tech_options(slot),
+                            on_select: move |t| technologies.write()[slot] = t,
+                        }
+                    }
+                }
                 Button {
-                    class: "margin-top",
-                    disabled: technologies().is_empty(),
-                    onclick: move |_| technologies.set(Vec::new()),
-                    "Clear"
+                    class: "rapid-mobilization-done",
+                    disabled: !all_picked(),
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::ResolveRapidMobilization {
+                                player: player(),
+                                planets: planets().into_iter().collect(),
+                                technologies: technologies().into_iter().flatten().collect(),
+                            })
+                    },
+                    "Done"
                 }
-            }
-            Button {
-                class: "margin-top",
-                disabled: technologies().len() != research_count(),
-                onclick: move |_| {
-                    event
-                        .send_event(Event::ResolveRapidMobilization {
-                            player: player_id.clone(),
-                            planets: planets().into_iter().collect(),
-                            technologies: technologies().into_iter().collect(),
-                        })
-                },
-                "Done"
             }
         }
     }
