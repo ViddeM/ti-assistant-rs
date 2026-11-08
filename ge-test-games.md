@@ -24,10 +24,10 @@ Minor Factions games: `1ac9a493` and `09d3557e` are regular (non-milty) games wi
 | ✅ | `260cb545` | Cultural Exchange Program (leaders) | Tux drew Crimson Rebellion: Component → Play Leader → Ahk Ravin |
 | - | `d64c88d1` | Rapid Mobilization (start) | Rapid Mobilization screen. No Fracture roll was needed |
 | ✅ | `551dc1fe` | Age of Fighters (setup) | Setup, Start Game enabled (grants Fighter II at start) |
-|  | `adf05cd3` | Advent of the War Sun (setup) | Setup, Start Game enabled (grants War Sun at start) |
-|  | `1ac9a493` | Minor Factions (setup), non-milty | Setup: three Minor faction dropdowns |
-|  | `09d3557e` | Minor Factions (alliance), non-milty | Minor factions: Tux Arborec, Vidde Winnu, Yoda Yin. Tux: Tactical → take Nestphar → alliance reminder |
-|  | `f1a70001` | Minor Factions (setup), milty | Setup: each player has a Minor faction dropdown, a "Replaces" dropdown and a Place button. Try Tux Arborec over System 20, Vidde Creuss over System 73 and Yoda Winnu over System 28. The column then shows the faction's name, and only Undo changes it. After Start Game, the Map view shows 5, 17 and 7 in those slots and 51 off-board. Mentak isn't offered (Tux's Tribunii home), and neither is Crimson Rebellion (Yoda plays it) |
+| ✅ | `adf05cd3` | Advent of the War Sun (setup) | Setup, Start Game enabled (grants War Sun at start) |
+| ✅ | `1ac9a493` | Minor Factions (setup), non-milty | Setup: three Minor faction dropdowns |
+| ✅ | `09d3557e` | Minor Factions (alliance), non-milty | Minor factions: Tux Arborec, Vidde Winnu, Yoda Yin. Tux: Tactical → take Nestphar → alliance reminder |
+| ✅ | `f1a70001` | Minor Factions (setup), milty | Setup: each player has a Minor faction dropdown, a "Replaces" dropdown and a Place button. Try Tux Arborec over System 20, Vidde Creuss over System 73 and Yoda Winnu over System 28. The column then shows the faction's name, and only Undo changes it. After Start Game, the Map view shows 5, 17 and 7 in those slots and 51 off-board. Mentak isn't offered (Tux's Tribunii home), and neither is Crimson Rebellion (Yoda plays it) |
 
 Skipped (info only): Age of Commerce, Call of the Void, Cosmic Phenomenae, Weird Wormholes.
 
