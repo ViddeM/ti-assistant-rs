@@ -254,6 +254,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                             on_select: move |obj| selected_public_objective.set(obj),
                         }
                         div { class: "score-objective-buttons-container",
+                            Button { disabled: true, "Skip" }
                             Button {
                                 disabled: selected_public_objective().is_none(),
                                 onclick: move |_| {
