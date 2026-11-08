@@ -315,11 +315,12 @@ laws: {}
 agendaOverrideState: ~
 statusPhaseState:
   scoredPublicObjectives:
-    Ann: ~
-    Ben: ~
-    Cid: ~
-    Dee: CornerTheMarket
-    Eve: ~
+    Ann: []
+    Ben: []
+    Cid: []
+    Dee:
+      - CornerTheMarket
+    Eve: []
   scoredSecretObjectives:
     Ann: ~
     Ben: ~

@@ -343,7 +343,8 @@ pub enum Event {
     },
 
     /* -- STATUS PHASE EVENTS -- */
-    /// Score a public objective.
+    /// Score a public objective in the status phase, or record that none was scored. Under
+    /// Civilized Society a player who scored one can score more.
     ScorePublicObjective {
         /// The player that scores the objective.
         player: PlayerId,

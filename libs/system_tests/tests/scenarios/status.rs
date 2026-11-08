@@ -57,6 +57,13 @@ pub fn status_scoring_and_reveal() -> TestGame {
             },
             "already taken a public objective scoring decision",
         )
+        .expect_rejected(
+            Event::ScorePublicObjective {
+                player: p("Alice"),
+                objective: Some(PublicObjective::DevelopWeaponry.into()),
+            },
+            "already taken a public objective scoring decision",
+        )
         .secret("Bob", SecretObjective::BecomeTheGatekeeper)
         .expect_rejected(
             Event::ScoreSecretObjective {

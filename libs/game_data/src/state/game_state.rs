@@ -1026,6 +1026,13 @@ impl GameState {
             .contains(&GalacticEvent::CivilizedSociety)
     }
 
+    /// Returns true if a player can score any number of public objectives in the status phase,
+    /// which they can under Civilized Society.
+    pub fn status_phase_scores_any_number_of_public_objectives(&self) -> bool {
+        self.galactic_events
+            .contains(&GalacticEvent::CivilizedSociety)
+    }
+
     /// Returns true if an entropic scar can be in play: Thunder's Edge is enabled and the map, if
     /// it is known, has an entropic scar.
     pub fn entropic_scar_in_play(&self) -> bool {

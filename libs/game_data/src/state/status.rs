@@ -14,8 +14,9 @@ use crate::{
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct StatusPhaseState {
-    /// What each player scored, or didn't score, for their public objective slot.
-    pub scored_public_objectives: HashMap<PlayerId, Option<Objective>>,
+    /// The public objectives each player scored this status phase, empty if they scored none. Only
+    /// Civilized Society lets a player score more than one.
+    pub scored_public_objectives: HashMap<PlayerId, Vec<Objective>>,
     /// What each player scored, or didn't score, for their private objective slot.
     pub scored_secret_objectives: HashMap<PlayerId, Option<SecretObjective>>,
     /// What objective was revealed during this status phase.

@@ -1704,17 +1704,24 @@ fn try_update_game_state(
                 game_state.assert_enabled(obj)?;
             }
 
+            let scores_any_number =
+                game_state.status_phase_scores_any_number_of_public_objectives();
+
             let Some(status_state) = game_state.status_phase_state.as_mut() else {
                 bail!("No status phase state!");
             };
 
-            if status_state.scored_public_objectives.contains_key(&player) {
+            if let Some(scored) = status_state.scored_public_objectives.get(&player)
+                && !(scores_any_number && objective.is_some() && !scored.is_empty())
+            {
                 bail!("Player has already taken a public objective scoring decision");
             }
 
             status_state
                 .scored_public_objectives
-                .insert(player.clone(), objective);
+                .entry(player.clone())
+                .or_default()
+                .extend(objective);
 
             if let Some(obj) = objective {
                 ensure!(

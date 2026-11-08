@@ -123,7 +123,8 @@ laws: {}
 agendaOverrideState: ~
 statusPhaseState:
   scoredPublicObjectives:
-    Alice: DestroyTheirGreatestShip
+    Alice:
+      - DestroyTheirGreatestShip
   scoredSecretObjectives: {}
   revealedObjective: ~
   entropicScarTechs: {}

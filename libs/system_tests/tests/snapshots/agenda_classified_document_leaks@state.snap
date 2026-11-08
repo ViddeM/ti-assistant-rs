@@ -186,9 +186,10 @@ laws: {}
 agendaOverrideState: ~
 statusPhaseState:
   scoredPublicObjectives:
-    Alice: ~
-    Bob: ~
-    Carol: DestroyTheirGreatestShip
+    Alice: []
+    Bob: []
+    Carol:
+      - DestroyTheirGreatestShip
   scoredSecretObjectives:
     Alice: ~
     Bob: ~

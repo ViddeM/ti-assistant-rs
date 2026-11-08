@@ -338,9 +338,9 @@ laws:
 agendaOverrideState: ~
 statusPhaseState:
   scoredPublicObjectives:
-    Alice: ~
-    Bob: ~
-    Carol: ~
+    Alice: []
+    Bob: []
+    Carol: []
   scoredSecretObjectives:
     Alice: ~
     Bob: ~

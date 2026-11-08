@@ -505,7 +505,7 @@ pub fn galactic_events_dangerous_wilds() -> TestGame {
 
 /// Civilized Society reveals all five stage I and five stage II objectives at setup, and the
 /// status phase reveals none. A player scores any number of public objectives in the status
-/// phase: the first in their slot, the others as extra objectives.
+/// phase, all through the status phase scoring.
 pub fn galactic_events_civilized_society() -> TestGame {
     let mut g = three_players()
         .thunders_edge()
@@ -540,22 +540,57 @@ pub fn galactic_events_civilized_society() -> TestGame {
         .collect::<BTreeSet<_>>();
     assert_eq!(revealed, objectives(&[STAGE_ONE, STAGE_TWO].concat()));
 
-    g.strategy_phase(SIMPLE_PICKS)
+    let status = g
+        .strategy_phase(SIMPLE_PICKS)
         .play_out_action_phase()
         .status_phase()
         .public("Alice", PublicObjective::CornerTheMarket)
-        .apply(Event::ScoreExtraPublicObjective {
-            player: p("Alice"),
-            objective: PublicObjective::DevelopWeaponry.into(),
+        .public("Alice", PublicObjective::DevelopWeaponry)
+        .public("Alice", PublicObjective::CentralizeGalacticTrade)
+        .expect_rejected(
+            Event::ScorePublicObjective {
+                player: p("Alice"),
+                objective: None,
+            },
+            "already taken a public objective scoring decision",
+        )
+        .expect_rejected(
+            Event::ScorePublicObjective {
+                player: p("Alice"),
+                objective: Some(PublicObjective::DevelopWeaponry.into()),
+            },
+            "can't score a public objective twice",
+        )
+        .apply(Event::ScorePublicObjective {
+            player: p("Bob"),
+            objective: None,
         })
-        .apply(Event::ScoreExtraPublicObjective {
-            player: p("Alice"),
-            objective: PublicObjective::CentralizeGalacticTrade.into(),
-        })
+        .expect_rejected(
+            Event::ScorePublicObjective {
+                player: p("Bob"),
+                objective: Some(PublicObjective::CornerTheMarket.into()),
+            },
+            "already taken a public objective scoring decision",
+        )
         .expect_rejected(
             Event::CompleteStatusPhase,
             "Not all players have made a decision regarding their public objectives",
-        )
+        );
+    assert_eq!(
+        status
+            .state()
+            .status_phase_state
+            .as_ref()
+            .unwrap()
+            .scored_public_objectives[&p("Alice")],
+        [
+            PublicObjective::CornerTheMarket,
+            PublicObjective::DevelopWeaponry,
+            PublicObjective::CentralizeGalacticTrade,
+        ]
+        .map(Objective::from)
+    );
+    status
         .skip_undecided()
         .expect_rejected(
             Event::RevealPublicObjective {

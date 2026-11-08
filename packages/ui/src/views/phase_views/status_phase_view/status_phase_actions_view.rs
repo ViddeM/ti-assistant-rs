@@ -165,11 +165,12 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
             .expect("Status phase state to be set in status phase")
     });
 
-    let public_objective =
+    let public_objectives =
         use_memo(move || sp_state().scored_public_objectives.get(&player()).cloned());
     let score_another = use_memo(move || {
-        !gc.game_state().status_phase_reveals_objective()
-            && matches!(public_objective(), Some(Some(_)))
+        gc.game_state()
+            .status_phase_scores_any_number_of_public_objectives()
+            && public_objectives().is_some_and(|objs| !objs.is_empty())
     });
     let secret_objective =
         use_memo(move || sp_state().scored_secret_objectives.get(&player()).cloned());
@@ -235,14 +236,14 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
             legend {
                 h4 { "{player()}" }
             }
-            if let Some(choice) = public_objective() {
-                p {
-                    "Public "
-                    if let Some(p) = choice {
-                        "{p.info().name}"
-                        InfoButton { info: Info::Objective(p) }
-                    } else {
-                        "Skipped"
+            if let Some(objs) = public_objectives() {
+                if objs.is_empty() {
+                    p { "Public Skipped" }
+                }
+                for obj in objs {
+                    p { key: "{obj}",
+                        "Public {obj.info().name}"
+                        InfoButton { info: Info::Objective(obj) }
                     }
                 }
                 if score_another() {
@@ -256,12 +257,12 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                             Button {
                                 disabled: selected_public_objective().is_none(),
                                 onclick: move |_| {
-                                    event
-                                        .send_event(Event::ScoreExtraPublicObjective {
-                                            player: player(),
-                                            objective: selected_public_objective()
+                                    score_public(
+                                        Some(
+                                            selected_public_objective()
                                                 .expect("Selected public objective to be set"),
-                                        });
+                                        ),
+                                    );
                                     selected_public_objective.set(None);
                                 },
                                 "Score"

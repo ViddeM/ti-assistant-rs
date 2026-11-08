@@ -111,9 +111,11 @@ laws: {}
 agendaOverrideState: ~
 statusPhaseState:
   scoredPublicObjectives:
-    Alice: CornerTheMarket
-    Bob: ~
-    Carol: CornerTheMarket
+    Alice:
+      - CornerTheMarket
+    Bob: []
+    Carol:
+      - CornerTheMarket
   scoredSecretObjectives:
     Alice: ~
     Bob: BecomeTheGatekeeper

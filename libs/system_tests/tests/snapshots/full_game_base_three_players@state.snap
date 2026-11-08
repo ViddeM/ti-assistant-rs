@@ -466,9 +466,11 @@ laws:
 agendaOverrideState: ~
 statusPhaseState:
   scoredPublicObjectives:
-    Alice: DevelopWeaponry
-    Bob: ExpandBorders
-    Carol: ~
+    Alice:
+      - DevelopWeaponry
+    Bob:
+      - ExpandBorders
+    Carol: []
   scoredSecretObjectives:
     Alice: ThreatenEnemies
     Bob: ~
