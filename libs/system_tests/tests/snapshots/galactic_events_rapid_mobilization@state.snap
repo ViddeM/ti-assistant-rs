@@ -142,5 +142,23 @@ fractureRoll: ~
 bookOfLatviniaResearch: ~
 ministerOfAntiquesRelic: ~
 rapidMobilization: []
+rapidMobilizationResolved:
+  Alice:
+    planets:
+      - Abyz
+      - Fria
+    technologies:
+      - GravityDrive
+      - NeuralMotivator
+  Bob:
+    planets:
+      - Lodor
+      - MeharXull
+    technologies: []
+  Carol:
+    planets:
+      - Quann
+    technologies:
+      - AntimassDeflectors
 stellarAtomicsUsed: []
 monuments: {}

@@ -448,5 +448,6 @@ fractureRoll: ~
 bookOfLatviniaResearch: ~
 ministerOfAntiquesRelic: ~
 rapidMobilization: []
+rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}

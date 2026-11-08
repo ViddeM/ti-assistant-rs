@@ -57,3 +57,16 @@
   align-self: flex-end;
   margin-top: $margin;
 }
+
+.rapid-mobilization-trash-button {
+  border: none;
+  background-color: inherit;
+  color: black;
+  height: 16px;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  :hover {
+    color: #500000;
+  }
+}

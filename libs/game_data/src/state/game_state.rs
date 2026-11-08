@@ -47,6 +47,14 @@ use super::{
 /// five stage I objectives and the status phases of rounds 1 to 3 reveal one each.
 const FIRST_STAGE_TWO_ROUND: u32 = 4;
 
+/// The planets and technologies a player gained from Rapid Mobilization.
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct RapidMobilizationResolution {
+    pub planets: Vec<Planet>,
+    pub technologies: Vec<Technology>,
+}
+
 /// A snapshot of the game state.
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
@@ -158,6 +166,9 @@ pub struct GameState {
 
     /// The players who still have to resolve Rapid Mobilization in the post-setup phase.
     pub rapid_mobilization: BTreeSet<PlayerId>,
+
+    /// What each player picked when resolving Rapid Mobilization, for display purposes.
+    pub rapid_mobilization_resolved: BTreeMap<PlayerId, RapidMobilizationResolution>,
 
     /// The players who have discarded their Stellar Atomics token. It can't be derived, since the
     /// event history isn't in [GameState].

@@ -183,6 +183,7 @@ fractureRoll: ~
 bookOfLatviniaResearch: ~
 ministerOfAntiquesRelic: ~
 rapidMobilization: []
+rapidMobilizationResolved: {}
 stellarAtomicsUsed:
   - Alice
 monuments: {}

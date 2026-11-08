@@ -47,7 +47,8 @@ use ti_helper_game_data::{
         expedition::{TECompletion, TEExpedition},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
-            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation, RelicProgress,
+            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation,
+            RapidMobilizationResolution, RelicProgress,
             StrategicPrimaryProgress, StrategicProgress, TacticalProgress, ThundersEdgeProgress,
         },
         player::NewPlayer,
@@ -2809,6 +2810,10 @@ fn try_update_game_state(
                 );
             }
 
+            let resolution = RapidMobilizationResolution {
+                planets: planets.iter().cloned().collect(),
+                technologies: technologies.iter().cloned().collect(),
+            };
             for planet in planets {
                 game_state.set_planet_owner(planet, Some(player.clone()))?;
             }
@@ -2820,6 +2825,9 @@ fn try_update_game_state(
                 p.research_tech(tech)?;
             }
             game_state.rapid_mobilization.remove(&player);
+            game_state
+                .rapid_mobilization_resolved
+                .insert(player, resolution);
         }
     }
 

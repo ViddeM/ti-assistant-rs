@@ -67,6 +67,12 @@ fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
             .unwrap_or_default()
     });
     let resolved = use_memo(move || !gc.game_state().rapid_mobilization.contains(&player()));
+    let resolution = use_memo(move || {
+        gc.game_state()
+            .rapid_mobilization_resolved
+            .get(&player())
+            .cloned()
+    });
     let research_count = use_memo(move || {
         gc.game_state()
             .players
@@ -94,13 +100,31 @@ fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
         fieldset { class: "player-color-border-{color} rapid-mobilization-fieldset",
             legend { class: "player-color-border-{color} rapid-mobilization-legend", "{player}" }
             if resolved() {
-                p { "Resolved" }
+                if let Some(resolution) = resolution() {
+                    p { class: "rapid-mobilization-label", "Planets" }
+                    if resolution.planets.is_empty() {
+                        p { "None" }
+                    }
+                    for planet in resolution.planets.iter() {
+                        p { key: "{planet}", "{planet.info().name}" }
+                    }
+                    p { class: "rapid-mobilization-label", "Technologies" }
+                    if resolution.technologies.is_empty() {
+                        p { "None" }
+                    }
+                    for tech in resolution.technologies.iter() {
+                        p { key: "{tech:?}", "{tech.info().name}" }
+                    }
+                } else {
+                    p { "Resolved" }
+                }
             } else {
                 p { class: "rapid-mobilization-label", "Planets" }
                 for planet in planets() {
                     div { key: "{planet}", class: "row space-between",
                         p { class: "margin-right", "{planet.info().name}" }
                         Button {
+                            class: "rapid-mobilization-trash-button",
                             onclick: {
                                 let planet = planet.clone();
                                 move |_| planets.write().retain(|p| p != &planet)

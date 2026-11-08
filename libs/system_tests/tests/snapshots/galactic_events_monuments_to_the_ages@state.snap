@@ -153,6 +153,7 @@ fractureRoll: ~
 bookOfLatviniaResearch: ~
 ministerOfAntiquesRelic: ~
 rapidMobilization: []
+rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments:
   Fria: 0
