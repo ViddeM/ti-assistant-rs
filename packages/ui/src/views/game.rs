@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use api::{
     endpoints::join_game,
@@ -9,6 +9,7 @@ use dioxus::{
     logger::tracing,
     prelude::*,
 };
+use dioxus_sdk::time::sleep;
 use ti_helper_game_data::{
     components::phase::Phase, game_id::GameId, game_options::GameOptions,
     state::game_state::GameState,
@@ -110,6 +111,13 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
                     }
                 }
             }
+
+            if *not_found.peek() {
+                return;
+            }
+
+            sleep(Duration::from_secs(1)).await;
+            socket.set(join_game(game_id, WebSocketOptions::new()).await);
         }
     });
 
