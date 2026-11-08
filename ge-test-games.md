@@ -17,13 +17,13 @@ Minor Factions games: `1ac9a493` and `09d3557e` are regular (non-milty) games wi
 | ✅ | `d4406362` | Dangerous Wilds (tactical action) | Tux: Tactical, take an unowned hazardous planet (Vefut II, Tequ'ran, Xanhact, Cormund, Sakulag, Olergodt) |
 | ✅ | `63b0393b` | Monuments to the Ages (build) | Galactic Events page → Build monument. Tux owns Thibah and Accoen, Vidde owns Lazar and Torkan |
 | ✅ | `d8bc49b5` | Zealous Orthodoxy (second secret) | Action. Tux and Vidde each have 1 secret scored; the next secret either of them scores should give the VP |
-|  | `0bc7835e` | Hidden Agenda (agenda) | Agenda phase, before Reveal |
-|  | `185090c7` | Civilized Society (setup) | Setup: "Select all public objectives" |
-|  | `1aac2dae` | Civilized Society (status) | Status phase round 1, all 10 objectives revealed, nothing scored, no reveal step |
-|  | `7d8a64d9` | Cultural Exchange Program (setup) | Setup: Cultural Exchange dropdowns for Tux and Yoda only (Vidde starts with The Obsidian) |
-|  | `260cb545` | Cultural Exchange Program (leaders) | Tux drew Crimson Rebellion: Component → Play Leader → Ahk Ravin |
-|  | `d64c88d1` | Rapid Mobilization (start) | Rapid Mobilization screen. No Fracture roll was needed |
-|  | `551dc1fe` | Age of Fighters (setup) | Setup, Start Game enabled (grants Fighter II at start) |
+| ✅ | `0bc7835e` | Hidden Agenda (agenda) | Agenda phase, before Reveal |
+| ✅ | `185090c7` | Civilized Society (setup) | Setup: "Select all public objectives" |
+| ✅ | `1aac2dae` | Civilized Society (status) | Status phase round 1, all 10 objectives revealed, nothing scored, no reveal step |
+| ✅ | `7d8a64d9` | Cultural Exchange Program (setup) | Setup: Cultural Exchange dropdowns for Tux and Yoda only (Vidde starts with The Obsidian) |
+| ✅ | `260cb545` | Cultural Exchange Program (leaders) | Tux drew Crimson Rebellion: Component → Play Leader → Ahk Ravin |
+| - | `d64c88d1` | Rapid Mobilization (start) | Rapid Mobilization screen. No Fracture roll was needed |
+| ✅ | `551dc1fe` | Age of Fighters (setup) | Setup, Start Game enabled (grants Fighter II at start) |
 |  | `adf05cd3` | Advent of the War Sun (setup) | Setup, Start Game enabled (grants War Sun at start) |
 |  | `1ac9a493` | Minor Factions (setup), non-milty | Setup: three Minor faction dropdowns |
 |  | `09d3557e` | Minor Factions (alliance), non-milty | Minor factions: Tux Arborec, Vidde Winnu, Yoda Yin. Tux: Tactical → take Nestphar → alliance reminder |
