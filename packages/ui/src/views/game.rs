@@ -92,6 +92,7 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
 
     let mut game_state = use_signal(|| None);
     let mut game_options = use_signal(|| None);
+    let loaded = use_memo(move || game_state.read().is_some() && game_options.read().is_some());
 
     use_future(move || async move {
         loop {
@@ -159,11 +160,9 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
         };
     }
 
-    if let Some(gs) = game_state.read().as_ref()
-        && let Some(go) = game_options.read().as_ref()
-    {
+    if loaded() {
         return rsx! {
-            MainGameView { game_options: Arc::clone(go), game_state: Arc::clone(gs) }
+            MainGameView { game_options, game_state }
         };
     }
 
@@ -175,11 +174,13 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
 
 #[component]
 fn MainGameView(
-    game_options: ReadSignal<Arc<GameOptions>>,
-    game_state: ReadSignal<Arc<GameState>>,
+    game_options: ReadSignal<Option<Arc<GameOptions>>>,
+    game_state: ReadSignal<Option<Arc<GameState>>>,
 ) -> Element {
-    use_context_provider(|| GameContext::new(game_state, game_options));
-    use_context_provider(|| PlayerViewContext::new(game_state));
+    let game_state = use_memo(move || game_state().expect("Game state to be loaded"));
+    let game_options = use_memo(move || game_options().expect("Game options to be loaded"));
+    use_context_provider(|| GameContext::new(game_state.into(), game_options.into()));
+    use_context_provider(|| PlayerViewContext::new(game_state.into()));
 
     let info = use_signal(|| None);
     use_context_provider(|| InfoContext::new(info));
