@@ -88,7 +88,10 @@ pub fn TechDropdown(
     };
 
     rsx! {
-        Dropdown { value: current_value, oninput,
+        Dropdown {
+            value: current_value,
+            disabled: disabled.unwrap_or(false),
+            oninput,
             option { value: "", "--Select technology--" }
             {
                 options

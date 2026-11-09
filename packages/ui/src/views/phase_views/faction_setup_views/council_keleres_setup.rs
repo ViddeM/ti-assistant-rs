@@ -64,28 +64,21 @@ pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element 
     let p2 = Arc::clone(&player_id);
     rsx! {
         div { class: "setup-column",
-            if all_other_players_ready() {
+            if !taken_techs.is_empty() {
                 {
-                    if !taken_techs.is_empty() {
-                        rsx! {
-                            {
-                                taken_techs
-                                    .iter()
-                                    .map(|t| {
-                                        rsx! {
-                                            p { key: "{t}", "{t.info().name}" }
-                                        }
-                                    })
+                    taken_techs
+                        .iter()
+                        .map(|t| {
+                            rsx! {
+                                p { key: "{t}", "{t.info().name}" }
                             }
-                        }
-                    } else {
-                        rsx! {
-                            KeleresTechChoice { player_id }
-                        }
-                    }
+                        })
                 }
             } else {
-                p { "Waiting for other players to be ready before picking techs" }
+                KeleresTechChoice { player_id, disabled: !all_other_players_ready() }
+                if !all_other_players_ready() {
+                    p { "Waiting for other players to be ready before picking techs" }
+                }
             }
 
             {
@@ -128,7 +121,7 @@ pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element 
 }
 
 #[component]
-fn KeleresTechChoice(player_id: PlayerId) -> Element {
+fn KeleresTechChoice(player_id: PlayerId, disabled: bool) -> Element {
     let event = use_context::<EventContext>();
     let gc = use_context::<GameContext>();
 
@@ -165,14 +158,16 @@ fn KeleresTechChoice(player_id: PlayerId) -> Element {
             value: first_tech,
             options: first_tech_possible(),
             on_select: move |t| first_tech.set(t),
+            disabled,
         }
         TechDropdown {
             value: second_tech,
             options: second_tech_possible(),
             on_select: move |t| second_tech.set(t),
+            disabled,
         }
         Button {
-            disabled: first_tech().is_none() || second_tech().is_none(),
+            disabled: disabled || first_tech().is_none() || second_tech().is_none(),
             onclick: move |_| {
                 event
                     .send_event(Event::SetupPlayerTechs {

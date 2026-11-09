@@ -34,7 +34,7 @@ Skipped (info only): Age of Commerce, Call of the Void, Cosmic Phenomenae, Weird
 ## Noticed, not changed
 
 - **Conventions of War planet list:** on a milty map the dropdown lists 133 planets, including ones not on this map (Abaddon, Abyz, …). `planet_location` counts any planet that has a system tile as on the board, and the server check uses the same rule, so it would accept those planets too.
-- **Keleres "Waiting for other players…":** in `7d8a64d9`, `1ac9a493` and `f1a70001`, Tux's card shows this text even though his techs are already set. `council_keleres_setup.rs` shows Keleres' techs only after the other players finish setup, including their Cultural Exchange / Minor Faction draws. The server accepted the techs earlier. They should appear once the other players' draws are done.
+- ✅ Fixed: **Keleres "Waiting for other players…":** in `7d8a64d9`, `1ac9a493` and `f1a70001`, Tux's card showed this text even though his techs were already set. `council_keleres_setup.rs` now lists the techs once they are set, whatever the other players' readiness, and shows the tech picker disabled until the others are ready.
 
 ## Screenshots (same folder)
 
