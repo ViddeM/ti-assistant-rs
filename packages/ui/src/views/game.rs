@@ -9,6 +9,7 @@ use dioxus::{
     logger::tracing,
     prelude::*,
 };
+use dioxus_primitives::toast::{ToastOptions, use_toast};
 use dioxus_sdk::time::sleep;
 use ti_helper_game_data::{
     components::phase::Phase, game_id::GameId, game_options::GameOptions,
@@ -75,8 +76,11 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
     });
     let mut ws_error = use_signal(|| None);
     let mut not_found = use_signal(|| false);
+    let toasts = use_toast();
+    let mut awaiting_reply = use_signal(|| false);
 
     let send_event = use_callback(move |msg: WsMessageIn| {
+        awaiting_reply.set(true);
         spawn(async move {
             if let Err(err) = socket.send(msg).await {
                 ws_error.set(Some(format!("Failed to send event {err}")));
@@ -99,12 +103,21 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
                     }
                     WsMessageOut::GameState(gs) => {
                         // tracing::info!("Game state message: {gs:?}");
+                        awaiting_reply.set(false);
                         game_state.set(Some(gs));
                     }
                     WsMessageOut::HandleEventError(err) => {
+                        awaiting_reply.set(false);
                         ws_error.set(Some(err));
                     }
-                    WsMessageOut::JoinedGame(game_id) => tracing::info!("Joined game {game_id}"),
+                    WsMessageOut::JoinedGame(game_id) => {
+                        tracing::info!("Joined game {game_id}");
+                        if *awaiting_reply.peek() {
+                            awaiting_reply.set(false);
+                            toasts
+                                .error("Disconnected, try again".to_string(), ToastOptions::new());
+                        }
+                    }
                     WsMessageOut::NotFound(game_id) => {
                         ws_error.set(Some(format!("Game {game_id} not found")));
                         not_found.set(true);

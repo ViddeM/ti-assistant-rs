@@ -19,10 +19,13 @@ const GLOBAL_SCSS: Asset = asset!("/assets/styling/globals.scss");
 
 const FONT_SCSS: Asset = asset!("/assets/styling/fonts.scss");
 
+const DX_COMPONENTS_THEME_CSS: Asset = asset!("/assets/dx-components-theme.css");
+
 #[component]
 pub fn Setup() -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: GLOBAL_SCSS }
         document::Link { rel: "stylesheet", href: FONT_SCSS }
+        document::Link { rel: "stylesheet", href: DX_COMPONENTS_THEME_CSS }
     }
 }

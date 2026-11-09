@@ -4,7 +4,10 @@ use game::Game;
 use main_menu::MainMenu;
 use new_game::NewGame;
 use source_code_button::SourceCodeLinkButton;
-use ui::{Setup, components::spinner::Spinner};
+use ui::{
+    Setup,
+    components::{spinner::Spinner, toast::ToastProvider},
+};
 
 mod game;
 mod main_menu;
@@ -55,7 +58,7 @@ fn App() -> Element {
 
         Setup {}
 
-        Router::<Route> {}
+        ToastProvider { Router::<Route> {} }
 
         if !started() {
             div { class: "app-loading", Spinner {} }
