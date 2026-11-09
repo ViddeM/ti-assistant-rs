@@ -22,8 +22,8 @@ enum Route {
         MainMenu,
         #[route("/game/new")]
         NewGame,
-        #[route("/game/:id")]
-        Game { id: String }
+        #[route("/game/:id?:playing_as")]
+        Game { id: String, playing_as: Option<String> }
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.svg");

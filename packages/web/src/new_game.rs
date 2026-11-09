@@ -6,6 +6,11 @@ use crate::Route;
 #[component]
 pub fn NewGame() -> Element {
     rsx! {
-        views::new_game::NewGame { join_game: |game_id| Route::Game { id: game_id } }
+        views::new_game::NewGame {
+            join_game: |game_id| Route::Game {
+                id: game_id,
+                playing_as: None,
+            },
+        }
     }
 }

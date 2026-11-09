@@ -6,28 +6,34 @@ use ti_helper_game_data::{common::player_id::PlayerId, state::game_state::GameSt
 
 #[derive(Clone, Copy)]
 pub struct PlayerViewContext {
-    current: Signal<PlayerView>,
+    current: ReadSignal<PlayerView>,
     game_state: ReadSignal<Arc<GameState>>,
+    set_view: Callback<Option<String>>,
 }
 
 impl PlayerViewContext {
-    pub fn new(game_state: ReadSignal<Arc<GameState>>) -> Self {
+    pub fn new(
+        game_state: ReadSignal<Arc<GameState>>,
+        current: ReadSignal<PlayerView>,
+        set_view: Callback<Option<String>>,
+    ) -> Self {
         Self {
-            current: Signal::new(PlayerView::Global),
+            current,
             game_state,
+            set_view,
         }
     }
 
-    pub fn set_global(&mut self) {
-        self.current.set(PlayerView::Global);
+    pub fn set_global(&self) {
+        (self.set_view)(None);
     }
 
-    pub fn set_player(&mut self, player_id: PlayerId) {
-        self.current.set(PlayerView::Player { player_id })
+    pub fn set_player(&self, player_id: PlayerId) {
+        (self.set_view)(Some(player_id.to_string()));
     }
 
     pub fn get(&self) -> ReadSignal<PlayerView> {
-        self.current.into()
+        self.current
     }
 
     pub fn is_global_or_speaker(&self) -> bool {
@@ -62,7 +68,7 @@ impl PlayerViewContext {
     }
 }
 
-#[derive(Debug, Clone, Display)]
+#[derive(Debug, Clone, PartialEq, Display)]
 pub enum PlayerView {
     Global,
     #[strum(to_string = "{player_id}")]

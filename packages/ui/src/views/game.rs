@@ -19,8 +19,11 @@ use ti_helper_game_data::{
 use crate::{
     components::{button::Button, info_modal::InfoModal, spinner::Spinner},
     data::{
-        event_context::EventContext, game_context::GameContext, info_context::InfoContext,
-        player_view::PlayerViewContext, view_mode::ViewMode,
+        event_context::EventContext,
+        game_context::GameContext,
+        info_context::InfoContext,
+        player_view::{PlayerView, PlayerViewContext},
+        view_mode::ViewMode,
     },
     views::{
         galactic_events_view_mode::GalacticEventsViewMode, info_box::InfoBox,
@@ -39,7 +42,9 @@ where
     R: PartialEq + Clone + 'static + Routable,
 {
     game_id: GameId,
+    playing_as: ReadSignal<Option<String>>,
     main_menu: Callback<(), R>,
+    player_view_route: Callback<Option<String>, R>,
 }
 
 #[derive(Debug, Clone, PartialEq, Props)]
@@ -68,9 +73,18 @@ fn BackToMainMenuButton<R: PartialEq + Clone + 'static + Routable>(
 
 #[component]
 pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
-    GameViewProps { game_id, main_menu }: GameViewProps<R>,
+    GameViewProps {
+        game_id,
+        playing_as,
+        main_menu,
+        player_view_route,
+    }: GameViewProps<R>,
 ) -> Element {
     use_context_provider(|| game_id);
+    let nav = navigator();
+    let set_view = use_callback(move |playing_as: Option<String>| {
+        nav.replace(player_view_route(playing_as));
+    });
     let mut socket = use_websocket(move || {
         join_game(game_id, WebSocketOptions::new().with_automatic_reconnect())
     });
@@ -162,7 +176,12 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
 
     if loaded() {
         return rsx! {
-            MainGameView { game_options, game_state }
+            MainGameView {
+                game_options,
+                game_state,
+                playing_as,
+                set_view,
+            }
         };
     }
 
@@ -176,11 +195,27 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
 fn MainGameView(
     game_options: ReadSignal<Option<Arc<GameOptions>>>,
     game_state: ReadSignal<Option<Arc<GameState>>>,
+    playing_as: ReadSignal<Option<String>>,
+    set_view: Callback<Option<String>>,
 ) -> Element {
     let game_state = use_memo(move || game_state().expect("Game state to be loaded"));
     let game_options = use_memo(move || game_options().expect("Game options to be loaded"));
+    let player_view = use_memo(move || {
+        playing_as()
+            .and_then(|name| {
+                game_state()
+                    .players
+                    .get_key_value(name.as_str())
+                    .map(|(player_id, _)| PlayerView::Player {
+                        player_id: player_id.clone(),
+                    })
+            })
+            .unwrap_or(PlayerView::Global)
+    });
     use_context_provider(|| GameContext::new(game_state.into(), game_options.into()));
-    use_context_provider(|| PlayerViewContext::new(game_state.into()));
+    use_context_provider(|| {
+        PlayerViewContext::new(game_state.into(), player_view.into(), set_view)
+    });
 
     let info = use_signal(|| None);
     use_context_provider(|| InfoContext::new(info));

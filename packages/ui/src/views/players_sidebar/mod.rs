@@ -23,7 +23,7 @@ const PLAYERS_SIDEBAR_SCSS: Asset =
 #[component]
 pub fn PlayersSidebar() -> Element {
     let gc = use_context::<GameContext>();
-    let mut view = use_context::<PlayerViewContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let current_player = use_memo(move || gc.game_state().current_player.clone());
     let next_player = use_memo(move || {
