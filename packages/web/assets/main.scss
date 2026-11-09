@@ -33,7 +33,66 @@ body::before {
   inset: 0;
   z-index: 200;
   display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   align-items: center;
   justify-content: center;
   background-color: rgba(37, 37, 37, 0.85);
+}
+
+.app-loading-bar {
+  width: min(20rem, 70vw);
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.app-loading-fill {
+  width: 30%;
+  height: 100%;
+  border-radius: inherit;
+  background-color: white;
+  animation: app-loading-sweep 1.2s ease-in-out infinite;
+}
+
+html[data-wasm-progress="known"] .app-loading-fill {
+  width: 100%;
+  border-radius: 0;
+  transform-origin: left;
+  transform: scaleX(var(--wasm-progress, 0));
+  transition: transform 0.2s linear;
+  animation: none;
+}
+
+html[data-wasm-progress="done"] .app-loading-fill {
+  width: 100%;
+  border-radius: 0;
+  animation: app-loading-pulse 1s ease-in-out infinite;
+}
+
+.app-loading-label {
+  min-height: 1.25rem;
+  line-height: 1.25rem;
+  color: white;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes app-loading-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(calc(100% / 0.3));
+  }
+}
+
+@keyframes app-loading-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }

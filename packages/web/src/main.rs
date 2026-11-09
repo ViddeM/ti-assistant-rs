@@ -6,7 +6,7 @@ use new_game::NewGame;
 use source_code_button::SourceCodeLinkButton;
 use ui::{
     Setup,
-    components::{spinner::Spinner, toast::ToastProvider},
+    components::toast::ToastProvider,
 };
 
 mod game;
@@ -28,6 +28,7 @@ enum Route {
 
 const FAVICON: Asset = asset!("/assets/favicon.svg");
 const MAIN_SCSS: Asset = asset!("/assets/main.scss");
+const WASM_PROGRESS_JS: &str = include_str!("wasm_progress.js");
 
 fn main() {
     #[cfg(not(feature = "server"))]
@@ -55,14 +56,27 @@ fn App() -> Element {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: MAIN_SCSS }
         document::Title { "TI Helper" }
+        WasmProgressScript {}
 
         Setup {}
 
         ToastProvider { Router::<Route> {} }
 
         if !started() {
-            div { class: "app-loading", Spinner {} }
+            div { class: "app-loading",
+                div { class: "app-loading-bar",
+                    div { class: "app-loading-fill" }
+                }
+                div { class: "app-loading-label" }
+            }
         }
+    }
+}
+
+#[component]
+fn WasmProgressScript() -> Element {
+    rsx! {
+        document::Script { "{WASM_PROGRESS_JS}" }
     }
 }
 
