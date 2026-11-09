@@ -77,6 +77,10 @@ pub fn SelectTechView(
             {
                 ALL_TECH_TYPES
                     .iter()
+                    .filter(|&tech_type| {
+                        tech_type != &TechType::Colorless
+                            || available_techs().iter().any(|t| &t.info().tech_type == tech_type)
+                    })
                     .map(|tech_type| {
                         rsx! {
                             TechCategoryButton {
