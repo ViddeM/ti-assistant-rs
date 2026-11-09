@@ -15,7 +15,6 @@ pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
     let event = use_context::<EventContext>();
 
     let mut first_tech: Signal<Option<Technology>> = use_signal(|| None);
-    let mut second_tech: Signal<Option<Technology>> = use_signal(|| None);
 
     let pi = player_id.clone();
     let player = use_memo(move || gc.game_state().players[&pi].clone());
@@ -62,38 +61,22 @@ pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
                 }
             }
 
-            if let Some(tech) = second_tech() {
-                p { "Second technology: {tech.info().name}" }
-                Button {
-                    onclick: move |_| {
-                        second_tech.set(None);
-                    },
-                    "Change"
-                }
-            } else if first_tech().is_some() {
+            if first_tech().is_some() {
                 SelectTechView {
                     player_id: player_id.clone(),
                     filtered_techs: filtered_techs(),
-                    on_select: move |t| second_tech.set(Some(t)),
+                    on_select: move |second| {
+                        let first = first_tech().expect("First technology must be selected");
+                        event
+                            .send_event(Event::SetupPlayerTechs {
+                                player: player_id.clone(),
+                                technologies: vec![first, second],
+                            });
+                        first_tech.set(None);
+                    },
                 }
             } else {
                 "Select the first technology before choosing the second."
-            }
-
-            Button {
-                disabled: first_tech().is_none() || second_tech().is_none(),
-                onclick: move |_| {
-                    let first = first_tech().expect("First technology must be selected");
-                    let second = second_tech().expect("Second technology must be selected");
-                    event
-                        .send_event(Event::SetupPlayerTechs {
-                            player: player_id.clone(),
-                            technologies: vec![first, second],
-                        });
-                    first_tech.set(None);
-                    second_tech.set(None);
-                },
-                {"Confirm"}
             }
         }
     }
