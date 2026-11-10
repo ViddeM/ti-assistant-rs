@@ -28,14 +28,7 @@ pub fn StatusPhaseActionsView() -> Element {
 
     let mut selected_objective: Signal<Option<Objective>> = use_signal(|| None);
 
-    let players = use_memo(move || {
-        gc.game_state()
-            .turn_order
-            .iter()
-            .filter(|&p| view.display_for(p))
-            .cloned()
-            .collect::<Vec<_>>()
-    });
+    let players = use_memo(move || gc.game_state().turn_order.to_vec());
 
     let speaker = use_memo(move || {
         gc.game_state()
@@ -156,6 +149,7 @@ pub fn StatusPhaseActionsView() -> Element {
 #[component]
 fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
     let sp_state = use_memo(move || {
@@ -246,7 +240,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                         InfoButton { info: Info::Objective(obj) }
                     }
                 }
-                if score_another() {
+                if score_another() && view.display_for(&player()) {
                     div { class: "score-objectives-container",
                         ObjectiveDropdown {
                             value: selected_public_objective,
@@ -271,7 +265,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                         }
                     }
                 }
-            } else {
+            } else if view.display_for(&player()) {
                 div { class: "score-objectives-container",
                     ObjectiveDropdown {
                         value: selected_public_objective,
@@ -295,6 +289,8 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                         }
                     }
                 }
+            } else {
+                p { "Has yet to score a public objective" }
             }
             if let Some(choice) = secret_objective() {
                 p {
@@ -306,7 +302,7 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                         "Skipped"
                     }
                 }
-            } else {
+            } else if view.display_for(&player()) {
                 div { class: "score-objectives-container",
                     ObjectiveDropdown {
                         value: selected_secret_objective,
@@ -328,6 +324,8 @@ fn PlayerObjectives(player: ReadSignal<PlayerId>) -> Element {
                         }
                     }
                 }
+            } else {
+                p { "Has yet to score a secret objective" }
             }
         }
     }

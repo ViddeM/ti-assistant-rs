@@ -3,13 +3,16 @@ use ti_helper_game_data::actions::event::Event;
 
 use crate::{
     components::button::Button,
-    data::{event_context::EventContext, game_context::GameContext},
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+    },
 };
 
 #[component]
 pub fn StatusPhaseInstructionsView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let reveals_objective = use_memo(move || gc.game_state().status_phase_reveals_objective());
 
@@ -43,7 +46,7 @@ pub fn StatusPhaseInstructionsView() -> Element {
             }
             Button {
                 class: "margin-top",
-                disabled: !status_phase_complete(),
+                disabled: !status_phase_complete() || !view.is_global_or_speaker(),
                 onclick: move |_| event.send_event(Event::CompleteStatusPhase),
                 "Next phase"
             }
