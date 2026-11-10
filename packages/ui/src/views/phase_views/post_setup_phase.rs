@@ -14,7 +14,10 @@ use crate::{
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
-    views::{destroyed_planets::planets_on_board, select_tech::SelectTechView},
+    views::{
+        destroyed_planets::planets_on_board, phase_views::speaker_step::SpeakerStep,
+        select_tech::SelectTechView,
+    },
 };
 
 const POST_SETUP_PHASE_SCSS: Asset =
@@ -23,7 +26,6 @@ const POST_SETUP_PHASE_SCSS: Asset =
 #[component]
 pub fn PostSetupPhaseView() -> Element {
     let gc = use_context::<GameContext>();
-    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
     let players = use_memo(move || gc.game_state().table_order.to_vec());
@@ -38,9 +40,10 @@ pub fn PostSetupPhaseView() -> Element {
                 for player in players() {
                     RapidMobilizationPlayer { key: "{player}", player }
                 }
-                Button {
+                SpeakerStep {
                     class: "margin-top",
-                    disabled: !all_resolved() || !view.is_global_or_speaker(),
+                    ready: all_resolved(),
+                    waiting_for: "start the strategy phase",
                     onclick: move |_| event.send_event(Event::CompletePostSetupPhase),
                     "Start Strategy Phase"
                 }

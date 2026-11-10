@@ -9,7 +9,7 @@ use crate::{
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
-    views::select_tech::SelectTechView,
+    views::{phase_views::speaker_step::SpeakerStep, select_tech::SelectTechView},
 };
 
 #[component]
@@ -113,9 +113,10 @@ pub fn RelicsPhaseView() -> Element {
                 h2 { "Continue to status phase" }
             }
 
-            Button {
+            SpeakerStep {
                 class: "margin-top",
-                disabled: !view.is_global_or_speaker(),
+                ready: true,
+                waiting_for: "start the agenda phase",
                 onclick: move |_| event.send_event(Event::CompleteRelicsPhase),
                 "Continue"
             }

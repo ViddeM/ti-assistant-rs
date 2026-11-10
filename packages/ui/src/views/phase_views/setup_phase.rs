@@ -12,10 +12,13 @@ use ti_helper_game_data::{
     state::player::Player,
 };
 
-use crate::views::phase_views::faction_setup_views::{
-    argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
-    deepwrought_scholarate_setup::DeepwroughtScholarateSetup,
-    pick_one_tech_setup::PickOneTechSetup,
+use crate::views::phase_views::{
+    faction_setup_views::{
+        argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
+        deepwrought_scholarate_setup::DeepwroughtScholarateSetup,
+        pick_one_tech_setup::PickOneTechSetup,
+    },
+    speaker_step::SpeakerStep,
 };
 use crate::{
     components::{
@@ -34,7 +37,6 @@ const SETUP_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/setup_
 pub fn SetupPhaseView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let speaker_chosen = use_memo(move || gc.game_state().speaker.is_some());
     let revealed_objectives = use_memo(move || gc.game_state().score.revealed_objectives.len());
@@ -60,9 +62,9 @@ pub fn SetupPhaseView() -> Element {
 
             ObjectivesSetup {}
 
-            Button {
-                disabled: !speaker_chosen() || revealed_objectives() == 0 || unfinished_players() > 0
-                    || !view.is_global_or_speaker(),
+            SpeakerStep {
+                ready: speaker_chosen() && revealed_objectives() > 0 && unfinished_players() == 0,
+                waiting_for: "start the game",
                 onclick: move |_| event.send_event(Event::StartGame),
                 "Start Game"
             }

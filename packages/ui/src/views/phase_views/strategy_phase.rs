@@ -9,7 +9,7 @@ use ti_helper_game_data::{
 
 use crate::{
     components::{
-        button::{Button, ButtonBase},
+        button::ButtonBase,
         dropdown::Dropdown,
         faction_icon::FactionIcon,
         info_button::InfoButton,
@@ -21,6 +21,7 @@ use crate::{
         info_context::{Info, InfoDescription},
         player_view::PlayerViewContext,
     },
+    views::phase_views::speaker_step::SpeakerStep,
 };
 
 const STRATEGY_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/strategy_phase.scss");
@@ -94,8 +95,9 @@ pub fn StrategyPhaseView() -> Element {
 
                 NaaluTelepathy {}
 
-                Button {
-                    disabled: !finished_selecting_cards() || !view.is_global_or_speaker(),
+                SpeakerStep {
+                    ready: finished_selecting_cards(),
+                    waiting_for: "start the action phase",
                     onclick: move |_| event.send_event(Event::CompleteStrategyPhase),
                     "Start Action Phase"
                 }

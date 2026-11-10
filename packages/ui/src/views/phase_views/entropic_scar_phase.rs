@@ -9,7 +9,7 @@ use crate::{
         event_context::EventContext, game_context::GameContext, info_context::Info,
         player_view::PlayerViewContext,
     },
-    views::select_tech::SelectTechView,
+    views::{phase_views::speaker_step::SpeakerStep, select_tech::SelectTechView},
 };
 
 const ENTROPIC_SCAR_PHASE_SCSS: Asset =
@@ -18,7 +18,6 @@ const ENTROPIC_SCAR_PHASE_SCSS: Asset =
 #[component]
 pub fn EntropicScarPhaseView() -> Element {
     let gc = use_context::<GameContext>();
-    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
     let players = use_memo(move || gc.game_state().turn_order.to_vec());
@@ -31,9 +30,10 @@ pub fn EntropicScarPhaseView() -> Element {
             for player in players() {
                 EntropicScarPlayer { key: "{player}", player }
             }
-            Button {
+            SpeakerStep {
                 class: "margin-top",
-                disabled: !view.is_global_or_speaker(),
+                ready: true,
+                waiting_for: "start the status phase",
                 onclick: move |_| event.send_event(Event::CompleteEntropicScarPhase),
                 "Continue"
             }

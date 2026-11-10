@@ -14,20 +14,21 @@ use crate::{
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
+    views::phase_views::speaker_step::SpeakerStep,
 };
 
 #[component]
 pub fn AgendaActionsView(state: ReadSignal<AgendaState>) -> Element {
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
 
     rsx! {
         div { class: "card",
             if state().round == AgendaRound::Completed {
                 div { class: "agenda-phase-complete-container",
                     h3 { "Ready all planets!" }
-                    Button {
-                        disabled: !view.is_global_or_speaker(),
+                    SpeakerStep {
+                        ready: true,
+                        waiting_for: "start the strategy phase",
                         onclick: move |_| event.send_event(Event::CompleteAgendaPhase),
                         "Begin Strategy Phase"
                     }

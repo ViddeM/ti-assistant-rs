@@ -2,17 +2,14 @@ use dioxus::prelude::*;
 use ti_helper_game_data::actions::event::Event;
 
 use crate::{
-    components::button::Button,
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
+    data::{event_context::EventContext, game_context::GameContext},
+    views::phase_views::speaker_step::SpeakerStep,
 };
 
 #[component]
 pub fn StatusPhaseInstructionsView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let reveals_objective = use_memo(move || gc.game_state().status_phase_reveals_objective());
 
@@ -44,9 +41,10 @@ pub fn StatusPhaseInstructionsView() -> Element {
                 li { "Repair Units" }
                 li { "Return Strategy Cards" }
             }
-            Button {
+            SpeakerStep {
                 class: "margin-top",
-                disabled: !status_phase_complete() || !view.is_global_or_speaker(),
+                ready: status_phase_complete(),
+                waiting_for: "start the next phase",
                 onclick: move |_| event.send_event(Event::CompleteStatusPhase),
                 "Next phase"
             }
