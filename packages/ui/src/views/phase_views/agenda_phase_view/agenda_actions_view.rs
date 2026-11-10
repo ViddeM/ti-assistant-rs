@@ -19,13 +19,16 @@ use crate::{
 #[component]
 pub fn AgendaActionsView(state: ReadSignal<AgendaState>) -> Element {
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     rsx! {
         div { class: "card",
             if state().round == AgendaRound::Completed {
                 div { class: "agenda-phase-complete-container",
                     h3 { "Ready all planets!" }
-                    Button { onclick: move |_| event.send_event(Event::CompleteAgendaPhase),
+                    Button {
+                        disabled: !view.is_global_or_speaker(),
+                        onclick: move |_| event.send_event(Event::CompleteAgendaPhase),
                         "Begin Strategy Phase"
                     }
                 }
@@ -203,7 +206,7 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
     if !state().player_votes.contains_key(&player_id()) {
         // Player has not yet voted.
 
-        if !(view.is_active() || (hidden_agenda() && view.is_global_or_speaker())) {
+        if !(view.display_for(&player_id()) || (hidden_agenda() && view.is_global_or_speaker())) {
             return rsx! {
                 p { "Has not voted yet" }
             };
