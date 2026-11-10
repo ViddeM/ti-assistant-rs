@@ -48,6 +48,8 @@ pub fn StrategyCardView() -> Element {
 
     let card = use_memo(move || progress().card);
 
+    let current_player = use_memo(move || gc.game_state().current_player.clone());
+
     let expected_secondaries = use_memo(move || {
         gc.game_state()
             .players
@@ -79,11 +81,17 @@ pub fn StrategyCardView() -> Element {
             h6 { "Secondary" }
             StrategyCardSecondary { progress }
 
-            Button {
-                class: "margin-top",
-                disabled: !primary_done() || !secondary_done() || !view.is_active(),
-                onclick: move |_| { event.send_event(Event::StrategicActionCommit) },
-                "Submit"
+            if view.is_active() {
+                Button {
+                    class: "margin-top",
+                    disabled: !primary_done() || !secondary_done(),
+                    onclick: move |_| { event.send_event(Event::StrategicActionCommit) },
+                    "Submit"
+                }
+            } else if primary_done() && secondary_done() {
+                if let Some(player) = current_player() {
+                    p { class: "margin-top", "Waiting for {player} to submit the {card} action" }
+                }
             }
         }
     }
