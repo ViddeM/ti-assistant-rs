@@ -26,12 +26,7 @@ pub fn PostSetupPhaseView() -> Element {
     let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
-    let players = use_memo(move || {
-        (gc.game_state().table_order.iter())
-            .filter(|p| view.display_for(p))
-            .cloned()
-            .collect::<Vec<_>>()
-    });
+    let players = use_memo(move || gc.game_state().table_order.to_vec());
     let all_resolved = use_memo(move || gc.game_state().rapid_mobilization.is_empty());
 
     rsx! {
@@ -45,7 +40,7 @@ pub fn PostSetupPhaseView() -> Element {
                 }
                 Button {
                     class: "margin-top",
-                    disabled: !all_resolved(),
+                    disabled: !all_resolved() || !view.is_global_or_speaker(),
                     onclick: move |_| event.send_event(Event::CompletePostSetupPhase),
                     "Start Strategy Phase"
                 }
@@ -57,6 +52,7 @@ pub fn PostSetupPhaseView() -> Element {
 #[component]
 fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
     let color = use_memo(move || {
@@ -118,7 +114,7 @@ fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
                 } else {
                     p { "Resolved" }
                 }
-            } else {
+            } else if view.display_for(&player()) {
                 p { class: "rapid-mobilization-label", "Planets" }
                 for planet in planets() {
                     div { key: "{planet}", class: "row space-between",
@@ -209,6 +205,8 @@ fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
                     },
                     "Done"
                 }
+            } else {
+                p { "Waiting for {player}" }
             }
         }
     }
