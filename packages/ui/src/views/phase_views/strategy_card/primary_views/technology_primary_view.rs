@@ -5,7 +5,9 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    components::button::Button, data::game_context::GameContext, views::select_tech::SelectTechView,
+    components::button::Button,
+    data::{game_context::GameContext, player_view::PlayerViewContext},
+    views::select_tech::SelectTechView,
 };
 
 #[component]
@@ -14,6 +16,7 @@ pub fn TechnologyPrimaryView(
     on_commit: EventHandler<StrategicPrimaryAction>,
 ) -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -58,6 +61,12 @@ pub fn TechnologyPrimaryView(
                     p { "{e.info().name}" }
                 }
             }
+        };
+    }
+
+    if !view.is_active() {
+        return rsx! {
+            p { "Waiting for {current_player()} to pick" }
         };
     }
 

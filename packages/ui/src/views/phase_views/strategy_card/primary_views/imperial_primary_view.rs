@@ -106,6 +106,8 @@ pub fn ImperialPrimaryView(
                                 }
                             }
                         }
+                    } else {
+                        p { "Waiting for {current_player} to score" }
                     }
                 }
             }
