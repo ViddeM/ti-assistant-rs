@@ -134,10 +134,10 @@ pub fn EndActionPhaseView() -> Element {
                         }
                     }
                 }
-                EndOfTurnActionCards { disabled: completion_required() }
             } else {
                 p { "Not your turn, currently {current_player_id()} is playing" }
             }
+            EndOfTurnActionCards { disabled: completion_required() }
         }
     }
 }
@@ -147,6 +147,7 @@ pub fn EndActionPhaseView() -> Element {
 fn EndOfTurnActionCards(disabled: bool) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let mut selected_card = use_signal(|| None);
 
@@ -158,11 +159,19 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
             .contains(&ActionCard::PuppetsOnAString)
     });
 
-    let players = use_memo(move || gc.game_state().players.keys().cloned().collect::<Vec<_>>());
+    let players = use_memo(move || {
+        gc.game_state()
+            .players
+            .keys()
+            .filter(|&p| view.display_for(p))
+            .cloned()
+            .collect::<Vec<_>>()
+    });
     let passed_players = use_memo(move || {
         gc.game_state()
             .passed_players
             .iter()
+            .filter(|&p| view.display_for(p))
             .cloned()
             .collect::<Vec<_>>()
     });
