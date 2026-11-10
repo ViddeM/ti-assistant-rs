@@ -97,7 +97,7 @@ pub fn StrategyPhaseView() -> Element {
                 }
 
                 SpeakerStep {
-                    class: "align-center",
+                    class: "align-center margin-top",
                     ready: finished_selecting_cards(),
                     waiting_for: "start the action phase",
                     onclick: move |_| event.send_event(Event::CompleteStrategyPhase),
