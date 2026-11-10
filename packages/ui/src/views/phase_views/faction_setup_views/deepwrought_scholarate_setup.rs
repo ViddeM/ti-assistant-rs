@@ -5,9 +5,7 @@ use ti_helper_game_data::{
 
 use crate::{
     components::button::Button,
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
+    data::{event_context::EventContext, game_context::GameContext},
     views::select_tech::SelectTechView,
 };
 
@@ -15,7 +13,6 @@ use crate::{
 pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let mut first_tech: Signal<Option<Technology>> = use_signal(|| None);
 
@@ -43,14 +40,6 @@ pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
             div { class: "setup-column",
                 p { "{first.info().name}" }
                 p { "{second.info().name}" }
-            }
-        };
-    }
-
-    if !view.display_for(&player_id) {
-        return rsx! {
-            div { class: "setup-column",
-                p { "Waiting for {player_id}" }
             }
         };
     }

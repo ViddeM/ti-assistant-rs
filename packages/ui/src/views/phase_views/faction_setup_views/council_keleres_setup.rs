@@ -13,16 +13,13 @@ use crate::{
         button::Button,
         dropdown::{FactionDropdown, TechDropdown},
     },
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
+    data::{event_context::EventContext, game_context::GameContext},
 };
 
 #[component]
 pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let event = use_context::<EventContext>();
     let gc = use_context::<GameContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let mut selected_faction: Signal<Option<Faction>> = use_signal(|| None);
 
@@ -65,7 +62,6 @@ pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element 
     taken_techs.sort();
 
     let p2 = Arc::clone(&player_id);
-    let is_player = view.display_for(&player_id);
     rsx! {
         div { class: "setup-column",
             if !taken_techs.is_empty() {
@@ -78,8 +74,6 @@ pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element 
                             }
                         })
                 }
-            } else if !is_player {
-                p { "Waiting for {player_id} to pick techs" }
             } else {
                 KeleresTechChoice { player_id, disabled: !all_other_players_ready() }
                 if !all_other_players_ready() {
@@ -88,11 +82,7 @@ pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element 
             }
 
             {
-                if player.planets.is_empty() && !is_player {
-                    rsx! {
-                        p { "Waiting for {p2} to pick a faction" }
-                    }
-                } else if player.planets.is_empty() {
+                if player.planets.is_empty() {
                     rsx! {
                         FactionDropdown {
                             value: selected_faction,

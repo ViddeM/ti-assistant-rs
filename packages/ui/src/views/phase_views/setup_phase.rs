@@ -12,16 +12,10 @@ use ti_helper_game_data::{
     state::player::Player,
 };
 
-use crate::views::{
-    phase_views::{
-        faction_setup_views::{
-            argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
-            deepwrought_scholarate_setup::DeepwroughtScholarateSetup,
-            pick_one_tech_setup::PickOneTechSetup,
-        },
-        speaker_step::SpeakerStep,
-    },
-    player_view_dropdown::PlayerViewDropdown,
+use crate::views::phase_views::faction_setup_views::{
+    argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
+    deepwrought_scholarate_setup::DeepwroughtScholarateSetup,
+    pick_one_tech_setup::PickOneTechSetup,
 };
 use crate::{
     components::{
@@ -29,9 +23,7 @@ use crate::{
         dropdown::{FactionDropdown, ObjectiveDropdown, SystemDropdown},
         faction_icon::FactionIcon,
     },
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
+    data::{event_context::EventContext, game_context::GameContext},
 };
 
 const SETUP_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/setup_phase.scss");
@@ -61,15 +53,12 @@ pub fn SetupPhaseView() -> Element {
         div { class: "card setup-container",
             h2 { "Setup" }
 
-            PlayerViewDropdown {}
-
             PlayersSetup {}
 
             ObjectivesSetup {}
 
-            SpeakerStep {
-                ready: speaker_chosen() && revealed_objectives() > 0 && unfinished_players() == 0,
-                waiting_for: "start the game",
+            Button {
+                disabled: !speaker_chosen() || revealed_objectives() == 0 || unfinished_players() > 0,
                 onclick: move |_| event.send_event(Event::StartGame),
                 "Start Game"
             }
@@ -81,7 +70,6 @@ pub fn SetupPhaseView() -> Element {
 fn PlayersSetup() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
     let players = use_memo(move || {
         let game_state = Arc::clone(&gc.game_state());
 
@@ -115,7 +103,7 @@ fn PlayersSetup() -> Element {
     });
 
     rsx! {
-        div { class: "player-specific-setup-container margin-top",
+        div { class: "player-specific-setup-container",
             h3 { "Player specific setup" }
             div { class: "players-setup-container",
                 {
@@ -136,7 +124,7 @@ fn PlayersSetup() -> Element {
                                     div { class: "setup-row",
                                         if gc.game_state().is_speaker(&name) {
                                             p { "Speaker" }
-                                        } else if view.is_global_or_speaker() {
+                                        } else {
                                             Button {
                                                 disabled: gc.game_state().is_speaker(&name),
                                                 onclick: move |_| {
@@ -229,7 +217,6 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let p1 = Arc::clone(&player_id);
     let leaders_from = use_memo(move || {
@@ -268,7 +255,7 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
             label { "Cultural Exchange" }
             if let Some(faction) = leaders_from() {
                 p { "{faction.name()}" }
-            } else if view.display_for(&player_id) {
+            } else {
                 FactionDropdown {
                     value: selected,
                     options: options(),
@@ -287,8 +274,6 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                     },
                     "Choose"
                 }
-            } else {
-                p { "Waiting for {player_id}" }
             }
         }
     }
@@ -298,7 +283,6 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 fn MinorFactionSetup(player_id: PlayerId) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let p1 = Arc::clone(&player_id);
     let minor_faction = use_memo(move || {
@@ -339,15 +323,6 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
             div { class: "setup-column",
                 label { "Minor faction" }
                 p { "{faction.name()}" }
-            }
-        };
-    }
-
-    if !view.display_for(&player_id) {
-        return rsx! {
-            div { class: "setup-column",
-                label { "Minor faction" }
-                p { "Waiting for {player_id}" }
             }
         };
     }
@@ -415,7 +390,6 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
 fn ObjectivesSetup() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let mut first_objective: Signal<Option<Objective>> = use_signal(|| None);
     let mut second_objective: Signal<Option<Objective>> = use_signal(|| None);
@@ -474,11 +448,7 @@ fn ObjectivesSetup() -> Element {
                 h3 { "Select initial objectives" }
             }
             {
-                if revealed_objectives.is_empty() && !view.is_global_or_speaker() {
-                    rsx! {
-                        p { "Waiting for the speaker to reveal objectives" }
-                    }
-                } else if revealed_objectives.is_empty() && civilized_society() {
+                if revealed_objectives.is_empty() && civilized_society() {
                     rsx! {
                         AllObjectivesSetup {}
                     }
