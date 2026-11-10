@@ -115,7 +115,7 @@ fn PlayersSetup() -> Element {
     });
 
     rsx! {
-        div { class: "player-specific-setup-container",
+        div { class: "player-specific-setup-container margin-top",
             h3 { "Player specific setup" }
             div { class: "players-setup-container",
                 {
