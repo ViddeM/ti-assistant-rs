@@ -38,7 +38,6 @@ pub enum TechCategory {
 pub enum TechType {
     Category(TechCategory),
     UnitUpgrade,
-    Colorless,
 }
 
 impl TechType {
@@ -46,7 +45,6 @@ impl TechType {
         match self {
             TechType::Category(tech_category) => tech_category.to_string().to_lowercase(),
             TechType::UnitUpgrade => "unit-upgrade".to_string(),
-            TechType::Colorless => "colorless".to_string(),
         }
     }
 
@@ -54,7 +52,6 @@ impl TechType {
         match self {
             TechType::Category(tech_category) => tech_category.to_string(),
             TechType::UnitUpgrade => String::from("Unit Upgrade"),
-            TechType::Colorless => String::from("Colorless"),
         }
     }
 }
@@ -66,7 +63,6 @@ impl Display for TechType {
             "{}",
             match self {
                 TechType::UnitUpgrade => "Unit Upgrade".to_string(),
-                TechType::Colorless => "Technology".to_string(),
                 TechType::Category(tech_category) => format!("Technology, {}", tech_category),
             }
         )
@@ -198,9 +194,6 @@ pub enum Technology {
     ValkyrieParticleWeave,
     ProximaTargetingVI,
     Nanomachines,
-    // Faction techs - Colorless
-    ValefarAssimilatorX,
-    ValefarAssimilatorY,
 }
 
 impl PartialOrd for Technology {
@@ -1327,26 +1320,6 @@ impl Technology {
                     "ACTION: Exhaust this card to place 1 PDS on a planet you control.",
                     "ACTION: Exhaust this card to repair all of your damaged units.",
                     "ACTION: Exhaust this card and discard 1 action card to draw 1 action card."
-                ],
-            ),
-            Technology::ValefarAssimilatorX => t!(
-                "Valefar Assimilator X",
-                TechType::Colorless,
-                TechOrigin::Faction(Faction::NekroVirus),
-                tr!(),
-                Expansion::Base,
-                &[
-                    "When you would gain another player's technology using 1 of your faction abilities, you may place the \"X\" assimilator token on a faction technology owned by that player instead. While that token is on a technology, this card gains that technology's text. You cannot place an assimilator token on a technology that already has an assimilator token."
-                ],
-            ),
-            Technology::ValefarAssimilatorY => t!(
-                "Valefar Assimilator Y",
-                TechType::Colorless,
-                TechOrigin::Faction(Faction::NekroVirus),
-                tr!(),
-                Expansion::Base,
-                &[
-                    "When you would gain another player's technology using 1 of your faction abilities, you may place the \"Y\" assimilator token on a faction technology owned by that player instead. While that token is on a technology, this card gains that technology's text. You cannot place an assimilator token on a technology that already has an assimilator token."
                 ],
             ),
         }

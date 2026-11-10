@@ -14,13 +14,12 @@ use crate::{
 };
 
 const SELECT_TECH_SCSS: Asset = asset!("/assets/styling/views/select_tech.scss");
-const ALL_TECH_TYPES: [TechType; 6] = [
+const ALL_TECH_TYPES: [TechType; 5] = [
     TechType::Category(TechCategory::Biotic),
     TechType::Category(TechCategory::Cybernetic),
     TechType::Category(TechCategory::Propulsion),
     TechType::Category(TechCategory::Warfare),
     TechType::UnitUpgrade,
-    TechType::Colorless,
 ];
 
 #[component]
@@ -77,10 +76,6 @@ pub fn SelectTechView(
             {
                 ALL_TECH_TYPES
                     .iter()
-                    .filter(|&tech_type| {
-                        tech_type != &TechType::Colorless
-                            || available_techs().iter().any(|t| &t.info().tech_type == tech_type)
-                    })
                     .map(|tech_type| {
                         rsx! {
                             TechCategoryButton {
