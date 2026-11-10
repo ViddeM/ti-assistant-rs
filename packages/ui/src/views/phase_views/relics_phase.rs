@@ -41,7 +41,7 @@ pub fn RelicsPhaseView() -> Element {
     let maw_of_worlds_holder = use_memo(move || {
         all_players()
             .iter()
-            .find(|(_, player)| player.relics.contains(&Relic::TheCrownOfEmphidia))
+            .find(|(_, player)| player.relics.contains(&Relic::MawOfWorlds))
             .map(|(id, _)| id.clone())
     });
 
