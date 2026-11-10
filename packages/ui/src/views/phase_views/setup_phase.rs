@@ -23,7 +23,9 @@ use crate::{
         dropdown::{FactionDropdown, ObjectiveDropdown, SystemDropdown},
         faction_icon::FactionIcon,
     },
-    data::{event_context::EventContext, game_context::GameContext},
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+    },
 };
 
 const SETUP_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/setup_phase.scss");
@@ -32,6 +34,7 @@ const SETUP_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/setup_
 pub fn SetupPhaseView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let speaker_chosen = use_memo(move || gc.game_state().speaker.is_some());
     let revealed_objectives = use_memo(move || gc.game_state().score.revealed_objectives.len());
@@ -58,7 +61,8 @@ pub fn SetupPhaseView() -> Element {
             ObjectivesSetup {}
 
             Button {
-                disabled: !speaker_chosen() || revealed_objectives() == 0 || unfinished_players() > 0,
+                disabled: !speaker_chosen() || revealed_objectives() == 0 || unfinished_players() > 0
+                    || !view.is_global_or_speaker(),
                 onclick: move |_| event.send_event(Event::StartGame),
                 "Start Game"
             }
@@ -70,6 +74,7 @@ pub fn SetupPhaseView() -> Element {
 fn PlayersSetup() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
     let players = use_memo(move || {
         let game_state = Arc::clone(&gc.game_state());
 
@@ -124,7 +129,7 @@ fn PlayersSetup() -> Element {
                                     div { class: "setup-row",
                                         if gc.game_state().is_speaker(&name) {
                                             p { "Speaker" }
-                                        } else {
+                                        } else if view.is_global_or_speaker() {
                                             Button {
                                                 disabled: gc.game_state().is_speaker(&name),
                                                 onclick: move |_| {
@@ -217,6 +222,7 @@ fn FactionSpecificSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let p1 = Arc::clone(&player_id);
     let leaders_from = use_memo(move || {
@@ -247,6 +253,19 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         };
     }
 
+    if !view.display_for(&player_id) {
+        return rsx! {
+            div { class: "setup-column",
+                label { "Cultural Exchange" }
+                if let Some(faction) = leaders_from() {
+                    p { "{faction.name()}" }
+                } else {
+                    p { "Waiting for {player_id}" }
+                }
+            }
+        };
+    }
+
     rsx! {
         div { class: "setup-column",
             label { "Cultural Exchange" }
@@ -269,6 +288,7 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
 fn MinorFactionSetup(player_id: PlayerId) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let p1 = Arc::clone(&player_id);
     let minor_faction = use_memo(move || {
@@ -301,6 +321,19 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
         selected_faction().is_some_and(|faction| options().contains(&faction))
             && selected_system().is_some_and(|system| replaceable_systems().contains(&system))
     });
+
+    if !view.display_for(&player_id) {
+        return rsx! {
+            div { class: "setup-column",
+                label { "Minor faction" }
+                if let Some(faction) = minor_faction() {
+                    p { "{faction.name()}" }
+                } else {
+                    p { "Waiting for {player_id}" }
+                }
+            }
+        };
+    }
 
     if !has_milty_map() {
         return rsx! {
@@ -365,6 +398,7 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
 fn ObjectivesSetup() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let mut first_objective: Signal<Option<Objective>> = use_signal(|| None);
     let mut second_objective: Signal<Option<Objective>> = use_signal(|| None);
@@ -423,7 +457,11 @@ fn ObjectivesSetup() -> Element {
                 h3 { "Select initial objectives" }
             }
             {
-                if revealed_objectives.is_empty() && civilized_society() {
+                if revealed_objectives.is_empty() && !view.is_global_or_speaker() {
+                    rsx! {
+                        p { "Waiting for the speaker to reveal objectives" }
+                    }
+                } else if revealed_objectives.is_empty() && civilized_society() {
                     rsx! {
                         AllObjectivesSetup {}
                     }

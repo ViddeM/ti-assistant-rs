@@ -1,6 +1,8 @@
 use crate::{
     components::{button::Button, dropdown::TechDropdown},
-    data::{event_context::EventContext, game_context::GameContext},
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+    },
 };
 use dioxus::prelude::*;
 use std::sync::Arc;
@@ -13,6 +15,7 @@ use ti_helper_game_data::{
 pub fn PickOneTechSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let event = use_context::<EventContext>();
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let mut tech = use_signal(|| None::<Technology>);
 
@@ -32,7 +35,7 @@ pub fn PickOneTechSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         div { class: "setup-column",
             if let Some(tech) = taken_tech {
                 p { "{tech.info().name}" }
-            } else {
+            } else if view.display_for(&player_id) {
                 TechDropdown {
                     value: tech,
                     options: available_techs(),
@@ -49,6 +52,8 @@ pub fn PickOneTechSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                     },
                     "Choose"
                 }
+            } else {
+                p { "Waiting for {player_id}" }
             }
 
         }

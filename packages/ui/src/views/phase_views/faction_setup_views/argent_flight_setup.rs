@@ -9,13 +9,16 @@ use ti_helper_game_data::{
 
 use crate::{
     components::{button::Button, dropdown::TechDropdown},
-    data::{event_context::EventContext, game_context::GameContext},
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+    },
 };
 
 #[component]
 pub fn ArgentFlightSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
     let event = use_context::<EventContext>();
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let mut first_tech = use_signal(|| None);
     let mut second_tech = use_signal(|| None);
@@ -45,6 +48,10 @@ pub fn ArgentFlightSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
                                     }
                                 })
                         }
+                    }
+                } else if !view.display_for(&player_id) {
+                    rsx! {
+                        p { "Waiting for {player_id}" }
                     }
                 } else {
                     rsx! {
