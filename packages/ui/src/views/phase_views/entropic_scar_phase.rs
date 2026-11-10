@@ -21,14 +21,7 @@ pub fn EntropicScarPhaseView() -> Element {
     let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
-    let players = use_memo(move || {
-        gc.game_state()
-            .turn_order
-            .iter()
-            .filter(|&p| view.display_for(p))
-            .cloned()
-            .collect::<Vec<_>>()
-    });
+    let players = use_memo(move || gc.game_state().turn_order.to_vec());
 
     rsx! {
         document::Stylesheet { href: ENTROPIC_SCAR_PHASE_SCSS }
@@ -40,6 +33,7 @@ pub fn EntropicScarPhaseView() -> Element {
             }
             Button {
                 class: "margin-top",
+                disabled: !view.is_global_or_speaker(),
                 onclick: move |_| event.send_event(Event::CompleteEntropicScarPhase),
                 "Continue"
             }
@@ -50,6 +44,7 @@ pub fn EntropicScarPhaseView() -> Element {
 #[component]
 fn EntropicScarPlayer(player: ReadSignal<PlayerId>) -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
     let mut picking = use_signal(|| false);
@@ -94,7 +89,7 @@ fn EntropicScarPlayer(player: ReadSignal<PlayerId>) -> Element {
                     "{tech.info().name}"
                     InfoButton { info: Info::Tech(tech) }
                 }
-            } else {
+            } else if view.display_for(&player()) {
                 p { "Ships in an entropic scar?" }
                 p { class: "warning-text", "Spend a strategy token" }
                 if !has_faction_tech_left() {
@@ -114,6 +109,8 @@ fn EntropicScarPlayer(player: ReadSignal<PlayerId>) -> Element {
                 } else {
                     Button { onclick: move |_| picking.set(true), "Pick tech" }
                 }
+            } else {
+                p { "No tech gained" }
             }
         }
     }
