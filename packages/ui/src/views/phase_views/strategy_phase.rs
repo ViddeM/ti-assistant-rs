@@ -78,7 +78,7 @@ pub fn StrategyPhaseView() -> Element {
         div { class: "card select-strategy-card-card",
             h2 { "Select a strategy card" }
             if !view.is_active() && !finished_selecting_cards() {
-                p { "Not your turn, {current_player()} is picking" }
+                p { class: "align-center", "Not your turn, {current_player()} is picking" }
             }
             div { class: "strategy-cards-container",
                 {StrategyCard::iter().map(|s| rsx! {
