@@ -19,6 +19,7 @@ use crate::{
         event_context::EventContext,
         game_context::GameContext,
         info_context::{Info, InfoDescription},
+        player_view::PlayerViewContext,
     },
 };
 
@@ -28,6 +29,7 @@ const STRATEGY_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/str
 pub fn StrategyPhaseView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -74,6 +76,9 @@ pub fn StrategyPhaseView() -> Element {
 
         div { class: "card select-strategy-card-card",
             h2 { "Select a strategy card" }
+            if !view.is_active() && !finished_selecting_cards() {
+                p { "Not your turn, {current_player()} is picking" }
+            }
             div { class: "strategy-cards-container",
                 {StrategyCard::iter().map(|s| rsx! {
                     div { key: "{s}", class: "select-card-row",
@@ -82,7 +87,7 @@ pub fn StrategyPhaseView() -> Element {
                             strategy_card: s,
                             selected_by_faction: selected_cards().get(&s).cloned(),
                             set_selected: move |_| select_card(s),
-                            finished_selecting_cards: finished_selecting_cards(),
+                            disabled: finished_selecting_cards() || !view.is_active(),
                         }
                     }
                 })}
@@ -90,7 +95,7 @@ pub fn StrategyPhaseView() -> Element {
                 NaaluTelepathy {}
 
                 Button {
-                    disabled: !finished_selecting_cards(),
+                    disabled: !finished_selecting_cards() || !view.is_global_or_speaker(),
                     onclick: move |_| event.send_event(Event::CompleteStrategyPhase),
                     "Start Action Phase"
                 }
@@ -104,7 +109,7 @@ struct StrategyCardButtonProps {
     strategy_card: StrategyCard,
     selected_by_faction: ReadSignal<Option<(Faction, Arc<FactionState>)>>,
     set_selected: EventHandler<()>,
-    finished_selecting_cards: bool,
+    disabled: bool,
 }
 
 #[component]
@@ -113,7 +118,7 @@ fn StrategyCardButton(
         strategy_card,
         selected_by_faction,
         set_selected,
-        finished_selecting_cards,
+        disabled,
     }: StrategyCardButtonProps,
 ) -> Element {
     let faction = use_memo(move || {
@@ -129,7 +134,7 @@ fn StrategyCardButton(
     rsx! {
         ButtonBase {
             onclick: move |_| set_selected(()),
-            disabled: selected_by_faction().is_some() || finished_selecting_cards,
+            disabled: selected_by_faction().is_some() || disabled,
             class: format!("strategy-card-button style-{}", strategy_card.name()),
             "{strategy_card.card_number()}."
             p { "{strategy_card}" }
