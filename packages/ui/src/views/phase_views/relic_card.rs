@@ -40,7 +40,7 @@ pub fn RelicCardView() -> Element {
                             }
                         } else {
                             rsx! {
-                                p { "Not your turn, currently {current_player_id()}" }
+                                p { "Not your turn, currently {current_player_id()} is playing" }
                             }
                         }
                     }

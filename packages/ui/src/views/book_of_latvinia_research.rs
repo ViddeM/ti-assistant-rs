@@ -22,6 +22,8 @@ pub fn BookOfLatviniaResearch() -> Element {
         if let Some(player_id) = researcher() {
             if view.display_for(&player_id) {
                 BookOfLatviniaTechPicker { key: "{player_id}", player_id }
+            } else {
+                p { "Waiting for {player_id} to research with the Book of Latvinia" }
             }
         }
     }
