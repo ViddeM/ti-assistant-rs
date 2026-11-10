@@ -74,8 +74,8 @@ pub enum Event {
     SetupCulturalExchange {
         /// The player who draws the reference card.
         player: PlayerId,
-        /// The drawn faction, or none to put the card back.
-        faction: Option<Faction>,
+        /// The drawn faction.
+        faction: Faction,
     },
 
     /// Deal a player the reference card of a faction that isn't being played, whose home system
@@ -83,8 +83,8 @@ pub enum Event {
     SetupMinorFaction {
         /// The player who is dealt the reference card.
         player: PlayerId,
-        /// The dealt faction, or none to put the card back.
-        faction: Option<Faction>,
+        /// The dealt faction.
+        faction: Faction,
         /// The system on the map that the minor faction system replaces, set exactly when the
         /// game has a milty map.
         replaced_system: Option<SystemId>,

@@ -253,6 +253,9 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         factions.sort();
         factions
     });
+    let mut selected: Signal<Option<Faction>> = use_signal(|| None);
+    let can_choose =
+        use_memo(move || selected().is_some_and(|faction| options().contains(&faction)));
 
     if player.faction == Faction::FirmamentObsidian {
         return rsx! {
@@ -260,32 +263,32 @@ fn CulturalExchangeSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         };
     }
 
-    if !view.display_for(&player_id) {
-        return rsx! {
-            div { class: "setup-column",
-                label { "Cultural Exchange" }
-                if let Some(faction) = leaders_from() {
-                    p { "{faction.name()}" }
-                } else {
-                    p { "Waiting for {player_id}" }
-                }
-            }
-        };
-    }
-
     rsx! {
         div { class: "setup-column",
             label { "Cultural Exchange" }
-            FactionDropdown {
-                value: leaders_from,
-                options: options(),
-                on_select: move |faction| {
-                    event
-                        .send_event(Event::SetupCulturalExchange {
-                            player: Arc::clone(&player_id),
-                            faction,
-                        })
-                },
+            if let Some(faction) = leaders_from() {
+                p { "{faction.name()}" }
+            } else if view.display_for(&player_id) {
+                FactionDropdown {
+                    value: selected,
+                    options: options(),
+                    on_select: move |faction| selected.set(faction),
+                }
+                Button {
+                    disabled: !can_choose(),
+                    onclick: move |_| {
+                        if let Some(faction) = selected() {
+                            event
+                                .send_event(Event::SetupCulturalExchange {
+                                    player: Arc::clone(&player_id),
+                                    faction,
+                                });
+                        }
+                    },
+                    "Choose"
+                }
+            } else {
+                p { "Waiting for {player_id}" }
             }
         }
     }
@@ -324,20 +327,27 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
     });
     let mut selected_faction: Signal<Option<Faction>> = use_signal(|| None);
     let mut selected_system: Signal<Option<SystemId>> = use_signal(|| None);
+    let can_choose =
+        use_memo(move || selected_faction().is_some_and(|faction| options().contains(&faction)));
     let can_place = use_memo(move || {
-        selected_faction().is_some_and(|faction| options().contains(&faction))
+        can_choose()
             && selected_system().is_some_and(|system| replaceable_systems().contains(&system))
     });
+
+    if let Some(faction) = minor_faction() {
+        return rsx! {
+            div { class: "setup-column",
+                label { "Minor faction" }
+                p { "{faction.name()}" }
+            }
+        };
+    }
 
     if !view.display_for(&player_id) {
         return rsx! {
             div { class: "setup-column",
                 label { "Minor faction" }
-                if let Some(faction) = minor_faction() {
-                    p { "{faction.name()}" }
-                } else {
-                    p { "Waiting for {player_id}" }
-                }
+                p { "Waiting for {player_id}" }
             }
         };
     }
@@ -347,26 +357,24 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
             div { class: "setup-column",
                 label { "Minor faction" }
                 FactionDropdown {
-                    value: minor_faction,
+                    value: selected_faction,
                     options: options(),
-                    on_select: move |faction| {
-                        event
-                            .send_event(Event::SetupMinorFaction {
-                                player: Arc::clone(&player_id),
-                                faction,
-                                replaced_system: None,
-                            })
-                    },
+                    on_select: move |faction| selected_faction.set(faction),
                 }
-            }
-        };
-    }
-
-    if let Some(faction) = minor_faction() {
-        return rsx! {
-            div { class: "setup-column",
-                label { "Minor faction" }
-                p { "{faction.name()}" }
+                Button {
+                    disabled: !can_choose(),
+                    onclick: move |_| {
+                        if let Some(faction) = selected_faction() {
+                            event
+                                .send_event(Event::SetupMinorFaction {
+                                    player: Arc::clone(&player_id),
+                                    faction,
+                                    replaced_system: None,
+                                });
+                        }
+                    },
+                    "Choose"
+                }
             }
         };
     }
@@ -388,12 +396,14 @@ fn MinorFactionSetup(player_id: PlayerId) -> Element {
             Button {
                 disabled: !can_place(),
                 onclick: move |_| {
-                    event
-                        .send_event(Event::SetupMinorFaction {
-                            player: Arc::clone(&player_id),
-                            faction: selected_faction(),
-                            replaced_system: selected_system(),
-                        })
+                    if let Some(faction) = selected_faction() {
+                        event
+                            .send_event(Event::SetupMinorFaction {
+                                player: Arc::clone(&player_id),
+                                faction,
+                                replaced_system: selected_system(),
+                            });
+                    }
                 },
                 "Place"
             }

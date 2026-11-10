@@ -155,7 +155,7 @@ playersPlayTime:
   Dave:
     secs: 120
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:28:00Z"
+currentTurnStartTime: "2025-01-01T12:24:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~

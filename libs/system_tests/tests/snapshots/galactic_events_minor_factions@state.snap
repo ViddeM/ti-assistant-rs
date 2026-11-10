@@ -69,7 +69,7 @@ players:
     breakthrough: ~
     factionState: None
     leadersFrom: ~
-    minorFaction: BaronyOfLetnev
+    minorFaction: Arborec
     homeSystemFrom: XxchaKingdom
 speaker: Alice
 tableOrder:
@@ -133,7 +133,7 @@ playersPlayTime:
   Carol:
     secs: 360
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:46:00Z"
+currentTurnStartTime: "2025-01-01T12:44:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~

@@ -327,32 +327,34 @@ fn try_update_game_state(
         Event::SetupCulturalExchange { player, faction } => {
             game_state.assert_phase(Phase::Setup)?;
             game_state.assert_galactic_event(&GalacticEvent::CulturalExchangeProgram)?;
-            let Some(own_faction) = game_state.players.get(&player).map(|p| p.faction) else {
+            let Some(current) = game_state.players.get(&player) else {
                 bail!("Player doesn't exist '{player}'");
             };
+            if let Some(drawn) = current.leaders_from {
+                bail!(
+                    "{player} has already drawn {}, use Undo to change it",
+                    drawn.name()
+                );
+            }
             ensure!(
-                own_faction != Faction::FirmamentObsidian
-                    && faction != Some(Faction::FirmamentObsidian),
+                current.faction != Faction::FirmamentObsidian
+                    && faction != Faction::FirmamentObsidian,
                 "The Firmament doesn't take part in the Cultural Exchange Program"
             );
-
-            if let Some(faction) = faction {
-                ensure!(
-                    game_state.players.values().any(|p| p.faction == faction),
-                    "{} isn't in play",
-                    faction.name()
-                );
-                let holder = (game_state.players.iter())
-                    .find(|(id, p)| **id != player && p.leaders_from == Some(faction));
-                if let Some((holder, _)) = holder {
-                    bail!("{} has already been drawn by {holder}", faction.name());
-                }
+            ensure!(
+                game_state.players.values().any(|p| p.faction == faction),
+                "{} isn't in play",
+                faction.name()
+            );
+            let holder = (game_state.players.iter()).find(|(_, p)| p.leaders_from == Some(faction));
+            if let Some((holder, _)) = holder {
+                bail!("{} has already been drawn by {holder}", faction.name());
             }
 
             let Some(player) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist '{player}'");
             };
-            player.leaders_from = faction;
+            player.leaders_from = Some(faction);
         }
         Event::SetupMinorFaction {
             player,
@@ -361,36 +363,27 @@ fn try_update_game_state(
         } => {
             game_state.assert_phase(Phase::Setup)?;
             game_state.assert_galactic_event(&GalacticEvent::MinorFactions)?;
-            ensure!(
-                game_state.players.contains_key(&player),
-                "Player doesn't exist '{player}'"
-            );
-
-            if let Some(faction) = faction {
-                game_state.assert_enabled(&faction)?;
-                ensure!(
-                    game_state.is_minor_faction_available(&player, faction),
-                    "{} can't be {player}'s minor faction: it has to be out of play, not another player's minor faction and have a home system with no controlled planets",
-                    faction.name()
+            let Some(current) = game_state.players.get(&player) else {
+                bail!("Player doesn't exist '{player}'");
+            };
+            if let Some(current) = current.minor_faction {
+                bail!(
+                    "{} is already {player}'s minor faction, use Undo to change it",
+                    current.name()
                 );
             }
+            game_state.assert_enabled(&faction)?;
+            ensure!(
+                game_state.is_minor_faction_available(&player, faction),
+                "{} can't be {player}'s minor faction: it has to be out of play, not another player's minor faction and have a home system with no controlled planets",
+                faction.name()
+            );
 
-            let current = game_state
-                .players
-                .get(&player)
-                .and_then(|p| p.minor_faction);
             match (
                 game_state.map_data.milty_information.as_mut(),
-                faction,
                 replaced_system,
             ) {
-                (Some(milty), Some(faction), Some(replaced_system)) => {
-                    if let Some(current) = current {
-                        bail!(
-                            "{} is already on the map as {player}'s minor faction, use Undo to change it",
-                            current.name()
-                        );
-                    }
+                (Some(milty), Some(replaced_system)) => {
                     ensure!(
                         milty
                             .hex_map
@@ -407,21 +400,21 @@ fn try_update_game_state(
                         .hex_map
                         .place_minor_faction_system(faction, &replaced_system);
                 }
-                (Some(_), _, _) => {
-                    bail!("Choose the minor faction and the system it replaces on the map")
+                (Some(_), None) => {
+                    bail!("Choose the system the minor faction system replaces on the map")
                 }
-                (None, _, Some(_)) => {
+                (None, Some(_)) => {
                     bail!(
                         "Only games imported from milty have a map to place the minor faction system on"
                     )
                 }
-                (None, _, None) => {}
+                (None, None) => {}
             }
 
             let Some(player) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist '{player}'");
             };
-            player.minor_faction = faction;
+            player.minor_faction = Some(faction);
         }
         Event::SetupPlayerTechs {
             player,

@@ -617,30 +617,37 @@ pub fn galactic_events_cultural_exchange_program() -> TestGame {
         .player("Dave", Faction::FirmamentObsidian)
         .galactic_events([GalacticEvent::CulturalExchangeProgram])
         .setup();
-    let draw = |player: &str, faction: Option<Faction>| Event::SetupCulturalExchange {
+    let draw = |player: &str, faction: Faction| Event::SetupCulturalExchange {
         player: p(player),
         faction,
     };
 
     g.expect_rejected(
-        draw("Dave", Some(Faction::Arborec)),
+        draw("Dave", Faction::Arborec),
         "The Firmament doesn't take part in the Cultural Exchange Program",
     )
     .expect_rejected(
-        draw("Alice", Some(Faction::FirmamentObsidian)),
+        draw("Alice", Faction::FirmamentObsidian),
         "The Firmament doesn't take part in the Cultural Exchange Program",
     )
     .expect_rejected(
-        draw("Alice", Some(Faction::FederationOfSol)),
+        draw("Alice", Faction::FederationOfSol),
         "The Federation of Sol isn't in play",
     )
-    .apply(draw("Alice", Some(Faction::Arborec)))
+    .apply(draw("Alice", Faction::XxchaKingdom))
     .expect_rejected(
-        draw("Carol", Some(Faction::Arborec)),
-        "The Arborec has already been drawn by Alice",
+        draw("Bob", Faction::XxchaKingdom),
+        "The Xxcha Kingdom has already been drawn by Alice",
     )
-    .apply(draw("Alice", None));
-    assert_eq!(g.player("Alice").leaders_from, None);
+    .expect_rejected(
+        draw("Alice", Faction::Arborec),
+        "Alice has already drawn The Xxcha Kingdom, use Undo to change it",
+    );
+    assert!(
+        !g.state()
+            .player_initialization_finished(&p("Bob"))
+            .expect("Bob to be in the game")
+    );
 
     g.auto_setup();
     assert_eq!(g.player("Alice").leaders_from, Some(Faction::XxchaKingdom));
@@ -648,13 +655,7 @@ pub fn galactic_events_cultural_exchange_program() -> TestGame {
     assert_eq!(g.player("Carol").leaders_from, Some(Faction::Arborec));
     assert_eq!(g.player("Dave").leaders_from, None);
 
-    g.apply(draw("Bob", None))
-        .expect_rejected(
-            Event::StartGame,
-            "All initialization has not yet been completed",
-        )
-        .apply(draw("Bob", Some(Faction::YssarilTribes)))
-        .start_game();
+    g.start_game();
     assert!(g.player("Dave").relics.contains(&Relic::TheObsidian));
 
     let leaders = |g: &TestGame, player: &str| {
@@ -1029,10 +1030,9 @@ pub fn galactic_events_minor_factions() -> TestGame {
         .player("Alice", Faction::FederationOfSol)
         .player("Bob", Faction::EmiratesOfHacan)
         .player("Carol", Faction::CouncilKeleres)
-        .tribunii(Faction::XxchaKingdom)
         .galactic_events([GalacticEvent::MinorFactions, GalacticEvent::DangerousWilds])
         .setup();
-    let deal = |player: &str, faction: Option<Faction>| Event::SetupMinorFaction {
+    let deal = |player: &str, faction: Faction| Event::SetupMinorFaction {
         player: p(player),
         faction,
         replaced_system: None,
@@ -1042,24 +1042,28 @@ pub fn galactic_events_minor_factions() -> TestGame {
         |g: &TestGame, player: &str, planet| g.state().minor_faction_alliance(&p(player), &planet);
 
     g.expect_rejected(
-        deal("Alice", Some(Faction::EmiratesOfHacan)),
+        deal("Alice", Faction::EmiratesOfHacan),
         "The Emirates of Hacan can't be Alice's minor faction",
     )
     .expect_rejected(
-        deal("Alice", Some(Faction::CouncilKeleres)),
+        deal("Alice", Faction::CouncilKeleres),
         "The Council Keleres can't be Alice's minor faction",
     )
     .expect_rejected(
         Event::SetupMinorFaction {
             player: p("Alice"),
-            faction: Some(Faction::MentakCoalition),
+            faction: Faction::MentakCoalition,
             replaced_system: Some("19".into()),
         },
         "Only games imported from milty have a map",
     )
-    .apply(deal("Alice", Some(Faction::MentakCoalition)))
+    .apply(deal("Alice", Faction::MentakCoalition))
     .expect_rejected(
-        deal("Bob", Some(Faction::MentakCoalition)),
+        deal("Alice", Faction::NaaluCollective),
+        "The Mentak Coalition is already Alice's minor faction, use Undo to change it",
+    )
+    .expect_rejected(
+        deal("Bob", Faction::MentakCoalition),
         "The Mentak Coalition can't be Bob's minor faction",
     )
     .expect_rejected(
@@ -1068,25 +1072,27 @@ pub fn galactic_events_minor_factions() -> TestGame {
             faction: Faction::MentakCoalition,
         },
         "The Mentak Coalition is Alice's minor faction",
+    )
+    .apply(Event::SetupTheTribunii {
+        player: p("Carol"),
+        faction: Faction::XxchaKingdom,
+    })
+    .expect_rejected(
+        deal("Bob", Faction::XxchaKingdom),
+        "The Xxcha Kingdom can't be Bob's minor faction",
+    );
+    assert!(
+        !g.state()
+            .player_initialization_finished(&p("Bob"))
+            .expect("Bob to be in the game")
     );
 
-    g.auto_setup();
+    g.apply(deal("Bob", Faction::NaaluCollective)).auto_setup();
     assert_eq!(minor_faction(&g, "Alice"), Some(Faction::MentakCoalition));
-    assert_eq!(minor_faction(&g, "Bob"), Some(Faction::Arborec));
-    assert_eq!(minor_faction(&g, "Carol"), Some(Faction::BaronyOfLetnev));
+    assert_eq!(minor_faction(&g, "Bob"), Some(Faction::NaaluCollective));
+    assert_eq!(minor_faction(&g, "Carol"), Some(Faction::Arborec));
 
-    g.apply(deal("Bob", None))
-        .expect_rejected(
-            Event::StartGame,
-            "All initialization has not yet been completed",
-        )
-        .expect_rejected(
-            deal("Bob", Some(Faction::XxchaKingdom)),
-            "The Xxcha Kingdom can't be Bob's minor faction",
-        )
-        .apply(deal("Bob", Some(Faction::NaaluCollective)))
-        .start_game()
-        .strategy_phase(SIMPLE_PICKS);
+    g.start_game().strategy_phase(SIMPLE_PICKS);
 
     assert!(!g.state().is_home_planet(&Planet::MollPrimus));
     assert!(g.state().is_home_planet(&Planet::Jord));
@@ -1181,12 +1187,11 @@ pub fn galactic_events_minor_factions_on_a_milty_map() -> TestGame {
         .milty(five_player_draft())
         .galactic_events([GalacticEvent::MinorFactions])
         .setup();
-    let deal =
-        |player: &str, faction: Option<Faction>, replaced: Option<&str>| Event::SetupMinorFaction {
-            player: p(player),
-            faction,
-            replaced_system: replaced.map(String::from),
-        };
+    let deal = |player: &str, faction: Faction, replaced: Option<&str>| Event::SetupMinorFaction {
+        player: p(player),
+        faction,
+        replaced_system: replaced.map(String::from),
+    };
     let positions = |g: &TestGame, system: &str| {
         (g.state().map_data.milty_information.as_ref())
             .expect("a milty map")
@@ -1212,48 +1217,40 @@ pub fn galactic_events_minor_factions_on_a_milty_map() -> TestGame {
 
     let not_replaceable = "isn't a system on the map that a minor faction system can replace";
     g.expect_rejected(
-        deal("Ann", Some(Faction::MentakCoalition), None),
-        "Choose the minor faction and the system it replaces on the map",
+        deal("Ann", Faction::MentakCoalition, None),
+        "Choose the system the minor faction system replaces on the map",
     )
     .expect_rejected(
-        deal("Ann", None, Some("24")),
-        "Choose the minor faction and the system it replaces on the map",
-    )
-    .expect_rejected(
-        deal("Ann", Some(Faction::MentakCoalition), Some("112")),
+        deal("Ann", Faction::MentakCoalition, Some("112")),
         not_replaceable,
     )
     .expect_rejected(
-        deal("Ann", Some(Faction::MentakCoalition), Some("85A")),
+        deal("Ann", Faction::MentakCoalition, Some("85A")),
         not_replaceable,
     )
     .expect_rejected(
-        deal("Ann", Some(Faction::MentakCoalition), Some("95")),
+        deal("Ann", Faction::MentakCoalition, Some("95")),
         not_replaceable,
     )
     .expect_rejected(
-        deal("Ann", Some(Faction::MentakCoalition), Some("26")),
+        deal("Ann", Faction::MentakCoalition, Some("26")),
         not_replaceable,
     )
-    .apply(deal("Ann", Some(Faction::MentakCoalition), Some("24")))
+    .apply(deal("Ann", Faction::MentakCoalition, Some("24")))
     .expect_rejected(
-        deal("Ann", Some(Faction::NaaluCollective), Some("28")),
-        "The Mentak Coalition is already on the map as Ann's minor faction, use Undo to change it",
+        deal("Ann", Faction::NaaluCollective, Some("28")),
+        "The Mentak Coalition is already Ann's minor faction, use Undo to change it",
     )
     .expect_rejected(
-        deal("Ann", None, None),
-        "Choose the minor faction and the system it replaces on the map",
-    )
-    .expect_rejected(
-        deal("Ben", Some(Faction::NaaluCollective), Some("2")),
+        deal("Ben", Faction::NaaluCollective, Some("2")),
         not_replaceable,
     )
-    .apply(deal("Ben", Some(Faction::GhostsOfCreuss), Some("28")))
+    .apply(deal("Ben", Faction::GhostsOfCreuss, Some("28")))
     .expect_rejected(
-        deal("Cid", Some(Faction::NaaluCollective), Some("17")),
+        deal("Cid", Faction::NaaluCollective, Some("17")),
         not_replaceable,
     )
-    .apply(deal("Cid", Some(Faction::CrimsonRebellion), Some("32")));
+    .apply(deal("Cid", Faction::CrimsonRebellion, Some("32")));
 
     assert_eq!(positions(&g, "2"), mehar_xull);
     assert_eq!(positions(&g, "24"), vec![]);
@@ -1420,7 +1417,7 @@ fn cultural_exchange_program_needs_the_event() {
     g.expect_rejected(
         Event::SetupCulturalExchange {
             player: p("Alice"),
-            faction: Some(Faction::XxchaKingdom),
+            faction: Faction::XxchaKingdom,
         },
         "Cultural Exchange Program isn't in play",
     );
@@ -1443,7 +1440,7 @@ fn minor_factions_needs_the_event() {
     g.expect_rejected(
         Event::SetupMinorFaction {
             player: p("Alice"),
-            faction: Some(Faction::MentakCoalition),
+            faction: Faction::MentakCoalition,
             replaced_system: None,
         },
         "Minor Factions isn't in play",

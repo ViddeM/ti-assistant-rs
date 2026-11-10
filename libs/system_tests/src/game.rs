@@ -157,13 +157,13 @@ impl TestGame {
     /// - Deepwrought Scholarate: Neural Motivator and Plasma Scoring.
     /// - Last Bastion: Sarween Tools.
     /// - Crimson Rebellion: Plasma Scoring.
-    /// - Council Keleres: the first of Mentak/Xxcha/Argent not in the game, and the first two
-    ///   (by name) base techs owned by the other players.
+    /// - Council Keleres: unless they've already done The Tribunii, the first of Mentak/Xxcha/Argent
+    ///   not in the game, and the first two (by name) base techs owned by the other players.
     /// - Speaker: the first player in table order, unless imported from milty.
     /// - Civilized Society: the first five enabled stage I and stage II objectives (in declaration
     ///   order) are revealed, ignoring the `objectives(..)` override.
-    /// - Cultural Exchange Program: each player except the Firmament draws the faction of the next
-    ///   such player in table order, wrapping around.
+    /// - Cultural Exchange Program: each player except the Firmament who hasn't drawn yet draws the
+    ///   faction of the next such player in table order, wrapping around.
     /// - Minor Factions: each player without a minor faction, in table order, is dealt the first
     ///   enabled faction (in declaration order) that is available as one. On a milty map its
     ///   system replaces the first (by number) system that a minor faction system can replace.
@@ -214,21 +214,24 @@ impl TestGame {
 
         // Keleres goes last since they pick their techs from the other players.
         if let Some(player) = keleres {
-            let in_game: Vec<Faction> = self.state().players.values().map(|p| p.faction).collect();
-            let faction = setup.tribunii.unwrap_or_else(|| {
-                [
-                    Faction::MentakCoalition,
-                    Faction::XxchaKingdom,
-                    Faction::ArgentFlight,
-                ]
-                .into_iter()
-                .find(|f| !in_game.contains(f))
-                .expect("no faction available for the Tribunii")
-            });
-            self.apply(Event::SetupTheTribunii {
-                player: player.clone(),
-                faction,
-            });
+            if self.state().players[&player].home_system_from.is_none() {
+                let in_game: Vec<Faction> =
+                    self.state().players.values().map(|p| p.faction).collect();
+                let faction = setup.tribunii.unwrap_or_else(|| {
+                    [
+                        Faction::MentakCoalition,
+                        Faction::XxchaKingdom,
+                        Faction::ArgentFlight,
+                    ]
+                    .into_iter()
+                    .find(|f| !in_game.contains(f))
+                    .expect("no faction available for the Tribunii")
+                });
+                self.apply(Event::SetupTheTribunii {
+                    player: player.clone(),
+                    faction,
+                });
+            }
 
             let technologies = custom_techs(&player).unwrap_or_else(|| {
                 let base_techs: BTreeSet<Technology> = self
@@ -275,10 +278,13 @@ impl TestGame {
                 .filter(|(_, faction)| *faction != Faction::FirmamentObsidian)
                 .collect();
             for (index, (player, _)) in drawing.iter().enumerate() {
+                if self.state().players[player].leaders_from.is_some() {
+                    continue;
+                }
                 let (_, faction) = drawing[(index + 1) % drawing.len()];
                 self.apply(Event::SetupCulturalExchange {
                     player: player.clone(),
-                    faction: Some(faction),
+                    faction,
                 });
             }
         }
@@ -306,7 +312,7 @@ impl TestGame {
                     });
                 self.apply(Event::SetupMinorFaction {
                     player: player.clone(),
-                    faction: Some(faction),
+                    faction,
                     replaced_system,
                 });
             }
