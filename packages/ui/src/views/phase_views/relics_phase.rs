@@ -6,7 +6,9 @@ use ti_helper_game_data::{
 
 use crate::{
     components::button::Button,
-    data::{event_context::EventContext, game_context::GameContext},
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+    },
     views::select_tech::SelectTechView,
 };
 
@@ -14,6 +16,7 @@ use crate::{
 pub fn RelicsPhaseView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let all_players = use_memo(move || {
         let mut players = gc
@@ -63,17 +66,21 @@ pub fn RelicsPhaseView() -> Element {
                 h2 { "Play the Crown of Emphidia?" }
                 fieldset {
                     legend { "{holder}" }
-                    Button {
-                        onclick: {
-                            let holder = holder.clone();
-                            move |_| {
-                                event
-                                    .send_event(Event::PlayCrownOfEmphidia {
-                                        player: holder.clone(),
-                                    })
-                            }
-                        },
-                        "Play"
+                    if view.display_for(&holder) {
+                        Button {
+                            onclick: {
+                                let holder = holder.clone();
+                                move |_| {
+                                    event
+                                        .send_event(Event::PlayCrownOfEmphidia {
+                                            player: holder.clone(),
+                                        })
+                                }
+                            },
+                            "Play"
+                        }
+                    } else {
+                        p { "Waiting for {holder}" }
                     }
                 }
             }
@@ -82,18 +89,22 @@ pub fn RelicsPhaseView() -> Element {
                 h2 { "Play of maw of Worlds?" }
                 fieldset { class: "screen-container",
                     legend { "{holder}" }
-                    SelectTechView {
-                        player_id: holder.clone(),
-                        on_select: {
-                            let holder = holder.clone();
-                            move |tech| {
-                                event
-                                    .send_event(Event::PlayMawOfWorlds {
-                                        player: holder.clone(),
-                                        tech,
-                                    });
-                            }
-                        },
+                    if view.display_for(&holder) {
+                        SelectTechView {
+                            player_id: holder.clone(),
+                            on_select: {
+                                let holder = holder.clone();
+                                move |tech| {
+                                    event
+                                        .send_event(Event::PlayMawOfWorlds {
+                                            player: holder.clone(),
+                                            tech,
+                                        });
+                                }
+                            },
+                        }
+                    } else {
+                        p { "Waiting for {holder}" }
                     }
                 }
             }
@@ -104,6 +115,7 @@ pub fn RelicsPhaseView() -> Element {
 
             Button {
                 class: "margin-top",
+                disabled: !view.is_global_or_speaker(),
                 onclick: move |_| event.send_event(Event::CompleteRelicsPhase),
                 "Continue"
             }
