@@ -11,6 +11,7 @@ pub mod new_game;
 pub mod phase_view;
 pub mod phase_views;
 pub mod planet_view_mode;
+pub mod player_view_dropdown;
 pub mod players_sidebar;
 pub mod relic_view_mode;
 pub mod score_view_mode;

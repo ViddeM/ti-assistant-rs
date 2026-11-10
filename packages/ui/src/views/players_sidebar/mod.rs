@@ -4,14 +4,14 @@ use dioxus::prelude::*;
 use ti_helper_game_data::common::player_id::PlayerId;
 
 use crate::{
-    components::{dropdown::Dropdown, faction_icon::get_faction_icon},
-    data::{
-        game_context::GameContext,
-        player_view::{PlayerView, PlayerViewContext},
-    },
-    views::players_sidebar::parts::{
-        player_resources::PlayerResources, player_score_info::PlayerScoreInfo,
-        player_time_info::PlayerTimeInfo, strategy_card_info::StrategyCardInfo,
+    components::faction_icon::get_faction_icon,
+    data::game_context::GameContext,
+    views::{
+        player_view_dropdown::PlayerViewDropdown,
+        players_sidebar::parts::{
+            player_resources::PlayerResources, player_score_info::PlayerScoreInfo,
+            player_time_info::PlayerTimeInfo, strategy_card_info::StrategyCardInfo,
+        },
     },
 };
 
@@ -23,7 +23,6 @@ const PLAYERS_SIDEBAR_SCSS: Asset =
 #[component]
 pub fn PlayersSidebar() -> Element {
     let gc = use_context::<GameContext>();
-    let view = use_context::<PlayerViewContext>();
 
     let current_player = use_memo(move || gc.game_state().current_player.clone());
     let next_player = use_memo(move || {
@@ -38,23 +37,6 @@ pub fn PlayersSidebar() -> Element {
         "None".to_string()
     });
 
-    let handle_playing_as_change = move |event: FormEvent| {
-        let v = event.value();
-
-        if v.is_empty() {
-            view.set_global();
-        } else {
-            let player_id = PlayerId::from(v);
-            view.set_player(player_id);
-        }
-    };
-
-    let currently_viewing_as = use_memo(move || match view.get()() {
-        PlayerView::Global => "".to_string(),
-        PlayerView::Player { player_id } => player_id.to_string(),
-    });
-
-    let players = use_memo(move || gc.game_state().players.keys().cloned().collect::<Vec<_>>());
     let turn_order_players = use_memo(move || gc.game_state().turn_order.clone());
 
     rsx! {
@@ -62,16 +44,7 @@ pub fn PlayersSidebar() -> Element {
 
         div { class: "card",
             h2 { "Players" }
-            label { r#for: "playing-as-dropdown", "Selected player view: " }
-            Dropdown {
-                id: "playing-as-dropdown",
-                value: "{currently_viewing_as()}",
-                oninput: handle_playing_as_change,
-                option { value: "", "Global view" }
-                for player in players().iter() {
-                    option { value: player.to_string(), "{player}" }
-                }
-            }
+            PlayerViewDropdown {}
             div { class: "player-side-bar-card",
                 if let Some(current) = current_player() {
                     fieldset { class: "player-box-container",

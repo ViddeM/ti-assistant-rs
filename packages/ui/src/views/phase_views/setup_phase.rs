@@ -12,13 +12,16 @@ use ti_helper_game_data::{
     state::player::Player,
 };
 
-use crate::views::phase_views::{
-    faction_setup_views::{
-        argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
-        deepwrought_scholarate_setup::DeepwroughtScholarateSetup,
-        pick_one_tech_setup::PickOneTechSetup,
+use crate::views::{
+    phase_views::{
+        faction_setup_views::{
+            argent_flight_setup::ArgentFlightSetup, council_keleres_setup::CouncilKeleresSetup,
+            deepwrought_scholarate_setup::DeepwroughtScholarateSetup,
+            pick_one_tech_setup::PickOneTechSetup,
+        },
+        speaker_step::SpeakerStep,
     },
-    speaker_step::SpeakerStep,
+    player_view_dropdown::PlayerViewDropdown,
 };
 use crate::{
     components::{
@@ -57,6 +60,8 @@ pub fn SetupPhaseView() -> Element {
 
         div { class: "card setup-container",
             h2 { "Setup" }
+
+            PlayerViewDropdown {}
 
             PlayersSetup {}
 
