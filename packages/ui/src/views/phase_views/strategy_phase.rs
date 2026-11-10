@@ -77,9 +77,6 @@ pub fn StrategyPhaseView() -> Element {
 
         div { class: "card select-strategy-card-card",
             h2 { "Select a strategy card" }
-            if !view.is_active() && !finished_selecting_cards() {
-                p { class: "align-center", "Not your turn, {current_player()} is picking" }
-            }
             div { class: "strategy-cards-container",
                 {StrategyCard::iter().map(|s| rsx! {
                     div { key: "{s}", class: "select-card-row",
@@ -95,7 +92,12 @@ pub fn StrategyPhaseView() -> Element {
 
                 NaaluTelepathy {}
 
+                if !view.is_active() && !finished_selecting_cards() {
+                    p { class: "align-center", "Waiting for {current_player()} to pick" }
+                }
+
                 SpeakerStep {
+                    class: "align-center",
                     ready: finished_selecting_cards(),
                     waiting_for: "start the action phase",
                     onclick: move |_| event.send_event(Event::CompleteStrategyPhase),
