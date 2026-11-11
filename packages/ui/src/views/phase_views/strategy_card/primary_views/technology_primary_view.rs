@@ -35,6 +35,7 @@ pub fn TechnologyPrimaryView(
     });
 
     let mut first_tech = use_signal(|| None);
+    let filtered_techs = use_memo(move || first_tech().map(|t: Technology| vec![t]));
 
     if player_faction().eq(&Faction::NekroVirus) {
         return rsx! {
@@ -43,8 +44,6 @@ pub fn TechnologyPrimaryView(
             }
         };
     }
-
-    let filtered_techs = use_memo(move || first_tech().map(|t: Technology| vec![t]));
 
     if let Some(StrategicPrimaryProgress::Technology {
         first_tech,
