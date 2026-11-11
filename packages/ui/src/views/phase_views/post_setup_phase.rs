@@ -11,13 +11,8 @@ use crate::{
         button::Button,
         dropdown::PlanetDropdown,
     },
-    data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
-    },
-    views::{
-        destroyed_planets::planets_on_board, phase_views::speaker_step::SpeakerStep,
-        select_tech::SelectTechView,
-    },
+    data::{event_context::EventContext, game_context::GameContext},
+    views::{destroyed_planets::planets_on_board, select_tech::SelectTechView},
 };
 
 const POST_SETUP_PHASE_SCSS: Asset =
@@ -40,10 +35,9 @@ pub fn PostSetupPhaseView() -> Element {
                 for player in players() {
                     RapidMobilizationPlayer { key: "{player}", player }
                 }
-                SpeakerStep {
+                Button {
                     class: "margin-top",
-                    ready: all_resolved(),
-                    waiting_for: "start the strategy phase",
+                    disabled: !all_resolved(),
                     onclick: move |_| event.send_event(Event::CompletePostSetupPhase),
                     "Start Strategy Phase"
                 }
@@ -55,7 +49,6 @@ pub fn PostSetupPhaseView() -> Element {
 #[component]
 fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
     let gc = use_context::<GameContext>();
-    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
     let color = use_memo(move || {
@@ -117,7 +110,7 @@ fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
                 } else {
                     p { "Resolved" }
                 }
-            } else if view.display_for(&player()) {
+            } else {
                 p { class: "rapid-mobilization-label", "Planets" }
                 for planet in planets() {
                     div { key: "{planet}", class: "row space-between",
@@ -208,8 +201,6 @@ fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
                     },
                     "Done"
                 }
-            } else {
-                p { "Waiting for {player}" }
             }
         }
     }
