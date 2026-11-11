@@ -658,16 +658,9 @@ fn try_update_game_state(
         Event::TacticalActionBegin { player } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
-            game_state.phase = Phase::TacticalAction;
-            game_state.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress {
-                activated_system: None,
-                taken_planets: Default::default(),
-                planet_attachments: Default::default(),
-                researched_techs: Default::default(),
-            }));
+            start_tactical_action(game_state);
         }
         Event::TacticalActionTakePlanet { player, planet } => {
-            game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
             let planet_system = match game_state.planet_location(&planet) {
                 PlanetLocation::SystemTile => Some(System::for_planet(&planet)?.id),
@@ -682,14 +675,7 @@ fn try_update_game_state(
                 game_state.gain_breakthrough(&player)?;
             }
 
-            let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
-            else {
-                bail!(
-                    "Invalid game state, expected tactical action, got {:?}",
-                    game_state.action_progress
-                );
-            };
-
+            let tactical = game_state.tactical_progress_mut()?;
             tactical.activated_system = planet_system;
             tactical.taken_planets.insert(planet, previous_owner);
         }
@@ -698,18 +684,11 @@ fn try_update_game_state(
             planet,
             attachment,
         } => {
-            game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
             let planet_traits = game_state.planet_traits(&planet);
 
             {
-                let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
-                else {
-                    bail!(
-                        "Invalid game state, expected tactical action, got {:?}",
-                        game_state.action_progress
-                    );
-                };
+                let tactical = game_state.tactical_progress_mut()?;
 
                 let Some(taken_from) = tactical.taken_planets.get(&planet) else {
                     bail!("Can only attach attachment to planet taken this turn")
@@ -745,14 +724,8 @@ fn try_update_game_state(
             let actual_attachment = attachment.match_planet(&planet.info());
             planet_attachments.insert(actual_attachment.clone());
 
-            let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
-            else {
-                bail!(
-                    "Invalid game state, was just tactical action, is now {:?}. This is a bug!",
-                    game_state.action_progress
-                );
-            };
-            tactical
+            game_state
+                .tactical_progress_mut()?
                 .planet_attachments
                 .insert(planet, actual_attachment);
         }
@@ -761,18 +734,12 @@ fn try_update_game_state(
             planet,
             tech,
         } => {
-            game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
             game_state.assert_galactic_event(&GalacticEvent::DangerousWilds)?;
+            let planet_traits = game_state.planet_traits(&planet);
 
             {
-                let Some(ActionPhaseProgress::Tactical(tactical)) = &game_state.action_progress
-                else {
-                    bail!(
-                        "Invalid game state, expected tactical action, got {:?}",
-                        game_state.action_progress
-                    );
-                };
+                let tactical = game_state.tactical_progress_mut()?;
 
                 let Some(taken_from) = tactical.taken_planets.get(&planet) else {
                     bail!("Can only research for a planet taken this turn")
@@ -785,9 +752,7 @@ fn try_update_game_state(
                 );
 
                 ensure!(
-                    game_state
-                        .planet_traits(&planet)
-                        .contains(&PlanetTrait::Hazardous),
+                    planet_traits.contains(&PlanetTrait::Hazardous),
                     "{} isn't hazardous",
                     planet.info().name
                 );
@@ -803,14 +768,10 @@ fn try_update_game_state(
             let current_player = game_state.get_current_player()?;
             current_player.research_tech(tech.clone())?;
 
-            let Some(ActionPhaseProgress::Tactical(tactical)) = &mut game_state.action_progress
-            else {
-                bail!(
-                    "Invalid game state, was just tactical action, is now {:?}. This is a bug!",
-                    game_state.action_progress
-                );
-            };
-            tactical.researched_techs.insert(planet, tech);
+            game_state
+                .tactical_progress_mut()?
+                .researched_techs
+                .insert(planet, tech);
         }
         Event::TacticalActionCommit { player } => {
             game_state.assert_phase(Phase::TacticalAction)?;
@@ -2956,6 +2917,12 @@ fn perform_strategic_secondary(
     }
 
     Ok(())
+}
+
+/// Start a tactical action for the current player.
+fn start_tactical_action(game_state: &mut GameState) {
+    game_state.phase = Phase::TacticalAction;
+    game_state.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress::default()));
 }
 
 /// End the current action turn, which isn't possible while Thunder's Edge waits to be placed.

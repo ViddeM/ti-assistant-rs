@@ -10,7 +10,7 @@ use ti_helper_game_data::{
     },
     state::{
         faction_state::FirmamentSide,
-        game_state::{ActionPhaseProgress, PlanetLocation, TacticalProgress},
+        game_state::{ActionPhaseProgress, PlanetLocation},
     },
 };
 use ti_helper_system_tests::prelude::*;
@@ -380,13 +380,13 @@ fn take(player: &str, planet: Planet) -> Event {
 }
 
 fn activated_system(g: &TestGame) -> Option<SystemId> {
-    let Some(ActionPhaseProgress::Tactical(TacticalProgress {
-        activated_system, ..
-    })) = &g.state().action_progress
-    else {
-        panic!("no tactical action in progress");
-    };
-    activated_system.clone()
+    g.state()
+        .action_progress
+        .as_ref()
+        .and_then(ActionPhaseProgress::tactical)
+        .expect("no tactical action in progress")
+        .activated_system
+        .clone()
 }
 
 /// The Fracture planets are in their own systems, once the Fracture is in play. Planets without a

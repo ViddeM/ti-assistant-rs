@@ -49,6 +49,7 @@ pub mod prelude {
     pub use crate::{
         Scenario, TestGame,
         game::{AGAINST, FOR, elect, p},
+        phases::TacticalSteps,
         scenarios,
     };
 }

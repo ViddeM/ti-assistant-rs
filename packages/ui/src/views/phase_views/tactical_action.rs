@@ -8,7 +8,7 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         tech::Technology,
     },
-    state::game_state::{ActionPhaseProgress, PlanetLocation, TacticalProgress},
+    state::game_state::{ActionPhaseProgress, PlanetLocation},
 };
 
 use crate::{
@@ -29,6 +29,7 @@ const TACTICAL_ACTION_VIEW: Asset =
 pub fn TacticalActionView() -> Element {
     let gc = use_context::<GameContext>();
     let view = use_context::<PlayerViewContext>();
+    let event = use_context::<EventContext>();
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -37,20 +38,19 @@ pub fn TacticalActionView() -> Element {
             .expect("Current player to exist in action phase")
     });
 
-    let tactical = use_memo(move || gc.game_state().action_progress.clone());
-
     rsx! {
-        document::Stylesheet { href: TACTICAL_ACTION_VIEW }
-
-        if let Some(progress) = tactical() {
-            div { class: "card tactical-container",
-                if let ActionPhaseProgress::Tactical(t) = progress {
-                    h2 { "Tactical" }
-                    if view.is_active() {
-                        TacticalActionProgressView { progress: t }
-                    } else {
-                        p { "Not your turn, waiting for {current_player()}" }
-                    }
+        div { class: "card tactical-container",
+            h2 { "Tactical" }
+            TacticalAction {}
+            if view.is_active() {
+                Button {
+                    onclick: move |_| {
+                        event
+                            .send_event(Event::TacticalActionCommit {
+                                player: current_player(),
+                            })
+                    },
+                    "End Tactical"
                 }
             }
         }
@@ -58,15 +58,25 @@ pub fn TacticalActionView() -> Element {
 }
 
 #[component]
-fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element {
+pub fn TacticalAction() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let current_player = use_memo(move || {
         gc.game_state()
             .current_player
             .clone()
             .expect("Current player to exist in action phase")
+    });
+
+    let progress = use_memo(move || {
+        gc.game_state()
+            .action_progress
+            .as_ref()
+            .and_then(ActionPhaseProgress::tactical)
+            .cloned()
+            .unwrap_or_default()
     });
 
     let taken_planets = use_memo(move || {
@@ -130,7 +140,11 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
     let attachments = use_memo(move || progress().planet_attachments);
 
     rsx! {
-        if !taken_planets().is_empty() {
+        document::Stylesheet { href: TACTICAL_ACTION_VIEW }
+
+        if !view.is_active() {
+            p { "Not your turn, waiting for {current_player()}" }
+        } else if !taken_planets().is_empty() {
             for (planet , previous_owner) in taken_planets().iter() {
                 fieldset { key: "{planet}",
                     legend { "{planet.info().name}" }
@@ -208,15 +222,6 @@ fn TacticalActionProgressView(progress: ReadSignal<TacticalProgress>) -> Element
                     }
                 }
             }
-        }
-        Button {
-            onclick: move |_| {
-                event
-                    .send_event(Event::TacticalActionCommit {
-                        player: current_player(),
-                    })
-            },
-            "End Tactical"
         }
     }
 }

@@ -272,6 +272,22 @@ impl ActionPhaseProgress {
     pub fn is_tactical(&self) -> bool {
         matches!(self, ActionPhaseProgress::Tactical(_))
     }
+
+    /// The tactical action being performed, if any.
+    pub fn tactical(&self) -> Option<&TacticalProgress> {
+        match self {
+            ActionPhaseProgress::Tactical(tactical) => Some(tactical),
+            _ => None,
+        }
+    }
+
+    /// The tactical action being performed, if any.
+    pub fn tactical_mut(&mut self) -> Option<&mut TacticalProgress> {
+        match self {
+            ActionPhaseProgress::Tactical(tactical) => Some(tactical),
+            _ => None,
+        }
+    }
 }
 
 /// The progress of committing to the Thunder's Edge expedition at the end of a turn.
@@ -348,7 +364,7 @@ impl StrategicPrimaryProgress {
 }
 
 /// Progress during a tactical action.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct TacticalProgress {
     /// What system was activated, if any.
@@ -620,6 +636,14 @@ impl GameState {
             );
         }
         Ok(())
+    }
+
+    /// The tactical action being performed.
+    pub fn tactical_progress_mut(&mut self) -> anyhow::Result<&mut TacticalProgress> {
+        self.action_progress
+            .as_mut()
+            .and_then(ActionPhaseProgress::tactical_mut)
+            .context("Not in a tactical action")
     }
 
     /// Asserts that the provided expansion is enabled.

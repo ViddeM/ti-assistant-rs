@@ -379,6 +379,50 @@ impl<'g> Turn<'g> {
     }
 }
 
+/// The steps of a tactical action, for the handles that can perform one.
+pub trait TacticalSteps<'g>: Sized {
+    /// The turn the tactical action is performed in.
+    fn turn(&mut self) -> &mut Turn<'g>;
+
+    /// Take control of a planet.
+    #[track_caller]
+    fn take(mut self, planet: Planet) -> Self {
+        let turn = self.turn();
+        let player = turn.id();
+        turn.game
+            .apply(Event::TacticalActionTakePlanet { player, planet });
+        self
+    }
+
+    /// Explore a planet taken this action, attaching the attachment to it.
+    #[track_caller]
+    fn attach(mut self, planet: Planet, attachment: PlanetAttachment) -> Self {
+        let turn = self.turn();
+        let player = turn.id();
+        turn.game
+            .apply(Event::TacticalActionAttachPlanetAttachment {
+                player,
+                planet,
+                attachment,
+            });
+        self
+    }
+
+    /// Research a technology for a hazardous planet taken from the planet deck this action
+    /// (Dangerous Wilds).
+    #[track_caller]
+    fn research(mut self, planet: Planet, tech: Technology) -> Self {
+        let turn = self.turn();
+        let player = turn.id();
+        turn.game.apply(Event::TacticalActionResearchTechnology {
+            player,
+            planet,
+            tech,
+        });
+        self
+    }
+}
+
 /// A tactical action in progress.
 pub struct Tactical<'g> {
     turn: Turn<'g>,
@@ -391,46 +435,13 @@ impl<'g> Deref for Tactical<'g> {
     }
 }
 
+impl<'g> TacticalSteps<'g> for Tactical<'g> {
+    fn turn(&mut self) -> &mut Turn<'g> {
+        &mut self.turn
+    }
+}
+
 impl<'g> Tactical<'g> {
-    /// Take control of a planet.
-    #[track_caller]
-    pub fn take(self, planet: Planet) -> Self {
-        let player = self.turn.id();
-        self.turn
-            .game
-            .apply(Event::TacticalActionTakePlanet { player, planet });
-        self
-    }
-
-    /// Explore a planet taken this action, attaching the attachment to it.
-    #[track_caller]
-    pub fn attach(self, planet: Planet, attachment: PlanetAttachment) -> Self {
-        let player = self.turn.id();
-        self.turn
-            .game
-            .apply(Event::TacticalActionAttachPlanetAttachment {
-                player,
-                planet,
-                attachment,
-            });
-        self
-    }
-
-    /// Research a technology for a hazardous planet taken from the planet deck this action
-    /// (Dangerous Wilds).
-    #[track_caller]
-    pub fn research(self, planet: Planet, tech: Technology) -> Self {
-        let player = self.turn.id();
-        self.turn
-            .game
-            .apply(Event::TacticalActionResearchTechnology {
-                player,
-                planet,
-                tech,
-            });
-        self
-    }
-
     /// Apply a raw event in the middle of the action.
     #[track_caller]
     pub fn apply(self, event: Event) -> Self {
