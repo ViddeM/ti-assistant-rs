@@ -155,3 +155,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - ScorePublicObjective:
+      player: Alice
+      objective: DestroyTheirGreatestShip
+  - "2025-01-01T13:19:00Z"

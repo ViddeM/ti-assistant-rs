@@ -141,3 +141,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - RollForTheFracture:
+      player: Bob
+      entered_play: false
+  - "2025-01-01T12:19:00Z"

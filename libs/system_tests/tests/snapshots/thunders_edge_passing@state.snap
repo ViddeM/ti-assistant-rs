@@ -150,3 +150,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - EndTurn:
+      player: Carol
+  - "2025-01-01T12:41:00Z"

@@ -415,3 +415,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - EndTurn:
+      player: Cid
+  - "2025-01-01T12:20:00Z"

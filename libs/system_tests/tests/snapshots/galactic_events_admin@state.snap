@@ -130,3 +130,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - SetTotalWarPoints:
+      player: Bob
+      points: 0
+  - "2025-01-01T12:20:00Z"

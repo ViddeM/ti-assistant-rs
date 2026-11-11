@@ -63,7 +63,7 @@ pub fn HistoryViewMode() -> Element {
 }
 
 #[component]
-fn HistoryPlayer(player: PlayerId) -> Element {
+pub fn HistoryPlayer(player: PlayerId) -> Element {
     let gc = use_context::<GameContext>();
     let class = gc
         .game_state()
@@ -76,7 +76,7 @@ fn HistoryPlayer(player: PlayerId) -> Element {
     }
 }
 
-fn event_name(event: &Event) -> String {
+pub fn event_name(event: &Event) -> String {
     let name: &'static str = event.into();
     let mut words = String::new();
     for c in name.chars() {

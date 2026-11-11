@@ -20,7 +20,7 @@ use crate::{
 };
 
 /// A new player that is currently being created.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct NewPlayer {
     /// The name of the player.

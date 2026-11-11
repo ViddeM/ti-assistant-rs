@@ -133,3 +133,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - SetCrownOfEmphidiaOwner:
+      player: ~
+  - "2025-01-01T12:25:00Z"

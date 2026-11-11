@@ -248,3 +248,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - GainMinisterOfAntiquesRelic:
+      player: Carol
+      relic: ~
+  - "2025-01-01T13:08:00Z"

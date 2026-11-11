@@ -139,3 +139,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - SetPlanetOwner:
+      player: ~
+      planet: Styx
+  - "2025-01-01T12:24:00Z"

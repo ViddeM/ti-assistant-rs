@@ -187,3 +187,9 @@ rapidMobilizationResolved: {}
 stellarAtomicsUsed:
   - Alice
 monuments: {}
+lastEvent:
+  - ResolveAgenda:
+      outcome:
+        electKind: ForOrAgainst
+        value: For
+  - "2025-01-01T12:58:00Z"

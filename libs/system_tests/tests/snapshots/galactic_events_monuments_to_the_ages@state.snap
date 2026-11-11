@@ -158,3 +158,8 @@ stellarAtomicsUsed: []
 monuments:
   Fria: 0
   Meer: 3
+lastEvent:
+  - BuildMonument:
+      player: Bob
+      planet: Meer
+  - "2025-01-01T14:34:00Z"

@@ -195,3 +195,6 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - CompleteAgendaPhase
+  - "2025-01-01T12:55:00Z"

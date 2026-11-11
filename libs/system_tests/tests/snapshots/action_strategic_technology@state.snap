@@ -144,3 +144,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - EndTurn:
+      player: Alice
+  - "2025-01-01T12:26:00Z"

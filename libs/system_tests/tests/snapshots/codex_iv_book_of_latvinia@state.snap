@@ -144,3 +144,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - SetBookOfLatviniaOwner:
+      player: ~
+  - "2025-01-01T12:34:00Z"

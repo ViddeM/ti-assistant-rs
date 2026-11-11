@@ -9,8 +9,9 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    actions::strategic::{
-        StrategicPrimaryAction, StrategicSecondaryAction, StrategicSecondaryProgress,
+    actions::{
+        event::Event,
+        strategic::{StrategicPrimaryAction, StrategicSecondaryAction, StrategicSecondaryProgress},
     },
     common::{
         component::Component, expansions::Expansion, faction::Faction, game_settings::GameSettings,
@@ -179,6 +180,9 @@ pub struct GameState {
     /// is when it was built, unless its commodities have been set; it is negative if they have
     /// been set above the number of status phases so far.
     pub monuments: BTreeMap<Planet, i64>,
+
+    /// The last applied event and when it happened.
+    pub last_event: Option<(Event, DateTime<Utc>)>,
 }
 
 /// Where a planet is on the board, see [GameState::planet_location].

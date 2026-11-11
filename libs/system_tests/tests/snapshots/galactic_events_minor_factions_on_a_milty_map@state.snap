@@ -391,3 +391,6 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - StartGame
+  - "2025-01-01T12:12:00Z"

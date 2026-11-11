@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use ti_helper_game_data::{
     actions::event::Event, common::game_settings::Expansions, game_id::GameId,
@@ -9,7 +10,7 @@ use ti_helper_game_data::{
 #[derive(Debug, Serialize, Deserialize)]
 pub enum WsMessageIn {
     Event(Event),
-    Undo,
+    Undo((Event, DateTime<Utc>)),
 }
 
 /// Messages that can be sent to a client.
@@ -34,6 +35,9 @@ pub enum WsMessageOut {
 
     /// Response of [WsMessageIn::JoinGame] when the game doesn't exist.
     NotFound(GameId),
+
+    /// Response to [WsMessageIn::Undo] when the event is no longer the last one.
+    UndoRejected,
 }
 
 impl WsMessageOut {

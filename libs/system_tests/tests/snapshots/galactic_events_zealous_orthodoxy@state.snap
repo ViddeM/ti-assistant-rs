@@ -145,3 +145,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - UnscoreSecretObjective:
+      player: Bob
+      objective: AdaptNewStrategies
+  - "2025-01-01T12:20:00Z"

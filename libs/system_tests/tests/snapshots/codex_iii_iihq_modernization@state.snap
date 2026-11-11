@@ -138,3 +138,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - AddTechToPlayer:
+      player: Alice
+      tech: IIHQModernization
+  - "2025-01-01T12:17:00Z"

@@ -228,7 +228,11 @@ async fn run_client(
                 let message = message.context("failed to receive message from client")?;
 
                 match message {
-                    WsMessageIn::Undo => handle_undo(state, game_id, &lobby).await.context("failed to handle undo event")?,
+                    WsMessageIn::Undo(expected) => {
+                        if !handle_undo(state, game_id, &lobby, expected).await.context("failed to handle undo event")? {
+                            socket.send(WsMessageOut::UndoRejected).await.context("failed to send undo rejected message to client")?;
+                        }
+                    }
                     WsMessageIn::Event(event) => {
                         match handle_event(state, game_id, &lobby, event).await {
                             Ok(_) => {},
@@ -301,8 +305,13 @@ async fn handle_undo(
     state: &state::State,
     id: GameId,
     lobby: &RwLock<Lobby>,
-) -> anyhow::Result<()> {
+    expected: (Event, DateTime<Utc>),
+) -> anyhow::Result<bool> {
     let mut lobby = lobby.write().await;
+
+    if lobby.game.current.last_event.as_ref() != Some(&expected) {
+        return Ok(false);
+    }
 
     if let Some(db_pool) = &state.db_pool {
         log::info!("undoing last event for game {id:?}");
@@ -312,5 +321,5 @@ async fn handle_undo(
     lobby.game.undo();
     lobby.state_updates.send(lobby.game.current.clone())?;
 
-    Ok(())
+    Ok(true)
 }

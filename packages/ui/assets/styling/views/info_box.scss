@@ -51,3 +51,14 @@
     }
   }
 }
+
+.undo-confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: $margin-large;
+  margin-top: $margin-large;
+
+  .button {
+    border-color: white;
+  }
+}

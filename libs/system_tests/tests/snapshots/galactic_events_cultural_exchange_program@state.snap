@@ -168,3 +168,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - LeaderActionBegin:
+      player: Bob
+      leader: LetaniOspha
+  - "2025-01-01T12:25:00Z"

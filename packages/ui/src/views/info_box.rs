@@ -1,9 +1,10 @@
+use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use dioxus_free_icons::{
     Icon,
     icons::fa_solid_icons::{FaPause, FaPlay},
 };
-use ti_helper_game_data::{components::phase::Phase, game_id::GameId};
+use ti_helper_game_data::{actions::event::Event, components::phase::Phase, game_id::GameId};
 
 use crate::{
     components::{button::Button, info_button::InfoButton},
@@ -14,10 +15,14 @@ use crate::{
         player_view::PlayerViewContext,
         view_mode::{ViewMode, ViewModeContext},
     },
-    views::galactic_events_view_mode::has_admin_section,
+    views::{
+        galactic_events_view_mode::has_admin_section,
+        history_view_mode::{HistoryPlayer, event_name},
+    },
 };
 
 const INFO_BOX_SCSS: Asset = asset!("/assets/styling/views/info_box.scss");
+const INFO_MODAL_SCSS: Asset = asset!("/assets/styling/components/info_modal.scss");
 
 #[component]
 pub fn InfoBox() -> Element {
@@ -25,6 +30,7 @@ pub fn InfoBox() -> Element {
     let gc = use_context::<GameContext>();
     let player = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
+    let mut undo_entry = use_signal(|| None);
 
     let current_player = use_memo(move || {
         gc.game_state()
@@ -134,7 +140,61 @@ pub fn InfoBox() -> Element {
                     },
                     {play_pause_icon}
                 }
-                Button { onclick: move |_| event.undo(), "Undo" }
+                Button {
+                    disabled: gc.game_state().last_event.is_none(),
+                    onclick: move |_| undo_entry.set(gc.game_state().last_event.clone()),
+                    "Undo"
+                }
+            }
+        }
+
+        if let Some(entry) = undo_entry() {
+            UndoConfirm { entry, on_close: move |_| undo_entry.set(None) }
+        }
+    }
+}
+
+#[component]
+fn UndoConfirm(entry: (Event, DateTime<Utc>), on_close: EventHandler) -> Element {
+    let event = use_context::<EventContext>();
+    let name = event_name(&entry.0);
+    let player = entry.0.player();
+
+    rsx! {
+        document::Stylesheet { href: INFO_MODAL_SCSS }
+
+        div {
+            class: "info-modal-bg",
+            tabindex: "-1",
+            onmounted: move |e| async move {
+                let _ = e.set_focus(true).await;
+            },
+            onclick: move |_| on_close.call(()),
+            onkeydown: move |e| {
+                if e.key() == Key::Escape {
+                    on_close.call(());
+                }
+            },
+            div { class: "info-modal", onclick: |e| e.stop_propagation(),
+                h2 { "Undo this event?" }
+                hr {}
+                p { "{name}" }
+                if let Some(player) = player {
+                    p {
+                        "Played by "
+                        HistoryPlayer { player }
+                    }
+                }
+                div { class: "undo-confirm-buttons",
+                    Button { onclick: move |_| on_close.call(()), "Cancel" }
+                    Button {
+                        onclick: move |_| {
+                            event.undo(entry.clone());
+                            on_close.call(());
+                        },
+                        "Undo"
+                    }
+                }
             }
         }
     }

@@ -148,3 +148,9 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - SetThundersEdgeCompletion:
+      new_completion:
+        won_by: Bob
+        placed_in: "114"
+  - "2025-01-01T12:25:00Z"

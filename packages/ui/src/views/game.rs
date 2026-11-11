@@ -145,6 +145,13 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
                         ws_error.set(Some(format!("Game {game_id} not found")));
                         not_found.set(true);
                     }
+                    WsMessageOut::UndoRejected => {
+                        awaiting_reply.set(false);
+                        toasts.error(
+                            "The last event changed, nothing was undone".to_string(),
+                            ToastOptions::new(),
+                        );
+                    }
                 }
             }
 

@@ -169,3 +169,9 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - AddAgendaResolve:
+      electedOutcome:
+        electKind: Player
+        value: Bob
+  - "2025-01-01T12:20:00Z"

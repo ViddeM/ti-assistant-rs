@@ -141,3 +141,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - SetPlanetOwner:
+      player: Alice
+      planet: Lodor
+  - "2025-01-01T12:22:00Z"

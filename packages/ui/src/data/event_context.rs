@@ -1,4 +1,5 @@
 use api::messages::WsMessageIn;
+use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use ti_helper_game_data::actions::event::Event;
 
@@ -12,8 +13,8 @@ impl EventContext {
         Self { send_event }
     }
 
-    pub fn undo(&self) {
-        self.send_event.call(WsMessageIn::Undo);
+    pub fn undo(&self, entry: (Event, DateTime<Utc>)) {
+        self.send_event.call(WsMessageIn::Undo(entry));
     }
 
     pub fn send_event(&self, event: Event) {

@@ -128,3 +128,8 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - RemoveTechFromPlayer:
+      player: Carol
+      tech: GravitonLaserSystem
+  - "2025-01-01T12:19:00Z"

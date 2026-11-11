@@ -31,7 +31,7 @@ use crate::{
 };
 
 /// An event in the game.
-#[derive(Debug, Clone, Serialize, Deserialize, IntoStaticStr)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, IntoStaticStr)]
 pub enum Event {
     /* -- CREATION PHASE EVENTS -- */
     /// Set the game settings.

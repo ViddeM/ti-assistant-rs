@@ -65,9 +65,10 @@ pub fn update_game_state(
 ) -> Result<(), GameError> {
     let mut new_game_state = game_state.clone();
 
-    try_update_game_state(&mut new_game_state, event, timestamp)?;
+    try_update_game_state(&mut new_game_state, event.clone(), timestamp)?;
     apply_techs_gained(game_state, &mut new_game_state)?;
 
+    new_game_state.last_event = Some((event, timestamp));
     *game_state = new_game_state;
     Ok(())
 }

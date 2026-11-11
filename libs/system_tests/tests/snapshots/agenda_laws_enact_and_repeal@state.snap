@@ -226,3 +226,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - RepealLaw:
+      law: PoliticalCensure
+  - "2025-01-01T12:57:00Z"

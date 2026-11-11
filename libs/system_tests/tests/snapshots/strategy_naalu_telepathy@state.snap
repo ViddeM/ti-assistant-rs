@@ -148,3 +148,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - PassAction:
+      player: Carol
+  - "2025-01-01T12:36:00Z"

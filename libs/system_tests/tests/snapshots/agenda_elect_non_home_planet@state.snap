@@ -143,3 +143,6 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - AddAgendaCancel
+  - "2025-01-01T12:19:00Z"

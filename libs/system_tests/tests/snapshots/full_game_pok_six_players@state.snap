@@ -451,3 +451,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - PassAction:
+      player: Alice
+  - "2025-01-01T15:51:00Z"

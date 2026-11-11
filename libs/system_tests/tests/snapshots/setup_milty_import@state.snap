@@ -408,3 +408,7 @@ rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
+lastEvent:
+  - EndTurn:
+      player: Ben
+  - "2025-01-01T12:15:00Z"
