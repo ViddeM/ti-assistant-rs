@@ -48,8 +48,8 @@ use ti_helper_game_data::{
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
             GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation,
-            RapidMobilizationResolution, RelicProgress,
-            StrategicPrimaryProgress, StrategicProgress, TacticalProgress, ThundersEdgeProgress,
+            RapidMobilizationResolution, RelicProgress, StrategicPrimaryProgress,
+            StrategicProgress, TacticalProgress, ThundersEdgeProgress,
         },
         player::NewPlayer,
     },

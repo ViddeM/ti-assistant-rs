@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_free_icons::{icons::fa_solid_icons::FaInfo, Icon};
+use dioxus_free_icons::{Icon, icons::fa_solid_icons::FaInfo};
 
 use crate::data::info_context::{Info, InfoContext};
 

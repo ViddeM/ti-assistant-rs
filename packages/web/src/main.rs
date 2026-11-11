@@ -4,10 +4,7 @@ use game::Game;
 use main_menu::MainMenu;
 use new_game::NewGame;
 use source_code_button::SourceCodeLinkButton;
-use ui::{
-    Setup,
-    components::toast::ToastProvider,
-};
+use ui::{Setup, components::toast::ToastProvider};
 
 mod game;
 mod main_menu;

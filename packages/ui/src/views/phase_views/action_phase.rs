@@ -34,8 +34,7 @@ use crate::{
         player_view::PlayerViewContext,
     },
     views::{
-        destroyed_planets::planets_on_board,
-        map_view_mode::RingNumbering,
+        destroyed_planets::planets_on_board, map_view_mode::RingNumbering,
         phase_views::breakthrough_action::BreakthroughActionView,
     },
 };

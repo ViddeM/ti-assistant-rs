@@ -74,8 +74,16 @@ pub fn galactic_events_age_of_fighters() -> TestGame {
     let alice = &g.player("Alice").technologies;
     assert!(alice.contains(&Technology::HybridCrystalFighterII));
     assert!(!alice.contains(&Technology::FighterII));
-    assert!(g.player("Bob").technologies.contains(&Technology::FighterII));
-    assert!(g.player("Carol").technologies.contains(&Technology::FighterII));
+    assert!(
+        g.player("Bob")
+            .technologies
+            .contains(&Technology::FighterII)
+    );
+    assert!(
+        g.player("Carol")
+            .technologies
+            .contains(&Technology::FighterII)
+    );
     assert!(
         g.player("Bob")
             .technologies

@@ -219,7 +219,12 @@ fn EndOfTurnActionCards(disabled: bool) -> Element {
                     PlayEndOfTurnActionCard {
                         card: ActionCard::PuppetsOnAString,
                         players: passed_players(),
-                        on_play: move |player| event.send_event(Event::PlayPuppetsOnAString { player }),
+                        on_play: move |player| {
+                            event
+                                .send_event(Event::PlayPuppetsOnAString {
+                                    player,
+                                })
+                        },
                     }
                 },
                 _ => rsx! {},

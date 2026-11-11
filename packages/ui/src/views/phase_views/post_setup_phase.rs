@@ -7,10 +7,7 @@ use ti_helper_game_data::{
 };
 
 use crate::{
-    components::{
-        button::Button,
-        dropdown::PlanetDropdown,
-    },
+    components::{button::Button, dropdown::PlanetDropdown},
     data::{event_context::EventContext, game_context::GameContext},
     views::{destroyed_planets::planets_on_board, select_tech::SelectTechView},
 };
