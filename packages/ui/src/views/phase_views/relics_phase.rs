@@ -86,7 +86,7 @@ pub fn RelicsPhaseView() -> Element {
             }
 
             if let Some(holder) = maw_of_worlds_holder() {
-                h2 { "Play of maw of Worlds?" }
+                h2 { "Play the Maw of Worlds?" }
                 fieldset { class: "screen-container",
                     legend { "{holder}" }
                     if view.display_for(&holder) {
