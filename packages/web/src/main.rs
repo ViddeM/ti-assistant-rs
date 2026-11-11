@@ -1,10 +1,10 @@
 use dioxus::prelude::*;
 
-use game::Game;
+use game::{Game, GameQuery};
 use main_menu::MainMenu;
 use new_game::NewGame;
 use source_code_button::SourceCodeLinkButton;
-use ui::{Setup, components::toast::ToastProvider, data::view_mode::ViewMode};
+use ui::{Setup, components::toast::ToastProvider};
 
 mod game;
 mod main_menu;
@@ -19,8 +19,8 @@ enum Route {
         MainMenu,
         #[route("/game/new")]
         NewGame,
-        #[route("/game/:id?:view&:playing_as")]
-        Game { id: String, view: Option<ViewMode>, playing_as: Option<String> }
+        #[route("/game/:id?:..query")]
+        Game { id: String, query: GameQuery }
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.svg");

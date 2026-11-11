@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 use ui::views;
 
-use crate::Route;
+use crate::{Route, game::GameQuery};
 
 #[component]
 pub fn NewGame() -> Element {
@@ -9,8 +9,7 @@ pub fn NewGame() -> Element {
         views::new_game::NewGame {
             join_game: |game_id| Route::Game {
                 id: game_id,
-                view: None,
-                playing_as: None,
+                query: GameQuery::default(),
             },
         }
     }
