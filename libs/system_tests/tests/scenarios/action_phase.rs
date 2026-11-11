@@ -15,6 +15,7 @@ scenarios![
     action_frontier_cards,
     action_relics,
     action_relics_keleres_home,
+    action_strategic_warfare_has_no_tactical_action,
 ];
 
 fn primary(player: &str, action: StrategicPrimaryAction) -> Event {
@@ -837,5 +838,27 @@ pub fn action_relics_keleres_home() -> TestGame {
     });
     assert!(g.player("Bob").relics.contains(&Relic::ShardOfTheThrone));
     assert_eq!(g.state().score.shard_of_the_throne, Some(p("Bob")));
+    g
+}
+
+/// Before Thunder's Edge, the primary of Warfare isn't a tactical action, so no planets can be taken
+/// with it.
+pub fn action_strategic_warfare_has_no_tactical_action() -> TestGame {
+    let mut g = action_phase(three_players());
+
+    g.turn("Alice").play_card(StrategyCard::Leadership);
+    g.turn("Bob").play_card(StrategyCard::Diplomacy);
+    g.turn("Carol")
+        .strategic(StrategyCard::Warfare)
+        .expect_rejected(
+            Event::TacticalActionTakePlanet {
+                player: p("Carol"),
+                planet: Planet::Arinam,
+            },
+            "Not in a tactical action",
+        )
+        .skip_rest()
+        .commit()
+        .end_turn();
     g
 }

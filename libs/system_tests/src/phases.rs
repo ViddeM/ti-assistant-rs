@@ -477,6 +477,12 @@ impl<'g> Deref for Strategic<'g> {
     }
 }
 
+impl<'g> TacticalSteps<'g> for Strategic<'g> {
+    fn turn(&mut self) -> &mut Turn<'g> {
+        &mut self.turn
+    }
+}
+
 impl<'g> Strategic<'g> {
     /// Perform the primary action of the card.
     #[track_caller]

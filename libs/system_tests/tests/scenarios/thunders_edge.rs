@@ -37,6 +37,7 @@ scenarios![
     thunders_edge_vaults_of_the_heir,
     thunders_edge_visionaria_select,
     thunders_edge_entropic_scar,
+    thunders_edge_warfare_primary_tactical_action,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -892,6 +893,49 @@ fn commit_action_card(player: &str, data: ActionCardAction) -> Event {
         player: p(player),
         data: Some(data),
     }
+}
+
+/// The primary of Warfare Ω is a tactical action, performed and ended with the strategic action.
+pub fn thunders_edge_warfare_primary_tactical_action() -> TestGame {
+    let mut g = action_phase(three_players().pok().thunders_edge());
+
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::Meer)
+        .commit()
+        .end_turn();
+    g.turn("Bob").play_card(StrategyCard::Diplomacy);
+
+    g.turn("Carol")
+        .strategic(StrategyCard::Warfare)
+        .take(Planet::Arinam)
+        .attach(Planet::Arinam, PlanetAttachment::BioticResearchFacility)
+        .take(Planet::Meer)
+        .expect_rejected(
+            Event::TacticalActionCommit { player: p("Carol") },
+            "expected TacticalAction",
+        )
+        .expect_rejected(
+            Event::StrategicActionPrimary {
+                player: p("Carol"),
+                action: StrategicPrimaryAction::Imperial {
+                    score_objective: None,
+                },
+            },
+            "already been performed",
+        )
+        .secondary("Alice", StrategicSecondaryAction::Warfare)
+        .skip_rest()
+        .commit();
+    assert_eq!(g.phase(), Phase::EndActionTurn);
+
+    let carol = g.player("Carol");
+    assert!(carol.planets.contains_key(&Planet::Meer));
+    assert!(carol.planets[&Planet::Arinam].contains(&PlanetAttachment::BioticResearchFacility));
+    assert!(!g.player("Alice").planets.contains_key(&Planet::Meer));
+
+    g.turn("Carol").end_turn();
+    g
 }
 
 /// Brilliance gives a player their breakthrough, Mercenary Contract returns another player's

@@ -28,7 +28,7 @@ use crate::{
         planet::{Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
         relic::Relic,
-        strategy_card::StrategyCard,
+        strategy_card::{StrategyCard, StrategyCardVersion},
         system::{AnomalyType, SystemId},
         tech::Technology,
     },
@@ -276,7 +276,11 @@ impl ActionPhaseProgress {
     /// The tactical action being performed, if any.
     pub fn tactical(&self) -> Option<&TacticalProgress> {
         match self {
-            ActionPhaseProgress::Tactical(tactical) => Some(tactical),
+            ActionPhaseProgress::Tactical(tactical)
+            | ActionPhaseProgress::Strategic(StrategicProgress {
+                primary: Some(StrategicPrimaryProgress::Warfare { tactical }),
+                ..
+            }) => Some(tactical),
             _ => None,
         }
     }
@@ -284,7 +288,11 @@ impl ActionPhaseProgress {
     /// The tactical action being performed, if any.
     pub fn tactical_mut(&mut self) -> Option<&mut TacticalProgress> {
         match self {
-            ActionPhaseProgress::Tactical(tactical) => Some(tactical),
+            ActionPhaseProgress::Tactical(tactical)
+            | ActionPhaseProgress::Strategic(StrategicProgress {
+                primary: Some(StrategicPrimaryProgress::Warfare { tactical }),
+                ..
+            }) => Some(tactical),
             _ => None,
         }
     }
@@ -344,15 +352,26 @@ pub enum StrategicPrimaryProgress {
         /// What objective, if any, was scored.
         objective: Option<Objective>,
     },
+    /// Primary progress for a warfare strategy card whose primary is a tactical action.
+    Warfare {
+        /// The tactical action performed with the primary.
+        tactical: TacticalProgress,
+    },
 }
 
 impl StrategicPrimaryProgress {
-    /// Returns the default value for the provided strategy card and faction.
-    pub fn default_for_card_and_faction(
-        card: StrategyCard,
+    /// Returns the default value for the provided strategy card version and faction.
+    pub fn default_for(
+        version: StrategyCardVersion,
         faction: Faction,
     ) -> Option<StrategicPrimaryProgress> {
-        if card == StrategyCard::Technology && faction == Faction::NekroVirus {
+        if version.primary_is_tactical_action() {
+            return Some(StrategicPrimaryProgress::Warfare {
+                tactical: Default::default(),
+            });
+        }
+
+        if version.card() == StrategyCard::Technology && faction == Faction::NekroVirus {
             return Some(StrategicPrimaryProgress::Technology {
                 first_tech: None,
                 second_tech: None,

@@ -3,7 +3,7 @@ use ti_helper_game_data::{
     actions::event::Event,
     common::faction::Faction,
     components::strategy_card::StrategyCard,
-    state::game_state::{ActionPhaseProgress, StrategicProgress},
+    state::game_state::{ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress},
 };
 
 use crate::{
@@ -12,14 +12,18 @@ use crate::{
         event_context::EventContext, game_context::GameContext, info_context::Info,
         player_view::PlayerViewContext,
     },
-    views::phase_views::strategy_card::{
-        primary_views::{
-            imperial_primary_view::ImperialPrimaryView, politics_primary_view::PoliticsPrimaryView,
-            technology_primary_view::TechnologyPrimaryView,
+    views::phase_views::{
+        strategy_card::{
+            primary_views::{
+                imperial_primary_view::ImperialPrimaryView,
+                politics_primary_view::PoliticsPrimaryView,
+                technology_primary_view::TechnologyPrimaryView,
+            },
+            secondary_card::{
+                generic_strategy_card::GenericStrategyCard, tech_secondary::TechSecondary,
+            },
         },
-        secondary_card::{
-            generic_strategy_card::GenericStrategyCard, tech_secondary::TechSecondary,
-        },
+        tactical_action::TacticalAction,
     },
 };
 
@@ -112,6 +116,12 @@ fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
             action,
         })
     };
+
+    if let Some(StrategicPrimaryProgress::Warfare { .. }) = primary {
+        return rsx! {
+            TacticalAction {}
+        };
+    }
 
     match progress().card {
         StrategyCard::Politics => rsx! {

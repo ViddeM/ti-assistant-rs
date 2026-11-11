@@ -118,6 +118,11 @@ impl StrategyCardVersion {
             StrategyCardVersion::Imperial => StrategyCard::Imperial,
         }
     }
+
+    /// Whether the primary ability of this version is a tactical action.
+    pub fn primary_is_tactical_action(&self) -> bool {
+        matches!(self, StrategyCardVersion::WarfareOmega)
+    }
 }
 
 impl Component for StrategyCardVersion {

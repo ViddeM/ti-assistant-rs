@@ -804,8 +804,8 @@ fn try_update_game_state(
 
             game_state.action_progress = Some(ActionPhaseProgress::Strategic(StrategicProgress {
                 card,
-                primary: StrategicPrimaryProgress::default_for_card_and_faction(
-                    card,
+                primary: StrategicPrimaryProgress::default_for(
+                    card.version(&game_state.game_settings.expansions),
                     player_faction,
                 ),
                 other_players: Default::default(),

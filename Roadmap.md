@@ -309,6 +309,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
   - ✅ Rest are not handled by this application
 - ❌ Updated codexes: go over all of them!! (Will have to support double-omega cards :sweat_smile:)
 - ✅ Updated strategy cards (Construction ΩΩ / Warfare Ω images, Construction secondary hint)
+  - ✅ Warfare Ω: the primary is a tactical action, entered in the Warfare card
 - ✅ Update milty import
 - 👺 Coexistence (map visualization)
 - 👺 Twilight's Fall game mode

@@ -1,0 +1,147 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: false
+    codex2: false
+    codex3: false
+    codex4: false
+    thundersEdge: true
+galacticEvents: []
+phase: Action
+mapData:
+  miltyInformation: ~
+  destroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - SarweenTools
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+      Arinam:
+        - BioticResearchFacility
+      Meer: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Alice
+  - Bob
+  - Carol
+strategyCardHolders:
+  Leadership: Alice
+  Diplomacy: Bob
+  Politics: Carol
+  Construction: Alice
+  Trade: Bob
+  Warfare: Carol
+currentPlayer: Alice
+spentStrategyCards:
+  - Diplomacy
+  - Warfare
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 0
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: ~
+  galacticEvents:
+    zealousOrthodoxy: ~
+    totalWar: {}
+agenda: ~
+agendaVoteHistory: []
+laws: {}
+agendaOverrideState: ~
+statusPhaseState: ~
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 420
+    nanos: 0
+  Bob:
+    secs: 300
+    nanos: 0
+  Carol:
+    secs: 600
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:29:00Z"
+naaluTelepathy: ~
+teExpedition:
+  completed: ~
+  progress: {}
+fractureInPlay: false
+fractureRoll: ~
+bookOfLatviniaResearch: ~
+ministerOfAntiquesRelic: ~
+rapidMobilization: []
+rapidMobilizationResolved: {}
+stellarAtomicsUsed: []
+monuments: {}
