@@ -480,7 +480,11 @@ fn OverruleView(send_commit_message: Callback<Option<ActionCardAction>>) -> Elem
                     ImperialPrimaryView { on_commit }
                 },
                 Some(card) => rsx! {
-                    p { "Primary not tracked" }
+                    if card.version(&gc.game_state().game_settings.expansions).primary_is_tactical_action() {
+                        p { "Perform the tactical action after Commit" }
+                    } else {
+                        p { "Primary not tracked" }
+                    }
                     Button { onclick: move |_| commit(card, None), "Commit" }
                 },
             }

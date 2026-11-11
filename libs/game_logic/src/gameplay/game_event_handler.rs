@@ -924,6 +924,13 @@ fn try_update_game_state(
                 bail!("Not currently performing an action card action");
             };
 
+            let starts_tactical_action = match &data {
+                Some(ActionCardAction::Overrule { card, .. }) => card
+                    .version(&game_state.game_settings.expansions)
+                    .primary_is_tactical_action(),
+                _ => false,
+            };
+
             if let Some(data) = data {
                 match data {
                     ActionCardAction::FocusedResearch { tech } => {
@@ -1036,8 +1043,12 @@ fn try_update_game_state(
                 }
             }
 
-            game_state.action_progress = None;
-            game_state.phase = Phase::EndActionTurn;
+            if starts_tactical_action {
+                start_tactical_action(game_state);
+            } else {
+                game_state.action_progress = None;
+                game_state.phase = Phase::EndActionTurn;
+            }
         }
         Event::LeaderActionBegin { player, leader } => {
             game_state.assert_phase(Phase::Action)?;

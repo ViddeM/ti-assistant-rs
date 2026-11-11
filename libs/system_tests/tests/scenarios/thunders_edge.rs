@@ -38,6 +38,7 @@ scenarios![
     thunders_edge_visionaria_select,
     thunders_edge_entropic_scar,
     thunders_edge_warfare_primary_tactical_action,
+    thunders_edge_overrule_warfare_tactical_action,
 ];
 
 fn a_valid_system() -> SystemId {
@@ -1127,6 +1128,36 @@ pub fn thunders_edge_overrule_and_strategize() -> TestGame {
     );
 
     g.turn("Carol").play_card(StrategyCard::Politics);
+    g
+}
+
+/// Overrule on Warfare Ω performs its primary, a tactical action, and leaves Warfare readied.
+pub fn thunders_edge_overrule_warfare_tactical_action() -> TestGame {
+    let mut g = action_phase(three_players().pok().thunders_edge());
+
+    g.turn("Alice").play_card(StrategyCard::Leadership);
+    g.turn("Bob").play_card(StrategyCard::Diplomacy);
+
+    g.turn("Carol")
+        .action_card(
+            ActionCard::Overrule,
+            Some(ActionCardAction::Overrule {
+                card: StrategyCard::Warfare,
+                primary: None,
+            }),
+        )
+        .tactical_in_progress()
+        .take(Planet::Arinam)
+        .commit();
+    assert_eq!(g.phase(), Phase::EndActionTurn);
+    assert!(g.player("Carol").planets.contains_key(&Planet::Arinam));
+    assert!(
+        !g.state()
+            .spent_strategy_cards
+            .contains(&StrategyCard::Warfare)
+    );
+
+    g.turn("Carol").end_turn();
     g
 }
 

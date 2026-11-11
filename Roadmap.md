@@ -304,6 +304,7 @@ Each expansion lists what it adds to the base game. An "X + Y" section holds wha
   - ✅ New action cards (14 unique, 20 in the deck)
   - ✅ Brilliance (gain breakthrough)
   - ✅ Overrule / Strategize (primary / secondary of a readied or unchosen strategy card)
+    - ✅ Overrule on Warfare Ω starts a tactical action
   - ✅ Crisis (skip a turn), Puppets on a String (passed player performs an action)
   - ✅ Mercenary Contract (owner returns the planet card)
   - ✅ Rest are not handled by this application

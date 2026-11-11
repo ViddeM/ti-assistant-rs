@@ -216,6 +216,18 @@ impl<'g> Turn<'g> {
         Tactical { turn: self }
     }
 
+    /// Continue a tactical action that something else began, e.g. Overrule on Warfare Ω.
+    #[track_caller]
+    pub fn tactical_in_progress(self) -> Tactical<'g> {
+        assert_eq!(
+            self.game.phase(),
+            Phase::TacticalAction,
+            "expected a tactical action\n{}",
+            self.game.describe()
+        );
+        Tactical { turn: self }
+    }
+
     /// Begin playing a strategy card.
     #[track_caller]
     pub fn strategic(self, card: StrategyCard) -> Strategic<'g> {
