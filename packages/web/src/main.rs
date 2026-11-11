@@ -1,12 +1,14 @@
-use dioxus::prelude::*;
+use dioxus::{prelude::*, router::components::HistoryProvider};
 
 use game::{Game, GameQuery};
+use history::TrimQueryHistory;
 use main_menu::MainMenu;
 use new_game::NewGame;
 use source_code_button::SourceCodeLinkButton;
 use ui::{Setup, components::toast::ToastProvider};
 
 mod game;
+mod history;
 mod main_menu;
 mod new_game;
 mod source_code_button;
@@ -57,7 +59,9 @@ fn App() -> Element {
 
         Setup {}
 
-        ToastProvider { Router::<Route> {} }
+        HistoryProvider { history: |_| TrimQueryHistory::wrap_current(),
+            ToastProvider { Router::<Route> {} }
+        }
 
         if !started() {
             div { class: "app-loading",
