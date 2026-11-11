@@ -33,23 +33,23 @@ pub fn HistoryViewMode() -> Element {
                             thead {
                                 tr {
                                     th { "#" }
-                                    th { "Time" }
                                     th { "Event" }
                                     th { "Player" }
+                                    th { "Time" }
                                 }
                             }
                             tbody {
                                 for (index, (event, timestamp)) in history.iter().enumerate().rev() {
                                     tr { key: "{index}",
                                         td { "{index}" }
-                                        td {
-                                            {timestamp.with_timezone(&chrono::Local).format("%Y-%m-%d %H:%M:%S").to_string()}
-                                        }
                                         td { {event_name(event)} }
                                         td {
                                             if let Some(player) = event.player() {
                                                 HistoryPlayer { player }
                                             }
+                                        }
+                                        td {
+                                            {timestamp.with_timezone(&chrono::Local).format("%Y-%m-%d %H:%M:%S").to_string()}
                                         }
                                     }
                                 }
