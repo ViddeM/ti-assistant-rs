@@ -110,7 +110,7 @@ pub fn RelicsPhaseView() -> Element {
             }
 
             if maw_of_worlds_holder().is_none() && crown_of_emphidia_holder().is_none() {
-                h2 { "Continue to status phase" }
+                h2 { "Continue to agenda phase" }
             }
 
             SpeakerStep {
