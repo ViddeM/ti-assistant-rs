@@ -4,7 +4,7 @@ use game::Game;
 use main_menu::MainMenu;
 use new_game::NewGame;
 use source_code_button::SourceCodeLinkButton;
-use ui::{Setup, components::toast::ToastProvider};
+use ui::{Setup, components::toast::ToastProvider, data::view_mode::ViewMode};
 
 mod game;
 mod main_menu;
@@ -19,8 +19,8 @@ enum Route {
         MainMenu,
         #[route("/game/new")]
         NewGame,
-        #[route("/game/:id?:playing_as")]
-        Game { id: String, playing_as: Option<String> }
+        #[route("/game/:id?:view&:playing_as")]
+        Game { id: String, view: Option<ViewMode>, playing_as: Option<String> }
 }
 
 const FAVICON: Asset = asset!("/assets/favicon.svg");

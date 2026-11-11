@@ -10,6 +10,7 @@ pub fn MainMenu() -> Element {
             new_game: || Route::NewGame,
             join_game: |game_id| Route::Game {
                 id: game_id,
+                view: None,
                 playing_as: None,
             },
         }

@@ -144,6 +144,7 @@ The expansions list their own extras under "Agenda phase extras", tagged with th
 - ✅ Player-specific view
 - ✅ Frontend-only personal views
   - ✅ URL-stored views
+    - ✅ The open tab (Score, Techs, …)
   - ✅ Limit views to the current person
 - ❌ Backend-tracked personal views
   - ❌ Personal undo

@@ -8,8 +8,11 @@ use ti_helper_game_data::{components::phase::Phase, game_id::GameId};
 use crate::{
     components::{button::Button, info_button::InfoButton},
     data::{
-        event_context::EventContext, game_context::GameContext, info_context::Info,
-        player_view::PlayerViewContext, view_mode::ViewMode,
+        event_context::EventContext,
+        game_context::GameContext,
+        info_context::Info,
+        player_view::PlayerViewContext,
+        view_mode::{ViewMode, ViewModeContext},
     },
     views::galactic_events_view_mode::has_admin_section,
 };
@@ -17,7 +20,7 @@ use crate::{
 const INFO_BOX_SCSS: Asset = asset!("/assets/styling/views/info_box.scss");
 
 #[component]
-pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
+pub fn InfoBox() -> Element {
     let game_id = use_context::<GameId>();
     let gc = use_context::<GameContext>();
     let player = use_context::<PlayerViewContext>();
@@ -81,29 +84,21 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
         div { class: "card game-info-card",
             h4 { "Game: {game_id}" }
             div { class: "view-mode-button-group",
-                ViewModeButton { view_mode: ViewMode::Game, current: view_mode }
-                ViewModeButton { view_mode: ViewMode::Score, current: view_mode }
-                ViewModeButton { view_mode: ViewMode::Techs, current: view_mode }
-                ViewModeButton { view_mode: ViewMode::Planets, current: view_mode }
+                ViewModeButton { view_mode: ViewMode::Game }
+                ViewModeButton { view_mode: ViewMode::Score }
+                ViewModeButton { view_mode: ViewMode::Techs }
+                ViewModeButton { view_mode: ViewMode::Planets }
                 if relics_enabled() {
-                    ViewModeButton { view_mode: ViewMode::Relics, current: view_mode }
+                    ViewModeButton { view_mode: ViewMode::Relics }
                 }
-                ViewModeButton { view_mode: ViewMode::Laws, current: view_mode }
-                ViewModeButton { view_mode: ViewMode::Map, current: view_mode }
+                ViewModeButton { view_mode: ViewMode::Laws }
+                ViewModeButton { view_mode: ViewMode::Map }
             }
             if te_enabled() {
-                ViewModeButton {
-                    class: "margin-top",
-                    view_mode: ViewMode::ThundersEdge,
-                    current: view_mode,
-                }
+                ViewModeButton { class: "margin-top", view_mode: ViewMode::ThundersEdge }
             }
             if has_galactic_event_sections() {
-                ViewModeButton {
-                    class: "margin-top",
-                    view_mode: ViewMode::GalacticEvents,
-                    current: view_mode,
-                }
+                ViewModeButton { class: "margin-top", view_mode: ViewMode::GalacticEvents }
             }
             p { class: "margin-top", "Round: {round()}" }
             p { "Current player: {current_player}" }
@@ -145,19 +140,16 @@ pub fn InfoBox(view_mode: Signal<ViewMode>) -> Element {
 }
 
 #[component]
-fn ViewModeButton(
-    class: Option<String>,
-    current: Signal<ViewMode>,
-    view_mode: ViewMode,
-) -> Element {
-    let disabled = current.read().eq(&view_mode);
+fn ViewModeButton(class: Option<String>, view_mode: ViewMode) -> Element {
+    let ctx = use_context::<ViewModeContext>();
+    let disabled = ctx.get() == view_mode;
 
     rsx! {
         Button {
             disabled,
             class: class.unwrap_or_default(),
-            onclick: move |_| current.set(view_mode),
-            "{view_mode.to_string()}"
+            onclick: move |_| ctx.set(view_mode),
+            "{view_mode.label()}"
         }
     }
 }

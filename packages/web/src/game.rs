@@ -1,11 +1,11 @@
 use dioxus::prelude::*;
 use std::str::FromStr;
-use ui::{game_id::GameId, views::game::GameView};
+use ui::{data::view_mode::ViewMode, game_id::GameId, views::game::GameView};
 
 use crate::Route;
 
 #[component]
-pub fn Game(id: String, playing_as: Option<String>) -> Element {
+pub fn Game(id: String, view: Option<ViewMode>, playing_as: Option<String>) -> Element {
     let game_id = GameId::from_str(&id);
     let game_id = match game_id {
         Ok(g) => g,
@@ -28,10 +28,12 @@ pub fn Game(id: String, playing_as: Option<String>) -> Element {
     rsx! {
         GameView {
             game_id,
+            view,
             playing_as,
             main_menu: || Route::MainMenu,
-            player_view_route: move |playing_as| Route::Game {
+            game_route: move |(view, playing_as)| Route::Game {
                 id: id.clone(),
+                view,
                 playing_as,
             },
         }

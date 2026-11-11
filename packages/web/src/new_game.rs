@@ -9,6 +9,7 @@ pub fn NewGame() -> Element {
         views::new_game::NewGame {
             join_game: |game_id| Route::Game {
                 id: game_id,
+                view: None,
                 playing_as: None,
             },
         }

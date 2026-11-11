@@ -23,7 +23,7 @@ use crate::{
         game_context::GameContext,
         info_context::InfoContext,
         player_view::{PlayerView, PlayerViewContext},
-        view_mode::ViewMode,
+        view_mode::{ViewMode, ViewModeContext},
     },
     views::{
         galactic_events_view_mode::GalacticEventsViewMode, info_box::InfoBox,
@@ -42,9 +42,10 @@ where
     R: PartialEq + Clone + 'static + Routable,
 {
     game_id: GameId,
+    view: ReadSignal<Option<ViewMode>>,
     playing_as: ReadSignal<Option<String>>,
     main_menu: Callback<(), R>,
-    player_view_route: Callback<Option<String>, R>,
+    game_route: Callback<(Option<ViewMode>, Option<String>), R>,
 }
 
 #[derive(Debug, Clone, PartialEq, Props)]
@@ -75,15 +76,22 @@ fn BackToMainMenuButton<R: PartialEq + Clone + 'static + Routable>(
 pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
     GameViewProps {
         game_id,
+        view,
         playing_as,
         main_menu,
-        player_view_route,
+        game_route,
     }: GameViewProps<R>,
 ) -> Element {
     use_context_provider(|| game_id);
     let nav = navigator();
     let set_view = use_callback(move |playing_as: Option<String>| {
-        nav.replace(player_view_route(playing_as));
+        nav.replace(game_route((*view.peek(), playing_as)));
+    });
+    let set_view_mode = use_callback(move |mode: ViewMode| {
+        nav.replace(game_route((
+            (mode != ViewMode::Game).then_some(mode),
+            playing_as.peek().clone(),
+        )));
     });
     let mut socket = use_websocket(move || {
         join_game(game_id, WebSocketOptions::new().with_automatic_reconnect())
@@ -179,8 +187,10 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
             MainGameView {
                 game_options,
                 game_state,
+                view,
                 playing_as,
                 set_view,
+                set_view_mode,
             }
         };
     }
@@ -195,8 +205,10 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
 fn MainGameView(
     game_options: ReadSignal<Option<Arc<GameOptions>>>,
     game_state: ReadSignal<Option<Arc<GameState>>>,
+    view: ReadSignal<Option<ViewMode>>,
     playing_as: ReadSignal<Option<String>>,
     set_view: Callback<Option<String>>,
+    set_view_mode: Callback<ViewMode>,
 ) -> Element {
     let game_state = use_memo(move || game_state().expect("Game state to be loaded"));
     let game_options = use_memo(move || game_options().expect("Game options to be loaded"));
@@ -220,21 +232,22 @@ fn MainGameView(
     let info = use_signal(|| None);
     use_context_provider(|| InfoContext::new(info));
 
-    let view_mode = use_signal(|| ViewMode::Game);
+    let view_mode = use_memo(move || view().unwrap_or_default());
+    use_context_provider(|| ViewModeContext::new(view_mode.into(), set_view_mode));
 
     rsx! {
         document::Stylesheet { href: GAME_SCSS }
         Fragment {
             InfoModal {}
-            InfoBox { view_mode }
-            DisplayViewMode { view_mode }
+            InfoBox {}
+            DisplayViewMode {}
         }
     }
 }
 
 #[component]
-fn DisplayViewMode(view_mode: ReadSignal<ViewMode>) -> Element {
-    let mode = *view_mode.read();
+fn DisplayViewMode() -> Element {
+    let mode = use_context::<ViewModeContext>().get();
     let gc = use_context::<GameContext>();
     let show_sidebar = use_memo(move || {
         !matches!(
