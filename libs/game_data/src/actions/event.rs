@@ -765,6 +765,112 @@ pub enum Event {
     },
 }
 
+impl Event {
+    pub fn player(&self) -> Option<PlayerId> {
+        match self {
+            Event::AddPlayer { player } => Some(PlayerId::from(player.name.clone())),
+            Event::GiveSupportForTheThrone { giver, .. } => Some(giver.clone()),
+            Event::SetupTheTribunii { player, .. }
+            | Event::SetupCulturalExchange { player, .. }
+            | Event::SetupMinorFaction { player, .. }
+            | Event::SetupPlayerTechs { player, .. }
+            | Event::SetupSpeaker { player }
+            | Event::TakeStrategyCard { player, .. }
+            | Event::PlayGiftOfPrescience { player }
+            | Event::TacticalActionBegin { player }
+            | Event::TacticalActionTakePlanet { player, .. }
+            | Event::TacticalActionAttachPlanetAttachment { player, .. }
+            | Event::TacticalActionResearchTechnology { player, .. }
+            | Event::TacticalActionCommit { player }
+            | Event::StrategicActionBegin { player, .. }
+            | Event::StrategicActionPrimary { player, .. }
+            | Event::StrategicActionSecondary { player, .. }
+            | Event::ActionCardActionBegin { player, .. }
+            | Event::ActionCardActionCommit { player, .. }
+            | Event::LeaderActionBegin { player, .. }
+            | Event::LeaderActionCommit { player, .. }
+            | Event::PuppetsOfTheBlade { player }
+            | Event::PlayGalacticEventAction { player, .. }
+            | Event::PlayBreakthroughAction { player, .. }
+            | Event::FrontierCardActionBegin { player, .. }
+            | Event::FrontierCardActionCommit { player, .. }
+            | Event::GainRelicAction { player, .. }
+            | Event::RelicActionBegin { player, .. }
+            | Event::RelicActionCommit { player, .. }
+            | Event::EndTurn { player }
+            | Event::TakeAnotherTurn { player }
+            | Event::PlayCrisis { player }
+            | Event::PlayPuppetsOnAString { player }
+            | Event::PassAction { player }
+            | Event::ScorePublicObjective { player, .. }
+            | Event::ScoreSecretObjective { player, .. }
+            | Event::PlayNeuraloop { player, .. }
+            | Event::GainEntropicScarTech { player, .. }
+            | Event::PlayCrownOfEmphidia { player }
+            | Event::PlayMawOfWorlds { player, .. }
+            | Event::CastAgendaVote { player, .. }
+            | Event::AddExtraPoints { player, .. }
+            | Event::AddImperial { player, .. }
+            | Event::ScoreExtraPublicObjective { player, .. }
+            | Event::ScoreExtraSecretObjective { player, .. }
+            | Event::UnscoreObjective { player, .. }
+            | Event::UnscoreSecretObjective { player, .. }
+            | Event::ResearchBookOfLatviniaTechs { player, .. }
+            | Event::AddTechToPlayer { player, .. }
+            | Event::RemoveTechFromPlayer { player, .. }
+            | Event::CommitToThundersEdgeExpedition { player, .. }
+            | Event::CompleteThundersEdgeExpedition { player, .. }
+            | Event::SetStellarAtomicsUsed { player, .. }
+            | Event::SetTotalWarPoints { player, .. }
+            | Event::BuildMonument { player, .. }
+            | Event::RollForTheFracture { player, .. }
+            | Event::GainMinisterOfAntiquesRelic { player, .. }
+            | Event::ResolveRapidMobilization { player, .. }
+            | Event::SetBreakthrough { player, .. }
+            | Event::AddPlanetAttachment { player, .. }
+            | Event::RemovePlanetAttachment { player, .. }
+            | Event::AddAgendaPlayerVote { player, .. } => Some(player.clone()),
+            Event::SetSettings { .. }
+            | Event::ImportFromMilty { .. }
+            | Event::SetGalacticEvents { .. }
+            | Event::CreationDone
+            | Event::RevealInitialObjectives { .. }
+            | Event::RevealAllPublicObjectives { .. }
+            | Event::StartGame
+            | Event::CompleteStrategyPhase
+            | Event::StrategicActionCommit
+            | Event::RevealPublicObjective { .. }
+            | Event::CompleteStatusPhase
+            | Event::CompleteEntropicScarPhase
+            | Event::CompletePostSetupPhase
+            | Event::CompleteRelicsPhase
+            | Event::RevealAgenda { .. }
+            | Event::VetoAgenda
+            | Event::ResolveAgenda { .. }
+            | Event::CompleteAgendaPhase
+            | Event::SetCustodians { .. }
+            | Event::RevealExtraPublicObjective { .. }
+            | Event::SetShardForTheThroneOwner { .. }
+            | Event::SetCrownOfEmphidiaOwner { .. }
+            | Event::SetBookOfLatviniaOwner { .. }
+            | Event::SetRelicOwner { .. }
+            | Event::ClaimThundersEdgeExpeditionSlot { .. }
+            | Event::SetThundersEdgeCompletion { .. }
+            | Event::SetFractureInPlay { .. }
+            | Event::SetZealousOrthodoxyOwner { .. }
+            | Event::DestroyMonument { .. }
+            | Event::SetMonumentCommodities { .. }
+            | Event::RepealLaw { .. }
+            | Event::TrackTime { .. }
+            | Event::SetPlanetOwner { .. }
+            | Event::SetPlanetDestroyed { .. }
+            | Event::AddAgendaBegin { .. }
+            | Event::AddAgendaCancel
+            | Event::AddAgendaResolve { .. } => None,
+        }
+    }
+}
+
 /// The actions taken for specific action cards.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[allow(missing_docs)]

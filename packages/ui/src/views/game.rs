@@ -26,9 +26,9 @@ use crate::{
         view_mode::{ViewMode, ViewModeContext},
     },
     views::{
-        galactic_events_view_mode::GalacticEventsViewMode, info_box::InfoBox,
-        laws_view_mode::LawsViewMode, map_view_mode::MapViewMode, phase_view::PhaseView,
-        planet_view_mode::PlanetViewMode, players_sidebar::PlayersSidebar,
+        galactic_events_view_mode::GalacticEventsViewMode, history_view_mode::HistoryViewMode,
+        info_box::InfoBox, laws_view_mode::LawsViewMode, map_view_mode::MapViewMode,
+        phase_view::PhaseView, planet_view_mode::PlanetViewMode, players_sidebar::PlayersSidebar,
         relic_view_mode::RelicViewMode, score_view_mode::ScoreViewMode,
         tech_view_mode::TechViewMode, thunders_edge_view_mode::ThundersEdgeViewMode,
     },
@@ -294,6 +294,9 @@ fn DisplayViewMode() -> Element {
         },
         ViewMode::GalacticEvents => rsx! {
             GalacticEventsViewMode {}
+        },
+        ViewMode::History => rsx! {
+            HistoryViewMode {}
         },
     }
 }

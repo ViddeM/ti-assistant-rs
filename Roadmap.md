@@ -141,6 +141,7 @@ The expansions list their own extras under "Agenda phase extras", tagged with th
 ### Undo and views
 - ✅ Undo
   - ❌ Display "Undo event {NAME}" popup when undoing so it's clear for everyone
+- ✅ History page (event, player, time)
 - ✅ Player-specific view
 - ✅ Frontend-only personal views
   - ✅ URL-stored views

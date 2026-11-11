@@ -100,6 +100,7 @@ pub fn InfoBox() -> Element {
             if has_galactic_event_sections() {
                 ViewModeButton { class: "margin-top", view_mode: ViewMode::GalacticEvents }
             }
+            ViewModeButton { class: "margin-top", view_mode: ViewMode::History }
             p { class: "margin-top", "Round: {round()}" }
             p { "Current player: {current_player}" }
             p { "Currently viewing: {player.display()}" }

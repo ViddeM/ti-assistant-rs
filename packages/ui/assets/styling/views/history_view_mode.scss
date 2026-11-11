@@ -1,0 +1,24 @@
+@import "../vars.scss";
+
+.history-view-container {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  & th {
+    border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+  }
+
+  & th,
+  & td {
+    text-align: left;
+    padding: 0 $margin;
+  }
+}
