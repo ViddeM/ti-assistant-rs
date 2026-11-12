@@ -154,7 +154,7 @@ fn TechCategoryButton(
     rsx! {
         fieldset { class: format!("{base_style} center-row"),
             legend {
-                "{tech_type.to_type_name()}"
+                "{tech_type.to_display_name()}"
                 {
                     if let TechType::Category(cat) = &tech_type {
                         rsx! {
