@@ -47,9 +47,9 @@ use ti_helper_game_data::{
         expedition::{TECompletion, TEExpedition},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
-            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation,
-            RapidMobilizationResolution, RelicProgress, StrategicPrimaryProgress,
-            StrategicProgress, TacticalProgress, ThundersEdgeProgress,
+            GameState, LeaderProgress, MapData, MiltyInformation, MinisterOfAntiquesProgress,
+            PlanetLocation, RapidMobilizationResolution, RelicProgress, RelicStep,
+            StrategicPrimaryProgress, StrategicProgress, TacticalProgress, ThundersEdgeProgress,
         },
         player::NewPlayer,
     },
@@ -108,11 +108,16 @@ fn try_update_game_state(
             "{roller} must roll for the Fracture first"
         );
     }
-    if let Some(player) = &game_state.minister_of_antiques_relic {
-        ensure!(
+    match &game_state.minister_of_antiques {
+        Some(MinisterOfAntiquesProgress::GainRelic { player }) => ensure!(
             matches!(event, Event::GainMinisterOfAntiquesRelic { .. }),
             "{player} must gain their Minister of Antiques relic first"
-        );
+        ),
+        Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player }) => ensure!(
+            matches!(event, Event::ResearchBookOfLatviniaTechs { .. }),
+            "{player} must research with the Book of Latvinia first"
+        ),
+        None => {}
     }
 
     match event {
@@ -1272,7 +1277,7 @@ fn try_update_game_state(
                         .context("Player not found")?
                         .technologies
                         .remove(&purged_tech);
-                    game_state.set_relic_owner(relic, Some(player))?;
+                    game_state.gain_relic_as_action(player.clone(), relic)?;
                 }
                 BreakthroughAction::VisionariaSelect { researched } => {
                     for (researcher, tech) in &researched {
@@ -1311,7 +1316,9 @@ fn try_update_game_state(
                 }
             }
 
-            game_state.phase = Phase::EndActionTurn;
+            if game_state.action_progress.is_none() {
+                game_state.phase = Phase::EndActionTurn;
+            }
         }
         Event::FrontierCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
@@ -1420,8 +1427,7 @@ fn try_update_game_state(
                 "Relic {relic:?} is already owned by another player."
             );
 
-            game_state.set_relic_owner(relic, Some(player))?;
-            game_state.phase = Phase::EndActionTurn;
+            game_state.gain_relic_as_action(player, relic)?;
         }
         Event::RelicActionBegin { player, relic } => {
             game_state.assert_phase(Phase::Action)?;
@@ -1445,7 +1451,10 @@ fn try_update_game_state(
                 "Player doesn't own the relic"
             );
 
-            game_state.action_progress = Some(ActionPhaseProgress::Relic(RelicProgress { relic }));
+            game_state.action_progress = Some(ActionPhaseProgress::Relic(RelicProgress {
+                relic,
+                step: RelicStep::Action,
+            }));
             game_state.phase = Phase::RelicAction;
         }
         Event::RelicActionCommit { player, data } => {
@@ -1459,6 +1468,10 @@ fn try_update_game_state(
                     game_state.action_progress
                 )
             };
+            ensure!(
+                progress.step == RelicStep::Action,
+                "{player} must research with the Book of Latvinia first"
+            );
 
             ensure!(
                 game_state
@@ -1551,7 +1564,6 @@ fn try_update_game_state(
                 } else {
                     game_state.speaker = Some(player.clone());
                 }
-                game_state.book_of_latvinia_research = None;
             }
 
             if !progress.relic.is_exhausted_when_played() {
@@ -2214,8 +2226,21 @@ fn try_update_game_state(
             player,
             technologies,
         } => {
+            let minister_research = matches!(
+                &game_state.minister_of_antiques,
+                Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player: p }) if p == &player
+            );
+            let action_research = game_state.phase == Phase::RelicAction
+                && game_state.current_player.as_ref() == Some(&player)
+                && matches!(
+                    &game_state.action_progress,
+                    Some(ActionPhaseProgress::Relic(RelicProgress {
+                        relic: Relic::BookOfLatvinia,
+                        step: RelicStep::Gain,
+                    }))
+                );
             ensure!(
-                game_state.book_of_latvinia_research.as_ref() == Some(&player),
+                minister_research || action_research,
                 "{player} has no Book of Latvinia research"
             );
             ensure!(
@@ -2242,7 +2267,12 @@ fn try_update_game_state(
             for tech in technologies {
                 p.research_tech(tech)?;
             }
-            game_state.book_of_latvinia_research = None;
+            if minister_research {
+                game_state.minister_of_antiques = None;
+            } else {
+                game_state.action_progress = None;
+                game_state.phase = Phase::EndActionTurn;
+            }
         }
         Event::AddTechToPlayer { player, tech } => {
             game_state.assert_enabled(&tech)?;
@@ -2721,10 +2751,14 @@ fn try_update_game_state(
         }
         Event::GainMinisterOfAntiquesRelic { player, relic } => {
             ensure!(
-                game_state.minister_of_antiques_relic.as_ref() == Some(&player),
+                matches!(
+                    &game_state.minister_of_antiques,
+                    Some(MinisterOfAntiquesProgress::GainRelic { player: p }) if p == &player
+                ),
                 "{player} has no Minister of Antiques relic to gain"
             );
 
+            game_state.minister_of_antiques = None;
             if let Some(relic) = relic {
                 game_state.assert_enabled(&relic)?;
                 ensure!(
@@ -2735,9 +2769,12 @@ fn try_update_game_state(
                     "Relic {relic:?} is already owned by another player."
                 );
 
-                game_state.set_relic_owner(relic, Some(player))?;
+                game_state.set_relic_owner(relic.clone(), Some(player.clone()))?;
+                if relic == Relic::BookOfLatvinia {
+                    game_state.minister_of_antiques =
+                        Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player });
+                }
             }
-            game_state.minister_of_antiques_relic = None;
         }
         Event::ResolveRapidMobilization {
             player,

@@ -28,11 +28,8 @@ use crate::{
         info_context::{Info, InfoDescription},
         player_view::PlayerViewContext,
     },
-    views::{
-        book_of_latvinia_research::BookOfLatviniaResearch,
-        thunders_edge_view_mode::{
-            THUNDERS_EDGE_VIEW_MODE_SCSS, expedition_token::ExpeditionToken,
-        },
+    views::thunders_edge_view_mode::{
+        THUNDERS_EDGE_VIEW_MODE_SCSS, expedition_token::ExpeditionToken,
     },
 };
 
@@ -93,8 +90,6 @@ pub fn EndActionPhaseView() -> Element {
                     }
                 }
             }
-
-            BookOfLatviniaResearch {}
 
             if view.is_active() {
                 fieldset { class: "end-of-turn-section",

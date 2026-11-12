@@ -157,13 +157,9 @@ pub struct GameState {
     /// must roll for it before anything else can happen.
     pub fracture_roll: Option<PlayerId>,
 
-    /// The player (if any) that gained the Book of Latvinia and may still research up to 2
-    /// technologies with no prerequisites.
-    pub book_of_latvinia_research: Option<PlayerId>,
-
-    /// The player (if any) elected for Minister of Antiques, who must gain their relic before
-    /// anything else can happen.
-    pub minister_of_antiques_relic: Option<PlayerId>,
+    /// The progress (if any) of the player elected for Minister of Antiques, who must resolve it
+    /// before anything else can happen.
+    pub minister_of_antiques: Option<MinisterOfAntiquesProgress>,
 
     /// The players who still have to resolve Rapid Mobilization in the post-setup phase.
     pub rapid_mobilization: BTreeSet<PlayerId>,
@@ -244,6 +240,33 @@ pub struct MiltyInformation {
     pub hex_map: HexMap,
     /// The system that contains mirage (if any).
     pub mirage_system: Option<SystemId>,
+}
+
+/// The progress of the player elected for Minister of Antiques.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum MinisterOfAntiquesProgress {
+    /// The player must gain their relic.
+    GainRelic {
+        /// The elected player.
+        player: PlayerId,
+    },
+    /// The player gained the Book of Latvinia, and must research up to 2 technologies with no
+    /// prerequisites (or skip it).
+    BookOfLatviniaResearch {
+        /// The elected player.
+        player: PlayerId,
+    },
+}
+
+impl MinisterOfAntiquesProgress {
+    /// The elected player.
+    pub fn player(&self) -> &PlayerId {
+        match self {
+            MinisterOfAntiquesProgress::GainRelic { player }
+            | MinisterOfAntiquesProgress::BookOfLatviniaResearch { player } => player,
+        }
+    }
 }
 
 /// The current progress of an action-phase action.
@@ -431,8 +454,20 @@ pub struct FrontierCardProgress {
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct RelicProgress {
-    /// The relic whose action is being taken.
+    /// The relic that was gained or whose action is being taken.
     pub relic: Relic,
+    /// Whether the relic was just gained, or its action is being taken.
+    pub step: RelicStep,
+}
+
+/// What is being done with the relic of a [RelicProgress].
+#[derive(Clone, Copy, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub enum RelicStep {
+    /// The relic was just gained, and its on-gain effect (the Book of Latvinia's research) is
+    /// being resolved.
+    Gain,
+    /// The relic's action is being taken.
+    Action,
 }
 
 impl GameState {
@@ -903,9 +938,8 @@ impl GameState {
 
     /// Give `relic` to `owner`, or to nobody, taking it from whoever had it.
     ///
-    /// Shard of the Throne's point follows the relic, gaining The Quantumcore unlocks the new
-    /// owner's breakthrough, and gaining the Book of Latvinia lets the new owner research up to 2
-    /// technologies.
+    /// Shard of the Throne's point follows the relic, and gaining The Quantumcore unlocks the new
+    /// owner's breakthrough.
     pub fn set_relic_owner(&mut self, relic: Relic, owner: Option<PlayerId>) -> anyhow::Result<()> {
         if let Some(p) = owner.as_ref() {
             ensure!(self.players.contains_key(p), "Player doesn't exist '{p}'");
@@ -922,10 +956,25 @@ impl GameState {
         match (&relic, owner) {
             (Relic::ShardOfTheThrone, owner) => self.score.shard_of_the_throne = owner,
             (Relic::TheQuantumcore, Some(owner)) => self.gain_breakthrough(&owner)?,
-            (Relic::BookOfLatvinia, owner) => self.book_of_latvinia_research = owner,
             _ => {}
         }
 
+        Ok(())
+    }
+
+    /// Give `relic` to `player` as (part of) their action, after which their turn ends, unless
+    /// it's the Book of Latvinia: they research with it first.
+    pub fn gain_relic_as_action(&mut self, player: PlayerId, relic: Relic) -> anyhow::Result<()> {
+        self.set_relic_owner(relic.clone(), Some(player))?;
+        if relic == Relic::BookOfLatvinia {
+            self.action_progress = Some(ActionPhaseProgress::Relic(RelicProgress {
+                relic,
+                step: RelicStep::Gain,
+            }));
+            self.phase = Phase::RelicAction;
+        } else {
+            self.phase = Phase::EndActionTurn;
+        }
         Ok(())
     }
 
@@ -1270,7 +1319,9 @@ impl GameState {
             if let (Agenda::MinisterOfAntiques, AgendaElect::Player(player)) =
                 (&vote.agenda, outcome)
             {
-                self.minister_of_antiques_relic = Some(player.clone());
+                self.minister_of_antiques = Some(MinisterOfAntiquesProgress::GainRelic {
+                    player: player.clone(),
+                });
             }
 
             // TODO: resolve any other vote effects such as VPs or techs

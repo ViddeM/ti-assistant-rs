@@ -16,7 +16,7 @@ source: libs/system_tests/src/check.rs
   12 TakeStrategyCard(Bob)                    r1 Strategy           Carol
   13 TakeStrategyCard(Carol)                  r1 Strategy           Alice
   14 CompleteStrategyPhase                    r1 Action             Alice
-  15 GainRelicAction(Alice)                   r1 EndActionTurn      Alice
+  15 GainRelicAction(Alice)                   r1 RelicAction        Alice
   16 ResearchBookOfLatviniaTechs(Alice)       r1 EndActionTurn      Alice
   17 EndTurn(Alice)                           r1 Action             Bob
   18 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
@@ -28,14 +28,13 @@ source: libs/system_tests/src/check.rs
   24 RelicActionBegin(Alice)                  r1 RelicAction        Alice
   25 RelicActionCommit(Alice)                 r1 EndActionTurn      Alice
   26 EndTurn(Alice)                           r1 Action             Bob
-  27 GainRelicAction(Bob)                     r1 EndActionTurn      Bob
+  27 GainRelicAction(Bob)                     r1 RelicAction        Bob
   28 ResearchBookOfLatviniaTechs(Bob)         r1 EndActionTurn      Bob
   29 TakeAnotherTurn(Bob)                     r1 Action             Bob
   30 RelicActionBegin(Bob)                    r1 RelicAction        Bob
   31 RelicActionCommit(Bob)                   r1 EndActionTurn      Bob        speaker=Bob
   32 EndTurn(Bob)                             r1 Action             Carol
-  33 GainRelicAction(Carol)                   r1 EndActionTurn      Carol
-  34 TakeAnotherTurn(Carol)                   r1 Action             Carol
-  35 RelicActionBegin(Carol)                  r1 RelicAction        Carol
-  36 RelicActionCommit(Carol)                 r1 EndActionTurn      Carol      speaker=Carol
-  37 EndTurn(Carol)                           r1 Action             Alice
+  33 GainRelicAction(Carol)                   r1 RelicAction        Carol
+  34 ResearchBookOfLatviniaTechs(Carol)       r1 EndActionTurn      Carol
+  35 EndTurn(Carol)                           r1 Action             Alice
+  36 SetRelicOwner(Bob)                       r1 Action             Alice

@@ -128,18 +128,17 @@ playersPlayTime:
     secs: 660
     nanos: 0
   Bob:
-    secs: 420
+    secs: 480
     nanos: 0
   Carol:
-    secs: 420
+    secs: 480
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:32:00Z"
+currentTurnStartTime: "2025-01-01T12:34:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-bookOfLatviniaResearch: ~
-ministerOfAntiquesRelic: ~
+ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
@@ -147,4 +146,4 @@ monuments: {}
 lastEvent:
   - SetBookOfLatviniaOwner:
       player: ~
-  - "2025-01-01T12:34:00Z"
+  - "2025-01-01T12:36:00Z"

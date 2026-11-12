@@ -45,7 +45,8 @@ players:
     technologies:
       - AntimassDeflectors
       - SarweenTools
-    relics: []
+    relics:
+      - BookOfLatvinia
     breakthrough: ~
     factionState: None
     leadersFrom: ~
@@ -66,7 +67,7 @@ players:
     leadersFrom: ~
     minorFaction: ~
     homeSystemFrom: ~
-speaker: Carol
+speaker: Bob
 tableOrder:
   - Alice
   - Bob
@@ -127,20 +128,20 @@ playersPlayTime:
     secs: 660
     nanos: 0
   Carol:
-    secs: 600
+    secs: 480
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:37:00Z"
+currentTurnStartTime: "2025-01-01T12:35:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-bookOfLatviniaResearch: ~
-ministerOfAntiquesRelic: ~
+ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
 lastEvent:
-  - EndTurn:
-      player: Carol
-  - "2025-01-01T12:37:00Z"
+  - SetRelicOwner:
+      relic: BookOfLatvinia
+      player: Bob
+  - "2025-01-01T12:36:00Z"

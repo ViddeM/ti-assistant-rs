@@ -1,0 +1,233 @@
+---
+source: libs/system_tests/src/check.rs
+---
+round: 1
+gameSettings:
+  maxPoints: 10
+  expansions:
+    prophecyOfKings: true
+    codex1: true
+    codex2: true
+    codex3: true
+    codex4: true
+    thundersEdge: false
+galacticEvents: []
+phase: Agenda
+mapData:
+  miltyInformation: ~
+  destroyedPlanets: []
+players:
+  Alice:
+    name: Alice
+    faction: FederationOfSol
+    color: Pink
+    planets:
+      Jord: []
+    technologies:
+      - AntimassDeflectors
+      - NeuralMotivator
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+  Bob:
+    name: Bob
+    faction: EmiratesOfHacan
+    color: Orange
+    planets:
+      Hercant: []
+      Arretze: []
+      Kamdorn: []
+    technologies:
+      - AntimassDeflectors
+      - PlasmaScoring
+      - SarweenTools
+    relics:
+      - BookOfLatvinia
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+  Carol:
+    name: Carol
+    faction: XxchaKingdom
+    color: Green
+    planets:
+      ArchonRen: []
+      ArchonTau: []
+    technologies:
+      - GravitonLaserSystem
+    relics: []
+    breakthrough: ~
+    factionState: None
+    leadersFrom: ~
+    minorFaction: ~
+    homeSystemFrom: ~
+speaker: Alice
+tableOrder:
+  - Alice
+  - Bob
+  - Carol
+turnOrder:
+  - Bob
+  - Carol
+  - Alice
+strategyCardHolders: {}
+currentPlayer: Bob
+spentStrategyCards: []
+passedPlayers: []
+interruptedTurn: ~
+actionProgress: ~
+score:
+  maxPoints: 10
+  playerPoints:
+    Alice: 1
+    Bob: 0
+    Carol: 0
+  revealedObjectives:
+    CornerTheMarket: []
+    DevelopWeaponry: []
+    ExpandBorders: []
+  secretObjectives: {}
+  supportForTheThrone: {}
+  shardOfTheThrone: ~
+  crownOfEmphidia: ~
+  bookOfLatvinia: ~
+  extraPoints: {}
+  imperial: {}
+  agendaScores: []
+  custodians: Alice
+  galacticEvents:
+    zealousOrthodoxy: ~
+    totalWar: {}
+agenda:
+  round: Completed
+  vote: ~
+agendaVoteHistory:
+  - round: 1
+    vote:
+      agenda: MinisterOfAntiques
+      kind: Directive
+      elect: Player
+      candidates:
+        - electKind: Player
+          value: Alice
+        - electKind: Player
+          value: Bob
+        - electKind: Player
+          value: Carol
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+        Bob:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+        Carol:
+          votes: 1
+          outcome:
+            electKind: Player
+            value: Bob
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: Player
+            value: Bob
+      expectedOutcome:
+        electKind: Player
+        value: Bob
+    outcome:
+      electKind: Player
+      value: Bob
+  - round: 1
+    vote:
+      agenda: ConventionsOfWar
+      kind: Law
+      elect: ForOrAgainst
+      candidates:
+        - electKind: ForOrAgainst
+          value: For
+        - electKind: ForOrAgainst
+          value: Against
+      playerVotes:
+        Alice:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Bob:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+        Carol:
+          votes: 1
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      outcomesByVotes:
+        - votes: 3
+          outcome:
+            electKind: ForOrAgainst
+            value: For
+      expectedOutcome:
+        electKind: ForOrAgainst
+        value: For
+    outcome:
+      electKind: ForOrAgainst
+      value: For
+laws:
+  ConventionsOfWar:
+    electKind: ForOrAgainst
+    value: For
+agendaOverrideState: ~
+statusPhaseState:
+  scoredPublicObjectives:
+    Alice: []
+    Bob: []
+    Carol: []
+  scoredSecretObjectives:
+    Alice: ~
+    Bob: ~
+    Carol: ~
+  revealedObjective: ExpandBorders
+  entropicScarTechs: {}
+availableLeaders:
+  Alice: []
+  Bob: []
+  Carol:
+    - GgrucotoRinn
+timeTrackingPaused: false
+playersPlayTime:
+  Alice:
+    secs: 660
+    nanos: 0
+  Bob:
+    secs: 540
+    nanos: 0
+  Carol:
+    secs: 600
+    nanos: 0
+currentTurnStartTime: "2025-01-01T12:45:00Z"
+naaluTelepathy: ~
+teExpedition: ~
+fractureInPlay: false
+fractureRoll: ~
+ministerOfAntiques: ~
+rapidMobilization: []
+rapidMobilizationResolved: {}
+stellarAtomicsUsed: []
+monuments: {}
+lastEvent:
+  - ResolveAgenda:
+      outcome:
+        electKind: ForOrAgainst
+        value: For
+  - "2025-01-01T12:57:00Z"

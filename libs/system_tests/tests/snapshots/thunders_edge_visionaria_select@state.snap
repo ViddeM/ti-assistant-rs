@@ -134,8 +134,7 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-bookOfLatviniaResearch: ~
-ministerOfAntiquesRelic: ~
+ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []

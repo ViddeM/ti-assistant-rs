@@ -12,19 +12,14 @@ use crate::{
 };
 
 #[component]
-pub fn BookOfLatviniaResearch() -> Element {
-    let gc = use_context::<GameContext>();
+pub fn BookOfLatviniaResearch(player_id: PlayerId) -> Element {
     let view = use_context::<PlayerViewContext>();
 
-    let researcher = use_memo(move || gc.game_state().book_of_latvinia_research.clone());
-
     rsx! {
-        if let Some(player_id) = researcher() {
-            if view.display_for(&player_id) {
-                BookOfLatviniaTechPicker { key: "{player_id}", player_id }
-            } else {
-                p { "Waiting for {player_id} to research with the Book of Latvinia" }
-            }
+        if view.display_for(&player_id) {
+            BookOfLatviniaTechPicker { key: "{player_id}", player_id }
+        } else {
+            p { "Waiting for {player_id} to research with the Book of Latvinia" }
         }
     }
 }

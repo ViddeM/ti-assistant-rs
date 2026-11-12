@@ -2,12 +2,13 @@
 
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{SIMPLE_PICKS, action_phase, three_players};
+use crate::fixtures::{SIMPLE_PICKS, action_phase, agenda_phase, three_players};
 
 scenarios![
     codex_iii_iihq_modernization,
     codex_iv_book_of_latvinia,
     codex_iv_book_of_latvinia_research,
+    codex_iv_book_of_latvinia_minister_of_antiques,
     codex_iv_neuraloop,
 ];
 
@@ -59,6 +60,10 @@ pub fn codex_iv_book_of_latvinia() -> TestGame {
     g.turn("Alice").play_card(StrategyCard::Leadership);
     g.turn("Bob")
         .gain_relic(Relic::BookOfLatvinia)
+        .apply(Event::ResearchBookOfLatviniaTechs {
+            player: p("Bob"),
+            technologies: vec![],
+        })
         .take_another_turn()
         .relic(Relic::BookOfLatvinia, None)
         .end_turn();
@@ -70,6 +75,10 @@ pub fn codex_iv_book_of_latvinia() -> TestGame {
     // Purged relics aren't tracked, so it can be gained again.
     g.turn("Carol")
         .gain_relic(Relic::BookOfLatvinia)
+        .apply(Event::ResearchBookOfLatviniaTechs {
+            player: p("Carol"),
+            technologies: vec![],
+        })
         .take_another_turn()
         .relic(Relic::BookOfLatvinia, None)
         .end_turn();
@@ -93,8 +102,9 @@ pub fn codex_iv_book_of_latvinia() -> TestGame {
     g
 }
 
-/// Gaining the Book of Latvinia lets the new owner research up to 2 technologies with no
-/// prerequisites, or skip it, and purging it clears the research.
+/// Gaining the Book of Latvinia as an action lets the new owner research up to 2 technologies
+/// with no prerequisites, or skip it, before their turn can end. Giving it from the admin Relics
+/// tab doesn't: the admin adds the techs by hand.
 pub fn codex_iv_book_of_latvinia_research() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     let research = |player: &str, technologies: &[Technology]| Event::ResearchBookOfLatviniaTechs {
@@ -104,6 +114,17 @@ pub fn codex_iv_book_of_latvinia_research() -> TestGame {
 
     g.turn("Alice")
         .gain_relic(Relic::BookOfLatvinia)
+        .expect_rejected(
+            Event::EndTurn { player: p("Alice") },
+            "expected EndActionTurn, was RelicAction",
+        )
+        .expect_rejected(
+            Event::RelicActionCommit {
+                player: p("Alice"),
+                data: None,
+            },
+            "Alice must research with the Book of Latvinia first",
+        )
         .expect_rejected(
             research("Bob", &[Technology::SarweenTools]),
             "no Book of Latvinia research",
@@ -155,21 +176,74 @@ pub fn codex_iv_book_of_latvinia_research() -> TestGame {
 
     let bob_techs = g.player("Bob").technologies.clone();
     let bob = g.turn("Bob").gain_relic(Relic::BookOfLatvinia);
-    assert_eq!(bob.state().book_of_latvinia_research, Some(p("Bob")));
+    assert_eq!(bob.phase(), Phase::RelicAction);
     let bob = bob.apply(research("Bob", &[]));
-    assert_eq!(bob.state().book_of_latvinia_research, None);
+    assert_eq!(bob.phase(), Phase::EndActionTurn);
+    assert_eq!(bob.state().action_progress, None);
     assert_eq!(bob.player("Bob").technologies, bob_techs);
     bob.take_another_turn()
         .relic(Relic::BookOfLatvinia, None)
         .end_turn();
 
-    let carol = g.turn("Carol").gain_relic(Relic::BookOfLatvinia);
-    assert_eq!(carol.state().book_of_latvinia_research, Some(p("Carol")));
-    carol
-        .take_another_turn()
-        .relic(Relic::BookOfLatvinia, None)
+    g.turn("Carol")
+        .gain_relic(Relic::BookOfLatvinia)
+        .expect_rejected(
+            Event::TakeAnotherTurn { player: p("Carol") },
+            "expected EndActionTurn, was RelicAction",
+        )
+        .apply(research("Carol", &[]))
         .end_turn();
-    assert_eq!(g.state().book_of_latvinia_research, None);
+
+    g.apply(Event::SetRelicOwner {
+        relic: Relic::BookOfLatvinia,
+        player: Some(p("Bob")),
+    })
+    .expect_rejected(research("Bob", &[]), "Bob has no Book of Latvinia research");
+    assert_eq!(g.phase(), Phase::Action);
+    assert_eq!(g.state().action_progress, None);
+    g
+}
+
+/// Gaining the Book of Latvinia through Minister of Antiques lets the elected player research
+/// with it before anything else can happen.
+pub fn codex_iv_book_of_latvinia_minister_of_antiques() -> TestGame {
+    let mut g = agenda_phase(three_players().pok().codex());
+    g.agenda(Agenda::MinisterOfAntiques)
+        .vote_all(elect("Bob"), 1)
+        .resolve_expected();
+    g.apply(Event::GainMinisterOfAntiquesRelic {
+        player: p("Bob"),
+        relic: Some(Relic::BookOfLatvinia),
+    });
+    assert!(g.player("Bob").relics.contains(&Relic::BookOfLatvinia));
+    assert_eq!(
+        g.state().minister_of_antiques,
+        Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player: p("Bob") })
+    );
+
+    g.expect_rejected(
+        Event::RevealAgenda {
+            agenda: Agenda::ConventionsOfWar,
+        },
+        "Bob must research with the Book of Latvinia first",
+    )
+    .expect_rejected(
+        Event::ResearchBookOfLatviniaTechs {
+            player: p("Alice"),
+            technologies: vec![Technology::SarweenTools],
+        },
+        "Alice has no Book of Latvinia research",
+    )
+    .apply(Event::ResearchBookOfLatviniaTechs {
+        player: p("Bob"),
+        technologies: vec![Technology::PlasmaScoring],
+    });
+    assert!(g.player("Bob").has_tech(&Technology::PlasmaScoring));
+    assert_eq!(g.state().minister_of_antiques, None);
+
+    g.agenda(Agenda::ConventionsOfWar)
+        .vote_all(FOR, 1)
+        .resolve_expected();
     g
 }
 

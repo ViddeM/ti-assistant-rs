@@ -436,7 +436,10 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     g.agenda(Agenda::MinisterOfAntiques)
         .vote_all(elect("Bob"), 1)
         .resolve_expected();
-    assert_eq!(g.state().minister_of_antiques_relic, Some(p("Bob")));
+    assert_eq!(
+        g.state().minister_of_antiques,
+        Some(MinisterOfAntiquesProgress::GainRelic { player: p("Bob") })
+    );
 
     g.expect_rejected(
         Event::RevealAgenda {
@@ -454,7 +457,7 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     )
     .apply(gain("Bob", Some(Relic::TheCodex)));
     assert!(g.player("Bob").relics.contains(&Relic::TheCodex));
-    assert_eq!(g.state().minister_of_antiques_relic, None);
+    assert_eq!(g.state().minister_of_antiques, None);
 
     g.agenda(Agenda::ConventionsOfWar)
         .vote_all(FOR, 1)
@@ -468,13 +471,16 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     .apply(Event::AddAgendaResolve {
         elected_outcome: elect("Carol"),
     });
-    assert_eq!(g.state().minister_of_antiques_relic, Some(p("Carol")));
+    assert_eq!(
+        g.state().minister_of_antiques,
+        Some(MinisterOfAntiquesProgress::GainRelic { player: p("Carol") })
+    );
     g.expect_rejected(
         Event::TacticalActionBegin { player: p("Alice") },
         "Carol must gain their Minister of Antiques relic first",
     )
     .apply(gain("Carol", None));
-    assert_eq!(g.state().minister_of_antiques_relic, None);
+    assert_eq!(g.state().minister_of_antiques, None);
     assert_eq!(g.player("Carol").relics, carol_relics);
     g
 }

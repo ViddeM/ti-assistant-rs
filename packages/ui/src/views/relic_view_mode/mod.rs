@@ -1,9 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::views::{
-    book_of_latvinia_research::BookOfLatviniaResearch,
-    relic_view_mode::{give_relic::GiveRelic, player_relics_grid::PlayerRelicsGrid},
-};
+use crate::views::relic_view_mode::{give_relic::GiveRelic, player_relics_grid::PlayerRelicsGrid};
 
 mod give_relic;
 mod player_relics_grid;
@@ -18,7 +15,6 @@ pub fn RelicViewMode() -> Element {
         div { class: "relic-view-container",
             PlayerRelicsGrid {}
             GiveRelic {}
-            BookOfLatviniaResearch {}
         }
     }
 }

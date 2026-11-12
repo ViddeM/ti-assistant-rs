@@ -1,9 +1,12 @@
 use dioxus::prelude::*;
-use ti_helper_game_data::components::phase::Phase;
+use ti_helper_game_data::{
+    components::phase::Phase, state::game_state::MinisterOfAntiquesProgress,
+};
 
 use crate::{
     data::game_context::GameContext,
     views::{
+        book_of_latvinia_research::BookOfLatviniaResearch,
         frontier_card::FrontierCardView,
         phase_views::{
             action_card::ActionCardView, action_phase::ActionPhaseView,
@@ -28,10 +31,18 @@ pub fn PhaseView() -> Element {
         };
     }
 
-    if let Some(player_id) = gc.game_state().minister_of_antiques_relic.clone() {
-        return rsx! {
-            MinisterOfAntiques { player_id }
-        };
+    match gc.game_state().minister_of_antiques.clone() {
+        Some(MinisterOfAntiquesProgress::GainRelic { player }) => {
+            return rsx! {
+                MinisterOfAntiques { player_id: player }
+            };
+        }
+        Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player }) => {
+            return rsx! {
+                BookOfLatviniaResearch { player_id: player }
+            };
+        }
+        None => {}
     }
 
     match gc.game_state().phase {

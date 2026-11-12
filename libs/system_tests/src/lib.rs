@@ -43,7 +43,10 @@ pub mod prelude {
             system::{System, SystemId},
             tech::Technology,
         },
-        state::expedition::{TECompletion, TEExpeditionSlot},
+        state::{
+            expedition::{TECompletion, TEExpeditionSlot},
+            game_state::MinisterOfAntiquesProgress,
+        },
     };
 
     pub use crate::{

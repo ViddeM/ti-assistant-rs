@@ -2,11 +2,8 @@ use dioxus::prelude::*;
 
 use crate::{
     data::game_context::GameContext,
-    views::{
-        book_of_latvinia_research::BookOfLatviniaResearch,
-        phase_views::agenda_phase_view::{
-            agenda_actions_view::AgendaActionsView, agenda_info_view::AgendaInfoView,
-        },
+    views::phase_views::agenda_phase_view::{
+        agenda_actions_view::AgendaActionsView, agenda_info_view::AgendaInfoView,
     },
 };
 
@@ -33,6 +30,5 @@ pub fn AgendaPhaseView() -> Element {
         } else {
             p { "Agenda state not set during agenda phase?" }
         }
-        BookOfLatviniaResearch {}
     }
 }

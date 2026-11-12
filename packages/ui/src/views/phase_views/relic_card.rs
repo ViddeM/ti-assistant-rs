@@ -6,7 +6,7 @@ use ti_helper_game_data::{
         galactic_event::GalacticEvent, planet_attachment::PlanetAttachment, relic::Relic,
         tech::TechCategory,
     },
-    state::game_state::ActionPhaseProgress,
+    state::game_state::{ActionPhaseProgress, RelicStep},
 };
 
 use crate::{
@@ -14,6 +14,7 @@ use crate::{
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
+    views::book_of_latvinia_research::BookOfLatviniaResearch,
 };
 
 #[component]
@@ -29,6 +30,9 @@ pub fn RelicCardView() -> Element {
     });
 
     match gc.game_state().action_progress.as_ref() {
+        Some(ActionPhaseProgress::Relic(r)) if r.step == RelicStep::Gain => rsx! {
+            BookOfLatviniaResearch { player_id: current_player_id() }
+        },
         Some(ActionPhaseProgress::Relic(r)) => {
             rsx! {
                 div { class: "card column",
