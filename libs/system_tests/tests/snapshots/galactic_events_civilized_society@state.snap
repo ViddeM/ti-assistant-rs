@@ -12,7 +12,12 @@ gameSettings:
     codex4: false
     thundersEdge: true
 galacticEvents:
-  - CivilizedSociety
+  inPlay:
+    - CivilizedSociety
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Strategy
 mapData:
   miltyInformation: ~
@@ -152,10 +157,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - CompleteStatusPhase
   - "2025-01-01T12:50:00Z"

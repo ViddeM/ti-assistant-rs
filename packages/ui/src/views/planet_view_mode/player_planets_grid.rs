@@ -83,7 +83,7 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
     });
     let monuments = use_memo(move || {
         let game_state = gc.game_state();
-        (game_state.monuments.keys())
+        (game_state.galactic_events.monuments.keys())
             .filter_map(|planet| Some((planet.clone(), game_state.monument_commodities(planet)?)))
             .collect::<HashMap<_, _>>()
     });

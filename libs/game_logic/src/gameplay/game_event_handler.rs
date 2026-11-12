@@ -45,11 +45,12 @@ use ti_helper_game_data::{
     state::{
         agenda::{AgendaRound, MinisterOfAntiquesProgress, Vote, VoteState},
         expedition::{TECompletion, TEExpedition},
+        galactic_events::RapidMobilizationResolution,
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
-            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation,
-            RapidMobilizationResolution, RelicProgress, RelicStep, StrategicPrimaryProgress,
-            StrategicProgress, TacticalProgress, ThundersEdgeProgress,
+            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation, RelicProgress,
+            RelicStep, StrategicPrimaryProgress, StrategicProgress, TacticalProgress,
+            ThundersEdgeProgress,
         },
         player::NewPlayer,
     },
@@ -198,7 +199,7 @@ fn try_update_game_state(
             for event in &events {
                 game_state.assert_enabled(event)?;
             }
-            game_state.galactic_events = events;
+            game_state.galactic_events.in_play = events;
         }
         Event::AddPlayer { player } => {
             game_state.assert_phase(Phase::Creation)?;
@@ -485,6 +486,7 @@ fn try_update_game_state(
             ensure!(
                 !game_state
                     .galactic_events
+                    .in_play
                     .contains(&GalacticEvent::CivilizedSociety),
                 "Civilized Society reveals all public objectives at setup"
             );
@@ -580,9 +582,11 @@ fn try_update_game_state(
 
             let age_of_fighters = game_state
                 .galactic_events
+                .in_play
                 .contains(&GalacticEvent::AgeOfFighters);
             let advent_of_the_war_sun = game_state
                 .galactic_events
+                .in_play
                 .contains(&GalacticEvent::AdventOfTheWarSun);
             for player in game_state.players.values_mut() {
                 if age_of_fighters {
@@ -599,6 +603,7 @@ fn try_update_game_state(
 
             if game_state
                 .galactic_events
+                .in_play
                 .contains(&GalacticEvent::CulturalExchangeProgram)
             {
                 let firmament = (game_state.players.iter())
@@ -611,6 +616,7 @@ fn try_update_game_state(
 
             if game_state
                 .galactic_events
+                .in_play
                 .contains(&GalacticEvent::RapidMobilization)
             {
                 game_state.fracture_in_play = true;
@@ -618,7 +624,7 @@ fn try_update_game_state(
                 for player in &players {
                     game_state.gain_breakthrough(player)?;
                 }
-                game_state.rapid_mobilization = players.into_iter().collect();
+                game_state.galactic_events.rapid_mobilization = players.into_iter().collect();
             }
 
             let with_breakthrough = (game_state.players.iter())
@@ -1165,10 +1171,16 @@ fn try_update_game_state(
                 GalacticEventAction::MercenariesForHire => {}
                 GalacticEventAction::StellarAtomics => {
                     ensure!(
-                        !game_state.stellar_atomics_used.contains(&player),
+                        !game_state
+                            .galactic_events
+                            .stellar_atomics_used
+                            .contains(&player),
                         "{player} has already used their Stellar Atomics token"
                     );
-                    game_state.stellar_atomics_used.insert(player);
+                    game_state
+                        .galactic_events
+                        .stellar_atomics_used
+                        .insert(player);
                 }
                 GalacticEventAction::ConventionsOfWarAbandoned { planet } => {
                     game_state.assert_enabled(&planet)?;
@@ -1497,6 +1509,7 @@ fn try_update_game_state(
                     RelicAction::StellarConverter { planet } => {
                         if !game_state
                             .galactic_events
+                            .in_play
                             .contains(&GalacticEvent::WildWildGalaxy)
                         {
                             ensure!(
@@ -1959,7 +1972,7 @@ fn try_update_game_state(
         Event::CompletePostSetupPhase => {
             game_state.assert_phase(Phase::PostSetup)?;
             ensure!(
-                game_state.rapid_mobilization.is_empty(),
+                game_state.galactic_events.rapid_mobilization.is_empty(),
                 "Not all players have resolved Rapid Mobilization"
             );
             game_state.change_phase(Phase::Strategy, timestamp)?;
@@ -2675,9 +2688,15 @@ fn try_update_game_state(
                 "Player doesn't exist '{player}'"
             );
             let changed = if used {
-                game_state.stellar_atomics_used.insert(player)
+                game_state
+                    .galactic_events
+                    .stellar_atomics_used
+                    .insert(player)
             } else {
-                game_state.stellar_atomics_used.remove(&player)
+                game_state
+                    .galactic_events
+                    .stellar_atomics_used
+                    .remove(&player)
             };
             ensure!(changed, "No change provided in event");
         }
@@ -2722,17 +2741,24 @@ fn try_update_game_state(
                 "{player} doesn't control {name}"
             );
             ensure!(
-                !game_state.monuments.contains_key(&planet),
+                !game_state.galactic_events.monuments.contains_key(&planet),
                 "{name} already has a monument"
             );
 
             let started = game_state.status_phases_started();
-            game_state.monuments.insert(planet, i64::from(started));
+            game_state
+                .galactic_events
+                .monuments
+                .insert(planet, i64::from(started));
         }
         Event::DestroyMonument { planet } => {
             game_state.assert_galactic_event(&GalacticEvent::MonumentsToTheAges)?;
             ensure!(
-                game_state.monuments.remove(&planet).is_some(),
+                game_state
+                    .galactic_events
+                    .monuments
+                    .remove(&planet)
+                    .is_some(),
                 "{} has no monument",
                 planet.info().name
             );
@@ -2749,6 +2775,7 @@ fn try_update_game_state(
             ensure!(current != commodities, "No change provided in event");
             let started = game_state.status_phases_started();
             game_state
+                .galactic_events
                 .monuments
                 .insert(planet, i64::from(started) - i64::from(commodities));
         }
@@ -2804,7 +2831,10 @@ fn try_update_game_state(
         } => {
             game_state.assert_phase(Phase::PostSetup)?;
             ensure!(
-                game_state.rapid_mobilization.contains(&player),
+                game_state
+                    .galactic_events
+                    .rapid_mobilization
+                    .contains(&player),
                 "{player} has no Rapid Mobilization to resolve"
             );
             for planet in &planets {
@@ -2848,8 +2878,12 @@ fn try_update_game_state(
             for tech in technologies {
                 p.research_tech(tech)?;
             }
-            game_state.rapid_mobilization.remove(&player);
             game_state
+                .galactic_events
+                .rapid_mobilization
+                .remove(&player);
+            game_state
+                .galactic_events
                 .rapid_mobilization_resolved
                 .insert(player, resolution);
         }

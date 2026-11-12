@@ -11,7 +11,12 @@ gameSettings:
     codex3: true
     codex4: true
     thundersEdge: false
-galacticEvents: []
+galacticEvents:
+  inPlay: []
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Status
 mapData:
   miltyInformation: ~
@@ -445,10 +450,6 @@ naaluTelepathy: Alice
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - PassAction:
       player: Alice

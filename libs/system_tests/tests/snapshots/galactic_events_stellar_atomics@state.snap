@@ -12,7 +12,13 @@ gameSettings:
     codex4: false
     thundersEdge: true
 galacticEvents:
-  - StellarAtomics
+  inPlay:
+    - StellarAtomics
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed:
+    - Alice
+  monuments: {}
 phase: Agenda
 mapData:
   miltyInformation: ~
@@ -181,11 +187,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed:
-  - Alice
-monuments: {}
 lastEvent:
   - ResolveAgenda:
       outcome:

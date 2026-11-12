@@ -12,7 +12,12 @@ gameSettings:
     codex4: false
     thundersEdge: true
 galacticEvents:
-  - ConventionsOfWarAbandoned
+  inPlay:
+    - ConventionsOfWarAbandoned
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -138,10 +143,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - EndTurn:
       player: Alice

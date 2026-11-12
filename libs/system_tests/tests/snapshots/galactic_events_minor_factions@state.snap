@@ -12,8 +12,13 @@ gameSettings:
     codex4: true
     thundersEdge: true
 galacticEvents:
-  - MinorFactions
-  - DangerousWilds
+  inPlay:
+    - MinorFactions
+    - DangerousWilds
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -140,10 +145,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - EndTurn:
       player: Bob

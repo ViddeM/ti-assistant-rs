@@ -39,6 +39,7 @@ use crate::{
 use super::{
     agenda::{AgendaRecord, AgendaState, VoteState},
     faction_state::FirmamentSide,
+    galactic_events::GalacticEventsState,
     player::Player,
     score::Score,
     status::StatusPhaseState,
@@ -47,14 +48,6 @@ use super::{
 /// The first round whose status phase reveals a stage II objective. Setup reveals two of the
 /// five stage I objectives and the status phases of rounds 1 to 3 reveal one each.
 const FIRST_STAGE_TWO_ROUND: u32 = 4;
-
-/// The planets and technologies a player gained from Rapid Mobilization.
-#[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct RapidMobilizationResolution {
-    pub planets: Vec<Planet>,
-    pub technologies: Vec<Technology>,
-}
 
 /// A snapshot of the game state.
 #[derive(Clone, Default, Debug, Serialize, Deserialize, PartialEq)]
@@ -66,8 +59,8 @@ pub struct GameState {
     /// The settings for the game.
     pub game_settings: GameSettings,
 
-    /// The galactic events in play.
-    pub galactic_events: BTreeSet<GalacticEvent>,
+    /// The galactic events in play and their state.
+    pub galactic_events: GalacticEventsState,
 
     /// The current phase of the game.
     pub phase: Phase,
@@ -156,22 +149,6 @@ pub struct GameState {
     /// The player (if any) who gained their breakthrough while the Fracture wasn't in play, and
     /// must roll for it before anything else can happen.
     pub fracture_roll: Option<PlayerId>,
-
-    /// The players who still have to resolve Rapid Mobilization in the post-setup phase.
-    pub rapid_mobilization: BTreeSet<PlayerId>,
-
-    /// What each player picked when resolving Rapid Mobilization, for display purposes.
-    pub rapid_mobilization_resolved: BTreeMap<PlayerId, RapidMobilizationResolution>,
-
-    /// The players who have discarded their Stellar Atomics token. It can't be derived, since the
-    /// event history isn't in [GameState].
-    pub stellar_atomics_used: BTreeSet<PlayerId>,
-
-    /// The planets with a monument ('Monuments to the Ages'), and the number of status phases
-    /// that had started when it had no commodities, see [GameState::monument_commodities]. That
-    /// is when it was built, unless its commodities have been set; it is negative if they have
-    /// been set above the number of status phases so far.
-    pub monuments: BTreeMap<Planet, i64>,
 
     /// The last applied event and when it happened.
     pub last_event: Option<(Event, DateTime<Utc>)>,
@@ -637,7 +614,7 @@ impl GameState {
         let player_state = self.players.get(player)?;
         if player_state.faction == Faction::NekroVirus {
             Some(VoteRestriction::NekroVirus)
-        } else if self.stellar_atomics_used.contains(player) {
+        } else if self.galactic_events.stellar_atomics_used.contains(player) {
             Some(VoteRestriction::StellarAtomics)
         } else {
             None
@@ -684,7 +661,7 @@ impl GameState {
     /// Asserts that the provided galactic event is in play.
     pub fn assert_galactic_event(&self, event: &GalacticEvent) -> anyhow::Result<()> {
         ensure!(
-            self.galactic_events.contains(event),
+            self.galactic_events.in_play.contains(event),
             "{} isn't in play",
             event.info().name
         );
@@ -867,7 +844,7 @@ impl GameState {
         for player in self.players.values_mut() {
             player.remove_planet(&planet);
         }
-        self.monuments.remove(&planet);
+        self.galactic_events.monuments.remove(&planet);
         self.map_data.destroyed_planets.push(planet);
     }
 
@@ -884,7 +861,7 @@ impl GameState {
     /// The commodities beneath the monument on `planet`, if it has one: one per status phase
     /// started since it had none.
     pub fn monument_commodities(&self, planet: &Planet) -> Option<u32> {
-        let empty_at = self.monuments.get(planet)?;
+        let empty_at = self.galactic_events.monuments.get(planet)?;
         Some(u32::try_from(i64::from(self.status_phases_started()) - empty_at).unwrap_or(0))
     }
 
@@ -892,7 +869,7 @@ impl GameState {
     /// commodities beneath it.
     pub fn monument_points(&self) -> HashMap<PlayerId, i8> {
         let mut points = HashMap::new();
-        for planet in self.monuments.keys() {
+        for planet in self.galactic_events.monuments.keys() {
             let monument_points = self.monument_commodities(planet).unwrap_or(0) / 3;
             let owner = (self.players.iter())
                 .find(|(_, player)| player.planets.contains_key(planet))
@@ -1099,6 +1076,7 @@ impl GameState {
     pub fn status_phase_reveals_objective(&self) -> bool {
         !self
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::CivilizedSociety)
     }
 
@@ -1106,6 +1084,7 @@ impl GameState {
     /// which they can under Civilized Society.
     pub fn status_phase_scores_any_number_of_public_objectives(&self) -> bool {
         self.galactic_events
+            .in_play
             .contains(&GalacticEvent::CivilizedSociety)
     }
 
@@ -1113,6 +1092,7 @@ impl GameState {
     /// Rapid Mobilization is in play.
     pub fn has_post_setup_phase(&self) -> bool {
         self.galactic_events
+            .in_play
             .contains(&GalacticEvent::RapidMobilization)
     }
 
@@ -1170,6 +1150,7 @@ impl GameState {
     pub fn gain_zealous_orthodoxy(&mut self, candidates: &[PlayerId]) {
         if !self
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::ZealousOrthodoxy)
             || self.score.galactic_events.zealous_orthodoxy.is_some()
         {
@@ -1201,10 +1182,14 @@ impl GameState {
         };
         let cultural_exchange_finished = !self
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::CulturalExchangeProgram)
             || player.faction == Faction::FirmamentObsidian
             || player.leaders_from.is_some();
-        let minor_faction_finished = !self.galactic_events.contains(&GalacticEvent::MinorFactions)
+        let minor_faction_finished = !self
+            .galactic_events
+            .in_play
+            .contains(&GalacticEvent::MinorFactions)
             || player.minor_faction.is_some();
 
         Ok(faction_setup_finished && cultural_exchange_finished && minor_faction_finished)

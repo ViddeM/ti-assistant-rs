@@ -42,7 +42,7 @@ fn sorted_players(gc: &GameContext) -> Vec<PlayerId> {
 pub fn GalacticEventsViewMode() -> Element {
     let gc = use_context::<GameContext>();
 
-    let in_play = use_memo(move || gc.game_state().galactic_events.clone());
+    let in_play = use_memo(move || gc.game_state().galactic_events.in_play.clone());
 
     rsx! {
         document::Stylesheet { href: GALACTIC_EVENTS_VIEW_MODE_SCSS }
@@ -83,7 +83,7 @@ fn StellarAtomics() -> Element {
     let event = use_context::<EventContext>();
 
     let players = use_memo(move || sorted_players(&gc));
-    let used = use_memo(move || gc.game_state().stellar_atomics_used.clone());
+    let used = use_memo(move || gc.game_state().galactic_events.stellar_atomics_used.clone());
 
     rsx! {
         div { class: "card column margin-top",
@@ -212,7 +212,7 @@ fn MonumentsToTheAges() -> Element {
     let players = use_memo(move || sorted_players(&gc));
     let monuments = use_memo(move || {
         let game_state = gc.game_state();
-        (game_state.monuments.keys())
+        (game_state.galactic_events.monuments.keys())
             .map(|planet| {
                 let controller = (game_state.players.iter())
                     .find(|(_, player)| player.planets.contains_key(planet))
@@ -233,7 +233,7 @@ fn MonumentsToTheAges() -> Element {
             return Vec::new();
         };
         let mut planets = (player.planets.keys())
-            .filter(|p| !game_state.monuments.contains_key(p))
+            .filter(|p| !game_state.galactic_events.monuments.contains_key(p))
             .cloned()
             .collect::<Vec<_>>();
         planets.sort();

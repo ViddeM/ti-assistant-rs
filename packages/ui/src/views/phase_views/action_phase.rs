@@ -214,6 +214,7 @@ fn ComponentSelectRow() -> Element {
     let has_galactic_event_action = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .iter()
             .any(|e| e.has_action())
     });
@@ -539,11 +540,15 @@ fn GalacticEventActionView() -> Element {
         let state = gc.game_state();
         state
             .galactic_events
+            .in_play
             .iter()
             .filter(|e| e.has_action())
             .map(|&e| {
                 let used = e == GalacticEvent::StellarAtomics
-                    && state.stellar_atomics_used.contains(&current_player());
+                    && state
+                        .galactic_events
+                        .stellar_atomics_used
+                        .contains(&current_player());
                 (e, used)
             })
             .collect::<Vec<_>>()

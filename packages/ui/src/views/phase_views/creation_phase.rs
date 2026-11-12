@@ -208,6 +208,7 @@ fn GalacticEvents() -> Element {
         let mut chosen = gc
             .game_state()
             .galactic_events
+            .in_play
             .iter()
             .copied()
             .collect::<Vec<_>>();
@@ -216,7 +217,7 @@ fn GalacticEvents() -> Element {
     });
 
     let available = use_memo(move || {
-        let chosen = &gc.game_state().galactic_events;
+        let chosen = &gc.game_state().galactic_events.in_play;
         let mut available = gc
             .game_options()
             .galactic_events
@@ -254,7 +255,7 @@ fn GalacticEvents() -> Element {
                                 Button {
                                     class: "remove-galactic-event-button",
                                     onclick: move |_| {
-                                        let mut events = gc.game_state().galactic_events.clone();
+                                        let mut events = gc.game_state().galactic_events.in_play.clone();
                                         events.remove(&galactic_event);
                                         event.send_event(Event::SetGalacticEvents { events });
                                     },
@@ -275,7 +276,7 @@ fn GalacticEvents() -> Element {
                     Button {
                         disabled: selected().is_none(),
                         onclick: move |_| {
-                            let mut events = gc.game_state().galactic_events.clone();
+                            let mut events = gc.game_state().galactic_events.in_play.clone();
                             events.insert(selected().expect("Galactic event to be selected"));
                             event.send_event(Event::SetGalacticEvents { events });
                             selected.set(None);

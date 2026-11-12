@@ -11,7 +11,12 @@ gameSettings:
     codex3: false
     codex4: false
     thundersEdge: false
-galacticEvents: []
+galacticEvents:
+  inPlay: []
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -134,10 +139,6 @@ naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - EndTurn:
       player: Carol

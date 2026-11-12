@@ -11,7 +11,12 @@ gameSettings:
     codex3: true
     codex4: true
     thundersEdge: true
-galacticEvents: []
+galacticEvents:
+  inPlay: []
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -160,10 +165,6 @@ teExpedition:
     Resources: Alice
 fractureInPlay: true
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - EndTurn:
       player: Dave

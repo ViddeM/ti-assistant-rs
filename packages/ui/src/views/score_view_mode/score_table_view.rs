@@ -48,7 +48,7 @@ pub fn ScoreTableView() -> Element {
             GalacticEvent::MonumentsToTheAges,
         ]
         .into_iter()
-        .filter(|e| gc.game_state().galactic_events.contains(e))
+        .filter(|e| gc.game_state().galactic_events.in_play.contains(e))
         .collect::<Vec<_>>()
     });
 

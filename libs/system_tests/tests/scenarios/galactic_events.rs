@@ -295,7 +295,10 @@ pub fn galactic_events_stellar_atomics() -> TestGame {
         .galactic_event(GalacticEventAction::StellarAtomics);
     assert_eq!(alice.phase(), Phase::EndActionTurn);
     alice.end_turn();
-    assert_eq!(g.state().stellar_atomics_used, BTreeSet::from([p("Alice")]));
+    assert_eq!(
+        g.state().galactic_events.stellar_atomics_used,
+        BTreeSet::from([p("Alice")])
+    );
 
     g.turn("Bob").play_card(StrategyCard::Diplomacy);
     g.turn("Carol").play_card(StrategyCard::Politics);
@@ -932,7 +935,7 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
     }
     assert!(g.player("Carol").planets.contains_key(&Planet::Avernus));
     assert_eq!(
-        g.state().rapid_mobilization,
+        g.state().galactic_events.rapid_mobilization,
         BTreeSet::from([p("Alice"), p("Bob"), p("Carol")])
     );
 
@@ -1018,7 +1021,7 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
             .technologies
             .contains(&Technology::AntimassDeflectors)
     );
-    assert!(g.state().rapid_mobilization.is_empty());
+    assert!(g.state().galactic_events.rapid_mobilization.is_empty());
 
     g.apply(Event::CompletePostSetupPhase);
     assert_eq!((g.round(), g.phase()), (1, Phase::Strategy));
@@ -1321,7 +1324,7 @@ pub fn galactic_events_admin() -> TestGame {
         .apply(stellar_atomics("Alice", false))
         .apply(alice_votes)
         .apply(Event::AddAgendaCancel);
-    assert!(g.state().stellar_atomics_used.is_empty());
+    assert!(g.state().galactic_events.stellar_atomics_used.is_empty());
 
     g.apply(zealous_orthodoxy(Some("Bob")));
     assert_eq!(g.points("Bob"), 1);
@@ -1485,7 +1488,7 @@ fn rapid_mobilization_needs_the_event() {
     let mut g = three_players().pok().thunders_edge().start();
     assert_eq!(g.phase(), Phase::Strategy);
     assert!(!g.state().fracture_in_play);
-    assert!(g.state().rapid_mobilization.is_empty());
+    assert!(g.state().galactic_events.rapid_mobilization.is_empty());
     g.expect_rejected(
         Event::ResolveRapidMobilization {
             player: p("Alice"),

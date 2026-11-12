@@ -46,6 +46,7 @@ pub fn InfoBox() -> Element {
         let mut events = gc
             .game_state()
             .galactic_events
+            .in_play
             .iter()
             .copied()
             .collect::<Vec<_>>();
@@ -80,6 +81,7 @@ pub fn InfoBox() -> Element {
     let has_galactic_event_sections = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .iter()
             .any(has_admin_section)
     });

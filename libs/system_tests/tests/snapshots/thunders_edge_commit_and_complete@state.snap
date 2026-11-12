@@ -11,7 +11,12 @@ gameSettings:
     codex3: false
     codex4: false
     thundersEdge: true
-galacticEvents: []
+galacticEvents:
+  inPlay: []
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -142,10 +147,6 @@ teExpedition:
     TradeGoods: Alice
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - EndTurn:
       player: Carol

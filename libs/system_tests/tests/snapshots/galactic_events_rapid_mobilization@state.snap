@@ -12,7 +12,29 @@ gameSettings:
     codex4: false
     thundersEdge: true
 galacticEvents:
-  - RapidMobilization
+  inPlay:
+    - RapidMobilization
+  rapidMobilization: []
+  rapidMobilizationResolved:
+    Alice:
+      planets:
+        - Abyz
+        - Fria
+      technologies:
+        - GravityDrive
+        - NeuralMotivator
+    Bob:
+      planets:
+        - Lodor
+        - MeharXull
+      technologies: []
+    Carol:
+      planets:
+        - Quann
+      technologies:
+        - AntimassDeflectors
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -139,27 +161,6 @@ teExpedition:
   progress: {}
 fractureInPlay: true
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved:
-  Alice:
-    planets:
-      - Abyz
-      - Fria
-    technologies:
-      - GravityDrive
-      - NeuralMotivator
-  Bob:
-    planets:
-      - Lodor
-      - MeharXull
-    technologies: []
-  Carol:
-    planets:
-      - Quann
-    technologies:
-      - AntimassDeflectors
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - CompleteStrategyPhase
   - "2025-01-01T12:19:00Z"

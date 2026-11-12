@@ -12,7 +12,12 @@ gameSettings:
     codex4: true
     thundersEdge: false
 galacticEvents:
-  - TotalWar
+  inPlay:
+    - TotalWar
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -135,10 +140,6 @@ naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - EndTurn:
       player: Alice

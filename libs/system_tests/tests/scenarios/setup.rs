@@ -231,7 +231,7 @@ pub fn setup_galactic_events() -> TestGame {
         .start();
 
     assert_eq!(
-        g.state().galactic_events,
+        g.state().galactic_events.in_play,
         BTreeSet::from([GalacticEvent::TotalWar, GalacticEvent::StellarAtomics])
     );
     g
@@ -311,10 +311,13 @@ fn galactic_event_rules() {
         "is not available with the enabled expansions",
     )
     .apply(choose(&[MinorFactions]));
-    assert_eq!(g.state().galactic_events, BTreeSet::from([MinorFactions]));
+    assert_eq!(
+        g.state().galactic_events.in_play,
+        BTreeSet::from([MinorFactions])
+    );
 
     g.apply(choose(&[]));
-    assert!(g.state().galactic_events.is_empty());
+    assert!(g.state().galactic_events.in_play.is_empty());
 
     g.finish_creation()
         .expect_rejected(choose(&[MinorFactions]), "expected Creation, was Setup");

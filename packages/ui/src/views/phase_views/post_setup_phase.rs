@@ -21,7 +21,12 @@ pub fn PostSetupPhaseView() -> Element {
     let event = use_context::<EventContext>();
 
     let players = use_memo(move || gc.game_state().table_order.to_vec());
-    let all_resolved = use_memo(move || gc.game_state().rapid_mobilization.is_empty());
+    let all_resolved = use_memo(move || {
+        gc.game_state()
+            .galactic_events
+            .rapid_mobilization
+            .is_empty()
+    });
 
     rsx! {
         document::Stylesheet { href: POST_SETUP_PHASE_SCSS }
@@ -55,9 +60,15 @@ fn RapidMobilizationPlayer(player: ReadSignal<PlayerId>) -> Element {
             .map(|p| p.color.name())
             .unwrap_or_default()
     });
-    let resolved = use_memo(move || !gc.game_state().rapid_mobilization.contains(&player()));
+    let resolved = use_memo(move || {
+        !gc.game_state()
+            .galactic_events
+            .rapid_mobilization
+            .contains(&player())
+    });
     let resolution = use_memo(move || {
         gc.game_state()
+            .galactic_events
             .rapid_mobilization_resolved
             .get(&player())
             .cloned()

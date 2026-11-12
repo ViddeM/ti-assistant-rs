@@ -302,6 +302,7 @@ fn DangerousWildsResearch(
     let applies = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::DangerousWilds)
             && previous_owner().is_none()
             && gc

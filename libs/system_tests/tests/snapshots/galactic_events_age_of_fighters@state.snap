@@ -12,7 +12,12 @@ gameSettings:
     codex4: false
     thundersEdge: true
 galacticEvents:
-  - AgeOfFighters
+  inPlay:
+    - AgeOfFighters
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Strategy
 mapData:
   miltyInformation: ~
@@ -120,10 +125,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - StartGame
   - "2025-01-01T12:09:00Z"

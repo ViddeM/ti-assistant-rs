@@ -12,7 +12,12 @@ gameSettings:
     codex4: false
     thundersEdge: true
 galacticEvents:
-  - WildWildGalaxy
+  inPlay:
+    - WildWildGalaxy
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Action
 mapData:
   miltyInformation: ~
@@ -137,10 +142,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - EndTurn:
       player: Carol

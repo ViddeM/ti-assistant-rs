@@ -125,6 +125,7 @@ fn StellarConvertersView() -> Element {
         let any_planet = gc
             .game_state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::WildWildGalaxy);
         let mut planets = gc
             .game_options()

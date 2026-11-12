@@ -94,11 +94,13 @@ fn PlayersSetup() -> Element {
     let cultural_exchange = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::CulturalExchangeProgram)
     });
     let minor_factions = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::MinorFactions)
     });
 
@@ -437,6 +439,7 @@ fn ObjectivesSetup() -> Element {
     let civilized_society = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::CivilizedSociety)
     });
 

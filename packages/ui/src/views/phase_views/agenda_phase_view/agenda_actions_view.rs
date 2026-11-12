@@ -131,6 +131,7 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
     let hidden_agenda = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::HiddenAgenda)
     });
 
@@ -194,6 +195,7 @@ fn PlayerVoteStateView(player_id: ReadSignal<PlayerId>, state: ReadSignal<VoteSt
     let hidden_agenda = use_memo(move || {
         gc.game_state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::HiddenAgenda)
     });
 

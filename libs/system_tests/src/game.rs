@@ -271,6 +271,7 @@ impl TestGame {
         if self
             .state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::CulturalExchangeProgram)
         {
             let drawing: Vec<(PlayerId, Faction)> = (table_order.iter())
@@ -292,6 +293,7 @@ impl TestGame {
         if self
             .state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::MinorFactions)
         {
             let expansions = self.state().game_settings.expansions.clone();
@@ -321,6 +323,7 @@ impl TestGame {
         if self
             .state()
             .galactic_events
+            .in_play
             .contains(&GalacticEvent::CivilizedSociety)
         {
             let expansions = self.state().game_settings.expansions.clone();

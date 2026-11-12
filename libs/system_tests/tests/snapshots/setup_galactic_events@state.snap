@@ -12,8 +12,13 @@ gameSettings:
     codex4: true
     thundersEdge: true
 galacticEvents:
-  - TotalWar
-  - StellarAtomics
+  inPlay:
+    - TotalWar
+    - StellarAtomics
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Strategy
 mapData:
   miltyInformation:
@@ -382,10 +387,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - StartGame
   - "2025-01-01T12:07:00Z"

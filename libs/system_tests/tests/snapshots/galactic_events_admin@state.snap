@@ -12,10 +12,15 @@ gameSettings:
     codex4: true
     thundersEdge: true
 galacticEvents:
-  - TotalWar
-  - StellarAtomics
-  - ZealousOrthodoxy
-  - ConventionsOfWarAbandoned
+  inPlay:
+    - TotalWar
+    - StellarAtomics
+    - ZealousOrthodoxy
+    - ConventionsOfWarAbandoned
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Strategy
 mapData:
   miltyInformation: ~
@@ -124,10 +129,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - SetTotalWarPoints:
       player: Bob

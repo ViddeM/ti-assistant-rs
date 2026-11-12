@@ -11,7 +11,12 @@ gameSettings:
     codex3: false
     codex4: false
     thundersEdge: false
-galacticEvents: []
+galacticEvents:
+  inPlay: []
+  rapidMobilization: []
+  rapidMobilizationResolved: {}
+  stellarAtomicsUsed: []
+  monuments: {}
 phase: Strategy
 mapData:
   miltyInformation: ~
@@ -137,10 +142,6 @@ naaluTelepathy: Alice
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-rapidMobilization: []
-rapidMobilizationResolved: {}
-stellarAtomicsUsed: []
-monuments: {}
 lastEvent:
   - CompleteStatusPhase
   - "2025-01-01T12:45:00Z"
