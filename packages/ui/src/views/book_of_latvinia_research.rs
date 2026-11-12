@@ -54,11 +54,13 @@ fn BookOfLatviniaTechPicker(player_id: PlayerId) -> Element {
                 p { key: "{tech}", class: "margin-top", "{tech.info().name}" }
             }
             if selected().len() < 2 {
-                SelectTechView {
-                    key: "{selected().len()}",
-                    player_id: player_id.clone(),
-                    filtered_techs: excluded_techs(),
-                    on_select: move |tech| selected.write().push(tech),
+                div { class: "full-width",
+                    SelectTechView {
+                        key: "{selected().len()}",
+                        player_id: player_id.clone(),
+                        filtered_techs: excluded_techs(),
+                        on_select: move |tech| selected.write().push(tech),
+                    }
                 }
             }
             div { class: "center-row margin-top",
