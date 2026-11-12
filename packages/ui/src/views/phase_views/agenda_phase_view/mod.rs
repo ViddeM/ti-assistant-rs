@@ -1,9 +1,16 @@
 use dioxus::prelude::*;
+use ti_helper_game_data::state::agenda::MinisterOfAntiquesProgress;
 
 use crate::{
     data::game_context::GameContext,
-    views::phase_views::agenda_phase_view::{
-        agenda_actions_view::AgendaActionsView, agenda_info_view::AgendaInfoView,
+    views::{
+        book_of_latvinia_research::BookOfLatviniaResearch,
+        phase_views::{
+            agenda_phase_view::{
+                agenda_actions_view::AgendaActionsView, agenda_info_view::AgendaInfoView,
+            },
+            minister_of_antiques::MinisterOfAntiques,
+        },
     },
 };
 
@@ -23,9 +30,21 @@ pub fn AgendaPhaseView() -> Element {
         document::Stylesheet { href: AGENDA_PHASE_VIEW_SCSS }
 
         if let Some(agenda_state) = state() {
-            div { class: "agenda-phase-container",
-                AgendaInfoView { state: agenda_state.clone() }
-                AgendaActionsView { state: agenda_state.clone() }
+            match agenda_state.minister_of_antiques.clone() {
+                Some(MinisterOfAntiquesProgress::GainRelic { player }) => rsx! {
+                    MinisterOfAntiques { player_id: player }
+                },
+                Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player }) => {
+                    rsx! {
+                        BookOfLatviniaResearch { player_id: player }
+                    }
+                }
+                None => rsx! {
+                    div { class: "agenda-phase-container",
+                        AgendaInfoView { state: agenda_state.clone() }
+                        AgendaActionsView { state: agenda_state.clone() }
+                    }
+                },
             }
         } else {
             p { "Agenda state not set during agenda phase?" }

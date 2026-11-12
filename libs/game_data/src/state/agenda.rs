@@ -26,6 +26,27 @@ pub struct AgendaState {
 
     /// State of the current agenda vote. This is `None` until an agenda is revealed.
     pub vote: Option<VoteState>,
+
+    /// The progress (if any) of the player elected for Minister of Antiques, who must resolve it
+    /// before anything else can happen.
+    pub minister_of_antiques: Option<MinisterOfAntiquesProgress>,
+}
+
+/// The progress of the player elected for Minister of Antiques.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub enum MinisterOfAntiquesProgress {
+    /// The player must gain their relic.
+    GainRelic {
+        /// The elected player.
+        player: PlayerId,
+    },
+    /// The player gained the Book of Latvinia, and must research up to 2 technologies with no
+    /// prerequisites (or skip it).
+    BookOfLatviniaResearch {
+        /// The elected player.
+        player: PlayerId,
+    },
 }
 
 /// Agenda phase rounds.

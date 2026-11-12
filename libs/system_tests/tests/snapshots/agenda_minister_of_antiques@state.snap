@@ -82,7 +82,7 @@ strategyCardHolders:
   Construction: Alice
   Trade: Bob
   Warfare: Carol
-currentPlayer: Alice
+currentPlayer: Bob
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -229,7 +229,7 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 840
+    secs: 1140
     nanos: 0
   Bob:
     secs: 1440
@@ -237,18 +237,16 @@ playersPlayTime:
   Carol:
     secs: 720
     nanos: 0
-currentTurnStartTime: "2025-01-01T13:05:00Z"
+currentTurnStartTime: "2025-01-01T13:10:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []
 monuments: {}
 lastEvent:
-  - GainMinisterOfAntiquesRelic:
-      player: Carol
-      relic: ~
-  - "2025-01-01T13:08:00Z"
+  - EndTurn:
+      player: Alice
+  - "2025-01-01T13:10:00Z"

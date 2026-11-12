@@ -114,6 +114,7 @@ score:
 agenda:
   round: Completed
   vote: ~
+  ministerOfAntiques: ~
 agendaVoteHistory:
   - round: 1
     vote:
@@ -216,7 +217,6 @@ naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
 fractureRoll: ~
-ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []

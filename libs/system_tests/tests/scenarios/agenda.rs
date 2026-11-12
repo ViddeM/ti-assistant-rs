@@ -420,10 +420,13 @@ pub fn agenda_elect_planet_with_trait() -> TestGame {
 }
 
 /// The player elected for Minister of Antiques gains 1 relic, or none if there is none left,
-/// before anything else can happen. This also holds when the agenda is resolved outside the agenda
-/// phase.
+/// before anything else can happen. Resolving it from the admin view doesn't: the admin gives the
+/// relic by hand.
 pub fn agenda_minister_of_antiques() -> TestGame {
     let mut g = agenda_phase(three_players().pok());
+    let minister = |g: &TestGame| {
+        (g.state().agenda.as_ref()).and_then(|agenda| agenda.minister_of_antiques.clone())
+    };
     let gain = |player: &str, relic: Option<Relic>| Event::GainMinisterOfAntiquesRelic {
         player: p(player),
         relic,
@@ -437,7 +440,7 @@ pub fn agenda_minister_of_antiques() -> TestGame {
         .vote_all(elect("Bob"), 1)
         .resolve_expected();
     assert_eq!(
-        g.state().minister_of_antiques,
+        minister(&g),
         Some(MinisterOfAntiquesProgress::GainRelic { player: p("Bob") })
     );
 
@@ -457,7 +460,7 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     )
     .apply(gain("Bob", Some(Relic::TheCodex)));
     assert!(g.player("Bob").relics.contains(&Relic::TheCodex));
-    assert_eq!(g.state().minister_of_antiques, None);
+    assert_eq!(minister(&g), None);
 
     g.agenda(Agenda::ConventionsOfWar)
         .vote_all(FOR, 1)
@@ -471,16 +474,15 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     .apply(Event::AddAgendaResolve {
         elected_outcome: elect("Carol"),
     });
-    assert_eq!(
-        g.state().minister_of_antiques,
-        Some(MinisterOfAntiquesProgress::GainRelic { player: p("Carol") })
-    );
+    assert_eq!(g.state().agenda, None);
     g.expect_rejected(
-        Event::TacticalActionBegin { player: p("Alice") },
-        "Carol must gain their Minister of Antiques relic first",
+        gain("Carol", None),
+        "Carol has no Minister of Antiques relic",
     )
-    .apply(gain("Carol", None));
-    assert_eq!(g.state().minister_of_antiques, None);
+    .turn("Alice")
+    .tactical()
+    .commit()
+    .end_turn();
     assert_eq!(g.player("Carol").relics, carol_relics);
     g
 }

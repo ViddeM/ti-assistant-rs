@@ -152,7 +152,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []

@@ -216,8 +216,11 @@ pub fn codex_iv_book_of_latvinia_minister_of_antiques() -> TestGame {
         relic: Some(Relic::BookOfLatvinia),
     });
     assert!(g.player("Bob").relics.contains(&Relic::BookOfLatvinia));
+    let minister = |g: &TestGame| {
+        (g.state().agenda.as_ref()).and_then(|agenda| agenda.minister_of_antiques.clone())
+    };
     assert_eq!(
-        g.state().minister_of_antiques,
+        minister(&g),
         Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player: p("Bob") })
     );
 
@@ -239,7 +242,7 @@ pub fn codex_iv_book_of_latvinia_minister_of_antiques() -> TestGame {
         technologies: vec![Technology::PlasmaScoring],
     });
     assert!(g.player("Bob").has_tech(&Technology::PlasmaScoring));
-    assert_eq!(g.state().minister_of_antiques, None);
+    assert_eq!(minister(&g), None);
 
     g.agenda(Agenda::ConventionsOfWar)
         .vote_all(FOR, 1)

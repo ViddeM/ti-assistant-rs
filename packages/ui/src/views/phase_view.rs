@@ -1,18 +1,15 @@
 use dioxus::prelude::*;
-use ti_helper_game_data::{
-    components::phase::Phase, state::game_state::MinisterOfAntiquesProgress,
-};
+use ti_helper_game_data::components::phase::Phase;
 
 use crate::{
     data::game_context::GameContext,
     views::{
-        book_of_latvinia_research::BookOfLatviniaResearch,
         frontier_card::FrontierCardView,
         phase_views::{
             action_card::ActionCardView, action_phase::ActionPhaseView,
             agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
             end_action_phase::EndActionPhaseView, entropic_scar_phase::EntropicScarPhaseView,
-            fracture_roll::FractureRoll, minister_of_antiques::MinisterOfAntiques,
+            fracture_roll::FractureRoll,
             post_setup_phase::PostSetupPhaseView, relic_card::RelicCardView,
             relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
             status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
@@ -29,20 +26,6 @@ pub fn PhaseView() -> Element {
         return rsx! {
             FractureRoll { player_id }
         };
-    }
-
-    match gc.game_state().minister_of_antiques.clone() {
-        Some(MinisterOfAntiquesProgress::GainRelic { player }) => {
-            return rsx! {
-                MinisterOfAntiques { player_id: player }
-            };
-        }
-        Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player }) => {
-            return rsx! {
-                BookOfLatviniaResearch { player_id: player }
-            };
-        }
-        None => {}
     }
 
     match gc.game_state().phase {

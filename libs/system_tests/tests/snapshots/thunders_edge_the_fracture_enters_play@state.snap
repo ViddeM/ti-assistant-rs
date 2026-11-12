@@ -160,7 +160,6 @@ teExpedition:
     Resources: Alice
 fractureInPlay: true
 fractureRoll: ~
-ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed: []

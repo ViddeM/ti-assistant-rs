@@ -111,6 +111,7 @@ score:
 agenda:
   round: Round2
   vote: ~
+  ministerOfAntiques: ~
 agendaVoteHistory:
   - round: 1
     vote:
@@ -180,7 +181,6 @@ teExpedition:
   progress: {}
 fractureInPlay: false
 fractureRoll: ~
-ministerOfAntiques: ~
 rapidMobilization: []
 rapidMobilizationResolved: {}
 stellarAtomicsUsed:

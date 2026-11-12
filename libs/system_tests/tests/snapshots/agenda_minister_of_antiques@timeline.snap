@@ -69,4 +69,6 @@ source: libs/system_tests/src/check.rs
   65 CompleteStrategyPhase                    r2 Action             Alice
   66 AddAgendaBegin                           r2 Action             Alice
   67 AddAgendaResolve                         r2 Action             Alice
-  68 GainMinisterOfAntiquesRelic(Carol)       r2 Action             Alice
+  68 TacticalActionBegin(Alice)               r2 TacticalAction     Alice
+  69 TacticalActionCommit(Alice)              r2 EndActionTurn      Alice
+  70 EndTurn(Alice)                           r2 Action             Bob

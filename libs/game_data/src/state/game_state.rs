@@ -157,10 +157,6 @@ pub struct GameState {
     /// must roll for it before anything else can happen.
     pub fracture_roll: Option<PlayerId>,
 
-    /// The progress (if any) of the player elected for Minister of Antiques, who must resolve it
-    /// before anything else can happen.
-    pub minister_of_antiques: Option<MinisterOfAntiquesProgress>,
-
     /// The players who still have to resolve Rapid Mobilization in the post-setup phase.
     pub rapid_mobilization: BTreeSet<PlayerId>,
 
@@ -240,33 +236,6 @@ pub struct MiltyInformation {
     pub hex_map: HexMap,
     /// The system that contains mirage (if any).
     pub mirage_system: Option<SystemId>,
-}
-
-/// The progress of the player elected for Minister of Antiques.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub enum MinisterOfAntiquesProgress {
-    /// The player must gain their relic.
-    GainRelic {
-        /// The elected player.
-        player: PlayerId,
-    },
-    /// The player gained the Book of Latvinia, and must research up to 2 technologies with no
-    /// prerequisites (or skip it).
-    BookOfLatviniaResearch {
-        /// The elected player.
-        player: PlayerId,
-    },
-}
-
-impl MinisterOfAntiquesProgress {
-    /// The elected player.
-    pub fn player(&self) -> &PlayerId {
-        match self {
-            MinisterOfAntiquesProgress::GainRelic { player }
-            | MinisterOfAntiquesProgress::BookOfLatviniaResearch { player } => player,
-        }
-    }
 }
 
 /// The current progress of an action-phase action.
@@ -1315,14 +1284,6 @@ impl GameState {
             }
 
             self.score.add_agenda_record(&agenda_record);
-
-            if let (Agenda::MinisterOfAntiques, AgendaElect::Player(player)) =
-                (&vote.agenda, outcome)
-            {
-                self.minister_of_antiques = Some(MinisterOfAntiquesProgress::GainRelic {
-                    player: player.clone(),
-                });
-            }
 
             // TODO: resolve any other vote effects such as VPs or techs
         } else {

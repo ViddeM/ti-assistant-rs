@@ -44,8 +44,8 @@ pub mod prelude {
             tech::Technology,
         },
         state::{
+            agenda::MinisterOfAntiquesProgress,
             expedition::{TECompletion, TEExpeditionSlot},
-            game_state::MinisterOfAntiquesProgress,
         },
     };
 

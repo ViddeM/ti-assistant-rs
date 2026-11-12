@@ -29,7 +29,7 @@ use ti_helper_game_data::{
     },
     components::{
         action_card::{ActionCard, ActionCardPlay},
-        agenda::{AgendaElectKind, AgendaKind},
+        agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind},
         frontier_card::FrontierCardType,
         galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
@@ -43,13 +43,13 @@ use ti_helper_game_data::{
         tech::{TechOrigin, TechType, Technology},
     },
     state::{
-        agenda::{AgendaRound, Vote, VoteState},
+        agenda::{AgendaRound, MinisterOfAntiquesProgress, Vote, VoteState},
         expedition::{TECompletion, TEExpedition},
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
-            GameState, LeaderProgress, MapData, MiltyInformation, MinisterOfAntiquesProgress,
-            PlanetLocation, RapidMobilizationResolution, RelicProgress, RelicStep,
-            StrategicPrimaryProgress, StrategicProgress, TacticalProgress, ThundersEdgeProgress,
+            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation,
+            RapidMobilizationResolution, RelicProgress, RelicStep, StrategicPrimaryProgress,
+            StrategicProgress, TacticalProgress, ThundersEdgeProgress,
         },
         player::NewPlayer,
     },
@@ -108,7 +108,11 @@ fn try_update_game_state(
             "{roller} must roll for the Fracture first"
         );
     }
-    match &game_state.minister_of_antiques {
+    match game_state
+        .agenda
+        .as_ref()
+        .and_then(|agenda| agenda.minister_of_antiques.as_ref())
+    {
         Some(MinisterOfAntiquesProgress::GainRelic { player }) => ensure!(
             matches!(event, Event::GainMinisterOfAntiquesRelic { .. }),
             "{player} must gain their Minister of Antiques relic first"
@@ -2080,6 +2084,14 @@ fn try_update_game_state(
             };
 
             let vote = vote.clone();
+            let minister_of_antiques = match (&vote.agenda, &outcome) {
+                (Agenda::MinisterOfAntiques, Some(AgendaElect::Player(player))) => {
+                    Some(MinisterOfAntiquesProgress::GainRelic {
+                        player: player.clone(),
+                    })
+                }
+                _ => None,
+            };
 
             game_state
                 .resolve_agenda(vote, outcome)
@@ -2091,6 +2103,7 @@ fn try_update_game_state(
 
             state.vote = None;
             state.round = state.round.next();
+            state.minister_of_antiques = minister_of_antiques;
         }
         Event::CompleteAgendaPhase => {
             game_state.assert_phase(Phase::Agenda)?;
@@ -2227,7 +2240,7 @@ fn try_update_game_state(
             technologies,
         } => {
             let minister_research = matches!(
-                &game_state.minister_of_antiques,
+                game_state.agenda.as_ref().and_then(|agenda| agenda.minister_of_antiques.as_ref()),
                 Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player: p }) if p == &player
             );
             let action_research = game_state.phase == Phase::RelicAction
@@ -2268,7 +2281,11 @@ fn try_update_game_state(
                 p.research_tech(tech)?;
             }
             if minister_research {
-                game_state.minister_of_antiques = None;
+                game_state
+                    .agenda
+                    .as_mut()
+                    .context("agenda state not initialized, this is a bug.")?
+                    .minister_of_antiques = None;
             } else {
                 game_state.action_progress = None;
                 game_state.phase = Phase::EndActionTurn;
@@ -2752,13 +2769,13 @@ fn try_update_game_state(
         Event::GainMinisterOfAntiquesRelic { player, relic } => {
             ensure!(
                 matches!(
-                    &game_state.minister_of_antiques,
+                    game_state.agenda.as_ref().and_then(|agenda| agenda.minister_of_antiques.as_ref()),
                     Some(MinisterOfAntiquesProgress::GainRelic { player: p }) if p == &player
                 ),
                 "{player} has no Minister of Antiques relic to gain"
             );
 
-            game_state.minister_of_antiques = None;
+            let mut next = None;
             if let Some(relic) = relic {
                 game_state.assert_enabled(&relic)?;
                 ensure!(
@@ -2771,10 +2788,14 @@ fn try_update_game_state(
 
                 game_state.set_relic_owner(relic.clone(), Some(player.clone()))?;
                 if relic == Relic::BookOfLatvinia {
-                    game_state.minister_of_antiques =
-                        Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player });
+                    next = Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player });
                 }
             }
+            game_state
+                .agenda
+                .as_mut()
+                .context("agenda state not initialized, this is a bug.")?
+                .minister_of_antiques = next;
         }
         Event::ResolveRapidMobilization {
             player,
