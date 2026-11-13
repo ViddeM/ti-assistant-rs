@@ -76,22 +76,14 @@ pub fn ImperialPrimaryView(
                                 options: objectives(),
                                 on_select: move |s| selected_objective.set(s),
                             }
-                            if has_mecatol_rex() {
-                                p { class: "info-text margin-top", "You have Mecatol Rex" }
-                            }
                             div { class: "action-buttons-container",
-
                                 Button {
                                     onclick: move |_| {
                                         on_commit(StrategicPrimaryAction::Imperial {
                                             score_objective: None,
                                         });
                                     },
-                                    if has_mecatol_rex() {
-                                        "Gain 1 VP"
-                                    } else {
-                                        "Skip"
-                                    }
+                                    "Skip"
                                 }
                                 Button {
                                     onclick: move |_| {
@@ -103,6 +95,13 @@ pub fn ImperialPrimaryView(
                                     },
                                     disabled: selected_objective().is_none(),
                                     "Score"
+                                }
+                            }
+                            p { class: "info-text margin-top",
+                                if has_mecatol_rex() {
+                                    "You have Mecatol Rex, gain 1 VP"
+                                } else {
+                                    "You do not have Mecatol Rex, \ndraw 1 secret objective"
                                 }
                             }
                         }
