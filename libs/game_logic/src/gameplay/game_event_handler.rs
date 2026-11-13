@@ -47,10 +47,10 @@ use ti_helper_game_data::{
         expedition::{TECompletion, TEExpedition},
         galactic_events::RapidMobilizationResolution,
         game_state::{
-            ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress,
-            GameState, LeaderProgress, MapData, MiltyInformation, PlanetLocation, RelicProgress,
-            RelicStep, StrategicPrimaryProgress, StrategicProgress, TacticalProgress,
-            ThundersEdgeProgress,
+            ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FractureProgress,
+            FrontierCardProgress, GameState, LeaderProgress, MapData, MiltyInformation,
+            PlanetLocation, RelicProgress, RelicStep, StrategicPrimaryProgress, StrategicProgress,
+            TacticalProgress, ThundersEdgeProgress,
         },
         player::NewPlayer,
     },
@@ -103,12 +103,6 @@ fn try_update_game_state(
     event: Event,
     timestamp: DateTime<Utc>,
 ) -> Result<(), GameError> {
-    if let Some(roller) = &game_state.fracture_roll {
-        ensure!(
-            matches!(event, Event::RollForTheFracture { .. }),
-            "{roller} must roll for the Fracture first"
-        );
-    }
     match game_state
         .agenda
         .as_ref()
@@ -1614,6 +1608,10 @@ fn try_update_game_state(
         Event::EndTurn { player } => {
             game_state.assert_phase(Phase::EndActionTurn)?;
             game_state.assert_player_turn(&player)?;
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Cannot end turn while an action is in progress"
+            );
 
             end_action_turn(game_state)?;
             game_state.advance_turn(timestamp)?;
@@ -2783,12 +2781,23 @@ fn try_update_game_state(
             player,
             entered_play,
         } => {
+            let Some(progress) = game_state.action_progress.as_ref() else {
+                bail!("No action in progress for the Fracture roll");
+            };
+
+            let ActionPhaseProgress::Fracture(FractureProgress::Roll { player: roller }) = progress
+            else {
+                bail!("Action progress is not fraction roll");
+            };
+
             ensure!(
-                game_state.fracture_roll.as_ref() == Some(&player),
-                "{player} has no roll for the Fracture"
+                roller == &player,
+                "Wrong player rolled, expected {roller} got {player}"
             );
 
-            game_state.fracture_roll = None;
+            game_state.action_progress =
+                Some(ActionPhaseProgress::Fracture(FractureProgress::Spawned));
+
             if entered_play {
                 game_state.fracture_in_play = true;
             }

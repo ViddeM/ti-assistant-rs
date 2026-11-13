@@ -146,10 +146,6 @@ pub struct GameState {
     /// and Styx) aren't on the board.
     pub fracture_in_play: bool,
 
-    /// The player (if any) who gained their breakthrough while the Fracture wasn't in play, and
-    /// must roll for it before anything else can happen.
-    pub fracture_roll: Option<PlayerId>,
-
     /// The last applied event and when it happened.
     pub last_event: Option<(Event, DateTime<Utc>)>,
 }
@@ -233,6 +229,8 @@ pub enum ActionPhaseProgress {
     Relic(RelicProgress),
     /// The progress of committing to the Thunder's Edge expedition at the end of a turn.
     ThundersEdge(ThundersEdgeProgress),
+    /// The progress of the roll / spawn.
+    Fracture(FractureProgress),
 }
 
 impl ActionPhaseProgress {
@@ -414,6 +412,15 @@ pub enum RelicStep {
     Gain,
     /// The relic's action is being taken.
     Action,
+}
+
+/// The progress of fracture spawning & info.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub enum FractureProgress {
+    // When someone is rolling for the fracture to spawn.
+    Roll { player: PlayerId },
+    // When the fracture has spawned.
+    Spawned,
 }
 
 impl GameState {
@@ -974,7 +981,9 @@ impl GameState {
     /// Have `player` roll for the Fracture, unless it's already in play.
     pub fn roll_for_the_fracture(&mut self, player: &PlayerId) {
         if !self.fracture_in_play {
-            self.fracture_roll = Some(player.clone());
+            self.action_progress = Some(ActionPhaseProgress::Fracture(FractureProgress::Roll {
+                player: player.clone(),
+            }));
         }
     }
 

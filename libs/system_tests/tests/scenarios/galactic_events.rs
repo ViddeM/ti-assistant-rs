@@ -929,7 +929,7 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
     assert_eq!(g.phase(), Phase::PostSetup);
     let state = g.state();
     assert!(state.fracture_in_play);
-    assert_eq!(state.fracture_roll, None);
+    assert_eq!(state.action_progress, None);
     for player in ["Alice", "Bob", "Carol"] {
         assert!(g.player(player).breakthrough.is_some());
     }
