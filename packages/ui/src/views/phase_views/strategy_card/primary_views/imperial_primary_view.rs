@@ -97,17 +97,19 @@ pub fn ImperialPrimaryView(
                                     "Score"
                                 }
                             }
-                            p { class: "info-text margin-top",
-                                if has_mecatol_rex() {
-                                    "You have Mecatol Rex, gain 1 VP"
-                                } else {
-                                    "You do not have Mecatol Rex, \ndraw 1 secret objective"
-                                }
-                            }
                         }
                     } else {
                         p { "Waiting for {current_player} to score" }
                     }
+                }
+            }
+            p { class: "info-text margin-top",
+                if has_mecatol_rex() {
+                    "You have Mecatol Rex, gain 1 VP"
+                } else {
+                    span { "You do not have Mecatol Rex." }
+                    br {}
+                    span { "Draw 1 secret objective." }
                 }
             }
         }
