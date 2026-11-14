@@ -5,7 +5,7 @@ use strum::IntoEnumIterator;
 use ti_helper_game_data::{
     actions::event::Event,
     common::player_id::PlayerId,
-    components::system::System,
+    components::{phase::Phase, system::System},
     state::expedition::{TECompletion, TEExpeditionSlot},
 };
 
@@ -179,7 +179,7 @@ fn Fracture() -> Element {
     let event = use_context::<EventContext>();
 
     let in_play = use_memo(move || gc.game_state().fracture_in_play);
-    let roll_pending = use_memo(move || gc.game_state().fracture_roll.is_some());
+    let is_fracture_phase = use_memo(move || gc.game_state().phase == Phase::Fracture);
 
     rsx! {
         div { class: "card column margin-top",
@@ -193,7 +193,7 @@ fn Fracture() -> Element {
             }
             Button {
                 class: "margin-top",
-                disabled: roll_pending(),
+                disabled: is_fracture_phase(), // If its the fracture phase they should complete these actions in there.
                 onclick: move |_| {
                     event
                         .send_event(Event::SetFractureInPlay {

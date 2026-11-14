@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeMap, BTreeSet, HashMap},
+    collections::{BTreeMap, BTreeSet, HashMap, VecDeque},
     fmt::Debug,
     time::Duration,
 };
@@ -230,7 +230,7 @@ pub enum ActionPhaseProgress {
     /// The progress of committing to the Thunder's Edge expedition at the end of a turn.
     ThundersEdge(ThundersEdgeProgress),
     /// The progress of the roll / spawn.
-    Fracture(FractureProgress),
+    Fracture(FractureProgressState),
 }
 
 impl ActionPhaseProgress {
@@ -414,13 +414,70 @@ pub enum RelicStep {
     Action,
 }
 
+/// The state for the fracture progress
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct FractureProgressState {
+    pub progress: FractureProgress,
+    /// The phase to return to after fracture rolling / spawning is complete.
+    pub phase: Phase,
+}
+
 /// The progress of fracture spawning & info.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum FractureProgress {
     // When someone is rolling for the fracture to spawn.
-    Roll { player: PlayerId },
+    Roll(FractureRollState),
     // When the fracture has spawned.
-    Spawned,
+    Spawned { player: PlayerId },
+}
+
+/// The fracture roll state.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+pub struct FractureRollState {
+    /// The player who is rolling.
+    player: PlayerId,
+    /// Other players that are waiting to roll at the same time.
+    queued: VecDeque<PlayerId>,
+}
+
+impl FractureRollState {
+    /// Add a player to the roll queue.
+    pub fn add_player(&mut self, new_player: PlayerId) -> anyhow::Result<()> {
+        ensure!(
+            self.player != new_player,
+            "Player {new_player} is already rolling for the fracture"
+        );
+        ensure!(
+            !self.queued.contains(&new_player),
+            "Player {new_player} is already in the queue to roll for the fracture"
+        );
+        self.queued.push_back(new_player);
+
+        Ok(())
+    }
+
+    /// Let the next player roll for the fracture.
+    /// Returns the new player or None if there are none more that are waiting to roll.
+    pub fn next_player(&mut self) -> Option<PlayerId> {
+        let next = self.queued.pop_front()?;
+
+        self.player = next.clone();
+
+        Some(next)
+    }
+
+    /// Create a new fracture roll state with the provided player as first roller.
+    pub fn new(player: PlayerId) -> Self {
+        Self {
+            player,
+            queued: VecDeque::new(),
+        }
+    }
+
+    /// Returns the current player rolling for the fracture.
+    pub fn current_player(&self) -> &PlayerId {
+        &self.player
+    }
 }
 
 impl GameState {
@@ -962,7 +1019,7 @@ impl GameState {
             }
             _ => {}
         }
-        self.roll_for_the_fracture(player);
+        self.roll_for_the_fracture(player)?;
         Ok(())
     }
 
@@ -979,12 +1036,27 @@ impl GameState {
     }
 
     /// Have `player` roll for the Fracture, unless it's already in play.
-    pub fn roll_for_the_fracture(&mut self, player: &PlayerId) {
-        if !self.fracture_in_play {
-            self.action_progress = Some(ActionPhaseProgress::Fracture(FractureProgress::Roll {
-                player: player.clone(),
-            }));
+    pub fn roll_for_the_fracture(&mut self, player: &PlayerId) -> anyhow::Result<()> {
+        if self.fracture_in_play {
+            // Fracture already in play, this is a no-op.
+            return Ok(());
         }
+
+        if let Some(ActionPhaseProgress::Fracture(FractureProgressState {
+            progress: FractureProgress::Roll(roll_state),
+            phase: _,
+        })) = &mut self.action_progress
+        {
+            roll_state.add_player(player.clone())?;
+        } else {
+            let fracture_state = FractureProgressState {
+                progress: FractureProgress::Roll(FractureRollState::new(player.clone())),
+                phase: self.phase,
+            };
+            self.action_progress = Some(ActionPhaseProgress::Fracture(fracture_state));
+        }
+        self.phase = Phase::Fracture;
+        Ok(())
     }
 
     /// Whether the Firmament has flipped to The Obsidian.

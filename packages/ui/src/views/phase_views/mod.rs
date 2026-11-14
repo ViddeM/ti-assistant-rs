@@ -6,7 +6,7 @@ pub mod creation_phase;
 pub mod end_action_phase;
 pub mod entropic_scar_phase;
 pub mod faction_setup_views;
-pub mod fracture_roll;
+pub mod fracture_view;
 pub mod minister_of_antiques;
 pub mod post_setup_phase;
 pub mod relic_card;

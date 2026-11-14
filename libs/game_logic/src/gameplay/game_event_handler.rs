@@ -599,18 +599,18 @@ fn try_update_game_state(
                 game_state.galactic_events.rapid_mobilization = players.into_iter().collect();
             }
 
+            if game_state.has_post_setup_phase() {
+                game_state.phase = Phase::PostSetup;
+            } else {
+                game_state.change_phase(Phase::Strategy, timestamp)?;
+            }
+
             let with_breakthrough = (game_state.players.iter())
                 .filter(|(_, player)| player.breakthrough.is_some())
                 .map(|(id, _)| id.clone())
                 .collect::<Vec<_>>();
             for player in with_breakthrough {
-                game_state.roll_for_the_fracture(&player);
-            }
-
-            if game_state.has_post_setup_phase() {
-                game_state.phase = Phase::PostSetup;
-            } else {
-                game_state.change_phase(Phase::Strategy, timestamp)?;
+                game_state.roll_for_the_fracture(&player)?;
             }
         }
         Event::TakeStrategyCard { player, card } => {
@@ -2759,26 +2759,58 @@ fn try_update_game_state(
             player,
             entered_play,
         } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+
+            let Some(progress) = &mut game_state.action_progress else {
+                bail!("No action in progress for the Fracture roll");
+            };
+
+            let ActionPhaseProgress::Fracture(state) = progress else {
+                bail!("Action progress is not fraction roll");
+            };
+
+            let FractureProgress::Roll(roll_state) = &mut state.progress else {
+                bail!("Got roll for fracture during non-roll fracture state");
+            };
+
+            ensure!(
+                roll_state.current_player() == &player,
+                "Wrong player rolled, expected {} got {player}",
+                roll_state.current_player()
+            );
+
+            if entered_play {
+                game_state.fracture_in_play = true;
+                state.progress = FractureProgress::Spawned { player };
+            } else {
+                if roll_state.next_player().is_none() {
+                    game_state.phase = state.phase;
+                    game_state.action_progress = None;
+                }
+            }
+        }
+        Event::FractureSpawned { player } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+
             let Some(progress) = game_state.action_progress.as_ref() else {
                 bail!("No action in progress for the Fracture roll");
             };
 
-            let ActionPhaseProgress::Fracture(FractureProgress::Roll { player: roller }) = progress
-            else {
+            let ActionPhaseProgress::Fracture(state) = progress else {
                 bail!("Action progress is not fraction roll");
             };
 
+            let FractureProgress::Spawned { player: spawner } = &state.progress else {
+                bail!("Invalid fracture progress");
+            };
+
             ensure!(
-                roller == &player,
-                "Wrong player rolled, expected {roller} got {player}"
+                spawner == &player,
+                "Wrong player spawns the fracture, expected {spawner} got {player}"
             );
 
-            game_state.action_progress =
-                Some(ActionPhaseProgress::Fracture(FractureProgress::Spawned));
-
-            if entered_play {
-                game_state.fracture_in_play = true;
-            }
+            game_state.phase = state.phase;
+            game_state.action_progress = None;
         }
         Event::GainMinisterOfAntiquesRelic { player, relic } => {
             ensure!(
@@ -3069,6 +3101,7 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::LeaderAction
         | Phase::FrontierCardAction
         | Phase::RelicAction
+        | Phase::Fracture
         | Phase::ActionCardAction => true,
 
         Phase::Relics

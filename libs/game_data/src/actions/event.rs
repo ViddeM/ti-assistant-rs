@@ -658,6 +658,12 @@ pub enum Event {
         entered_play: bool,
     },
 
+    /// The fracture is spawned.
+    FractureSpawned {
+        /// The player that caused the fracture to come into play.
+        player: PlayerId,
+    },
+
     /// The relic gained by the player elected for Minister of Antiques.
     GainMinisterOfAntiquesRelic {
         /// The elected player.
@@ -829,6 +835,7 @@ impl Event {
             | Event::SetBreakthrough { player, .. }
             | Event::AddPlanetAttachment { player, .. }
             | Event::RemovePlanetAttachment { player, .. }
+            | Event::FractureSpawned { player }
             | Event::AddAgendaPlayerVote { player, .. } => Some(player.clone()),
             Event::SetSettings { .. }
             | Event::ImportFromMilty { .. }

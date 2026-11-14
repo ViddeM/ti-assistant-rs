@@ -9,9 +9,8 @@ use crate::{
             action_card::ActionCardView, action_phase::ActionPhaseView,
             agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
             end_action_phase::EndActionPhaseView, entropic_scar_phase::EntropicScarPhaseView,
-            fracture_roll::FractureRoll,
-            post_setup_phase::PostSetupPhaseView, relic_card::RelicCardView,
-            relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
+            fracture_view::FractureView, post_setup_phase::PostSetupPhaseView,
+            relic_card::RelicCardView, relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
             status_phase_view::StatusPhaseView, strategy_card::StrategyCardView,
             strategy_phase::StrategyPhaseView, tactical_action::TacticalActionView,
         },
@@ -21,12 +20,6 @@ use crate::{
 #[component]
 pub fn PhaseView() -> Element {
     let gc = use_context::<GameContext>();
-
-    if let Some(player_id) = gc.game_state().fracture_roll.clone() {
-        return rsx! {
-            FractureRoll { player_id }
-        };
-    }
 
     match gc.game_state().phase {
         Phase::Creation => rsx! {
@@ -73,6 +66,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::Relics => rsx! {
             RelicsPhaseView {}
+        },
+        Phase::Fracture => rsx! {
+            FractureView {}
         },
         Phase::LeaderAction => todo!(),
     }

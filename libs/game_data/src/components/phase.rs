@@ -40,6 +40,9 @@ pub enum Phase {
     /// Performing a relic action
     RelicAction,
 
+    /// Fracture spawning
+    Fracture,
+
     /// Player has finished one action turn, check if they're gonna take another one.
     EndActionTurn,
 
@@ -74,6 +77,7 @@ impl Display for Phase {
                 Phase::LeaderAction => "Leader Action",
                 Phase::FrontierCardAction => "Frontier Card Action",
                 Phase::RelicAction => "Relic Action",
+                Phase::Fracture => "Fracture",
                 Phase::EndActionTurn => "End Action Turn",
                 Phase::EntropicScar => "Entropic Scar",
                 Phase::Status => "Status",
