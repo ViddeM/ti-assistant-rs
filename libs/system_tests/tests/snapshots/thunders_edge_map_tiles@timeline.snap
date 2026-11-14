@@ -9,7 +9,7 @@ source: libs/system_tests/src/check.rs
    5 SetupPlayerTechs(Dee)                    r0 Setup              -
    6 SetupPlayerTechs(Eve)                    r0 Setup              -
    7 RevealInitialObjectives                  r0 Setup              -
-   8 StartGame                                r1 Strategy           Ann        order=[Ann Ben Cid Dee Eve]
+   8 StartGame                                r1 Fracture           Ann        order=[Ann Ben Cid Dee Eve]
    9 RollForTheFracture(Cid)                  r1 Strategy           Ann
   10 SetPlanetOwner(Ann)                      r1 Strategy           Ann        custodians=Ann Ann=1
   11 SetPlanetOwner(Ben)                      r1 Strategy           Ann

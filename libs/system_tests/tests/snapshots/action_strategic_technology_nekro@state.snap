@@ -87,6 +87,7 @@ strategyCardHolders:
   Warfare: Carol
   Technology: Carol
 currentPlayer: Alice
+turnNumber: 9
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -139,7 +140,6 @@ currentTurnStartTime: "2025-01-01T12:24:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - EndTurn:
       player: Carol

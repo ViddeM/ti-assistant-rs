@@ -82,6 +82,7 @@ turnOrder:
   - Alice
 strategyCardHolders: {}
 currentPlayer: Bob
+turnNumber: 16
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -185,8 +186,8 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - ResolveAgenda:
       outcome:

@@ -1,0 +1,15 @@
+---
+source: libs/system_tests/src/check.rs
+---
+   0 SetSettings                              r0 Creation           -
+   1 AddPlayer(Alice)                         r0 Creation           -
+   2 AddPlayer(Bob)                           r0 Creation           -
+   3 AddPlayer(Carol)                         r0 Creation           -
+   4 CreationDone                             r0 Setup              -
+   5 SetBreakthrough(Bob)                     r0 Setup              -
+   6 SetBreakthrough(Carol)                   r0 Setup              -
+   7 SetupSpeaker(Alice)                      r0 Setup              -          speaker=Alice
+   8 RevealInitialObjectives                  r0 Setup              -
+   9 StartGame                                r1 Fracture           Alice      order=[Alice Bob Carol]
+  10 RollForTheFracture(Bob)                  r1 Fracture           Alice
+  11 RollForTheFracture(Carol)                r1 Strategy           Alice

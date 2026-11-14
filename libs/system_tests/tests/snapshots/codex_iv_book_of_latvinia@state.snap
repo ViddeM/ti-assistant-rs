@@ -91,6 +91,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Alice
+turnNumber: 11
 spentStrategyCards:
   - Leadership
 passedPlayers: []
@@ -142,7 +143,6 @@ currentTurnStartTime: "2025-01-01T12:34:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - SetBookOfLatviniaOwner:
       player: ~

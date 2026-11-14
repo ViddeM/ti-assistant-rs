@@ -22,7 +22,7 @@ source: libs/system_tests/src/check.rs
   18 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
   19 TakeAnotherTurn(Alice)                   r1 Action             Alice
   20 ActionCardActionBegin(Alice)             r1 ActionCardAction   Alice
-  21 ActionCardActionCommit(Alice)            r1 EndActionTurn      Alice
+  21 ActionCardActionCommit(Alice)            r1 Fracture           Alice
   22 RollForTheFracture(Bob)                  r1 EndActionTurn      Alice
   23 EndTurn(Alice)                           r1 Action             Bob
   24 ActionCardActionBegin(Bob)               r1 ActionCardAction   Bob

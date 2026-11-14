@@ -341,6 +341,7 @@ turnOrder:
   - Eve
 strategyCardHolders: {}
 currentPlayer: Ben
+turnNumber: 0
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -388,8 +389,8 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - StartGame
   - "2025-01-01T12:12:00Z"

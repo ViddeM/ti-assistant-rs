@@ -151,6 +151,7 @@ strategyCardHolders:
   Technology: Bob
   Imperial: Finn
 currentPlayer: Alice
+turnNumber: 62
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -449,7 +450,6 @@ currentTurnStartTime: ~
 naaluTelepathy: Alice
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - PassAction:
       player: Alice

@@ -33,7 +33,7 @@ use crate::{
         system::{AnomalyType, SystemId},
         tech::Technology,
     },
-    state::expedition::{TEExpedition, TEExpeditionSlot},
+    state::expedition::TEExpedition,
 };
 
 use super::{
@@ -85,6 +85,13 @@ pub struct GameState {
 
     /// The current player, if any.
     pub current_player: Option<PlayerId>,
+
+    /// Counts every action turn in the game, so that actions can be tied to a single turn.
+    pub turn_number: u32,
+
+    /// Players that must roll for the Fracture once the current event has been applied.
+    #[serde(skip)]
+    pub pending_fracture_rolls: Vec<PlayerId>,
 
     /// Which strategy cards have been spent this action phase.
     pub spent_strategy_cards: BTreeSet<StrategyCard>,
@@ -227,8 +234,6 @@ pub enum ActionPhaseProgress {
     FrontierCard(FrontierCardProgress),
     /// The progress of a relic action.
     Relic(RelicProgress),
-    /// The progress of committing to the Thunder's Edge expedition at the end of a turn.
-    ThundersEdge(ThundersEdgeProgress),
     /// The progress of the roll / spawn.
     Fracture(FractureProgressState),
 }
@@ -267,21 +272,6 @@ impl ActionPhaseProgress {
             _ => None,
         }
     }
-}
-
-/// The progress of committing to the Thunder's Edge expedition at the end of a turn.
-///
-/// Only exists during [Phase::EndActionTurn]. Without it the player hasn't committed this turn.
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-// Not "t", that is the tag of the [ActionPhaseProgress] this is nested in.
-#[serde(tag = "state")]
-pub enum ThundersEdgeProgress {
-    /// The player committed to the expedition by claiming `slot`.
-    Committed { slot: TEExpeditionSlot },
-    /// The commit claimed the final slot, the player must now place Thunder's Edge and decide who
-    /// wins it before the turn can end.
-    AwaitingPlacement { slot: TEExpeditionSlot },
 }
 
 /// Progress of a strategy card.
@@ -425,9 +415,9 @@ pub struct FractureProgressState {
 /// The progress of fracture spawning & info.
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum FractureProgress {
-    // When someone is rolling for the fracture to spawn.
+    /// When someone is rolling for the fracture to spawn.
     Roll(FractureRollState),
-    // When the fracture has spawned.
+    /// When the fracture has spawned.
     Spawned { player: PlayerId },
 }
 
@@ -568,6 +558,7 @@ impl GameState {
 
     /// Advance to the next players turn, if all players have passed, advance to the next phase.
     pub fn advance_turn(&mut self, timestamp: DateTime<Utc>) -> anyhow::Result<()> {
+        self.turn_number += 1;
         let current_player = self.current_player()?;
         let next_player = self.next_player_after(&current_player)?;
 
@@ -1019,7 +1010,7 @@ impl GameState {
             }
             _ => {}
         }
-        self.roll_for_the_fracture(player)?;
+        self.roll_for_the_fracture(player);
         Ok(())
     }
 
@@ -1035,28 +1026,54 @@ impl GameState {
         Ok(())
     }
 
-    /// Have `player` roll for the Fracture, unless it's already in play.
-    pub fn roll_for_the_fracture(&mut self, player: &PlayerId) -> anyhow::Result<()> {
+    /// Queue `player` to roll for the Fracture, unless it's already in play. The roll starts once
+    /// the current event has been applied, see [GameState::start_pending_fracture_rolls].
+    pub fn roll_for_the_fracture(&mut self, player: &PlayerId) {
+        if self.fracture_in_play || matches!(self.phase, Phase::Creation | Phase::Setup) {
+            // Setup breakthroughs roll when the game starts, see `Event::StartGame`.
+            return;
+        }
+        self.pending_fracture_rolls.push(player.clone());
+    }
+
+    /// Start the Fracture roll for the players queued during the event that was just applied.
+    /// The game returns to the phase it is in now once the rolls are done.
+    pub fn start_pending_fracture_rolls(&mut self) -> anyhow::Result<()> {
+        let mut queued = std::mem::take(&mut self.pending_fracture_rolls).into_iter();
+        let Some(first) = queued.next() else {
+            return Ok(());
+        };
         if self.fracture_in_play {
-            // Fracture already in play, this is a no-op.
             return Ok(());
         }
 
-        if let Some(ActionPhaseProgress::Fracture(FractureProgressState {
-            progress: FractureProgress::Roll(roll_state),
-            phase: _,
-        })) = &mut self.action_progress
-        {
-            roll_state.add_player(player.clone())?;
-        } else {
-            let fracture_state = FractureProgressState {
-                progress: FractureProgress::Roll(FractureRollState::new(player.clone())),
-                phase: self.phase,
-            };
-            self.action_progress = Some(ActionPhaseProgress::Fracture(fracture_state));
+        let (mut roll_state, return_phase) = match self.action_progress.take() {
+            Some(ActionPhaseProgress::Fracture(FractureProgressState {
+                progress: FractureProgress::Roll(mut roll_state),
+                phase,
+            })) => {
+                roll_state.add_player(first)?;
+                (roll_state, phase)
+            }
+            Some(_) => bail!("Cannot roll for the Fracture while another action is in progress"),
+            None => (FractureRollState::new(first), self.phase),
+        };
+        for player in queued {
+            roll_state.add_player(player)?;
         }
+
+        self.action_progress = Some(ActionPhaseProgress::Fracture(FractureProgressState {
+            progress: FractureProgress::Roll(roll_state),
+            phase: return_phase,
+        }));
         self.phase = Phase::Fracture;
         Ok(())
+    }
+
+    /// Whether `player` has claimed a Thunder's Edge expedition slot this turn.
+    pub fn has_committed_to_thunders_edge(&self, player: &PlayerId) -> bool {
+        (self.te_expedition.as_ref())
+            .is_some_and(|te| te.has_committed(player, self.round, self.turn_number))
     }
 
     /// Whether the Firmament has flipped to The Obsidian.

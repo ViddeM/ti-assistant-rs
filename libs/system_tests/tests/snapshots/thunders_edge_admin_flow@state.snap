@@ -87,6 +87,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Bob
+turnNumber: 7
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -139,14 +140,38 @@ teExpedition:
     won_by: Bob
     placed_in: "114"
   progress:
-    Resources: Alice
-    ActionCards: Alice
-    Influence: Alice
-    SecretObjective: Alice
-    TechSpecialityPlanet: Alice
-    TradeGoods: Alice
+    Resources:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    ActionCards:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    Influence:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    SecretObjective:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    TechSpecialityPlanet:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    TradeGoods:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - SetThundersEdgeCompletion:
       new_completion:

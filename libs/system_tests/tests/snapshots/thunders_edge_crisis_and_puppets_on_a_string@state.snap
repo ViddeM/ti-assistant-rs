@@ -86,6 +86,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Carol
+turnNumber: 16
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -146,14 +147,38 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress:
-    Resources: Alice
-    ActionCards: Alice
-    Influence: Alice
-    SecretObjective: Alice
-    TechSpecialityPlanet: Alice
-    TradeGoods: Alice
+    Resources:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    ActionCards:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    Influence:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    SecretObjective:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    TechSpecialityPlanet:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+    TradeGoods:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: false
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - EndTurn:
       player: Carol

@@ -87,6 +87,7 @@ strategyCardHolders:
   Warfare: Alice
   Imperial: Alice
 currentPlayer: Carol
+turnNumber: 15
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -146,7 +147,6 @@ currentTurnStartTime: ~
 naaluTelepathy: Alice
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - PassAction:
       player: Carol

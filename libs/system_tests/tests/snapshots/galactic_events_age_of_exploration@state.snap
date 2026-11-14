@@ -350,6 +350,7 @@ strategyCardHolders:
   Construction: Dee
   Trade: Eve
 currentPlayer: Ann
+turnNumber: 7
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -412,8 +413,8 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - EndTurn:
       player: Cid

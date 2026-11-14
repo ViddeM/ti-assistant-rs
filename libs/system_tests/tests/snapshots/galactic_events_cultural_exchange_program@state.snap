@@ -106,6 +106,7 @@ strategyCardHolders:
   Technology: Carol
   Imperial: Dave
 currentPlayer: Bob
+turnNumber: 9
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -165,8 +166,8 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - LeaderActionBegin:
       player: Bob

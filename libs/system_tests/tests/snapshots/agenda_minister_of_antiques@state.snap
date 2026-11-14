@@ -88,6 +88,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Bob
+turnNumber: 22
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -246,7 +247,6 @@ currentTurnStartTime: "2025-01-01T13:10:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - EndTurn:
       player: Alice

@@ -93,6 +93,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Bob
+turnNumber: 48
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -155,8 +156,8 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - BuildMonument:
       player: Bob

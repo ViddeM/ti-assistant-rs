@@ -87,6 +87,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Carol
+turnNumber: 32
 spentStrategyCards:
   - Leadership
   - Diplomacy
@@ -153,7 +154,6 @@ currentTurnStartTime: ~
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - ScorePublicObjective:
       player: Alice

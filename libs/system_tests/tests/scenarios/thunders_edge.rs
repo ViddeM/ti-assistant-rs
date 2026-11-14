@@ -3,14 +3,16 @@
 use std::collections::{BTreeMap, HashMap};
 
 use ti_helper_game_data::{
-    common::{expansions::Expansion, map::HexPosition},
+    common::{expansions::Expansion, map::HexPosition, player_id::PlayerId},
     components::{
         breakthrough::Breakthrough,
         system::{SystemType, systems},
     },
     state::{
         faction_state::FirmamentSide,
-        game_state::{ActionPhaseProgress, PlanetLocation},
+        game_state::{
+            ActionPhaseProgress, FractureProgress, FractureProgressState, PlanetLocation,
+        },
     },
 };
 use ti_helper_system_tests::prelude::*;
@@ -27,6 +29,7 @@ scenarios![
     thunders_edge_take_planets_without_tile,
     thunders_edge_styx_victory_point,
     thunders_edge_the_fracture_enters_play,
+    thunders_edge_setup_breakthroughs_roll_at_start,
     thunders_edge_breakthrough_planets,
     thunders_edge_action_cards,
     thunders_edge_overrule_and_strategize,
@@ -59,6 +62,16 @@ fn roll(player: &str, entered_play: bool) -> Event {
     Event::RollForTheFracture {
         player: p(player),
         entered_play,
+    }
+}
+
+fn fracture_roll(g: &TestGame) -> Option<PlayerId> {
+    match g.state().action_progress.as_ref()? {
+        ActionPhaseProgress::Fracture(FractureProgressState {
+            progress: FractureProgress::Roll(roll),
+            ..
+        }) => Some(roll.current_player().clone()),
+        _ => None,
     }
 }
 
@@ -264,7 +277,7 @@ pub fn thunders_edge_admin_flow() -> TestGame {
     );
     assert!(g.state().players[&p("Alice")].breakthrough.is_none());
     assert!(g.state().players[&p("Bob")].breakthrough.is_none());
-    assert_eq!(g.state().fracture_roll, None);
+    assert_eq!(fracture_roll(&g), None);
     g
 }
 
@@ -287,7 +300,7 @@ fn thunders_edge_progress_survives_json() {
         .commit()
         .commit_to_expedition(TEExpeditionSlot::Resources);
     assert!(g.state().action_progress.is_some());
-    assert_eq!(g.state().fracture_roll, Some(p("Alice")));
+    assert_eq!(fracture_roll(&g), Some(p("Alice")));
     assert_round_trips(&g);
     g.apply(roll("Alice", false));
     assert_round_trips(&g);
@@ -309,7 +322,8 @@ fn thunders_edge_progress_survives_json() {
         .commit()
         .commit_to_expedition(TEExpeditionSlot::TradeGoods)
         .apply(roll("Bob", false));
-    assert!(g.state().action_progress.is_some());
+    let te = g.state().te_expedition.as_ref().unwrap();
+    assert_eq!(te.claimed_by()[&TEExpeditionSlot::TradeGoods], p("Bob"));
     assert_round_trips(&g);
 }
 
@@ -505,8 +519,7 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
         ("Dave", StrategyCard::Imperial),
     ]);
     let in_play = |g: &TestGame| g.state().fracture_in_play;
-    let fracture_roll = |g: &TestGame| g.state().fracture_roll.clone();
-    let roll_first = "Alice must roll for the Fracture first";
+    let roll_first = "invalid game state, expected EndActionTurn, was Fracture";
 
     let alice = g
         .turn("Alice")
@@ -517,8 +530,7 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
     assert_eq!(fracture_roll(&alice), Some(p("Alice")));
     alice
         .expect_rejected(Event::EndTurn { player: p("Alice") }, roll_first)
-        .expect_rejected(Event::SetFractureInPlay { in_play: true }, roll_first)
-        .expect_rejected(roll("Bob", true), "Bob has no roll for the Fracture")
+        .expect_rejected(roll("Bob", true), "Wrong player rolled, expected Alice got Bob")
         .apply(roll("Alice", false))
         .end_turn();
     assert_eq!(fracture_roll(&g), None);
@@ -535,7 +547,9 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
 
     let bob = g.turn("Bob").gain_relic(Relic::TheQuantumcore);
     assert_eq!(fracture_roll(&bob), Some(p("Bob")));
-    bob.apply(roll("Bob", true)).end_turn();
+    bob.apply(roll("Bob", true))
+        .apply(Event::FractureSpawned { player: p("Bob") })
+        .end_turn();
     assert!(in_play(&g));
     assert_eq!(fracture_roll(&g), None);
 
@@ -564,6 +578,38 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
         .commit()
         .end_turn();
     assert!(g.player("Dave").planets.contains_key(&Planet::Cocytus));
+    g
+}
+
+/// Breakthroughs unlocked during setup don't roll straight away. When the game starts, every
+/// player with a breakthrough rolls exactly once, one after another.
+pub fn thunders_edge_setup_breakthroughs_roll_at_start() -> TestGame {
+    let mut g = TestGame::builder()
+        .player("Alice", Faction::FederationOfSol)
+        .player("Bob", Faction::EmiratesOfHacan)
+        .player("Carol", Faction::XxchaKingdom)
+        .thunders_edge()
+        .setup();
+
+    g.apply(Event::SetBreakthrough {
+        player: p("Bob"),
+        breakthrough: Some(Breakthrough::Psychospore),
+    })
+    .apply(Event::SetBreakthrough {
+        player: p("Carol"),
+        breakthrough: Some(Breakthrough::DeorbitBarrage),
+    });
+    assert_eq!(g.phase(), Phase::Setup);
+    assert_eq!(fracture_roll(&g), None);
+
+    g.auto_setup().start_game();
+    assert_eq!(g.phase(), Phase::Fracture);
+    assert_eq!(fracture_roll(&g), Some(p("Bob")));
+    g.apply(roll("Bob", false));
+    assert_eq!(fracture_roll(&g), Some(p("Carol")));
+    g.apply(roll("Carol", false));
+    assert_eq!(fracture_roll(&g), None);
+    assert_eq!(g.phase(), Phase::Strategy);
     g
 }
 
@@ -669,7 +715,7 @@ fn the_crimson_rebellion_starts_with_its_breakthrough() {
         Some(Breakthrough::ResonanceGenerator)
     );
     assert_eq!(g.player("Bob").breakthrough, None);
-    assert_eq!(g.state().fracture_roll, Some(p("Alice")));
+    assert_eq!(fracture_roll(&g), Some(p("Alice")));
 
     let take_leadership = Event::TakeStrategyCard {
         player: p("Alice"),
@@ -677,10 +723,10 @@ fn the_crimson_rebellion_starts_with_its_breakthrough() {
     };
     g.expect_rejected(
         take_leadership.clone(),
-        "Alice must roll for the Fracture first",
+        "invalid game state, expected Strategy, was Fracture",
     );
     g.apply(roll("Alice", false));
-    assert_eq!(g.state().fracture_roll, None);
+    assert_eq!(fracture_roll(&g), None);
     g.apply(take_leadership);
 }
 

@@ -17,7 +17,7 @@ source: libs/system_tests/src/check.rs
   13 TakeStrategyCard(Bob)                    r1 Strategy           Carol
   14 TakeStrategyCard(Carol)                  r1 Strategy           Alice
   15 CompleteStrategyPhase                    r1 Action             Alice
-  16 SetBreakthrough(Alice)                   r1 Action             Alice
+  16 SetBreakthrough(Alice)                   r1 Fracture           Alice
   17 RollForTheFracture(Alice)                r1 Action             Alice
   18 PuppetsOfTheBlade(Alice)                 r1 EndActionTurn      Alice
   19 EndTurn(Alice)                           r1 Action             Bob

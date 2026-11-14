@@ -83,6 +83,7 @@ turnOrder:
   - Alice
 strategyCardHolders: {}
 currentPlayer: Bob
+turnNumber: 17
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -147,7 +148,6 @@ currentTurnStartTime: "2025-01-01T12:54:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - CompleteRelicsPhase
   - "2025-01-01T12:54:00Z"

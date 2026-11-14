@@ -85,6 +85,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Alice
+turnNumber: 9
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -137,9 +138,13 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress:
-    Resources: Alice
+    Resources:
+      player: Alice
+      round: 1
+      turn: 6
+      committed: true
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - EndTurn:
       player: Carol

@@ -30,7 +30,7 @@ source: libs/system_tests/src/check.rs
   26 StrategicActionCommit                    r1 EndActionTurn      Alice
   27 TakeAnotherTurn(Alice)                   r1 Action             Alice
   28 PassAction(Alice)                        r1 EndActionTurn      Alice
-  29 CommitToThundersEdgeExpedition(Alice)    r1 EndActionTurn      Alice
+  29 CommitToThundersEdgeExpedition(Alice)    r1 Fracture           Alice
   30 RollForTheFracture(Alice)                r1 EndActionTurn      Alice
   31 EndTurn(Alice)                           r1 Action             Bob
   32 StrategicActionBegin(Bob)                r1 StrategicAction    Bob

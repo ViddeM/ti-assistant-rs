@@ -90,6 +90,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Alice
+turnNumber: 9
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -142,8 +143,8 @@ teExpedition:
     won_by: Alice
     placed_in: "114"
   progress: {}
+  pending_placement: ~
 fractureInPlay: true
-fractureRoll: ~
 lastEvent:
   - EndTurn:
       player: Carol

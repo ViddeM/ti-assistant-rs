@@ -86,7 +86,7 @@ fn FractureEnteredPlay(player_id: PlayerId) -> Element {
     rsx! {
         div {
             class: "card column",
-            h2 { "Fracture Setup"}
+            h2 { "Fracture Setup" }
             ol {
                 li {
                     "Place the fracture tiles along any edge of the game board."

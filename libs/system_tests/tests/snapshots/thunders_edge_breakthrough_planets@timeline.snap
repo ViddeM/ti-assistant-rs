@@ -20,10 +20,10 @@ source: libs/system_tests/src/check.rs
   16 CompleteStrategyPhase                    r1 Action             Alice
   17 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
   18 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
-  19 CommitToThundersEdgeExpedition(Alice)    r1 EndActionTurn      Alice
+  19 CommitToThundersEdgeExpedition(Alice)    r1 Fracture           Alice
   20 RollForTheFracture(Alice)                r1 EndActionTurn      Alice
   21 EndTurn(Alice)                           r1 Action             Bob
-  22 SetBreakthrough(Bob)                     r1 Action             Bob
+  22 SetBreakthrough(Bob)                     r1 Fracture           Bob
   23 RollForTheFracture(Bob)                  r1 Action             Bob
   24 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
   25 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob

@@ -10,10 +10,7 @@ use ti_helper_game_data::{
         planet::Planet,
         system::{System, SystemId},
     },
-    state::{
-        expedition::{TEExpedition, TEExpeditionSlot},
-        game_state::{ActionPhaseProgress, ThundersEdgeProgress},
-    },
+    state::expedition::{TEExpedition, TEExpeditionSlot},
 };
 
 use crate::{
@@ -59,15 +56,12 @@ pub fn EndActionPhaseView() -> Element {
             .contains_key(&Planet::ThundersEdge)
     });
     let expedition = use_memo(move || gc.game_state().te_expedition.clone());
-    let thunders_edge_progress = use_memo(move || match gc.game_state().action_progress.as_ref() {
-        Some(ActionPhaseProgress::ThundersEdge(progress)) => Some(progress.clone()),
-        _ => None,
+    let committed = use_memo(move || {
+        gc.game_state()
+            .has_committed_to_thunders_edge(&current_player_id())
     });
     let completion_required = use_memo(move || {
-        matches!(
-            thunders_edge_progress(),
-            Some(ThundersEdgeProgress::AwaitingPlacement { .. })
-        )
+        expedition().is_some_and(|expedition| expedition.is_awaiting_placement())
     });
 
     rsx! {
@@ -84,7 +78,7 @@ pub fn EndActionPhaseView() -> Element {
                 if !expedition.is_full() || completion_required() {
                     Expedition {
                         expedition,
-                        progress: thunders_edge_progress(),
+                        committed: committed(),
                         player_id: current_player_id(),
                         interactive: view.is_active(),
                     }
@@ -261,14 +255,11 @@ fn PlayEndOfTurnActionCard(
 #[component]
 fn Expedition(
     expedition: TEExpedition,
-    progress: Option<ThundersEdgeProgress>,
+    committed: bool,
     player_id: PlayerId,
     interactive: bool,
 ) -> Element {
-    if matches!(
-        progress,
-        Some(ThundersEdgeProgress::AwaitingPlacement { .. })
-    ) {
+    if expedition.is_awaiting_placement() {
         return rsx! {
             CompleteExpedition { expedition, player_id, interactive }
         };
@@ -277,7 +268,7 @@ fn Expedition(
     rsx! {
         CommitToExpedition {
             expedition,
-            committed: progress.is_some(),
+            committed,
             player_id,
             interactive,
         }
@@ -309,7 +300,7 @@ fn CommitToExpedition(
     let selected = selected_slot().filter(|slot| selectable.contains(slot));
 
     // Preview the player's pending claim on the wheel before it's committed.
-    let mut preview_progress = expedition.progress.clone();
+    let mut preview_progress = expedition.claimed_by();
     if let Some(slot) = &selected {
         preview_progress.insert(slot.clone(), player_id.clone());
     }
@@ -405,7 +396,7 @@ fn CompleteExpedition(
     let winner_slots = use_memo(move || {
         selected_winner().map(|winner| {
             expedition()
-                .progress
+                .claimed_by()
                 .values()
                 .filter(|p| **p == winner)
                 .count()
@@ -419,7 +410,7 @@ fn CompleteExpedition(
         fieldset { class: "expedition-complete",
             legend { "Thunder's Edge" }
 
-            ExpeditionToken { progress: expedition().progress.clone() }
+            ExpeditionToken { progress: expedition().claimed_by() }
 
             p { "Expedition complete, place Thunder's Edge." }
 

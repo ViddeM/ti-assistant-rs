@@ -34,7 +34,7 @@ pub fn ThundersEdgeViewMode() -> Element {
         document::Stylesheet { href: THUNDERS_EDGE_VIEW_MODE_SCSS }
 
         if let Some(thunders_edge) = thunders_edge() {
-            Expedition { progress: thunders_edge.progress.clone() }
+            Expedition { progress: thunders_edge.claimed_by() }
             Completed { completed: thunders_edge.completed.clone() }
             Fracture {}
             Breakthroughs {}

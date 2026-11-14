@@ -108,6 +108,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Alice
+turnNumber: 6
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -159,8 +160,8 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+  pending_placement: ~
 fractureInPlay: true
-fractureRoll: ~
 lastEvent:
   - CompleteStrategyPhase
   - "2025-01-01T12:19:00Z"

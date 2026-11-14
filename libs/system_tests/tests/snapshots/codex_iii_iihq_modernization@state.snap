@@ -85,6 +85,7 @@ strategyCardHolders:
   Trade: Bob
   Warfare: Carol
 currentPlayer: Alice
+turnNumber: 6
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -136,7 +137,6 @@ currentTurnStartTime: "2025-01-01T12:16:00Z"
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - AddTechToPlayer:
       player: Alice

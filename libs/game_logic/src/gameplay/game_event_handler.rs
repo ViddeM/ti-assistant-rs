@@ -44,13 +44,13 @@ use ti_helper_game_data::{
     },
     state::{
         agenda::{AgendaRound, MinisterOfAntiquesProgress, Vote, VoteState},
-        expedition::{TECompletion, TEExpedition},
+        expedition::{ExpeditionClaim, TECompletion, TEExpedition},
         galactic_events::RapidMobilizationResolution,
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FractureProgress,
             FrontierCardProgress, GameState, LeaderProgress, MapData, MiltyInformation,
             PlanetLocation, RelicProgress, RelicStep, StrategicPrimaryProgress, StrategicProgress,
-            TacticalProgress, ThundersEdgeProgress,
+            TacticalProgress,
         },
         player::NewPlayer,
     },
@@ -68,6 +68,7 @@ pub fn update_game_state(
 
     try_update_game_state(&mut new_game_state, event.clone(), timestamp)?;
     apply_techs_gained(game_state, &mut new_game_state)?;
+    new_game_state.start_pending_fracture_rolls()?;
 
     new_game_state.last_event = Some((event, timestamp));
     *game_state = new_game_state;
@@ -610,7 +611,7 @@ fn try_update_game_state(
                 .map(|(id, _)| id.clone())
                 .collect::<Vec<_>>();
             for player in with_breakthrough {
-                game_state.roll_for_the_fracture(&player)?;
+                game_state.roll_for_the_fracture(&player);
             }
         }
         Event::TakeStrategyCard { player, card } => {
@@ -1580,6 +1581,7 @@ fn try_update_game_state(
                 "Thunder's Edge must be placed before taking another turn"
             );
             game_state.action_progress = None;
+            game_state.turn_number += 1;
 
             game_state.phase = Phase::Action;
         }
@@ -2493,20 +2495,31 @@ fn try_update_game_state(
         Event::ClaimThundersEdgeExpeditionSlot { player, slot } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
 
+            let round = game_state.round;
+            let turn = game_state.turn_number;
             let te = game_state
                 .te_expedition
                 .as_mut()
                 .expect("Thunders Edge enabled but not initialized");
 
             ensure!(
-                te.progress.get(&slot) != player.as_ref(),
+                te.progress.get(&slot).map(|claim| &claim.player) != player.as_ref(),
                 "No change provided in event"
             );
 
-            if let Some(p) = player {
-                te.progress.insert(slot, p);
+            if let Some(player) = player {
+                te.progress.insert(
+                    slot,
+                    ExpeditionClaim {
+                        player,
+                        round,
+                        turn,
+                        committed: false,
+                    },
+                );
             } else {
                 te.progress.remove(&slot);
+                te.pending_placement = None;
             }
         }
         Event::SetBreakthrough {
@@ -2540,10 +2553,12 @@ fn try_update_game_state(
             game_state.assert_player_turn(&player)?;
 
             ensure!(
-                game_state.action_progress.is_none(),
+                !game_state.has_committed_to_thunders_edge(&player),
                 "Player has already committed to the expedition this turn"
             );
 
+            let round = game_state.round;
+            let turn = game_state.turn_number;
             let te = game_state
                 .te_expedition
                 .as_mut()
@@ -2554,16 +2569,20 @@ fn try_update_game_state(
                 "Expedition slot is already claimed"
             );
 
-            te.progress.insert(slot.clone(), player.clone());
-
-            let progress = if te.is_full() {
-                ThundersEdgeProgress::AwaitingPlacement { slot }
-            } else {
-                ThundersEdgeProgress::Committed { slot }
-            };
+            te.progress.insert(
+                slot,
+                ExpeditionClaim {
+                    player: player.clone(),
+                    round,
+                    turn,
+                    committed: true,
+                },
+            );
+            if te.is_full() {
+                te.pending_placement = Some(player.clone());
+            }
 
             game_state.gain_breakthrough(&player)?;
-            game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(progress));
         }
         Event::CompleteThundersEdgeExpedition {
             player,
@@ -2574,18 +2593,15 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::EndActionTurn)?;
             game_state.assert_player_turn(&player)?;
 
-            let Some(ActionPhaseProgress::ThundersEdge(ThundersEdgeProgress::AwaitingPlacement {
-                slot,
-            })) = game_state.action_progress.clone()
-            else {
-                bail!("Thunder's Edge is not waiting to be placed");
-            };
-
             let te = game_state
                 .te_expedition
                 .as_mut()
                 .expect("Thunders Edge enabled but not initialized");
 
+            ensure!(
+                te.is_awaiting_placement(),
+                "Thunder's Edge is not waiting to be placed"
+            );
             ensure!(
                 System::valid_thunders_edge_systems().contains(&placed_in),
                 "System is not a valid candidate for Thunder's Edge"
@@ -2603,11 +2619,9 @@ fn try_update_game_state(
                 won_by: won_by.clone(),
                 placed_in,
             });
+            te.pending_placement = None;
             game_state.set_planet_owner(Planet::ThundersEdge, Some(won_by.clone()))?;
             game_state.gain_breakthrough(&won_by)?;
-            game_state.action_progress = Some(ActionPhaseProgress::ThundersEdge(
-                ThundersEdgeProgress::Committed { slot },
-            ));
         }
         Event::SetThundersEdgeCompletion { new_completion } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
@@ -2766,7 +2780,7 @@ fn try_update_game_state(
             };
 
             let ActionPhaseProgress::Fracture(state) = progress else {
-                bail!("Action progress is not fraction roll");
+                bail!("Action progress is not fracture roll");
             };
 
             let FractureProgress::Roll(roll_state) = &mut state.progress else {
@@ -2797,7 +2811,7 @@ fn try_update_game_state(
             };
 
             let ActionPhaseProgress::Fracture(state) = progress else {
-                bail!("Action progress is not fraction roll");
+                bail!("Action progress is not fracture roll");
             };
 
             let FractureProgress::Spawned { player: spawner } = &state.progress else {
@@ -2918,15 +2932,9 @@ fn try_update_game_state(
     Ok(())
 }
 
-/// True if the current player has claimed the final expedition slot, but hasn't placed
-/// Thunder's Edge yet.
+/// True if the final expedition slot is claimed, but Thunder's Edge hasn't been placed yet.
 fn is_awaiting_thunders_edge_placement(game_state: &GameState) -> bool {
-    matches!(
-        game_state.action_progress,
-        Some(ActionPhaseProgress::ThundersEdge(
-            ThundersEdgeProgress::AwaitingPlacement { .. }
-        ))
-    )
+    (game_state.te_expedition.as_ref()).is_some_and(|te| te.is_awaiting_placement())
 }
 
 /// Perform the tracked effects of the primary ability of `card` for `player`.

@@ -315,6 +315,7 @@ turnOrder:
   - Eve
 strategyCardHolders: {}
 currentPlayer: Ann
+turnNumber: 0
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -364,8 +365,8 @@ teExpedition:
     won_by: Eve
     placed_in: "114"
   progress: {}
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - SetThundersEdgeCompletion:
       new_completion:

@@ -81,6 +81,7 @@ turnOrder:
   - Carol
 strategyCardHolders: {}
 currentPlayer: Alice
+turnNumber: 15
 spentStrategyCards: []
 passedPlayers: []
 interruptedTurn: ~
@@ -148,8 +149,8 @@ naaluTelepathy: ~
 teExpedition:
   completed: ~
   progress: {}
+  pending_placement: ~
 fractureInPlay: false
-fractureRoll: ~
 lastEvent:
   - CompleteStatusPhase
   - "2025-01-01T12:51:00Z"
