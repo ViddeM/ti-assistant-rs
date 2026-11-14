@@ -223,28 +223,6 @@ fn try_update_game_state(
                 "two players can't play the same faction",
             );
 
-            if let Some(map_data) = game_state.map_data.milty_information.as_ref() {
-                // Ensure that this faction was included in the milty string import.
-                let map_systems: Vec<&String> = map_data
-                    .hex_map
-                    .tiles
-                    .iter()
-                    .map(|tile| &tile.system)
-                    .collect();
-
-                ensure!(
-                    systems()
-                        .into_iter()
-                        .filter(|(_, system)| match system.system_type {
-                            SystemType::HomeSystem(faction) => faction == player.faction,
-                            _ => false,
-                        })
-                        .map(|(id, _)| id)
-                        .all(|system_id| map_systems.contains(&&system_id)),
-                    "The selected faction was not included in the milty draft map!"
-                );
-            }
-
             game_state.table_order.push(id.clone());
             game_state
                 .players
