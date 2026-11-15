@@ -1833,25 +1833,7 @@ fn try_update_game_state(
             game_state.passed_players = Default::default();
             game_state.spent_strategy_cards = Default::default();
 
-            // TODO: Whilst the Maw of Worlds should be at the end of the agenda phase, Crown of Emphidia should be at the end of the Status phase (snor).
-            // This is relevant before mecatol rex is taken.
-            let phase = if game_state.score.custodians.is_some() {
-                if game_state.players.values().any(|p| {
-                    p.relics.contains(&Relic::MawOfWorlds)
-                        || (p.relics.contains(&Relic::TheCrownOfEmphidia)
-                            && p.planets.values().any(|attachments| {
-                                attachments
-                                    .iter()
-                                    .any(|a| a == &PlanetAttachment::TombOfEmphidia)
-                            }))
-                }) {
-                    Phase::Relics
-                } else {
-                    Phase::Agenda
-                }
-            } else {
-                Phase::Strategy
-            };
+            let phase = get_phase_after_status(game_state);
             game_state.change_phase(phase, timestamp)?;
         }
         Event::PlayNeuraloop {
@@ -1985,6 +1967,12 @@ fn try_update_game_state(
 
             game_state.assert_enabled(&Relic::MawOfWorlds)?;
             game_state.assert_enabled(&tech)?;
+            // The relic phase occurs after the status phase (depending on relics in play)
+            // and maw of worlds is played at the start of the agenda phase which doesn't necessarily happen afterwards.
+            ensure!(
+                game_state.score.custodians.is_some(),
+                "Maw of worlds can only be played before the agenda phase"
+            );
 
             let Some(player) = game_state.players.get_mut(&player) else {
                 bail!("Player doesn't exist");
@@ -2000,7 +1988,12 @@ fn try_update_game_state(
         }
         Event::CompleteRelicsPhase => {
             game_state.assert_phase(Phase::Relics)?;
-            game_state.change_phase(Phase::Agenda, timestamp)?;
+            let phase = if game_state.score.custodians.is_some() {
+                Phase::Agenda
+            } else {
+                Phase::Strategy
+            };
+            game_state.change_phase(phase, timestamp)?;
         }
         /* Agenda phase events */
         Event::RevealAgenda { agenda } => {
@@ -3120,4 +3113,31 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::Agenda
         | Phase::Creation => false,
     }
+}
+
+fn get_phase_after_status(game_state: &GameState) -> Phase {
+    if game_state.players.values().any(|p| {
+        p.relics.contains(&Relic::TheCrownOfEmphidia)
+            && p.planets.values().any(|attachments| {
+                attachments
+                    .iter()
+                    .any(|a| a == &PlanetAttachment::TombOfEmphidia)
+            })
+    }) {
+        return Phase::Relics;
+    }
+
+    if game_state.score.custodians.is_some() {
+        return if game_state
+            .players
+            .values()
+            .any(|p| p.relics.contains(&Relic::MawOfWorlds))
+        {
+            Phase::Relics
+        } else {
+            Phase::Agenda
+        };
+    }
+
+    Phase::Strategy
 }
