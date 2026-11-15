@@ -18,6 +18,7 @@ use crate::{
                 imperial_primary_view::ImperialPrimaryView,
                 politics_primary_view::PoliticsPrimaryView,
                 technology_primary_view::TechnologyPrimaryView,
+                warfare_primary_view::WarfarePrimaryView,
             },
             secondary_card::{
                 generic_strategy_card::GenericStrategyCard, tech_secondary::TechSecondary,
@@ -117,12 +118,6 @@ fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
         })
     };
 
-    if let Some(StrategicPrimaryProgress::Warfare { .. }) = primary {
-        return rsx! {
-            TacticalAction {}
-        };
-    }
-
     match progress().card {
         StrategyCard::Politics => rsx! {
             PoliticsPrimaryView { primary, on_commit }
@@ -132,6 +127,9 @@ fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
         },
         StrategyCard::Imperial => rsx! {
             ImperialPrimaryView { primary, on_commit }
+        },
+        StrategyCard::Warfare => rsx! {
+            WarfarePrimaryView { }
         },
         _ => {
             rsx! {
