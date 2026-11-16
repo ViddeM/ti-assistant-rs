@@ -659,6 +659,12 @@ impl GameState {
         self.speaker.as_ref().ok_or(anyhow!("No speaker"))
     }
 
+    /// Whether rounds have an agenda phase, which they do once the custodians token has been
+    /// taken from Mecatol Rex.
+    pub fn is_agenda_enabled(&self) -> bool {
+        self.score.custodians.is_some()
+    }
+
     /// Returns weather the provided player is the speaker.
     pub fn is_speaker(&self, player: &PlayerId) -> bool {
         self.speaker.as_ref().eq(&Some(player))

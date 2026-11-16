@@ -11,6 +11,7 @@ scenarios![
     status_stage_two_ignores_incentive_program_against,
     status_stage_two_ignores_classified_document_leaks,
     status_relics_phase_maw_and_crown,
+    status_relics_phase_without_custodians,
 ];
 
 /// Every player makes a public and a secret scoring decision before an objective is revealed.
@@ -213,8 +214,9 @@ pub fn status_stage_two_ignores_classified_document_leaks() -> TestGame {
     g
 }
 
-/// With custodians taken, Maw of Worlds or the Crown of Emphidia (with the Tomb) add a relics
-/// phase between the status and agenda phases.
+/// With custodians taken, Maw of Worlds (at the start of the agenda phase) or the Crown of
+/// Emphidia (with the Tomb, at the end of the status phase) add a relics phase between the status
+/// and agenda phases.
 pub fn status_relics_phase_maw_and_crown() -> TestGame {
     let mut g = action_phase(three_players().pok());
     g.apply(Event::SetCustodians {
@@ -272,5 +274,54 @@ pub fn status_relics_phase_maw_and_crown() -> TestGame {
     assert!(g.player("Bob").relics.is_empty());
     assert_eq!(g.state().score.crown_of_emphidia, Some(p("Bob")));
     assert_eq!(g.points("Bob"), 1);
+    g
+}
+
+/// Without custodians there is no agenda phase: the Crown of Emphidia (with the Tomb) still adds
+/// a relics phase, followed by the strategy phase, but the Maw of Worlds can't be played and
+/// doesn't add one.
+pub fn status_relics_phase_without_custodians() -> TestGame {
+    let mut g = action_phase(three_players().pok());
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Bob")),
+        planet: Planet::Centauri,
+    })
+    .apply(Event::AddPlanetAttachment {
+        player: p("Bob"),
+        planet: Planet::Centauri,
+        attachment: PlanetAttachment::TombOfEmphidia,
+    });
+    g.turn("Alice").gain_relic(Relic::MawOfWorlds).end_turn();
+    g.turn("Bob")
+        .gain_relic(Relic::TheCrownOfEmphidia)
+        .end_turn();
+
+    g.play_out_action_phase()
+        .status_phase()
+        .reveal(PublicObjective::ExpandBorders)
+        .complete();
+    assert_eq!(g.phase(), Phase::Relics);
+
+    g.expect_rejected(
+        Event::PlayMawOfWorlds {
+            player: p("Alice"),
+            tech: Technology::GravityDrive,
+        },
+        "only be played when there is an agenda phase",
+    )
+    .apply(Event::PlayCrownOfEmphidia { player: p("Bob") })
+    .apply(Event::CompleteRelicsPhase);
+    assert_eq!(g.phase(), Phase::Strategy);
+    assert_eq!(g.round(), 2);
+    assert_eq!(g.state().score.crown_of_emphidia, Some(p("Bob")));
+    assert!(g.player("Alice").relics.contains(&Relic::MawOfWorlds));
+
+    g.strategy_phase(SIMPLE_PICKS)
+        .play_out_action_phase()
+        .status_phase()
+        .reveal(PublicObjective::ErectAMonument)
+        .complete();
+    assert_eq!(g.phase(), Phase::Strategy);
+    assert_eq!(g.round(), 3);
     g
 }

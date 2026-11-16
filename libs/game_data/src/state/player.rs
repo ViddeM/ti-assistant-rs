@@ -97,6 +97,13 @@ impl NewPlayer {
 }
 
 impl Player {
+    /// Whether the player controls the Tomb of Emphidia, needed to play the Crown of Emphidia.
+    pub fn controls_tomb_of_emphidia(&self) -> bool {
+        self.planets
+            .values()
+            .any(|attachments| attachments.contains(&PlanetAttachment::TombOfEmphidia))
+    }
+
     /// The faction whose leaders the player holds, see [Player::leaders_from].
     pub fn leader_faction(&self) -> Faction {
         self.leaders_from.unwrap_or(self.faction)

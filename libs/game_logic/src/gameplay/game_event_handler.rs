@@ -1952,9 +1952,7 @@ fn try_update_game_state(
             );
 
             ensure!(
-                p.planets.values().any(|attachments| attachments
-                    .iter()
-                    .any(|a| a == &PlanetAttachment::TombOfEmphidia)),
+                p.controls_tomb_of_emphidia(),
                 "Planet must have the 'Tomb of Emphidia' planet attachment in order to play the Crown of Emphidia"
             );
 
@@ -1967,11 +1965,9 @@ fn try_update_game_state(
 
             game_state.assert_enabled(&Relic::MawOfWorlds)?;
             game_state.assert_enabled(&tech)?;
-            // The relic phase occurs after the status phase (depending on relics in play)
-            // and maw of worlds is played at the start of the agenda phase which doesn't necessarily happen afterwards.
             ensure!(
-                game_state.score.custodians.is_some(),
-                "Maw of worlds can only be played before the agenda phase"
+                game_state.is_agenda_enabled(),
+                "The Maw of Worlds can only be played when there is an agenda phase (the custodians token is taken)"
             );
 
             let Some(player) = game_state.players.get_mut(&player) else {
@@ -1988,7 +1984,7 @@ fn try_update_game_state(
         }
         Event::CompleteRelicsPhase => {
             game_state.assert_phase(Phase::Relics)?;
-            let phase = if game_state.score.custodians.is_some() {
+            let phase = if game_state.is_agenda_enabled() {
                 Phase::Agenda
             } else {
                 Phase::Strategy
@@ -3116,18 +3112,15 @@ fn should_track_time_in(phase: Phase) -> bool {
 }
 
 fn get_phase_after_status(game_state: &GameState) -> Phase {
-    if game_state.players.values().any(|p| {
-        p.relics.contains(&Relic::TheCrownOfEmphidia)
-            && p.planets.values().any(|attachments| {
-                attachments
-                    .iter()
-                    .any(|a| a == &PlanetAttachment::TombOfEmphidia)
-            })
-    }) {
+    if game_state
+        .players
+        .values()
+        .any(|p| p.relics.contains(&Relic::TheCrownOfEmphidia) && p.controls_tomb_of_emphidia())
+    {
         return Phase::Relics;
     }
 
-    if game_state.score.custodians.is_some() {
+    if game_state.is_agenda_enabled() {
         return if game_state
             .players
             .values()

@@ -1,8 +1,5 @@
 use dioxus::prelude::*;
-use ti_helper_game_data::{
-    actions::event::Event,
-    components::{planet_attachment::PlanetAttachment, relic::Relic},
-};
+use ti_helper_game_data::{actions::event::Event, components::relic::Relic};
 
 use crate::{
     components::button::Button,
@@ -42,27 +39,26 @@ pub fn RelicsPhaseView() -> Element {
         all_players()
             .iter()
             .find(|(_, player)| player.relics.contains(&Relic::MawOfWorlds))
+            .filter(|_| gc.game_state().is_agenda_enabled())
             .map(|(id, _)| id.clone())
-    });
-
-    let display_maw_of_worlds = use_memo(move || {
-        // Maw of Worlds is only played at the start of the agenda phase.
-        gc.game_state().score.custodians.is_some()
     });
 
     let crown_of_emphidia_holder = use_memo(move || {
         all_players()
             .iter()
-            .filter(|(_, player)| player.relics.contains(&Relic::TheCrownOfEmphidia))
             .find(|(_, player)| {
-                player
-                    .planets
-                    .values()
-                    .flatten()
-                    .find(|&attachments| attachments == &PlanetAttachment::TombOfEmphidia)
-                    .is_some()
+                player.relics.contains(&Relic::TheCrownOfEmphidia)
+                    && player.controls_tomb_of_emphidia()
             })
             .map(|(id, _)| id.clone())
+    });
+
+    let next_phase = use_memo(move || {
+        if gc.game_state().is_agenda_enabled() {
+            "agenda"
+        } else {
+            "strategy"
+        }
     });
 
     rsx! {
@@ -92,12 +88,14 @@ pub fn RelicsPhaseView() -> Element {
                 }
             }
 
-            if let Some(holder) = maw_of_worlds_holder() && display_maw_of_worlds() {
+            if let Some(holder) = maw_of_worlds_holder() {
                 h2 { "Play the Maw of Worlds?" }
                 fieldset { class: "screen-container",
                     legend { "{holder}" }
                     if view.display_for(&holder) {
-                        p { class: "warning-text", "Remember to exhaust all of your planets and purge this card" }
+                        p { class: "warning-text",
+                            "Remember to exhaust all of your planets and purge this card"
+                        }
                         SelectTechView {
                             player_id: holder.clone(),
                             on_select: {
@@ -117,14 +115,14 @@ pub fn RelicsPhaseView() -> Element {
                 }
             }
 
-            if (maw_of_worlds_holder().is_none() || !display_maw_of_worlds()) && crown_of_emphidia_holder().is_none() {
-                h2 { "Continue to next phase" }
+            if maw_of_worlds_holder().is_none() && crown_of_emphidia_holder().is_none() {
+                h2 { "Continue to the {next_phase} phase" }
             }
 
             SpeakerStep {
                 class: "margin-top",
                 ready: true,
-                waiting_for: "start the agenda phase",
+                waiting_for: "start the {next_phase} phase",
                 onclick: move |_| event.send_event(Event::CompleteRelicsPhase),
                 "Continue"
             }
