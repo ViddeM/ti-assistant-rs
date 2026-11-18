@@ -21,7 +21,7 @@ use crate::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
     views::{
-        book_of_latvinia_research::BookOfLatviniaResearch,
+        book_of_latvinia_research::BookOfLatviniaTechPicker,
         phase_views::action_phase::unowned_relics, select_tech::SelectTechView,
     },
 };
@@ -188,14 +188,12 @@ pub fn TacticalAction() -> Element {
                             planet: planet.clone(),
                             owes_relic: progress().owes_relic(planet),
                             gained_relic: progress().gained_relics.get(planet).cloned(),
+                            owes_book_of_latvinia_research: progress().owes_book_of_latvinia_research(),
                         }
                         MonumentPrompt { planet: planet.clone() }
                         MinorFactionAlliance { planet: planet.clone() }
                     }
                 }
-            }
-            if progress().owes_book_of_latvinia_research() {
-                BookOfLatviniaResearch { player_id: current_player() }
             }
             if !available_planets_in_system().is_empty() {
                 fieldset {
@@ -369,6 +367,7 @@ fn PlanetRelic(
     planet: ReadSignal<Planet>,
     owes_relic: ReadSignal<bool>,
     gained_relic: ReadSignal<Option<Option<Relic>>>,
+    owes_book_of_latvinia_research: ReadSignal<bool>,
 ) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
@@ -396,6 +395,9 @@ fn PlanetRelic(
         match gained_relic() {
             Some(Some(relic)) => rsx! {
                 p { class: "margin-top", "Gained {relic.info().name}" }
+                if relic == Relic::BookOfLatvinia && owes_book_of_latvinia_research() {
+                    BookOfLatviniaTechPicker { player_id: current_player() }
+                }
             },
             Some(None) => rsx! {
                 p { class: "margin-top", "No relic to gain" }
