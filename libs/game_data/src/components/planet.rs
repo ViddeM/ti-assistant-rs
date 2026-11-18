@@ -52,41 +52,43 @@ pub enum OrbitalBodyType {
 }
 
 macro_rules! planet {
-    ($name: literal, $traits:expr, $tech_specs:expr, $resources: literal, $influence: literal, $expansion:expr) => {
+    (
+        name: $name:literal,
+        $(planet_traits: [$($trait:ident),*],)?
+        $(tech_specialities: [$($tech:ident),*],)?
+        resources: $resources:literal,
+        influence: $influence:literal,
+        expansion: $expansion:ident
+        $(, is_legendary: $legendary:literal)?
+    ) => {
         PlanetInfo {
             name: $name.to_string(),
-            planet_traits: $traits,
-            tech_specialities: $tech_specs,
+            planet_traits: vec![$($(PlanetTrait::$trait),*)?],
+            tech_specialities: vec![$($(TechCategory::$tech),*)?],
             resources: $resources,
             influence: $influence,
-            expansion: $expansion,
-            is_legendary: false,
+            expansion: Expansion::$expansion,
+            is_legendary: planet!(@legendary $($legendary)?),
             body_type: OrbitalBodyType::Planet,
         }
     };
-    ($name: literal, $traits:expr, $tech_specs:expr, $resources: literal, $influence: literal, $expansion: expr, $legendary: literal) => {
-        PlanetInfo {
-            name: $name.to_string(),
-            planet_traits: $traits,
-            tech_specialities: $tech_specs,
-            resources: $resources,
-            influence: $influence,
-            expansion: $expansion,
-            is_legendary: $legendary,
-            body_type: OrbitalBodyType::Planet,
-        }
+    (@legendary) => {
+        false
+    };
+    (@legendary $legendary:literal) => {
+        $legendary
     };
 }
 
 macro_rules! space_station {
-    ($name: literal, $resources:literal, $influence:literal, $expansion:expr) => {
+    (name: $name:literal, resources: $resources:literal, influence: $influence:literal, expansion: $expansion:ident) => {
         PlanetInfo {
             name: $name.to_string(),
             planet_traits: vec![],
             tech_specialities: vec![],
             resources: $resources,
             influence: $influence,
-            expansion: $expansion,
+            expansion: Expansion::$expansion,
             is_legendary: false,
             body_type: OrbitalBodyType::SpaceStation,
         }
@@ -250,842 +252,996 @@ impl Planet {
     /// Returns the [PlanetInfo] for this planet.
     pub fn info(&self) -> PlanetInfo {
         match self {
-            Planet::Nestphar => planet!("Nestphar", vec![], vec![], 3, 2, Expansion::Base),
-            Planet::ArcPrime => planet!("Arc Prime", vec![], vec![], 4, 0, Expansion::Base),
-            Planet::WrenTerra => planet!("Wren Terra", vec![], vec![], 2, 1, Expansion::Base),
-            Planet::LisisII => planet!("Lisis II", vec![], vec![], 1, 0, Expansion::Base),
-            Planet::Ragh => planet!("Ragh", vec![], vec![], 2, 1, Expansion::Base),
-            Planet::Muaat => planet!("Muaat", vec![], vec![], 4, 1, Expansion::Base),
-            Planet::Hercant => planet!("Hercant", vec![], vec![], 1, 1, Expansion::Base),
-            Planet::Arretze => planet!("Arretze", vec![], vec![], 2, 0, Expansion::Base),
-            Planet::Kamdorn => planet!("Kamdorn", vec![], vec![], 0, 1, Expansion::Base),
-            Planet::Jord => planet!("Jord", vec![], vec![], 4, 2, Expansion::Base),
-            Planet::Creuss => planet!("Creuss", vec![], vec![], 4, 2, Expansion::Base),
-            Planet::ZeroZeroZero => planet!("[0.0.0]", vec![], vec![], 5, 0, Expansion::Base),
-            Planet::MollPrimus => planet!("Moll Primus", vec![], vec![], 4, 1, Expansion::Base),
-            Planet::Druaa => planet!("Druaa", vec![], vec![], 3, 1, Expansion::Base),
-            Planet::Maaluuk => planet!("Maaluuk", vec![], vec![], 0, 2, Expansion::Base),
-            Planet::MordaiII => planet!("Mordai II", vec![], vec![], 4, 0, Expansion::Base),
-            Planet::TrenLak => planet!("Tren'Lak", vec![], vec![], 1, 0, Expansion::Base),
-            Planet::Quinarra => planet!("Quinarra", vec![], vec![], 3, 1, Expansion::Base),
-            Planet::Jol => planet!("Jol", vec![], vec![], 1, 2, Expansion::Base),
-            Planet::Nar => planet!("Nar", vec![], vec![], 2, 3, Expansion::Base),
-            Planet::Winnu => planet!("Winnu", vec![], vec![], 3, 4, Expansion::Base),
-            Planet::ArchonRen => planet!("Archon Ren", vec![], vec![], 2, 3, Expansion::Base),
-            Planet::ArchonTau => planet!("Archon Tau", vec![], vec![], 1, 1, Expansion::Base),
-            Planet::Darien => planet!("Darien", vec![], vec![], 4, 4, Expansion::Base),
-            Planet::Retillion => planet!("Retillion", vec![], vec![], 2, 3, Expansion::Base),
-            Planet::Shalloq => planet!("Shalloq", vec![], vec![], 1, 2, Expansion::Base),
-            Planet::MecatolRex => planet!("Mecatol Rex", vec![], vec![], 1, 6, Expansion::Base),
-            Planet::Abyz => planet!(
-                "Abyz",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                0,
-                Expansion::Base
-            ),
-            Planet::Fria => planet!(
-                "Fria",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                0,
-                Expansion::Base
-            ),
-            Planet::Arinam => planet!(
-                "Arinam",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                1,
-                2,
-                Expansion::Base
-            ),
-            Planet::Meer => planet!(
-                "Meer",
-                vec![PlanetTrait::Hazardous],
-                vec![TechCategory::Warfare],
-                0,
-                4,
-                Expansion::Base
-            ),
-            Planet::Arnor => planet!(
-                "Arnor",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                2,
-                1,
-                Expansion::Base
-            ),
-            Planet::Lor => planet!(
-                "Lor",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                1,
-                2,
-                Expansion::Base
-            ),
-            Planet::Bereg => planet!(
-                "Bereg",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                1,
-                Expansion::Base
-            ),
-            Planet::LirtaIV => planet!(
-                "Lirta IV",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                3,
-                Expansion::Base
-            ),
-            Planet::Centauri => planet!(
-                "Centauri",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                3,
-                Expansion::Base
-            ),
-            Planet::Gral => planet!(
-                "Gral",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Propulsion],
-                1,
-                1,
-                Expansion::Base
-            ),
-            Planet::Corneeq => planet!(
-                "Corneeq",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                2,
-                Expansion::Base
-            ),
-            Planet::Resculon => planet!(
-                "Resculon",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                2,
-                0,
-                Expansion::Base
-            ),
-            Planet::DalBootha => planet!(
-                "Dal Bootha",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                0,
-                2,
-                Expansion::Base
-            ),
-            Planet::Xxehan => planet!(
-                "Xxehan",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                1,
-                Expansion::Base
-            ),
-            Planet::Lazar => planet!(
-                "Lazar",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Cybernetic],
-                1,
-                0,
-                Expansion::Base
-            ),
-            Planet::Sakulag => planet!(
-                "Sakulag",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                1,
-                Expansion::Base
-            ),
-            Planet::Lodor => planet!(
-                "Lodor",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                3,
-                1,
-                Expansion::Base
-            ),
-            Planet::MeharXull => planet!(
-                "Mehar Xull",
-                vec![PlanetTrait::Hazardous],
-                vec![TechCategory::Warfare],
-                1,
-                3,
-                Expansion::Base
-            ),
-            Planet::Mellon => planet!(
-                "Mellon",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                0,
-                2,
-                Expansion::Base
-            ),
-            Planet::Zohbat => planet!(
-                "Zohbat",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                1,
-                Expansion::Base
-            ),
-            Planet::NewAlbion => planet!(
-                "New Albion",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Biotic],
-                1,
-                1,
-                Expansion::Base
-            ),
-            Planet::Starpoint => planet!(
-                "Starpoint",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                1,
-                Expansion::Base
-            ),
-            Planet::Quann => planet!(
-                "Quann",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                2,
-                1,
-                Expansion::Base
-            ),
-            Planet::Qucenn => planet!(
-                "Qucen'n",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                1,
-                2,
-                Expansion::Base
-            ),
-            Planet::Rarron => planet!(
-                "Rarron",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                0,
-                3,
-                Expansion::Base
-            ),
-            Planet::Saudor => planet!(
-                "Saudor",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                2,
-                2,
-                Expansion::Base
-            ),
-            Planet::TarMann => planet!(
-                "Tar'Mann",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Biotic],
-                1,
-                1,
-                Expansion::Base
-            ),
-            Planet::TequRan => planet!(
-                "Tequ'ran",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                0,
-                Expansion::Base
-            ),
-            Planet::Torkan => planet!(
-                "Torkan",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                0,
-                3,
-                Expansion::Base
-            ),
-            Planet::Thibah => planet!(
-                "Thibah",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Propulsion],
-                1,
-                1,
-                Expansion::Base
-            ),
-            Planet::VefutII => planet!(
-                "Vefut II",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                2,
-                Expansion::Base
-            ),
-            Planet::Wellon => planet!(
-                "Wellon",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Cybernetic],
-                1,
-                2,
-                Expansion::Base
-            ),
-            Planet::ArchonVail => planet!(
-                "Archon Vail",
-                vec![PlanetTrait::Hazardous],
-                vec![TechCategory::Propulsion],
-                1,
-                3,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Perimiter => planet!(
-                "Perimeter",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                2,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Ang => planet!(
-                "Ang",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Warfare],
-                2,
-                0,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::SemLore => planet!(
-                "Sem-Lore",
-                vec![PlanetTrait::Cultural],
-                vec![TechCategory::Cybernetic],
-                3,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Vorhal => planet!(
-                "Vorhal",
-                vec![PlanetTrait::Cultural],
-                vec![TechCategory::Biotic],
-                0,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Atlas => planet!(
-                "Atlas",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Primor => planet!(
-                "Primor",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                2,
-                1,
-                Expansion::ProphecyOfKings,
-                true
-            ),
-            Planet::HopesEnd => planet!(
-                "Hope's End",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                0,
-                Expansion::ProphecyOfKings,
-                true
-            ),
-            Planet::Cormund => planet!(
-                "Cormund",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                0,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Everra => planet!(
-                "Everra",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                3,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::JeolIr => planet!(
-                "Jeol Ir",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                2,
-                3,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Accoen => planet!(
-                "Accoen",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                2,
-                3,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Kraag => planet!(
-                "Kraag",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Siig => planet!(
-                "Siig",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                0,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Bakal => planet!(
-                "Ba'kal",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                3,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::AlioPrima => planet!(
-                "Alio Prima",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Lisis => planet!(
-                "Lisis",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                2,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Velnor => planet!(
-                "Velnor",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Warfare],
-                2,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Cealdri => planet!(
-                "Cealdri",
-                vec![PlanetTrait::Cultural],
-                vec![TechCategory::Cybernetic],
-                0,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Xanhact => planet!(
-                "Xanhact",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                0,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::VegaMajor => planet!(
-                "Vega Major",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                2,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::VegaMinor => planet!(
-                "Vega Minor",
-                vec![PlanetTrait::Cultural],
-                vec![TechCategory::Propulsion],
-                1,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Abaddon => planet!(
-                "Abaddon",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                0,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Ashtroth => planet!(
-                "Ashtroth",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                0,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Loki => planet!(
-                "Loki",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::RigelI => planet!(
-                "Rigel I",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                0,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::RigelII => planet!(
-                "Rigel II",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                1,
-                2,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::RigelIII => planet!(
-                "Rigel III",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Biotic],
-                1,
-                1,
-                Expansion::ProphecyOfKings
-            ),
-            Planet::Valk => planet!("Valk", vec![], vec![], 2, 0, Expansion::ProphecyOfKings),
-            Planet::Avar => planet!("Avar", vec![], vec![], 1, 1, Expansion::ProphecyOfKings),
-            Planet::Ylir => planet!("Ylir", vec![], vec![], 0, 2, Expansion::ProphecyOfKings),
-            Planet::TheDark => {
-                planet!("The Dark", vec![], vec![], 3, 4, Expansion::ProphecyOfKings)
-            }
-            Planet::Ixth => planet!("Ixth", vec![], vec![], 3, 5, Expansion::ProphecyOfKings),
-            Planet::Naazir => planet!("Naazir", vec![], vec![], 2, 1, Expansion::ProphecyOfKings),
-            Planet::Rokha => planet!("Rokha", vec![], vec![], 1, 2, Expansion::ProphecyOfKings),
-            Planet::Arcturus => {
-                planet!("Arcturus", vec![], vec![], 4, 4, Expansion::ProphecyOfKings)
-            }
-            Planet::Elysium => planet!("Elysium", vec![], vec![], 4, 1, Expansion::ProphecyOfKings),
-            Planet::Acheron => planet!("Acheron", vec![], vec![], 4, 0, Expansion::ProphecyOfKings),
-            Planet::Mallice => planet!(
-                "Mallice",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                0,
-                3,
-                Expansion::ProphecyOfKings,
-                true
-            ),
-            Planet::Mirage => planet!(
-                "Mirage",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                2,
-                Expansion::ProphecyOfKings,
-                true
-            ),
-            Planet::CustodiaVigilia => {
-                planet!(
-                    "Custodia Vigilia",
-                    vec![],
-                    vec![],
-                    2,
-                    3,
-                    Expansion::CodexIII,
-                    true
-                )
-            }
-            Planet::CustodiaVigiliaOmega => planet!(
-                "Custodia Vigilia Ω",
-                vec![],
-                vec![],
-                2,
-                2,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Lesab => planet!(
-                "Lesab",
-                vec![PlanetTrait::Industrial, PlanetTrait::Hazardous],
-                vec![],
-                2,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::Olergodt => planet!(
-                "Olergodt",
-                vec![PlanetTrait::Cultural, PlanetTrait::Hazardous],
-                vec![TechCategory::Cybernetic, TechCategory::Warfare],
-                2,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::ViraPicsIII => planet!(
-                "Vira-Pics III",
-                vec![PlanetTrait::Cultural, PlanetTrait::Hazardous],
-                vec![],
-                2,
-                3,
-                Expansion::ThundersEdge
-            ),
-            Planet::Andeara => planet!(
-                "Andeara",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Propulsion],
-                1,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::Lemox => planet!(
-                "Lemox",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                0,
-                3,
-                Expansion::ThundersEdge
-            ),
-            Planet::TheWatchtower => {
-                space_station!("The Watchtower", 1, 1, Expansion::ThundersEdge)
-            }
-            Planet::Emelpar => planet!(
-                "Emelpar",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                0,
-                2,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Faunus => planet!(
-                "Faunus",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Biotic],
-                1,
-                3,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Garbozia => planet!(
-                "Garbozia",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                1,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Tempesta => planet!(
-                "Tempesta",
-                vec![PlanetTrait::Hazardous],
-                vec![TechCategory::Propulsion],
-                1,
-                1,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Industrex => planet!(
-                "Industrex",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Warfare],
-                2,
-                0,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Capha => planet!(
-                "Capha",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                0,
-                Expansion::ThundersEdge
-            ),
-            Planet::Kostboth => planet!(
-                "Kostboth",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                0,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::Cresius => planet!(
-                "Cresius",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                0,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::LazulRex => planet!(
-                "Lazul Rex",
-                vec![PlanetTrait::Cultural, PlanetTrait::Industrial],
-                vec![],
-                2,
-                2,
-                Expansion::ThundersEdge
-            ),
-            Planet::Hercalor => planet!(
-                "Hercalor",
-                vec![PlanetTrait::Industrial],
-                vec![],
-                1,
-                0,
-                Expansion::ThundersEdge
-            ),
-            Planet::Tiamat => planet!(
-                "Tiamat",
-                vec![PlanetTrait::Cultural],
-                vec![TechCategory::Cybernetic],
-                1,
-                2,
-                Expansion::ThundersEdge
-            ),
-            Planet::NewTerra => planet!(
-                "New Terra",
-                vec![PlanetTrait::Industrial],
-                vec![TechCategory::Biotic],
-                1,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::Tinnes => planet!(
-                "Tinnes",
-                vec![PlanetTrait::Industrial, PlanetTrait::Hazardous],
-                vec![TechCategory::Biotic],
-                2,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::Bellatrix => planet!(
-                "Bellatrix",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                2,
-                Expansion::ThundersEdge
-            ),
-            Planet::TsionStation => space_station!("Tsion Station", 1, 1, Expansion::ThundersEdge),
-            Planet::Tarana => planet!(
-                "Tarana",
-                vec![PlanetTrait::Cultural, PlanetTrait::Industrial],
-                vec![],
-                1,
-                2,
-                Expansion::ThundersEdge
-            ),
-            Planet::OluzStation => space_station!("Oluz Station", 1, 1, Expansion::ThundersEdge),
-            Planet::Cocytus => planet!("Cocytus", vec![], vec![], 3, 0, Expansion::ThundersEdge),
-            Planet::Styx => planet!("Styx", vec![], vec![], 4, 0, Expansion::ThundersEdge, true),
-            Planet::Lethe => planet!("Lethe", vec![], vec![], 0, 2, Expansion::ThundersEdge),
-            Planet::Phlegethon => {
-                planet!("Phlegethon", vec![], vec![], 1, 2, Expansion::ThundersEdge)
-            }
-            Planet::MecatolRexOmega => planet!(
-                "Mecatol Rex Ω",
-                vec![],
-                vec![],
-                1,
-                6,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::ThundersEdge => planet!(
-                "Thunder's Edge",
-                vec![],
-                vec![],
-                5,
-                1,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Ordinian => planet!(
-                "Ordinian",
-                vec![],
-                vec![],
-                0,
-                0,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Avernus => planet!(
-                "Avernus",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                0,
-                Expansion::ThundersEdge,
-                true
-            ),
-            Planet::Cronos => planet!("Cronos", vec![], vec![], 2, 1, Expansion::ThundersEdge),
-            Planet::CronosHollow => planet!(
-                "Cronos Hollow",
-                vec![],
-                vec![],
-                3,
-                0,
-                Expansion::ThundersEdge
-            ),
-            Planet::Tallin => planet!("Tallin", vec![], vec![], 1, 2, Expansion::ThundersEdge),
-            Planet::TallinHollow => planet!(
-                "Tallin Hollow",
-                vec![],
-                vec![],
-                3,
-                0,
-                Expansion::ThundersEdge
-            ),
-            Planet::Revelation => space_station!("Revelation", 1, 2, Expansion::ThundersEdge),
-            Planet::MezLoOrzFeiZsha => planet!(
-                "Mez Lo Orz Fei Zsha",
-                vec![],
-                vec![],
-                2,
-                1,
-                Expansion::ThundersEdge
-            ),
-            Planet::RepoLoOrzQet => planet!(
-                "Rep Lo Orz Qet",
-                vec![],
-                vec![],
-                1,
-                3,
-                Expansion::ThundersEdge
-            ),
-            Planet::Ikatena => planet!("Ikatena", vec![], vec![], 4, 4, Expansion::ThundersEdge),
-            Planet::AhkCreuxx => {
-                planet!("Ahk Creuxx", vec![], vec![], 4, 2, Expansion::ThundersEdge)
-            }
-            Planet::Elnath => planet!(
-                "El'Nath",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                2,
-                0,
-                Expansion::ThundersEdge
-            ),
-            Planet::Horizon => planet!(
-                "Horizon",
-                vec![PlanetTrait::Cultural],
-                vec![],
-                1,
-                2,
-                Expansion::ThundersEdge
-            ),
-            Planet::LuthienVi => planet!(
-                "Luthien VI",
-                vec![PlanetTrait::Hazardous],
-                vec![],
-                3,
-                1,
-                Expansion::ThundersEdge
-            ),
+            Planet::Nestphar => planet! {
+                name: "Nestphar",
+                resources: 3,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::ArcPrime => planet! {
+                name: "Arc Prime",
+                resources: 4,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::WrenTerra => planet! {
+                name: "Wren Terra",
+                resources: 2,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::LisisII => planet! {
+                name: "Lisis II",
+                resources: 1,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::Ragh => planet! {
+                name: "Ragh",
+                resources: 2,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Muaat => planet! {
+                name: "Muaat",
+                resources: 4,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Hercant => planet! {
+                name: "Hercant",
+                resources: 1,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Arretze => planet! {
+                name: "Arretze",
+                resources: 2,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::Kamdorn => planet! {
+                name: "Kamdorn",
+                resources: 0,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Jord => planet! {
+                name: "Jord",
+                resources: 4,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Creuss => planet! {
+                name: "Creuss",
+                resources: 4,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::ZeroZeroZero => planet! {
+                name: "[0.0.0]",
+                resources: 5,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::MollPrimus => planet! {
+                name: "Moll Primus",
+                resources: 4,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Druaa => planet! {
+                name: "Druaa",
+                resources: 3,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Maaluuk => planet! {
+                name: "Maaluuk",
+                resources: 0,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::MordaiII => planet! {
+                name: "Mordai II",
+                resources: 4,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::TrenLak => planet! {
+                name: "Tren'Lak",
+                resources: 1,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::Quinarra => planet! {
+                name: "Quinarra",
+                resources: 3,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Jol => planet! {
+                name: "Jol",
+                resources: 1,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Nar => planet! {
+                name: "Nar",
+                resources: 2,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::Winnu => planet! {
+                name: "Winnu",
+                resources: 3,
+                influence: 4,
+                expansion: Base
+            },
+            Planet::ArchonRen => planet! {
+                name: "Archon Ren",
+                resources: 2,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::ArchonTau => planet! {
+                name: "Archon Tau",
+                resources: 1,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Darien => planet! {
+                name: "Darien",
+                resources: 4,
+                influence: 4,
+                expansion: Base
+            },
+            Planet::Retillion => planet! {
+                name: "Retillion",
+                resources: 2,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::Shalloq => planet! {
+                name: "Shalloq",
+                resources: 1,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::MecatolRex => planet! {
+                name: "Mecatol Rex",
+                resources: 1,
+                influence: 6,
+                expansion: Base
+            },
+            Planet::Abyz => planet! {
+                name: "Abyz",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::Fria => planet! {
+                name: "Fria",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::Arinam => planet! {
+                name: "Arinam",
+                planet_traits: [Industrial],
+                resources: 1,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Meer => planet! {
+                name: "Meer",
+                planet_traits: [Hazardous],
+                tech_specialities: [Warfare],
+                resources: 0,
+                influence: 4,
+                expansion: Base
+            },
+            Planet::Arnor => planet! {
+                name: "Arnor",
+                planet_traits: [Industrial],
+                resources: 2,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Lor => planet! {
+                name: "Lor",
+                planet_traits: [Industrial],
+                resources: 1,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Bereg => planet! {
+                name: "Bereg",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::LirtaIV => planet! {
+                name: "Lirta IV",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::Centauri => planet! {
+                name: "Centauri",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::Gral => planet! {
+                name: "Gral",
+                planet_traits: [Industrial],
+                tech_specialities: [Propulsion],
+                resources: 1,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Corneeq => planet! {
+                name: "Corneeq",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Resculon => planet! {
+                name: "Resculon",
+                planet_traits: [Cultural],
+                resources: 2,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::DalBootha => planet! {
+                name: "Dal Bootha",
+                planet_traits: [Cultural],
+                resources: 0,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Xxehan => planet! {
+                name: "Xxehan",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Lazar => planet! {
+                name: "Lazar",
+                planet_traits: [Industrial],
+                tech_specialities: [Cybernetic],
+                resources: 1,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::Sakulag => planet! {
+                name: "Sakulag",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Lodor => planet! {
+                name: "Lodor",
+                planet_traits: [Cultural],
+                resources: 3,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::MeharXull => planet! {
+                name: "Mehar Xull",
+                planet_traits: [Hazardous],
+                tech_specialities: [Warfare],
+                resources: 1,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::Mellon => planet! {
+                name: "Mellon",
+                planet_traits: [Cultural],
+                resources: 0,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Zohbat => planet! {
+                name: "Zohbat",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::NewAlbion => planet! {
+                name: "New Albion",
+                planet_traits: [Industrial],
+                tech_specialities: [Biotic],
+                resources: 1,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Starpoint => planet! {
+                name: "Starpoint",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Quann => planet! {
+                name: "Quann",
+                planet_traits: [Cultural],
+                resources: 2,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::Qucenn => planet! {
+                name: "Qucen'n",
+                planet_traits: [Industrial],
+                resources: 1,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Rarron => planet! {
+                name: "Rarron",
+                planet_traits: [Cultural],
+                resources: 0,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::Saudor => planet! {
+                name: "Saudor",
+                planet_traits: [Industrial],
+                resources: 2,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::TarMann => planet! {
+                name: "Tar'Mann",
+                planet_traits: [Industrial],
+                tech_specialities: [Biotic],
+                resources: 1,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::TequRan => planet! {
+                name: "Tequ'ran",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 0,
+                expansion: Base
+            },
+            Planet::Torkan => planet! {
+                name: "Torkan",
+                planet_traits: [Cultural],
+                resources: 0,
+                influence: 3,
+                expansion: Base
+            },
+            Planet::Thibah => planet! {
+                name: "Thibah",
+                planet_traits: [Industrial],
+                tech_specialities: [Propulsion],
+                resources: 1,
+                influence: 1,
+                expansion: Base
+            },
+            Planet::VefutII => planet! {
+                name: "Vefut II",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::Wellon => planet! {
+                name: "Wellon",
+                planet_traits: [Industrial],
+                tech_specialities: [Cybernetic],
+                resources: 1,
+                influence: 2,
+                expansion: Base
+            },
+            Planet::ArchonVail => planet! {
+                name: "Archon Vail",
+                planet_traits: [Hazardous],
+                tech_specialities: [Propulsion],
+                resources: 1,
+                influence: 3,
+                expansion: ProphecyOfKings
+            },
+            Planet::Perimiter => planet! {
+                name: "Perimeter",
+                planet_traits: [Industrial],
+                resources: 2,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Ang => planet! {
+                name: "Ang",
+                planet_traits: [Industrial],
+                tech_specialities: [Warfare],
+                resources: 2,
+                influence: 0,
+                expansion: ProphecyOfKings
+            },
+            Planet::SemLore => planet! {
+                name: "Sem-Lore",
+                planet_traits: [Cultural],
+                tech_specialities: [Cybernetic],
+                resources: 3,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::Vorhal => planet! {
+                name: "Vorhal",
+                planet_traits: [Cultural],
+                tech_specialities: [Biotic],
+                resources: 0,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::Atlas => planet! {
+                name: "Atlas",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Primor => planet! {
+                name: "Primor",
+                planet_traits: [Cultural],
+                resources: 2,
+                influence: 1,
+                expansion: ProphecyOfKings,
+                is_legendary: true
+            },
+            Planet::HopesEnd => planet! {
+                name: "Hope's End",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 0,
+                expansion: ProphecyOfKings,
+                is_legendary: true
+            },
+            Planet::Cormund => planet! {
+                name: "Cormund",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 0,
+                expansion: ProphecyOfKings
+            },
+            Planet::Everra => planet! {
+                name: "Everra",
+                planet_traits: [Cultural],
+                resources: 3,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::JeolIr => planet! {
+                name: "Jeol Ir",
+                planet_traits: [Industrial],
+                resources: 2,
+                influence: 3,
+                expansion: ProphecyOfKings
+            },
+            Planet::Accoen => planet! {
+                name: "Accoen",
+                planet_traits: [Industrial],
+                resources: 2,
+                influence: 3,
+                expansion: ProphecyOfKings
+            },
+            Planet::Kraag => planet! {
+                name: "Kraag",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Siig => planet! {
+                name: "Siig",
+                planet_traits: [Hazardous],
+                resources: 0,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::Bakal => planet! {
+                name: "Ba'kal",
+                planet_traits: [Industrial],
+                resources: 3,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::AlioPrima => planet! {
+                name: "Alio Prima",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Lisis => planet! {
+                name: "Lisis",
+                planet_traits: [Industrial],
+                resources: 2,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::Velnor => planet! {
+                name: "Velnor",
+                planet_traits: [Industrial],
+                tech_specialities: [Warfare],
+                resources: 2,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Cealdri => planet! {
+                name: "Cealdri",
+                planet_traits: [Cultural],
+                tech_specialities: [Cybernetic],
+                resources: 0,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::Xanhact => planet! {
+                name: "Xanhact",
+                planet_traits: [Hazardous],
+                resources: 0,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::VegaMajor => planet! {
+                name: "Vega Major",
+                planet_traits: [Cultural],
+                resources: 2,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::VegaMinor => planet! {
+                name: "Vega Minor",
+                planet_traits: [Cultural],
+                tech_specialities: [Propulsion],
+                resources: 1,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::Abaddon => planet! {
+                name: "Abaddon",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 0,
+                expansion: ProphecyOfKings
+            },
+            Planet::Ashtroth => planet! {
+                name: "Ashtroth",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 0,
+                expansion: ProphecyOfKings
+            },
+            Planet::Loki => planet! {
+                name: "Loki",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::RigelI => planet! {
+                name: "Rigel I",
+                planet_traits: [Hazardous],
+                resources: 0,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::RigelII => planet! {
+                name: "Rigel II",
+                planet_traits: [Industrial],
+                resources: 1,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::RigelIII => planet! {
+                name: "Rigel III",
+                planet_traits: [Industrial],
+                tech_specialities: [Biotic],
+                resources: 1,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Valk => planet! {
+                name: "Valk",
+                resources: 2,
+                influence: 0,
+                expansion: ProphecyOfKings
+            },
+            Planet::Avar => planet! {
+                name: "Avar",
+                resources: 1,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Ylir => planet! {
+                name: "Ylir",
+                resources: 0,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::TheDark => planet! {
+                name: "The Dark",
+                resources: 3,
+                influence: 4,
+                expansion: ProphecyOfKings
+            },
+            Planet::Ixth => planet! {
+                name: "Ixth",
+                resources: 3,
+                influence: 5,
+                expansion: ProphecyOfKings
+            },
+            Planet::Naazir => planet! {
+                name: "Naazir",
+                resources: 2,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Rokha => planet! {
+                name: "Rokha",
+                resources: 1,
+                influence: 2,
+                expansion: ProphecyOfKings
+            },
+            Planet::Arcturus => planet! {
+                name: "Arcturus",
+                resources: 4,
+                influence: 4,
+                expansion: ProphecyOfKings
+            },
+            Planet::Elysium => planet! {
+                name: "Elysium",
+                resources: 4,
+                influence: 1,
+                expansion: ProphecyOfKings
+            },
+            Planet::Acheron => planet! {
+                name: "Acheron",
+                resources: 4,
+                influence: 0,
+                expansion: ProphecyOfKings
+            },
+            Planet::Mallice => planet! {
+                name: "Mallice",
+                planet_traits: [Cultural],
+                resources: 0,
+                influence: 3,
+                expansion: ProphecyOfKings,
+                is_legendary: true
+            },
+            Planet::Mirage => planet! {
+                name: "Mirage",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 2,
+                expansion: ProphecyOfKings,
+                is_legendary: true
+            },
+            Planet::CustodiaVigilia => planet! {
+                name: "Custodia Vigilia",
+                resources: 2,
+                influence: 3,
+                expansion: CodexIII,
+                is_legendary: true
+            },
+            Planet::CustodiaVigiliaOmega => planet! {
+                name: "Custodia Vigilia Ω",
+                resources: 2,
+                influence: 2,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Lesab => planet! {
+                name: "Lesab",
+                planet_traits: [Industrial, Hazardous],
+                resources: 2,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Olergodt => planet! {
+                name: "Olergodt",
+                planet_traits: [Cultural, Hazardous],
+                tech_specialities: [Cybernetic, Warfare],
+                resources: 2,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::ViraPicsIII => planet! {
+                name: "Vira-Pics III",
+                planet_traits: [Cultural, Hazardous],
+                resources: 2,
+                influence: 3,
+                expansion: ThundersEdge
+            },
+            Planet::Andeara => planet! {
+                name: "Andeara",
+                planet_traits: [Industrial],
+                tech_specialities: [Propulsion],
+                resources: 1,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Lemox => planet! {
+                name: "Lemox",
+                planet_traits: [Industrial],
+                resources: 0,
+                influence: 3,
+                expansion: ThundersEdge
+            },
+            Planet::TheWatchtower => space_station! {
+                name: "The Watchtower",
+                resources: 1,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Emelpar => planet! {
+                name: "Emelpar",
+                planet_traits: [Cultural],
+                resources: 0,
+                influence: 2,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Faunus => planet! {
+                name: "Faunus",
+                planet_traits: [Industrial],
+                tech_specialities: [Biotic],
+                resources: 1,
+                influence: 3,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Garbozia => planet! {
+                name: "Garbozia",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 1,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Tempesta => planet! {
+                name: "Tempesta",
+                planet_traits: [Hazardous],
+                tech_specialities: [Propulsion],
+                resources: 1,
+                influence: 1,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Industrex => planet! {
+                name: "Industrex",
+                planet_traits: [Industrial],
+                tech_specialities: [Warfare],
+                resources: 2,
+                influence: 0,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Capha => planet! {
+                name: "Capha",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 0,
+                expansion: ThundersEdge
+            },
+            Planet::Kostboth => planet! {
+                name: "Kostboth",
+                planet_traits: [Cultural],
+                resources: 0,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Cresius => planet! {
+                name: "Cresius",
+                planet_traits: [Hazardous],
+                resources: 0,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::LazulRex => planet! {
+                name: "Lazul Rex",
+                planet_traits: [Cultural, Industrial],
+                resources: 2,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::Hercalor => planet! {
+                name: "Hercalor",
+                planet_traits: [Industrial],
+                resources: 1,
+                influence: 0,
+                expansion: ThundersEdge
+            },
+            Planet::Tiamat => planet! {
+                name: "Tiamat",
+                planet_traits: [Cultural],
+                tech_specialities: [Cybernetic],
+                resources: 1,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::NewTerra => planet! {
+                name: "New Terra",
+                planet_traits: [Industrial],
+                tech_specialities: [Biotic],
+                resources: 1,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Tinnes => planet! {
+                name: "Tinnes",
+                planet_traits: [Industrial, Hazardous],
+                tech_specialities: [Biotic],
+                resources: 2,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Bellatrix => planet! {
+                name: "Bellatrix",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::TsionStation => space_station! {
+                name: "Tsion Station",
+                resources: 1,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Tarana => planet! {
+                name: "Tarana",
+                planet_traits: [Cultural, Industrial],
+                resources: 1,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::OluzStation => space_station! {
+                name: "Oluz Station",
+                resources: 1,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::Cocytus => planet! {
+                name: "Cocytus",
+                resources: 3,
+                influence: 0,
+                expansion: ThundersEdge
+            },
+            Planet::Styx => planet! {
+                name: "Styx",
+                resources: 4,
+                influence: 0,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Lethe => planet! {
+                name: "Lethe",
+                resources: 0,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::Phlegethon => planet! {
+                name: "Phlegethon",
+                resources: 1,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::MecatolRexOmega => planet! {
+                name: "Mecatol Rex Ω",
+                resources: 1,
+                influence: 6,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::ThundersEdge => planet! {
+                name: "Thunder's Edge",
+                resources: 5,
+                influence: 1,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Ordinian => planet! {
+                name: "Ordinian",
+                resources: 0,
+                influence: 0,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Avernus => planet! {
+                name: "Avernus",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 0,
+                expansion: ThundersEdge,
+                is_legendary: true
+            },
+            Planet::Cronos => planet! {
+                name: "Cronos",
+                resources: 2,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::CronosHollow => planet! {
+                name: "Cronos Hollow",
+                resources: 3,
+                influence: 0,
+                expansion: ThundersEdge
+            },
+            Planet::Tallin => planet! {
+                name: "Tallin",
+                resources: 1,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::TallinHollow => planet! {
+                name: "Tallin Hollow",
+                resources: 3,
+                influence: 0,
+                expansion: ThundersEdge
+            },
+            Planet::Revelation => space_station! {
+                name: "Revelation",
+                resources: 1,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::MezLoOrzFeiZsha => planet! {
+                name: "Mez Lo Orz Fei Zsha",
+                resources: 2,
+                influence: 1,
+                expansion: ThundersEdge
+            },
+            Planet::RepoLoOrzQet => planet! {
+                name: "Rep Lo Orz Qet",
+                resources: 1,
+                influence: 3,
+                expansion: ThundersEdge
+            },
+            Planet::Ikatena => planet! {
+                name: "Ikatena",
+                resources: 4,
+                influence: 4,
+                expansion: ThundersEdge
+            },
+            Planet::AhkCreuxx => planet! {
+                name: "Ahk Creuxx",
+                resources: 4,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::Elnath => planet! {
+                name: "El'Nath",
+                planet_traits: [Hazardous],
+                resources: 2,
+                influence: 0,
+                expansion: ThundersEdge
+            },
+            Planet::Horizon => planet! {
+                name: "Horizon",
+                planet_traits: [Cultural],
+                resources: 1,
+                influence: 2,
+                expansion: ThundersEdge
+            },
+            Planet::LuthienVi => planet! {
+                name: "Luthien VI",
+                planet_traits: [Hazardous],
+                resources: 3,
+                influence: 1,
+                expansion: ThundersEdge
+            },
         }
     }
 
