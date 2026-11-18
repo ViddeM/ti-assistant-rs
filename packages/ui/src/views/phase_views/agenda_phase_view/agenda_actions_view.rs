@@ -9,7 +9,7 @@ use ti_helper_game_data::{
 use crate::{
     components::{
         button::Button,
-        dropdown::{AgendaDropdown, VoteOptionDropdown},
+        dropdown::{AgendaDropdown, Dropdown, VoteOptionDropdown},
     },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
@@ -303,22 +303,34 @@ fn PlayerVoteActionsView(player_id: ReadSignal<PlayerId>, state: ReadSignal<Vote
     }
 }
 
+const DISCARD_VALUE: &str = "discard";
+
+#[derive(Clone, PartialEq)]
+enum OutcomeOverride {
+    Outcome(AgendaElect),
+    Discard,
+}
+
 #[component]
 fn ResolveOutcome(state: ReadSignal<VoteState>) -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
     let expected_outcome = use_memo(move || state().expected_outcome.clone());
-    let mut outcome_override = use_signal(|| None);
+    let mut outcome_override: Signal<Option<OutcomeOverride>> = use_signal(|| None);
 
     let candidates = use_memo(move || state().candidates.clone());
 
-    let outcome = use_memo(move || {
-        if let Some(option) = outcome_override() {
-            return Some(option);
-        }
+    let outcome = use_memo(move || match outcome_override() {
+        Some(OutcomeOverride::Outcome(elect)) => Some(elect),
+        Some(OutcomeOverride::Discard) => None,
+        None => expected_outcome(),
+    });
 
-        expected_outcome()
+    let override_value = use_memo(move || match outcome_override() {
+        Some(OutcomeOverride::Outcome(elect)) => elect.name(),
+        Some(OutcomeOverride::Discard) => DISCARD_VALUE.to_string(),
+        None => String::new(),
     });
 
     let resolve = use_memo(move || {
@@ -346,10 +358,32 @@ fn ResolveOutcome(state: ReadSignal<VoteState>) -> Element {
 
             div { class: "resolve-outcome-container",
                 label { "Override outcome" }
-                VoteOptionDropdown {
-                    value: outcome_override,
-                    on_select: move |o| outcome_override.set(o),
-                    options: candidates(),
+                Dropdown {
+                    value: override_value,
+                    oninput: move |e: FormEvent| {
+                        let value = e.value();
+                        outcome_override
+                            .set(
+                                match value.as_str() {
+                                    "" => None,
+                                    DISCARD_VALUE => Some(OutcomeOverride::Discard),
+                                    name => {
+                                        Some(
+                                            OutcomeOverride::Outcome(
+                                                AgendaElect::parse(name).expect("Unexpected agenda elect"),
+                                            ),
+                                        )
+                                    }
+                                },
+                            )
+                    },
+                    option { value: "", "--Select vote option--" }
+                    for elect in candidates() {
+                        option { key: "{elect.name()}", value: elect.name(),
+                            {elect.to_display_value()}
+                        }
+                    }
+                    option { value: DISCARD_VALUE, "Discard" }
                 }
                 Button {
                     disabled: !everyone_has_voted(),
