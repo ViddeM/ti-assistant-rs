@@ -60,6 +60,7 @@ macro_rules! planet {
         influence: $influence:literal,
         expansion: $expansion:ident
         $(, is_legendary: $legendary:literal)?
+        $(,)?
     ) => {
         PlanetInfo {
             name: $name.to_string(),
@@ -81,7 +82,7 @@ macro_rules! planet {
 }
 
 macro_rules! space_station {
-    (name: $name:literal, resources: $resources:literal, influence: $influence:literal, expansion: $expansion:ident) => {
+    (name: $name:literal, resources: $resources:literal, influence: $influence:literal, expansion: $expansion:ident $(,)?) => {
         PlanetInfo {
             name: $name.to_string(),
             planet_traits: vec![],
@@ -256,184 +257,184 @@ impl Planet {
                 name: "Nestphar",
                 resources: 3,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::ArcPrime => planet! {
                 name: "Arc Prime",
                 resources: 4,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::WrenTerra => planet! {
                 name: "Wren Terra",
                 resources: 2,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::LisisII => planet! {
                 name: "Lisis II",
                 resources: 1,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Ragh => planet! {
                 name: "Ragh",
                 resources: 2,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Muaat => planet! {
                 name: "Muaat",
                 resources: 4,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Hercant => planet! {
                 name: "Hercant",
                 resources: 1,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Arretze => planet! {
                 name: "Arretze",
                 resources: 2,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Kamdorn => planet! {
                 name: "Kamdorn",
                 resources: 0,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Jord => planet! {
                 name: "Jord",
                 resources: 4,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Creuss => planet! {
                 name: "Creuss",
                 resources: 4,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::ZeroZeroZero => planet! {
                 name: "[0.0.0]",
                 resources: 5,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::MollPrimus => planet! {
                 name: "Moll Primus",
                 resources: 4,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Druaa => planet! {
                 name: "Druaa",
                 resources: 3,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Maaluuk => planet! {
                 name: "Maaluuk",
                 resources: 0,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::MordaiII => planet! {
                 name: "Mordai II",
                 resources: 4,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::TrenLak => planet! {
                 name: "Tren'Lak",
                 resources: 1,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Quinarra => planet! {
                 name: "Quinarra",
                 resources: 3,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Jol => planet! {
                 name: "Jol",
                 resources: 1,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Nar => planet! {
                 name: "Nar",
                 resources: 2,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Winnu => planet! {
                 name: "Winnu",
                 resources: 3,
                 influence: 4,
-                expansion: Base
+                expansion: Base,
             },
             Planet::ArchonRen => planet! {
                 name: "Archon Ren",
                 resources: 2,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::ArchonTau => planet! {
                 name: "Archon Tau",
                 resources: 1,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Darien => planet! {
                 name: "Darien",
                 resources: 4,
                 influence: 4,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Retillion => planet! {
                 name: "Retillion",
                 resources: 2,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Shalloq => planet! {
                 name: "Shalloq",
                 resources: 1,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::MecatolRex => planet! {
                 name: "Mecatol Rex",
                 resources: 1,
                 influence: 6,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Abyz => planet! {
                 name: "Abyz",
                 planet_traits: [Hazardous],
                 resources: 3,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Fria => planet! {
                 name: "Fria",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Arinam => planet! {
                 name: "Arinam",
                 planet_traits: [Industrial],
                 resources: 1,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Meer => planet! {
                 name: "Meer",
@@ -441,42 +442,42 @@ impl Planet {
                 tech_specialities: [Warfare],
                 resources: 0,
                 influence: 4,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Arnor => planet! {
                 name: "Arnor",
                 planet_traits: [Industrial],
                 resources: 2,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Lor => planet! {
                 name: "Lor",
                 planet_traits: [Industrial],
                 resources: 1,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Bereg => planet! {
                 name: "Bereg",
                 planet_traits: [Hazardous],
                 resources: 3,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::LirtaIV => planet! {
                 name: "Lirta IV",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Centauri => planet! {
                 name: "Centauri",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Gral => planet! {
                 name: "Gral",
@@ -484,35 +485,35 @@ impl Planet {
                 tech_specialities: [Propulsion],
                 resources: 1,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Corneeq => planet! {
                 name: "Corneeq",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Resculon => planet! {
                 name: "Resculon",
                 planet_traits: [Cultural],
                 resources: 2,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::DalBootha => planet! {
                 name: "Dal Bootha",
                 planet_traits: [Cultural],
                 resources: 0,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Xxehan => planet! {
                 name: "Xxehan",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Lazar => planet! {
                 name: "Lazar",
@@ -520,21 +521,21 @@ impl Planet {
                 tech_specialities: [Cybernetic],
                 resources: 1,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Sakulag => planet! {
                 name: "Sakulag",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Lodor => planet! {
                 name: "Lodor",
                 planet_traits: [Cultural],
                 resources: 3,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::MeharXull => planet! {
                 name: "Mehar Xull",
@@ -542,21 +543,21 @@ impl Planet {
                 tech_specialities: [Warfare],
                 resources: 1,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Mellon => planet! {
                 name: "Mellon",
                 planet_traits: [Cultural],
                 resources: 0,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Zohbat => planet! {
                 name: "Zohbat",
                 planet_traits: [Hazardous],
                 resources: 3,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::NewAlbion => planet! {
                 name: "New Albion",
@@ -564,42 +565,42 @@ impl Planet {
                 tech_specialities: [Biotic],
                 resources: 1,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Starpoint => planet! {
                 name: "Starpoint",
                 planet_traits: [Hazardous],
                 resources: 3,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Quann => planet! {
                 name: "Quann",
                 planet_traits: [Cultural],
                 resources: 2,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Qucenn => planet! {
                 name: "Qucen'n",
                 planet_traits: [Industrial],
                 resources: 1,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Rarron => planet! {
                 name: "Rarron",
                 planet_traits: [Cultural],
                 resources: 0,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Saudor => planet! {
                 name: "Saudor",
                 planet_traits: [Industrial],
                 resources: 2,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::TarMann => planet! {
                 name: "Tar'Mann",
@@ -607,21 +608,21 @@ impl Planet {
                 tech_specialities: [Biotic],
                 resources: 1,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::TequRan => planet! {
                 name: "Tequ'ran",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 0,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Torkan => planet! {
                 name: "Torkan",
                 planet_traits: [Cultural],
                 resources: 0,
                 influence: 3,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Thibah => planet! {
                 name: "Thibah",
@@ -629,14 +630,14 @@ impl Planet {
                 tech_specialities: [Propulsion],
                 resources: 1,
                 influence: 1,
-                expansion: Base
+                expansion: Base,
             },
             Planet::VefutII => planet! {
                 name: "Vefut II",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::Wellon => planet! {
                 name: "Wellon",
@@ -644,7 +645,7 @@ impl Planet {
                 tech_specialities: [Cybernetic],
                 resources: 1,
                 influence: 2,
-                expansion: Base
+                expansion: Base,
             },
             Planet::ArchonVail => planet! {
                 name: "Archon Vail",
@@ -652,14 +653,14 @@ impl Planet {
                 tech_specialities: [Propulsion],
                 resources: 1,
                 influence: 3,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Perimiter => planet! {
                 name: "Perimeter",
                 planet_traits: [Industrial],
                 resources: 2,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Ang => planet! {
                 name: "Ang",
@@ -667,7 +668,7 @@ impl Planet {
                 tech_specialities: [Warfare],
                 resources: 2,
                 influence: 0,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::SemLore => planet! {
                 name: "Sem-Lore",
@@ -675,7 +676,7 @@ impl Planet {
                 tech_specialities: [Cybernetic],
                 resources: 3,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Vorhal => planet! {
                 name: "Vorhal",
@@ -683,14 +684,14 @@ impl Planet {
                 tech_specialities: [Biotic],
                 resources: 0,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Atlas => planet! {
                 name: "Atlas",
                 planet_traits: [Hazardous],
                 resources: 3,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Primor => planet! {
                 name: "Primor",
@@ -698,7 +699,7 @@ impl Planet {
                 resources: 2,
                 influence: 1,
                 expansion: ProphecyOfKings,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::HopesEnd => planet! {
                 name: "Hope's End",
@@ -706,70 +707,70 @@ impl Planet {
                 resources: 3,
                 influence: 0,
                 expansion: ProphecyOfKings,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Cormund => planet! {
                 name: "Cormund",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 0,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Everra => planet! {
                 name: "Everra",
                 planet_traits: [Cultural],
                 resources: 3,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::JeolIr => planet! {
                 name: "Jeol Ir",
                 planet_traits: [Industrial],
                 resources: 2,
                 influence: 3,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Accoen => planet! {
                 name: "Accoen",
                 planet_traits: [Industrial],
                 resources: 2,
                 influence: 3,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Kraag => planet! {
                 name: "Kraag",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Siig => planet! {
                 name: "Siig",
                 planet_traits: [Hazardous],
                 resources: 0,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Bakal => planet! {
                 name: "Ba'kal",
                 planet_traits: [Industrial],
                 resources: 3,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::AlioPrima => planet! {
                 name: "Alio Prima",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Lisis => planet! {
                 name: "Lisis",
                 planet_traits: [Industrial],
                 resources: 2,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Velnor => planet! {
                 name: "Velnor",
@@ -777,7 +778,7 @@ impl Planet {
                 tech_specialities: [Warfare],
                 resources: 2,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Cealdri => planet! {
                 name: "Cealdri",
@@ -785,21 +786,21 @@ impl Planet {
                 tech_specialities: [Cybernetic],
                 resources: 0,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Xanhact => planet! {
                 name: "Xanhact",
                 planet_traits: [Hazardous],
                 resources: 0,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::VegaMajor => planet! {
                 name: "Vega Major",
                 planet_traits: [Cultural],
                 resources: 2,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::VegaMinor => planet! {
                 name: "Vega Minor",
@@ -807,42 +808,42 @@ impl Planet {
                 tech_specialities: [Propulsion],
                 resources: 1,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Abaddon => planet! {
                 name: "Abaddon",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 0,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Ashtroth => planet! {
                 name: "Ashtroth",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 0,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Loki => planet! {
                 name: "Loki",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::RigelI => planet! {
                 name: "Rigel I",
                 planet_traits: [Hazardous],
                 resources: 0,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::RigelII => planet! {
                 name: "Rigel II",
                 planet_traits: [Industrial],
                 resources: 1,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::RigelIII => planet! {
                 name: "Rigel III",
@@ -850,67 +851,67 @@ impl Planet {
                 tech_specialities: [Biotic],
                 resources: 1,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Valk => planet! {
                 name: "Valk",
                 resources: 2,
                 influence: 0,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Avar => planet! {
                 name: "Avar",
                 resources: 1,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Ylir => planet! {
                 name: "Ylir",
                 resources: 0,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::TheDark => planet! {
                 name: "The Dark",
                 resources: 3,
                 influence: 4,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Ixth => planet! {
                 name: "Ixth",
                 resources: 3,
                 influence: 5,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Naazir => planet! {
                 name: "Naazir",
                 resources: 2,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Rokha => planet! {
                 name: "Rokha",
                 resources: 1,
                 influence: 2,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Arcturus => planet! {
                 name: "Arcturus",
                 resources: 4,
                 influence: 4,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Elysium => planet! {
                 name: "Elysium",
                 resources: 4,
                 influence: 1,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Acheron => planet! {
                 name: "Acheron",
                 resources: 4,
                 influence: 0,
-                expansion: ProphecyOfKings
+                expansion: ProphecyOfKings,
             },
             Planet::Mallice => planet! {
                 name: "Mallice",
@@ -918,7 +919,7 @@ impl Planet {
                 resources: 0,
                 influence: 3,
                 expansion: ProphecyOfKings,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Mirage => planet! {
                 name: "Mirage",
@@ -926,28 +927,28 @@ impl Planet {
                 resources: 1,
                 influence: 2,
                 expansion: ProphecyOfKings,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::CustodiaVigilia => planet! {
                 name: "Custodia Vigilia",
                 resources: 2,
                 influence: 3,
                 expansion: CodexIII,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::CustodiaVigiliaOmega => planet! {
                 name: "Custodia Vigilia Ω",
                 resources: 2,
                 influence: 2,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Lesab => planet! {
                 name: "Lesab",
                 planet_traits: [Industrial, Hazardous],
                 resources: 2,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Olergodt => planet! {
                 name: "Olergodt",
@@ -955,14 +956,14 @@ impl Planet {
                 tech_specialities: [Cybernetic, Warfare],
                 resources: 2,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::ViraPicsIII => planet! {
                 name: "Vira-Pics III",
                 planet_traits: [Cultural, Hazardous],
                 resources: 2,
                 influence: 3,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Andeara => planet! {
                 name: "Andeara",
@@ -970,20 +971,20 @@ impl Planet {
                 tech_specialities: [Propulsion],
                 resources: 1,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Lemox => planet! {
                 name: "Lemox",
                 planet_traits: [Industrial],
                 resources: 0,
                 influence: 3,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::TheWatchtower => space_station! {
                 name: "The Watchtower",
                 resources: 1,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Emelpar => planet! {
                 name: "Emelpar",
@@ -991,7 +992,7 @@ impl Planet {
                 resources: 0,
                 influence: 2,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Faunus => planet! {
                 name: "Faunus",
@@ -1000,7 +1001,7 @@ impl Planet {
                 resources: 1,
                 influence: 3,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Garbozia => planet! {
                 name: "Garbozia",
@@ -1008,7 +1009,7 @@ impl Planet {
                 resources: 2,
                 influence: 1,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Tempesta => planet! {
                 name: "Tempesta",
@@ -1017,7 +1018,7 @@ impl Planet {
                 resources: 1,
                 influence: 1,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Industrex => planet! {
                 name: "Industrex",
@@ -1026,42 +1027,42 @@ impl Planet {
                 resources: 2,
                 influence: 0,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Capha => planet! {
                 name: "Capha",
                 planet_traits: [Hazardous],
                 resources: 3,
                 influence: 0,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Kostboth => planet! {
                 name: "Kostboth",
                 planet_traits: [Cultural],
                 resources: 0,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Cresius => planet! {
                 name: "Cresius",
                 planet_traits: [Hazardous],
                 resources: 0,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::LazulRex => planet! {
                 name: "Lazul Rex",
                 planet_traits: [Cultural, Industrial],
                 resources: 2,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Hercalor => planet! {
                 name: "Hercalor",
                 planet_traits: [Industrial],
                 resources: 1,
                 influence: 0,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Tiamat => planet! {
                 name: "Tiamat",
@@ -1069,7 +1070,7 @@ impl Planet {
                 tech_specialities: [Cybernetic],
                 resources: 1,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::NewTerra => planet! {
                 name: "New Terra",
@@ -1077,7 +1078,7 @@ impl Planet {
                 tech_specialities: [Biotic],
                 resources: 1,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Tinnes => planet! {
                 name: "Tinnes",
@@ -1085,79 +1086,79 @@ impl Planet {
                 tech_specialities: [Biotic],
                 resources: 2,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Bellatrix => planet! {
                 name: "Bellatrix",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::TsionStation => space_station! {
                 name: "Tsion Station",
                 resources: 1,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Tarana => planet! {
                 name: "Tarana",
                 planet_traits: [Cultural, Industrial],
                 resources: 1,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::OluzStation => space_station! {
                 name: "Oluz Station",
                 resources: 1,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Cocytus => planet! {
                 name: "Cocytus",
                 resources: 3,
                 influence: 0,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Styx => planet! {
                 name: "Styx",
                 resources: 4,
                 influence: 0,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Lethe => planet! {
                 name: "Lethe",
                 resources: 0,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Phlegethon => planet! {
                 name: "Phlegethon",
                 resources: 1,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::MecatolRexOmega => planet! {
                 name: "Mecatol Rex Ω",
                 resources: 1,
                 influence: 6,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::ThundersEdge => planet! {
                 name: "Thunder's Edge",
                 resources: 5,
                 influence: 1,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Ordinian => planet! {
                 name: "Ordinian",
                 resources: 0,
                 influence: 0,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Avernus => planet! {
                 name: "Avernus",
@@ -1165,82 +1166,82 @@ impl Planet {
                 resources: 2,
                 influence: 0,
                 expansion: ThundersEdge,
-                is_legendary: true
+                is_legendary: true,
             },
             Planet::Cronos => planet! {
                 name: "Cronos",
                 resources: 2,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::CronosHollow => planet! {
                 name: "Cronos Hollow",
                 resources: 3,
                 influence: 0,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Tallin => planet! {
                 name: "Tallin",
                 resources: 1,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::TallinHollow => planet! {
                 name: "Tallin Hollow",
                 resources: 3,
                 influence: 0,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Revelation => space_station! {
                 name: "Revelation",
                 resources: 1,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::MezLoOrzFeiZsha => planet! {
                 name: "Mez Lo Orz Fei Zsha",
                 resources: 2,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::RepoLoOrzQet => planet! {
                 name: "Rep Lo Orz Qet",
                 resources: 1,
                 influence: 3,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Ikatena => planet! {
                 name: "Ikatena",
                 resources: 4,
                 influence: 4,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::AhkCreuxx => planet! {
                 name: "Ahk Creuxx",
                 resources: 4,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Elnath => planet! {
                 name: "El'Nath",
                 planet_traits: [Hazardous],
                 resources: 2,
                 influence: 0,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::Horizon => planet! {
                 name: "Horizon",
                 planet_traits: [Cultural],
                 resources: 1,
                 influence: 2,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
             Planet::LuthienVi => planet! {
                 name: "Luthien VI",
                 planet_traits: [Hazardous],
                 resources: 3,
                 influence: 1,
-                expansion: ThundersEdge
+                expansion: ThundersEdge,
             },
         }
     }
