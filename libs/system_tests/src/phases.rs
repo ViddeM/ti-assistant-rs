@@ -433,6 +433,19 @@ pub trait TacticalSteps<'g>: Sized {
         });
         self
     }
+
+    /// Gain the relic for a planet taken this action that grants one, or no relic if `None`.
+    #[track_caller]
+    fn relic_for(mut self, planet: Planet, relic: Option<Relic>) -> Self {
+        let turn = self.turn();
+        let player = turn.id();
+        turn.game.apply(Event::TacticalActionGainRelic {
+            player,
+            planet,
+            relic,
+        });
+        self
+    }
 }
 
 /// A tactical action in progress.

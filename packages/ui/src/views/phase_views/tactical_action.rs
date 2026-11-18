@@ -1,25 +1,29 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
-    common::{faction::Faction, player_id::PlayerId},
+    common::faction::Faction,
     components::{
         galactic_event::GalacticEvent,
         planet::{Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
+        relic::Relic,
         tech::Technology,
     },
-    state::game_state::{ActionPhaseProgress, PlanetLocation},
+    state::game_state::{ActionPhaseProgress, PlanetLocation, TakenFrom},
 };
 
 use crate::{
     components::{
         button::Button,
-        dropdown::{PlanetAttachmentDropdown, PlanetDropdown},
+        dropdown::{PlanetAttachmentDropdown, PlanetDropdown, RelicDropdown},
     },
     data::{
         event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
-    views::select_tech::SelectTechView,
+    views::{
+        book_of_latvinia_research::BookOfLatviniaResearch,
+        phase_views::action_phase::unowned_relics, select_tech::SelectTechView,
+    },
 };
 
 const TACTICAL_ACTION_VIEW: Asset =
@@ -38,12 +42,21 @@ pub fn TacticalActionView() -> Element {
             .expect("Current player to exist in action phase")
     });
 
+    let finished = use_memo(move || {
+        gc.game_state()
+            .action_progress
+            .as_ref()
+            .and_then(ActionPhaseProgress::tactical)
+            .is_none_or(|tactical| tactical.is_finished())
+    });
+
     rsx! {
         div { class: "card tactical-container",
             h2 { "Tactical" }
             TacticalAction {}
             if view.is_active() {
                 Button {
+                    disabled: !finished(),
                     onclick: move |_| {
                         event
                             .send_event(Event::TacticalActionCommit {
@@ -83,7 +96,7 @@ pub fn TacticalAction() -> Element {
         progress()
             .taken_planets
             .iter()
-            .map(|(planet, previous_owner)| (planet.clone(), previous_owner.clone()))
+            .map(|(planet, taken_from)| (planet.clone(), taken_from.clone()))
             .collect::<Vec<_>>()
     });
 
@@ -145,7 +158,7 @@ pub fn TacticalAction() -> Element {
         if !view.is_active() {
             p { "Not your turn, waiting for {current_player()}" }
         } else if !taken_planets().is_empty() {
-            for (planet , previous_owner) in taken_planets().iter() {
+            for (planet, taken_from) in taken_planets().iter() {
                 fieldset { key: "{planet}",
                     legend { "{planet.info().name}" }
 
@@ -153,7 +166,7 @@ pub fn TacticalAction() -> Element {
                         SelectPlanetAttachment {
                             planet: planet.clone(),
                             attachment: attachments().get(planet).cloned(),
-                            previous_owner: previous_owner.clone(),
+                            taken_from: taken_from.clone(),
                             select_attachment: {
                                 let planet = planet.clone();
                                 move |attachment| {
@@ -168,13 +181,21 @@ pub fn TacticalAction() -> Element {
                         }
                         DangerousWildsResearch {
                             planet: planet.clone(),
-                            previous_owner: previous_owner.clone(),
+                            taken_from: taken_from.clone(),
                             tech: progress().researched_techs.get(planet).cloned(),
+                        }
+                        PlanetRelic {
+                            planet: planet.clone(),
+                            owes_relic: progress().owes_relic(planet),
+                            gained_relic: progress().gained_relics.get(planet).cloned(),
                         }
                         MonumentPrompt { planet: planet.clone() }
                         MinorFactionAlliance { planet: planet.clone() }
                     }
                 }
+            }
+            if progress().owes_book_of_latvinia_research() {
+                BookOfLatviniaResearch { player_id: current_player() }
             }
             if !available_planets_in_system().is_empty() {
                 fieldset {
@@ -278,7 +299,7 @@ fn MinorFactionAlliance(planet: ReadSignal<Planet>) -> Element {
 #[component]
 fn DangerousWildsResearch(
     planet: ReadSignal<Planet>,
-    previous_owner: ReadSignal<Option<PlayerId>>,
+    taken_from: ReadSignal<TakenFrom>,
     tech: ReadSignal<Option<Technology>>,
 ) -> Element {
     let gc = use_context::<GameContext>();
@@ -304,7 +325,7 @@ fn DangerousWildsResearch(
             .galactic_events
             .in_play
             .contains(&GalacticEvent::DangerousWilds)
-            && previous_owner().is_none()
+            && taken_from() == TakenFrom::NeverOwned
             && gc
                 .game_state()
                 .planet_traits(&planet())
@@ -344,10 +365,70 @@ fn DangerousWildsResearch(
 }
 
 #[component]
+fn PlanetRelic(
+    planet: ReadSignal<Planet>,
+    owes_relic: ReadSignal<bool>,
+    gained_relic: ReadSignal<Option<Option<Relic>>>,
+) -> Element {
+    let gc = use_context::<GameContext>();
+    let event = use_context::<EventContext>();
+
+    let mut selected_relic: Signal<Option<Relic>> = use_signal(|| None);
+
+    let available_relics = use_memo(move || unowned_relics(&gc));
+
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player
+            .clone()
+            .expect("Current player to exist in action phase")
+    });
+
+    let gain = use_callback(move |relic: Option<Relic>| {
+        event.send_event(Event::TacticalActionGainRelic {
+            player: current_player(),
+            planet: planet(),
+            relic,
+        })
+    });
+
+    rsx! {
+        match gained_relic() {
+            Some(Some(relic)) => rsx! {
+                p { class: "margin-top", "Gained {relic.info().name}" }
+            },
+            Some(None) => rsx! {
+                p { class: "margin-top", "No relic to gain" }
+            },
+            None if owes_relic() => rsx! {
+                div { class: "margin-top column",
+                    p { class: "info-text", "The first player to gain {planet().info().name} gains 1 relic" }
+                    RelicDropdown {
+                        value: selected_relic,
+                        options: available_relics(),
+                        on_select: move |r| selected_relic.set(r),
+                    }
+                    div { class: "center-row margin-top",
+                        Button {
+                            class: "margin-right",
+                            disabled: selected_relic().is_none(),
+                            onclick: move |_| gain(selected_relic()),
+                            "Gain relic"
+                        }
+                        Button { onclick: move |_| gain(None), "No relic" }
+                    }
+                }
+            },
+            None => rsx! {},
+        }
+    }
+}
+
+#[component]
 pub fn SelectPlanetAttachment(
     planet: ReadSignal<Planet>,
     attachment: ReadSignal<Option<PlanetAttachment>>,
-    previous_owner: ReadSignal<Option<PlayerId>>,
+    taken_from: ReadSignal<TakenFrom>,
     select_attachment: EventHandler<PlanetAttachment>,
 ) -> Element {
     let gc = use_context::<GameContext>();
@@ -360,10 +441,18 @@ pub fn SelectPlanetAttachment(
         return rsx! { "Cannot explore" };
     }
 
-    if let Some(prev) = previous_owner() {
-        return rsx! {
-            p { "Taken from {prev}" }
-        };
+    match taken_from() {
+        TakenFrom::Player(prev) => {
+            return rsx! {
+                p { "Taken from {prev}" }
+            };
+        }
+        TakenFrom::Unowned => {
+            return rsx! {
+                p { "Owned before, so it isn't explored" }
+            };
+        }
+        TakenFrom::NeverOwned => {}
     }
 
     if let Some(a) = attachment() {

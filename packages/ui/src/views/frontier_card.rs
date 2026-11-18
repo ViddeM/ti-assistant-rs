@@ -7,7 +7,7 @@ use ti_helper_game_data::{
         planet::Planet,
         system::{SystemId, SystemType},
     },
-    state::game_state::ActionPhaseProgress,
+    state::game_state::{ActionPhaseProgress, TakenFrom},
 };
 
 use crate::{
@@ -197,7 +197,7 @@ fn MirageView() -> Element {
                         SelectPlanetAttachment {
                             planet: Planet::Mirage,
                             attachment: selected_attachment,
-                            previous_owner: None,
+                            taken_from: TakenFrom::NeverOwned,
                             select_attachment: move |att| selected_attachment.set(Some(att)),
                         }
                     } else {

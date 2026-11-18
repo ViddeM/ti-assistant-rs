@@ -21,6 +21,8 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Cocytus
 players:
   Alice:
     name: Alice
@@ -156,9 +158,9 @@ playersPlayTime:
     secs: 300
     nanos: 0
   Dave:
-    secs: 480
+    secs: 540
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:37:00Z"
+currentTurnStartTime: "2025-01-01T12:38:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~
@@ -173,4 +175,4 @@ fractureInPlay: true
 lastEvent:
   - EndTurn:
       player: Dave
-  - "2025-01-01T12:37:00Z"
+  - "2025-01-01T12:38:00Z"

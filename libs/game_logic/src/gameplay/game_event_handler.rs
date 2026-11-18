@@ -50,7 +50,7 @@ use ti_helper_game_data::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FractureProgress,
             FrontierCardProgress, GameState, LeaderProgress, MapData, MiltyInformation,
             PlanetLocation, RelicProgress, RelicStep, StrategicPrimaryProgress, StrategicProgress,
-            TacticalProgress,
+            TacticalProgress, TakenFrom,
         },
         player::NewPlayer,
     },
@@ -150,6 +150,7 @@ fn try_update_game_state(
                     mirage_system: None,
                 }),
                 destroyed_planets: vec![],
+                ever_owned_planets: BTreeSet::new(),
             };
 
             // Sorted so that the outcome (e.g. color ties) doesn't depend on HashMap order.
@@ -658,15 +659,21 @@ fn try_update_game_state(
             };
             game_state.assert_enabled(&planet)?;
 
+            let has_been_owned = game_state.has_been_owned(&planet);
             let previous_owner =
                 game_state.set_planet_owner(planet.clone(), Some(player.clone()))?;
             if planet == Planet::ThundersEdge {
                 game_state.gain_breakthrough(&player)?;
             }
 
+            let taken_from = match previous_owner {
+                Some(previous_owner) => TakenFrom::Player(previous_owner),
+                None if has_been_owned => TakenFrom::Unowned,
+                None => TakenFrom::NeverOwned,
+            };
             let tactical = game_state.tactical_progress_mut()?;
             tactical.activated_system = planet_system;
-            tactical.taken_planets.insert(planet, previous_owner);
+            tactical.taken_planets.insert(planet, taken_from);
         }
         Event::TacticalActionAttachPlanetAttachment {
             player,
@@ -679,14 +686,17 @@ fn try_update_game_state(
             {
                 let tactical = game_state.tactical_progress_mut()?;
 
-                let Some(taken_from) = tactical.taken_planets.get(&planet) else {
-                    bail!("Can only attach attachment to planet taken this turn")
-                };
-
-                ensure!(
-                    taken_from.is_none(),
-                    "Cannot explore planet that was taken from another player"
-                );
+                match tactical.taken_planets.get(&planet) {
+                    None => bail!("Can only attach attachment to planet taken this turn"),
+                    Some(TakenFrom::Player(_)) => {
+                        bail!("Cannot explore planet that was taken from another player")
+                    }
+                    Some(TakenFrom::Unowned) => bail!(
+                        "{} has been owned before, so it isn't explored",
+                        planet.info().name
+                    ),
+                    Some(TakenFrom::NeverOwned) => {}
+                }
 
                 ensure!(
                     !tactical.planet_attachments.contains_key(&planet),
@@ -730,15 +740,18 @@ fn try_update_game_state(
             {
                 let tactical = game_state.tactical_progress_mut()?;
 
-                let Some(taken_from) = tactical.taken_planets.get(&planet) else {
-                    bail!("Can only research for a planet taken this turn")
-                };
-
-                ensure!(
-                    taken_from.is_none(),
-                    "{} was taken from another player, not the planet deck",
-                    planet.info().name
-                );
+                match tactical.taken_planets.get(&planet) {
+                    None => bail!("Can only research for a planet taken this turn"),
+                    Some(TakenFrom::Player(_)) => bail!(
+                        "{} was taken from another player, not the planet deck",
+                        planet.info().name
+                    ),
+                    Some(TakenFrom::Unowned) => bail!(
+                        "{} has been owned before, it wasn't taken from the planet deck",
+                        planet.info().name
+                    ),
+                    Some(TakenFrom::NeverOwned) => {}
+                }
 
                 ensure!(
                     planet_traits.contains(&PlanetTrait::Hazardous),
@@ -762,9 +775,39 @@ fn try_update_game_state(
                 .researched_techs
                 .insert(planet, tech);
         }
+        Event::TacticalActionGainRelic {
+            player,
+            planet,
+            relic,
+        } => {
+            game_state.assert_player_turn(&player)?;
+            ensure!(
+                game_state.tactical_progress_mut()?.owes_relic(&planet),
+                "{player} doesn't gain a relic for {}",
+                planet.info().name
+            );
+
+            if let Some(relic) = &relic {
+                game_state.assert_enabled(relic)?;
+                ensure!(
+                    !game_state
+                        .players
+                        .values()
+                        .any(|p| p.relics.contains(relic)),
+                    "Relic {relic:?} is already owned by another player."
+                );
+                game_state.set_relic_owner(relic.clone(), Some(player))?;
+            }
+
+            game_state
+                .tactical_progress_mut()?
+                .gained_relics
+                .insert(planet, relic);
+        }
         Event::TacticalActionCommit { player } => {
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
+            ensure_tactical_action_finished(game_state)?;
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
@@ -865,6 +908,7 @@ fn try_update_game_state(
                     "has not performed strategy card primary"
                 );
             }
+            ensure_tactical_action_finished(game_state)?;
 
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
@@ -2232,8 +2276,14 @@ fn try_update_game_state(
                         step: RelicStep::Gain,
                     }))
                 );
+            let tactical_research = game_state.current_player.as_ref() == Some(&player)
+                && game_state
+                    .action_progress
+                    .as_ref()
+                    .and_then(ActionPhaseProgress::tactical)
+                    .is_some_and(TacticalProgress::owes_book_of_latvinia_research);
             ensure!(
-                minister_research || action_research,
+                minister_research || action_research || tactical_research,
                 "{player} has no Book of Latvinia research"
             );
             ensure!(
@@ -2257,8 +2307,8 @@ fn try_update_game_state(
                 .players
                 .get_mut(&player)
                 .context("Player doesn't exist")?;
-            for tech in technologies {
-                p.research_tech(tech)?;
+            for tech in &technologies {
+                p.research_tech(tech.clone())?;
             }
             if minister_research {
                 game_state
@@ -2266,6 +2316,8 @@ fn try_update_game_state(
                     .as_mut()
                     .context("agenda state not initialized, this is a bug.")?
                     .minister_of_antiques = None;
+            } else if tactical_research {
+                game_state.tactical_progress_mut()?.book_of_latvinia_techs = Some(technologies);
             } else {
                 game_state.action_progress = None;
                 game_state.phase = Phase::EndActionTurn;
@@ -3043,6 +3095,30 @@ fn perform_strategic_secondary(
 fn start_tactical_action(game_state: &mut GameState) {
     game_state.phase = Phase::TacticalAction;
     game_state.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress::default()));
+}
+
+/// Ensure the tactical action being performed, if any, has gained the relics it owes and has
+/// researched with a Book of Latvinia gained during it.
+fn ensure_tactical_action_finished(game_state: &GameState) -> Result<()> {
+    let Some(tactical) = game_state
+        .action_progress
+        .as_ref()
+        .and_then(ActionPhaseProgress::tactical)
+    else {
+        return Ok(());
+    };
+    if let Some(planet) = tactical
+        .taken_planets
+        .keys()
+        .find(|planet| tactical.owes_relic(planet))
+    {
+        bail!("A relic must be gained for {} first", planet.info().name);
+    }
+    ensure!(
+        !tactical.owes_book_of_latvinia_research(),
+        "The Book of Latvinia must be researched with first"
+    );
+    Ok(())
 }
 
 /// End the current action turn, which isn't possible while Thunder's Edge waits to be placed.

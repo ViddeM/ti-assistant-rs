@@ -21,6 +21,8 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Styx
 players:
   Alice:
     name: Alice
@@ -124,7 +126,7 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 480
+    secs: 540
     nanos: 0
   Bob:
     secs: 360
@@ -132,7 +134,7 @@ playersPlayTime:
   Carol:
     secs: 120
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:23:00Z"
+currentTurnStartTime: "2025-01-01T12:24:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~
@@ -143,4 +145,4 @@ lastEvent:
   - SetPlanetOwner:
       player: ~
       planet: Styx
-  - "2025-01-01T12:24:00Z"
+  - "2025-01-01T12:25:00Z"

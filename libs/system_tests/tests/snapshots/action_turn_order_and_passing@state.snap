@@ -21,6 +21,7 @@ phase: Status
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets: []
 players:
   Alice:
     name: Alice

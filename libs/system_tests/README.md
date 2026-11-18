@@ -78,7 +78,7 @@ All of it is documented in `src/game.rs` and `src/phases.rs`. In short:
 - **Strategy phase**: `g.strategy_phase(&[("Alice", card), ...])` checks that every pick is made in turn.
 - **Action phase**:
   - `g.turn("Alice")` asserts that it's Alice's turn. Continue with one of:
-    - `.tactical().take(planet).attach(planet, attachment).commit()`
+    - `.tactical().take(planet).attach(planet, attachment).commit()`, with `.research(planet, tech)` for Dangerous Wilds and `.relic_for(planet, relic)` for a planet that grants a relic
     - `.strategic(card).primary(..).secondary("Bob", ..).skip_rest().commit()`
     - `.action_card(..)`, `.leader(..)`, `.frontier(..)`, `.gain_relic(..)` or `.relic(..)`
   - End the turn with `.end_turn()` or `.pass()`.

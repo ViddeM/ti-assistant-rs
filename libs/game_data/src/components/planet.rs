@@ -38,10 +38,12 @@ pub struct PlanetInfo {
     pub influence: u32,
     /// Which expansion the planet belongs to.
     pub expansion: Expansion,
-    /// Weather the planet is legendary or not.
+    /// Whether the planet is legendary or not.
     pub is_legendary: bool,
-    /// Weather this is a planet or a space station.
+    /// Whether this is a planet or a space station.
     pub body_type: OrbitalBodyType,
+    /// Whether the planet grants a relic when first gained.
+    pub gain_relic: bool,
 }
 
 /// What type of orbital body type.
@@ -60,7 +62,8 @@ macro_rules! planet {
         influence: $influence:literal,
         expansion: $expansion:ident
         $(, is_legendary: $legendary:literal)?
-        $(,)?
+        $(, gain_relic: $gain_relic:literal)?
+        $(,)? // Allow a trailing comma at the end.
     ) => {
         PlanetInfo {
             name: $name.to_string(),
@@ -71,6 +74,7 @@ macro_rules! planet {
             expansion: Expansion::$expansion,
             is_legendary: planet!(@legendary $($legendary)?),
             body_type: OrbitalBodyType::Planet,
+            gain_relic: planet!(@gain_relic $($gain_relic)?),
         }
     };
     (@legendary) => {
@@ -78,6 +82,12 @@ macro_rules! planet {
     };
     (@legendary $legendary:literal) => {
         $legendary
+    };
+    (@gain_relic) => {
+        false
+    };
+    (@gain_relic $gain_relic:literal) => {
+        $gain_relic
     };
 }
 
@@ -92,6 +102,7 @@ macro_rules! space_station {
             expansion: Expansion::$expansion,
             is_legendary: false,
             body_type: OrbitalBodyType::SpaceStation,
+            gain_relic: false,
         }
     };
 }
@@ -1119,6 +1130,7 @@ impl Planet {
                 resources: 3,
                 influence: 0,
                 expansion: ThundersEdge,
+                gain_relic: true,
             },
             Planet::Styx => planet! {
                 name: "Styx",
@@ -1126,18 +1138,21 @@ impl Planet {
                 influence: 0,
                 expansion: ThundersEdge,
                 is_legendary: true,
+                gain_relic: true,
             },
             Planet::Lethe => planet! {
                 name: "Lethe",
                 resources: 0,
                 influence: 2,
                 expansion: ThundersEdge,
+                gain_relic: true,
             },
             Planet::Phlegethon => planet! {
                 name: "Phlegethon",
                 resources: 1,
                 influence: 2,
                 expansion: ThundersEdge,
+                gain_relic: true,
             },
             Planet::MecatolRexOmega => planet! {
                 name: "Mecatol Rex Ω",

@@ -29,6 +29,7 @@ scenarios![
     thunders_edge_take_planets_without_tile,
     thunders_edge_styx_victory_point,
     thunders_edge_the_fracture_enters_play,
+    thunders_edge_fracture_planet_relics,
     thunders_edge_setup_breakthroughs_roll_at_start,
     thunders_edge_breakthrough_planets,
     thunders_edge_action_cards,
@@ -427,7 +428,11 @@ pub fn thunders_edge_take_planets_without_tile() -> TestGame {
         .take(Planet::Lethe)
         .take(Planet::Phlegethon);
     assert_eq!(activated_system(&alice), Some("126".to_string()));
-    alice.commit().end_turn();
+    alice
+        .relic_for(Planet::Lethe, None)
+        .relic_for(Planet::Phlegethon, None)
+        .commit()
+        .end_turn();
 
     g.apply(Event::SetThundersEdgeCompletion {
         new_completion: Some(TECompletion {
@@ -475,6 +480,7 @@ pub fn thunders_edge_styx_victory_point() -> TestGame {
     g.turn("Alice")
         .tactical()
         .take(Planet::Styx)
+        .relic_for(Planet::Styx, None)
         .commit()
         .end_turn();
     assert_eq!(points(&g), [1, 0]);
@@ -575,9 +581,126 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
     g.turn("Dave")
         .tactical()
         .take(Planet::Cocytus)
+        .relic_for(Planet::Cocytus, None)
         .commit()
         .end_turn();
     assert!(g.player("Dave").planets.contains_key(&Planet::Cocytus));
+    g
+}
+
+/// The first player to gain a planet in the Fracture gains a relic, with its on-gain effects,
+/// before their tactical action can end. Gaining one that somebody has owned before gives no
+/// relic and isn't explored, and planets given from the admin page never give a relic. Taking
+/// legendary Styx from its owner takes Shard of the Throne with it.
+pub fn thunders_edge_fracture_planet_relics() -> TestGame {
+    let mut g = action_phase(three_players().pok().codex().thunders_edge());
+    let gain = |player: &str, planet, relic| Event::TacticalActionGainRelic {
+        player: p(player),
+        planet,
+        relic: Some(relic),
+    };
+
+    g.apply(Event::SetFractureInPlay { in_play: true })
+        .apply(Event::SetPlanetOwner {
+            player: Some(p("Carol")),
+            planet: Planet::Lethe,
+        })
+        .apply(Event::SetPlanetOwner {
+            player: Some(p("Carol")),
+            planet: Planet::Centauri,
+        })
+        .apply(Event::SetPlanetOwner {
+            player: None,
+            planet: Planet::Lethe,
+        })
+        .apply(Event::SetPlanetOwner {
+            player: None,
+            planet: Planet::Centauri,
+        });
+    assert!(g.player("Carol").relics.is_empty());
+
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::Styx)
+        .expect_rejected(
+            Event::TacticalActionCommit { player: p("Alice") },
+            "A relic must be gained for Styx first",
+        )
+        .expect_rejected(
+            gain("Alice", Planet::Cocytus, Relic::ShardOfTheThrone),
+            "Alice doesn't gain a relic for Cocytus",
+        )
+        .relic_for(Planet::Styx, Some(Relic::ShardOfTheThrone))
+        .expect_rejected(
+            gain("Alice", Planet::Styx, Relic::TheQuantumcore),
+            "Alice doesn't gain a relic for Styx",
+        )
+        .commit()
+        .end_turn();
+    assert!(g.player("Alice").relics.contains(&Relic::ShardOfTheThrone));
+    assert_eq!(g.points("Alice"), 2);
+
+    g.turn("Bob")
+        .tactical()
+        .take(Planet::Styx)
+        .expect_rejected(
+            gain("Bob", Planet::Styx, Relic::TheQuantumcore),
+            "Bob doesn't gain a relic for Styx",
+        )
+        .commit()
+        .end_turn();
+    assert_eq!(
+        g.player("Bob").relics.iter().collect::<Vec<_>>(),
+        [&Relic::ShardOfTheThrone]
+    );
+    assert_eq!([g.points("Alice"), g.points("Bob")], [0, 2]);
+
+    g.turn("Carol")
+        .tactical()
+        .take(Planet::Lethe)
+        .take(Planet::Centauri)
+        .expect_rejected(
+            gain("Carol", Planet::Lethe, Relic::TheQuantumcore),
+            "Carol doesn't gain a relic for Lethe",
+        )
+        .expect_rejected(
+            Event::TacticalActionAttachPlanetAttachment {
+                player: p("Carol"),
+                planet: Planet::Centauri,
+                attachment: PlanetAttachment::ParadiseWorld,
+            },
+            "Centauri has been owned before, so it isn't explored",
+        )
+        .take(Planet::Phlegethon)
+        .relic_for(Planet::Phlegethon, Some(Relic::BookOfLatvinia))
+        .expect_rejected(
+            Event::TacticalActionCommit { player: p("Carol") },
+            "The Book of Latvinia must be researched with first",
+        )
+        .apply(Event::ResearchBookOfLatviniaTechs {
+            player: p("Carol"),
+            technologies: vec![Technology::SarweenTools],
+        })
+        .expect_rejected(
+            Event::ResearchBookOfLatviniaTechs {
+                player: p("Carol"),
+                technologies: vec![],
+            },
+            "Carol has no Book of Latvinia research",
+        )
+        .commit()
+        .end_turn();
+    assert!(g.player("Carol").relics.contains(&Relic::BookOfLatvinia));
+    assert!(g.player("Carol").has_tech(&Technology::SarweenTools));
+
+    g.turn("Alice")
+        .tactical()
+        .take(Planet::Cocytus)
+        .relic_for(Planet::Cocytus, Some(Relic::TheQuantumcore))
+        .commit()
+        .end_turn();
+    assert!(g.player("Alice").relics.contains(&Relic::TheQuantumcore));
+    assert!(g.player("Alice").breakthrough.is_some());
     g
 }
 

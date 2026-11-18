@@ -21,6 +21,8 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - MecatolRex
 players:
   Alice:
     name: Alice

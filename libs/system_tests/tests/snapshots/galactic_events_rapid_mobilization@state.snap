@@ -39,6 +39,13 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Abyz
+    - Avernus
+    - Fria
+    - Lodor
+    - MeharXull
+    - Quann
 players:
   Alice:
     name: Alice

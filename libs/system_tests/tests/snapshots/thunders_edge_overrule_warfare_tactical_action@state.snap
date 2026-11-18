@@ -21,6 +21,8 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Arinam
 players:
   Alice:
     name: Alice

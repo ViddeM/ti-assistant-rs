@@ -22,6 +22,10 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Abyz
+    - Centauri
+    - Fria
 players:
   Alice:
     name: Alice

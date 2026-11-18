@@ -21,6 +21,8 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - ThundersEdge
 players:
   Alice:
     name: Alice

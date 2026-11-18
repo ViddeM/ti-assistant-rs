@@ -21,6 +21,8 @@ phase: Agenda
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Centauri
 players:
   Alice:
     name: Alice

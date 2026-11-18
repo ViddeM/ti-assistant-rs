@@ -22,6 +22,7 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets: []
 players:
   Alice:
     name: Alice

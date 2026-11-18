@@ -21,6 +21,11 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Avernus
+    - Lethe
+    - Phlegethon
+    - ThundersEdge
 players:
   Alice:
     name: Alice
@@ -128,7 +133,7 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 540
+    secs: 660
     nanos: 0
   Bob:
     secs: 480
@@ -136,7 +141,7 @@ playersPlayTime:
   Carol:
     secs: 360
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:30:00Z"
+currentTurnStartTime: "2025-01-01T12:32:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed:
@@ -148,4 +153,4 @@ fractureInPlay: true
 lastEvent:
   - EndTurn:
       player: Carol
-  - "2025-01-01T12:30:00Z"
+  - "2025-01-01T12:32:00Z"

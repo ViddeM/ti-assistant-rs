@@ -25,6 +25,8 @@ mapData:
     - MecatolRex
     - Jord
     - Primor
+  everOwnedPlanets:
+    - Primor
 players:
   Alice:
     name: Alice

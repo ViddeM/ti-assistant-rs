@@ -191,6 +191,39 @@ mapData:
       ring_count: 4
     mirageSystem: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Andeara
+    - Bellatrix
+    - Capha
+    - Cocytus
+    - Cresius
+    - Elnath
+    - Emelpar
+    - Faunus
+    - Garbozia
+    - Hercalor
+    - Horizon
+    - Industrex
+    - Kostboth
+    - LazulRex
+    - Lemox
+    - Lesab
+    - Lethe
+    - LuthienVi
+    - MecatolRexOmega
+    - NewTerra
+    - Olergodt
+    - OluzStation
+    - Phlegethon
+    - Styx
+    - Tarana
+    - Tempesta
+    - TheWatchtower
+    - ThundersEdge
+    - Tiamat
+    - Tinnes
+    - TsionStation
+    - ViraPicsIII
 players:
   Ann:
     name: Ann

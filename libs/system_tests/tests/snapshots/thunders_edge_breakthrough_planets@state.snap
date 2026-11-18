@@ -21,6 +21,9 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Avernus
+    - CustodiaVigiliaOmega
 players:
   Alice:
     name: Alice

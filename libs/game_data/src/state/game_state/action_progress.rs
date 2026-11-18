@@ -56,8 +56,8 @@ impl ActionPhaseProgress {
     /// The tactical action being performed, if any.
     pub fn tactical(&self) -> Option<&TacticalProgress> {
         match self {
-            ActionPhaseProgress::Tactical(tactical)
-            | ActionPhaseProgress::Strategic(StrategicProgress {
+            ActionPhaseProgress::Tactical(tactical) => Some(tactical),
+            ActionPhaseProgress::Strategic(StrategicProgress {
                 primary: Some(StrategicPrimaryProgress::Warfare { tactical }),
                 ..
             }) => Some(tactical),
@@ -68,8 +68,8 @@ impl ActionPhaseProgress {
     /// The tactical action being performed, if any.
     pub fn tactical_mut(&mut self) -> Option<&mut TacticalProgress> {
         match self {
-            ActionPhaseProgress::Tactical(tactical)
-            | ActionPhaseProgress::Strategic(StrategicProgress {
+            ActionPhaseProgress::Tactical(tactical) => Some(tactical),
+            ActionPhaseProgress::Strategic(StrategicProgress {
                 primary: Some(StrategicPrimaryProgress::Warfare { tactical }),
                 ..
             }) => Some(tactical),
@@ -92,7 +92,11 @@ pub struct StrategicProgress {
 
 impl StrategicProgress {
     pub fn is_done(&self) -> bool {
-        !self.card.has_tracked_primary() || self.primary.is_some()
+        let tactical_finished = match &self.primary {
+            Some(StrategicPrimaryProgress::Warfare { tactical }) => tactical.is_finished(),
+            _ => true,
+        };
+        (!self.card.has_tracked_primary() || self.primary.is_some()) && tactical_finished
     }
 }
 
@@ -120,7 +124,7 @@ pub enum StrategicPrimaryProgress {
     /// Primary progress for a warfare strategy card whose primary is a tactical action.
     Warfare {
         /// The tactical action performed with the primary.
-        tactical: TacticalProgress,
+        tactical: Box<TacticalProgress>,
     },
 }
 
@@ -153,13 +157,74 @@ impl StrategicPrimaryProgress {
 pub struct TacticalProgress {
     /// What system was activated, if any.
     pub activated_system: Option<SystemId>, // TODO: Maybe in the future we should track systems for all tactical actions (Could use some cool interactive map :eyes:)
-    /// Which planets have been taken this far and the player who owned them previously (if any).
-    pub taken_planets: HashMap<Planet, Option<PlayerId>>,
+    /// Which planets have been taken this far and who owned them before.
+    pub taken_planets: HashMap<Planet, TakenFrom>,
     /// What planet attachments have been selected for the taken planets.
     /// NOTE: Does not include attachments kept when taken from another player.
     pub planet_attachments: HashMap<Planet, PlanetAttachment>,
     /// Technologies researched for planets taken this turn (Dangerous Wilds).
     pub researched_techs: HashMap<Planet, Technology>,
+    /// The relics gained for planets taken this turn that grant a relic, or `None` if there was
+    /// no relic to gain.
+    pub gained_relics: HashMap<Planet, Option<Relic>>,
+    /// The technologies researched with a Book of Latvinia gained this turn.
+    pub book_of_latvinia_techs: Option<Vec<Technology>>,
+}
+
+/// Who owned a planet before it was taken during a tactical action.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(tag = "t", content = "player")]
+pub enum TakenFrom {
+    /// Nobody had ever owned the planet.
+    NeverOwned,
+    /// Nobody owned the planet, but somebody had before.
+    Unowned,
+    /// The player who owned the planet.
+    Player(PlayerId),
+}
+
+impl TakenFrom {
+    /// The player who owned the planet, if any.
+    pub fn player(&self) -> Option<&PlayerId> {
+        match self {
+            TakenFrom::Player(player) => Some(player),
+            TakenFrom::NeverOwned | TakenFrom::Unowned => None,
+        }
+    }
+}
+
+impl TacticalProgress {
+    /// Whether `planet` was taken this turn without anybody having owned it before, which is
+    /// when it's explored and grants its relic.
+    pub fn is_first_owned(&self, planet: &Planet) -> bool {
+        self.taken_planets.get(planet) == Some(&TakenFrom::NeverOwned)
+    }
+
+    /// Whether the player gains a relic for `planet`, which they haven't done yet.
+    pub fn owes_relic(&self, planet: &Planet) -> bool {
+        self.is_first_owned(planet)
+            && planet.info().gain_relic
+            && !self.gained_relics.contains_key(planet)
+    }
+
+    /// Whether every relic owed for the planets taken this turn has been gained, and a Book of
+    /// Latvinia gained with them has been researched with.
+    pub fn is_finished(&self) -> bool {
+        !self
+            .taken_planets
+            .keys()
+            .any(|planet| self.owes_relic(planet))
+            && !self.owes_book_of_latvinia_research()
+    }
+
+    /// Whether a Book of Latvinia gained this turn still has to be researched with.
+    pub fn owes_book_of_latvinia_research(&self) -> bool {
+        self.book_of_latvinia_techs.is_none()
+            && self
+                .gained_relics
+                .values()
+                .any(|relic| relic == &Some(Relic::BookOfLatvinia))
+    }
 }
 
 /// The progress of an action card being played.

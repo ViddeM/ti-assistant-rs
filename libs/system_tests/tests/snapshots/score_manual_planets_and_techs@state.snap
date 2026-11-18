@@ -21,6 +21,11 @@ phase: Strategy
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Elysium
+    - Lodor
+    - MecatolRex
+    - Primor
 players:
   Alice:
     name: Alice

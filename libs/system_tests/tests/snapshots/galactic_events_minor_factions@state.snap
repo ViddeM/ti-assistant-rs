@@ -24,6 +24,10 @@ mapData:
   miltyInformation: ~
   destroyedPlanets:
     - MollPrimus
+  everOwnedPlanets:
+    - Druaa
+    - Maaluuk
+    - MollPrimus
 players:
   Alice:
     name: Alice

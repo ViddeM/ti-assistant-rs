@@ -243,6 +243,7 @@ mapData:
       ring_count: 4
     mirageSystem: "65"
   destroyedPlanets: []
+  everOwnedPlanets: []
 players:
   Ann:
     name: Ann

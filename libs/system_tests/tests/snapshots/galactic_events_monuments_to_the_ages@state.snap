@@ -25,6 +25,12 @@ mapData:
   miltyInformation: ~
   destroyedPlanets:
     - Arinam
+  everOwnedPlanets:
+    - Abyz
+    - Arinam
+    - Fria
+    - Meer
+    - ThundersEdge
 players:
   Alice:
     name: Alice

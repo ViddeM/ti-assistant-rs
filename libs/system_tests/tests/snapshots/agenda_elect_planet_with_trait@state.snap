@@ -21,6 +21,10 @@ phase: Agenda
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Arnor
+    - Quann
+    - Wellon
 players:
   Alice:
     name: Alice

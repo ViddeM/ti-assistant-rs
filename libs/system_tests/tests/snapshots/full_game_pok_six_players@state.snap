@@ -21,6 +21,11 @@ phase: Status
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Lodor
+    - MecatolRex
+    - Mirage
+    - Primor
 players:
   Alice:
     name: Alice

@@ -21,6 +21,10 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Lodor
+    - MecatolRexOmega
+    - Styx
 players:
   Alice:
     name: Alice

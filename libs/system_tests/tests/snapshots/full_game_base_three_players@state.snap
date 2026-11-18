@@ -21,6 +21,12 @@ phase: Strategy
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Centauri
+    - Gral
+    - Lodor
+    - MecatolRex
+    - Quann
 players:
   Alice:
     name: Alice

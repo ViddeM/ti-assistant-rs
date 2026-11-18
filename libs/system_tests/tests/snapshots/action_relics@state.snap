@@ -22,6 +22,11 @@ mapData:
   miltyInformation: ~
   destroyedPlanets:
     - Lodor
+  everOwnedPlanets:
+    - Arretze
+    - Centauri
+    - Lodor
+    - Primor
 players:
   Alice:
     name: Alice

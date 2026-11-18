@@ -21,6 +21,11 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Abyz
+    - Gral
+    - Lazar
+    - NewAlbion
 players:
   Alice:
     name: Alice

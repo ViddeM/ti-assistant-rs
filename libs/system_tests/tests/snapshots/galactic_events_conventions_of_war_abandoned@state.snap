@@ -24,6 +24,7 @@ mapData:
   destroyedPlanets:
     - Arretze
     - Jord
+  everOwnedPlanets: []
 players:
   Alice:
     name: Alice

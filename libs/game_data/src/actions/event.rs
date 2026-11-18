@@ -179,6 +179,17 @@ pub enum Event {
         tech: Technology,
     },
 
+    /// Gain the relic for a planet taken this turn that grants one the first time anybody gains
+    /// it, such as the planets in the Fracture.
+    TacticalActionGainRelic {
+        /// Which player gains the relic.
+        player: PlayerId,
+        /// The planet that grants the relic.
+        planet: Planet,
+        /// The relic gained, or `None` if there was no relic to gain.
+        relic: Option<Relic>,
+    },
+
     /// End a tactical action.
     TacticalActionCommit {
         /// The player that has taken the action.
@@ -787,6 +798,7 @@ impl Event {
             | Event::TacticalActionTakePlanet { player, .. }
             | Event::TacticalActionAttachPlanetAttachment { player, .. }
             | Event::TacticalActionResearchTechnology { player, .. }
+            | Event::TacticalActionGainRelic { player, .. }
             | Event::TacticalActionCommit { player }
             | Event::StrategicActionBegin { player, .. }
             | Event::StrategicActionPrimary { player, .. }

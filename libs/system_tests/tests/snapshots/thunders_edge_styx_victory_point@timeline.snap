@@ -19,10 +19,11 @@ source: libs/system_tests/src/check.rs
   15 SetFractureInPlay                        r1 Action             Alice
   16 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
   17 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice      Alice=1
-  18 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
-  19 EndTurn(Alice)                           r1 Action             Bob
-  20 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
-  21 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob        Alice=0 Bob=1
-  22 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
-  23 EndTurn(Bob)                             r1 Action             Carol
-  24 SetPlanetOwner                           r1 Action             Carol      Bob=0
+  18 TacticalActionGainRelic(Alice)           r1 TacticalAction     Alice
+  19 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  20 EndTurn(Alice)                           r1 Action             Bob
+  21 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  22 TacticalActionTakePlanet(Bob)            r1 TacticalAction     Bob        Alice=0 Bob=1
+  23 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  24 EndTurn(Bob)                             r1 Action             Carol
+  25 SetPlanetOwner                           r1 Action             Carol      Bob=0

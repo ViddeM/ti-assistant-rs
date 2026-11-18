@@ -21,6 +21,9 @@ phase: Action
 mapData:
   miltyInformation: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Abyz
+    - Lazar
 players:
   Alice:
     name: Alice

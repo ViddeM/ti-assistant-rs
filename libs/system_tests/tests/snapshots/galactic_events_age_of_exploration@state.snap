@@ -250,6 +250,8 @@ mapData:
       ring_count: 4
     mirageSystem: ~
   destroyedPlanets: []
+  everOwnedPlanets:
+    - Lodor
 players:
   Ann:
     name: Ann

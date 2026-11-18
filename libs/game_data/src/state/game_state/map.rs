@@ -37,6 +37,9 @@ pub struct MapData {
     pub milty_information: Option<MiltyInformation>,
     /// Which planets (if any) have been destroyed or purged.
     pub destroyed_planets: Vec<Planet>,
+    /// Which planets have been given to a player since the game started, see
+    /// [GameState::has_been_owned].
+    pub ever_owned_planets: BTreeSet<Planet>,
 }
 
 /// Map information only relevant / obtainable for games imported from milty draft.
@@ -180,6 +183,10 @@ impl GameState {
             })
             .unwrap_or_default();
 
+        if previous_owner.is_some() || owner.is_some() {
+            self.map_data.ever_owned_planets.insert(planet.clone());
+        }
+
         let Some(owner) = owner else {
             return Ok(previous_owner);
         };
@@ -207,6 +214,16 @@ impl GameState {
         player.planets.insert(planet, attachments);
 
         Ok(previous_owner)
+    }
+
+    /// Whether `planet` is or has been owned by a player, which also counts planets owned from the
+    /// start of the game.
+    pub fn has_been_owned(&self, planet: &Planet) -> bool {
+        self.map_data.ever_owned_planets.contains(planet)
+            || self
+                .players
+                .values()
+                .any(|p| p.planets.contains_key(planet))
     }
 
     /// Destroy or purge `planet`: it's taken from its owner along with its attachments and added

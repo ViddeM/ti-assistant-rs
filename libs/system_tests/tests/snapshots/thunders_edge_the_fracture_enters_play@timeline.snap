@@ -37,5 +37,6 @@ source: libs/system_tests/src/check.rs
   33 SetBreakthrough(Dave)                    r1 Action             Dave
   34 TacticalActionBegin(Dave)                r1 TacticalAction     Dave
   35 TacticalActionTakePlanet(Dave)           r1 TacticalAction     Dave
-  36 TacticalActionCommit(Dave)               r1 EndActionTurn      Dave
-  37 EndTurn(Dave)                            r1 Action             Alice
+  36 TacticalActionGainRelic(Dave)            r1 TacticalAction     Dave
+  37 TacticalActionCommit(Dave)               r1 EndActionTurn      Dave
+  38 EndTurn(Dave)                            r1 Action             Alice
