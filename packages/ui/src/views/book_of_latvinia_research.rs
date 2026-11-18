@@ -1,6 +1,8 @@
 use dioxus::prelude::*;
 use ti_helper_game_data::{
-    actions::event::Event, common::player_id::PlayerId, components::tech::Technology,
+    actions::event::Event,
+    common::{faction::Faction, player_id::PlayerId},
+    components::tech::Technology,
 };
 
 use crate::{
@@ -37,6 +39,16 @@ pub fn BookOfLatviniaTechPicker(player_id: PlayerId) -> Element {
 
     let mut selected: Signal<Vec<Technology>> = use_signal(Vec::new);
 
+    let is_nekro = {
+        let player_id = player_id.clone();
+        use_memo(move || {
+            gc.game_state()
+                .players
+                .get(&player_id)
+                .is_some_and(|p| p.faction == Faction::NekroVirus)
+        })
+    };
+
     let excluded_techs = use_memo(move || {
         gc.game_options()
             .technologies
@@ -56,6 +68,14 @@ pub fn BookOfLatviniaTechPicker(player_id: PlayerId) -> Element {
             })
         }
     };
+
+    if is_nekro() {
+        return rsx! {
+            p { "Nekro Virus cannot research technologies" }
+            p { class: "info-text", "Gain 6 command tokens instead" }
+            Button { class: "margin-top", onclick: move |_| research(vec![]), "Continue" }
+        };
+    }
 
     rsx! {
         p { "Research up to 2 technologies that have no prerequisites." }
