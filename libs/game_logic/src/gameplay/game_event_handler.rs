@@ -2294,12 +2294,22 @@ fn try_update_game_state(
                 .players
                 .get(&player)
                 .context("Player doesn't exist")?;
-            for tech in &technologies {
+            for (i, tech) in technologies.iter().enumerate() {
                 game_state.assert_enabled(tech)?;
                 researcher.assert_can_research(tech)?;
                 ensure!(
                     tech.info().requirements.is_empty(),
                     "{tech:?} has prerequisites"
+                );
+                ensure!(
+                    !researcher.has_tech(tech),
+                    "{player} already owns {}",
+                    tech.info().name
+                );
+                ensure!(
+                    !technologies[..i].contains(tech),
+                    "{} can't be researched twice",
+                    tech.info().name
                 );
             }
 

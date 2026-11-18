@@ -102,9 +102,9 @@ pub fn codex_iv_book_of_latvinia() -> TestGame {
     g
 }
 
-/// Gaining the Book of Latvinia as an action lets the new owner research up to 2 technologies
-/// with no prerequisites, or skip it, before their turn can end. Giving it from the admin Relics
-/// tab doesn't: the admin adds the techs by hand.
+/// Gaining the Book of Latvinia as an action lets the new owner research up to 2 different
+/// technologies they don't own with no prerequisites, or skip it, before their turn can end.
+/// Giving it from the admin Relics tab doesn't: the admin adds the techs by hand.
 pub fn codex_iv_book_of_latvinia_research() -> TestGame {
     let mut g = action_phase(three_players().pok().codex());
     let research = |player: &str, technologies: &[Technology]| Event::ResearchBookOfLatviniaTechs {
@@ -150,7 +150,14 @@ pub fn codex_iv_book_of_latvinia_research() -> TestGame {
         )
         .expect_rejected(
             research("Alice", &[Technology::AntimassDeflectors]),
-            "already has tech",
+            "Alice already owns Antimass Deflectors",
+        )
+        .expect_rejected(
+            research(
+                "Alice",
+                &[Technology::SarweenTools, Technology::SarweenTools],
+            ),
+            "Sarween Tools can't be researched twice",
         )
         .apply(research(
             "Alice",

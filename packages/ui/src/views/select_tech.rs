@@ -42,32 +42,26 @@ pub fn SelectTechView(
             .expect("Current player to exist")
     });
     let player_techs = use_memo(move || player().technologies.iter().cloned().collect::<Vec<_>>());
-    let filtered_techs = use_memo(move || filtered_techs.clone().unwrap_or_default());
-    let available_techs = use_memo(move || {
-        let mut techs = gc
-            .game_options()
-            .technologies
-            .iter()
-            .filter(|&t| !player_techs().contains(t))
-            .filter(|&t| !filtered_techs().contains(t))
-            .filter(|&t| match t.info().origin {
-                TechOrigin::Base => true,
-                TechOrigin::Faction(faction) => player().faction == faction,
-            })
-            .cloned()
-            .collect::<Vec<_>>();
-
-        techs.sort();
-
-        techs
-    });
-    let selected_techs = use_memo(move || {
-        available_techs()
-            .iter()
-            .filter(|t| selected_tech_type().eq(&Some(&t.info().tech_type)))
-            .cloned()
-            .collect::<Vec<_>>()
-    });
+    let filtered_techs = filtered_techs.unwrap_or_default();
+    let mut available_techs = gc
+        .game_options()
+        .technologies
+        .iter()
+        .filter(|&t| !player_techs().contains(t))
+        .filter(|&t| !filtered_techs.contains(t))
+        .filter(|&t| match t.info().origin {
+            TechOrigin::Base => true,
+            TechOrigin::Faction(faction) => player().faction == faction,
+        })
+        .cloned()
+        .collect::<Vec<_>>();
+    available_techs.sort();
+    let chosen_tech = selected_tech().filter(|tech| available_techs.contains(tech));
+    let selected_techs = available_techs
+        .iter()
+        .filter(|t| selected_tech_type().eq(&Some(&t.info().tech_type)))
+        .cloned()
+        .collect::<Vec<_>>();
 
     rsx! {
         document::Stylesheet { href: SELECT_TECH_SCSS }
@@ -81,22 +75,22 @@ pub fn SelectTechView(
                             TechCategoryButton {
                                 key: "{tech_type}",
                                 tech_type: tech_type.clone(),
-                                disabled: !available_techs().iter().any(|t| &t.info().tech_type == tech_type),
+                                disabled: !available_techs.iter().any(|t| &t.info().tech_type == tech_type),
                                 is_selected: selected_tech_type().as_ref().eq(&Some(&tech_type)),
                                 set_selected: move |_| {
                                     selected_tech_type.set(Some(tech_type));
                                     selected_tech.set(None);
                                 },
-                                selected_tech: selected_tech(),
-                                tech_options: selected_techs(),
+                                selected_tech: chosen_tech.clone(),
+                                tech_options: selected_techs.clone(),
                                 set_selected_tech: move |tech| selected_tech.set(tech),
                             }
                         }
                     })
             }
             Button {
-                disabled: selected_tech().is_none(),
-                onclick: move |_| on_select(selected_tech().expect("No tech selected")),
+                disabled: chosen_tech.is_none(),
+                onclick: move |_| on_select(chosen_tech.clone().expect("No tech selected")),
                 "Select tech"
             }
         }
