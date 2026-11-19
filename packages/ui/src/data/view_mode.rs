@@ -15,6 +15,7 @@ pub enum ViewMode {
     ThundersEdge,
     GalacticEvents,
     History,
+    Time,
 }
 
 impl ViewMode {
@@ -30,6 +31,7 @@ impl ViewMode {
             ViewMode::ThundersEdge => "Thunder's Edge",
             ViewMode::GalacticEvents => "Galactic Events",
             ViewMode::History => "History",
+            ViewMode::Time => "Time",
         }
     }
 }

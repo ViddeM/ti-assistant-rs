@@ -52,6 +52,10 @@
   }
 }
 
+.view-mode-button-group-pair {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .undo-confirm-buttons {
   display: flex;
   justify-content: center;

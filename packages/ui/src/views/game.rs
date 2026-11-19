@@ -32,6 +32,7 @@ use crate::{
         phase_view::PhaseView, planet_view_mode::PlanetViewMode, players_sidebar::PlayersSidebar,
         relic_view_mode::RelicViewMode, score_view_mode::ScoreViewMode,
         tech_view_mode::TechViewMode, thunders_edge_view_mode::ThundersEdgeViewMode,
+        time_view_mode::TimeViewMode,
     },
 };
 
@@ -121,7 +122,8 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
         });
     });
     let mut history = use_signal(|| None);
-    use_context_provider(|| ServerDataContext::new(request, history.into()));
+    let mut time_stats = use_signal(|| None);
+    use_context_provider(|| ServerDataContext::new(request, history.into(), time_stats.into()));
 
     let mut game_state = use_signal(|| None);
     let mut game_options = use_signal(|| None);
@@ -158,6 +160,9 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
                     }
                     WsMessageOut::History(h) => {
                         history.set(Some(h));
+                    }
+                    WsMessageOut::TimeStats(stats) => {
+                        time_stats.set(Some(stats));
                     }
                     WsMessageOut::UndoRejected => {
                         awaiting_reply.set(false);
@@ -318,6 +323,9 @@ fn DisplayViewMode() -> Element {
         },
         ViewMode::History => rsx! {
             HistoryViewMode {}
+        },
+        ViewMode::Time => rsx! {
+            TimeViewMode {}
         },
     }
 }

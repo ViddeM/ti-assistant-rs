@@ -5,7 +5,7 @@ use dioxus::prelude::*;
 use dioxus_sdk::time::use_interval;
 use ti_helper_game_data::common::player_id::PlayerId;
 
-use crate::data::game_context::GameContext;
+use crate::{data::game_context::GameContext, format::format_duration};
 
 #[component]
 pub fn PlayerTimeInfo(player_id: PlayerId) -> Element {
@@ -50,13 +50,4 @@ pub fn PlayerTimeInfo(player_id: PlayerId) -> Element {
     rsx! {
         p { "{format_duration(&total)}" }
     }
-}
-
-fn format_duration(duration: &Duration) -> String {
-    format!(
-        "{:02}:{:02}:{:02}",
-        duration.num_hours(),
-        duration.num_minutes() % 60,
-        duration.num_seconds() % 60
-    )
 }

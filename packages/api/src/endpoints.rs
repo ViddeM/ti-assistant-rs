@@ -20,7 +20,7 @@ use {
     std::sync::Arc,
     ti_helper_db::queries,
     ti_helper_game_data::actions::event::Event,
-    ti_helper_game_logic::gameplay::{error::GameError, game::Game},
+    ti_helper_game_logic::gameplay::{error::GameError, game::Game, time_stats::time_stats},
     tokio::{select, sync::RwLock},
 };
 
@@ -228,6 +228,16 @@ async fn run_client(
                     WsMessageIn::RequestHistory => {
                         let history = Arc::new(lobby.read().await.game.history.clone());
                         socket.send(WsMessageOut::History(history)).await.context("failed to send history message to client")?;
+                    }
+                    WsMessageIn::RequestTimeStats => {
+                        let history = lobby.read().await.game.history.clone();
+                        match time_stats(&history, Utc::now()) {
+                            Ok(stats) => socket.send(WsMessageOut::TimeStats(Arc::new(stats))).await.context("failed to send time stats message to client")?,
+                            Err(err) => {
+                                log::error!("Failed to compute the time stats of {game_id}: {err:?}");
+                                socket.send(WsMessageOut::event_err(format!("Failed to compute the time stats: {err}"))).await.context("failed to send error message to client")?;
+                            }
+                        }
                     }
                     WsMessageIn::Event(event) => {
                         match handle_event(state, game_id, &lobby, event).await {

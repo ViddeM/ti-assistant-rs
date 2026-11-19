@@ -3,8 +3,11 @@ use std::sync::Arc;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use ti_helper_game_data::{
-    actions::event::Event, common::game_settings::Expansions, game_id::GameId,
-    game_options::GameOptions, state::game_state::GameState,
+    actions::event::Event,
+    common::game_settings::Expansions,
+    game_id::GameId,
+    game_options::GameOptions,
+    state::{game_state::GameState, time_stats::TimeStats},
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -12,6 +15,7 @@ pub enum WsMessageIn {
     Event(Event),
     Undo((Event, DateTime<Utc>)),
     RequestHistory,
+    RequestTimeStats,
 }
 
 /// Messages that can be sent to a client.
@@ -42,6 +46,9 @@ pub enum WsMessageOut {
 
     /// Response to [WsMessageIn::RequestHistory] with every event of the game and when it occurred.
     History(Arc<Vec<(Event, DateTime<Utc>)>>),
+
+    /// Response to [WsMessageIn::RequestTimeStats] with how time has been spent over the game.
+    TimeStats(Arc<TimeStats>),
 }
 
 impl WsMessageOut {

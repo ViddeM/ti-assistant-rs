@@ -2,6 +2,8 @@
 
 use std::time::Duration;
 
+use ti_helper_game_data::state::time_stats::PhaseGroup;
+use ti_helper_game_logic::gameplay::time_stats::time_stats;
 use ti_helper_system_tests::prelude::*;
 
 use crate::fixtures::{SIMPLE_PICKS, three_players};
@@ -46,5 +48,19 @@ pub fn time_tracking_and_pause() -> TestGame {
     assert_eq!(play_time("Alice"), Duration::from_secs(9 * 60));
     assert_eq!(play_time("Bob"), Duration::from_secs(5 * 60));
     assert_eq!(play_time("Carol"), Duration::from_secs(6 * 60));
+
+    let now = g.history().last().expect("Events to exist").1;
+    let stats = time_stats(g.history(), now).expect("History to replay");
+    assert_eq!(stats.paused_total(), Duration::from_secs(30 * 60));
+
+    let alice_turn = stats
+        .turns()
+        .into_iter()
+        .find(|turn| turn.player == p("Alice") && turn.phase == PhaseGroup::Action)
+        .expect("Alice to have taken a turn");
+    assert_eq!(alice_turn.duration, Duration::from_secs(7 * 60));
+
+    let round_1 = &stats.phase_durations()[&1];
+    assert_eq!(round_1[&PhaseGroup::Status], Duration::from_secs(10 * 60));
     g
 }

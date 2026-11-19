@@ -6,3 +6,4 @@ pub mod game_state;
 pub mod player;
 pub mod score;
 pub mod status;
+pub mod time_stats;

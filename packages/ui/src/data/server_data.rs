@@ -3,7 +3,7 @@ use std::sync::Arc;
 use api::messages::WsMessageIn;
 use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
-use ti_helper_game_data::actions::event::Event;
+use ti_helper_game_data::{actions::event::Event, state::time_stats::TimeStats};
 
 pub type History = Arc<Vec<(Event, DateTime<Utc>)>>;
 
@@ -11,11 +11,20 @@ pub type History = Arc<Vec<(Event, DateTime<Utc>)>>;
 pub struct ServerDataContext {
     request: Callback<WsMessageIn>,
     history: ReadSignal<Option<History>>,
+    time_stats: ReadSignal<Option<Arc<TimeStats>>>,
 }
 
 impl ServerDataContext {
-    pub fn new(request: Callback<WsMessageIn>, history: ReadSignal<Option<History>>) -> Self {
-        Self { request, history }
+    pub fn new(
+        request: Callback<WsMessageIn>,
+        history: ReadSignal<Option<History>>,
+        time_stats: ReadSignal<Option<Arc<TimeStats>>>,
+    ) -> Self {
+        Self {
+            request,
+            history,
+            time_stats,
+        }
     }
 
     pub fn request_history(&self) {
@@ -24,5 +33,13 @@ impl ServerDataContext {
 
     pub fn history(&self) -> Option<History> {
         (self.history)()
+    }
+
+    pub fn request_time_stats(&self) {
+        self.request.call(WsMessageIn::RequestTimeStats);
+    }
+
+    pub fn time_stats(&self) -> Option<Arc<TimeStats>> {
+        (self.time_stats)()
     }
 }

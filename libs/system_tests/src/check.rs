@@ -1,10 +1,14 @@
 //! The checks every registered scenario goes through, see [check_scenario].
 
+use std::collections::BTreeMap;
+
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 use serde_json::Value;
 use ti_helper_game_data::{actions::event::Event, state::game_state::GameState};
-use ti_helper_game_logic::gameplay::game_event_handler::update_game_state;
+use ti_helper_game_logic::gameplay::{
+    game_event_handler::update_game_state, time_stats::time_stats,
+};
 
 use crate::game::TestGame;
 
@@ -37,7 +41,9 @@ pub fn replay(history: &[(Event, DateTime<Utc>)]) -> anyhow::Result<Vec<GameStat
 /// 3. **Persistence**: the history survives a JSON round trip (like when stored in the DB)
 ///    and still replays to the same state.
 /// 4. **Undo**: undoing the last few events gives the same states as before those events.
-/// 5. **Snapshots**: the final state and the timeline match `tests/snapshots/<name>@*.snap`.
+/// 5. **Time stats**: the tracked time of each player in the time stats matches their play
+///    time, including the current turn.
+/// 6. **Snapshots**: the final state and the timeline match `tests/snapshots/<name>@*.snap`.
 #[track_caller]
 pub fn check_scenario(name: &str, build: fn() -> TestGame) {
     let game = build();
@@ -63,6 +69,26 @@ pub fn check_scenario(name: &str, build: fn() -> TestGame) {
         states.last().unwrap_or(&GameState::default()),
         "replaying the history gave a different state",
     );
+
+    if let Some((_, now)) = history.last() {
+        let stats = time_stats(history, *now).expect("computing the time stats failed");
+        let mut play_time: BTreeMap<_, _> = state
+            .players_play_time
+            .iter()
+            .map(|(player, time)| (player.clone(), *time))
+            .collect();
+        if let (Some(player), Some(start)) = (&state.current_player, state.current_turn_start_time)
+        {
+            *play_time.entry(player.clone()).or_default() +=
+                (*now - start).to_std().unwrap_or_default();
+        }
+        play_time.retain(|_, time| !time.is_zero());
+        assert_eq!(
+            stats.player_totals(),
+            play_time,
+            "the time stats differ from the players' play time"
+        );
+    }
 
     let json = serde_json::to_value(history).expect("failed to serialize the history");
     let parsed: Vec<(Event, DateTime<Utc>)> =

@@ -6,3 +6,5 @@ pub mod error;
 pub mod game;
 /// Handles updates of the [GameState] using [Event]s.
 pub mod game_event_handler;
+/// How time has been spent over a game.
+pub mod time_stats;

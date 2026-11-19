@@ -1,0 +1,172 @@
+@import "../vars.scss";
+
+.time-view-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  & > .card {
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: $margin-large;
+  }
+}
+
+.time-card {
+  overflow-x: auto;
+
+  & > h2 {
+    margin-bottom: $margin;
+  }
+}
+
+.time-phase-setup {
+  background-color: #707070;
+}
+.time-phase-strategy {
+  background-color: $politics-color;
+}
+.time-phase-action {
+  background-color: $technology-color;
+}
+.time-phase-status {
+  background-color: $construction-color;
+}
+.time-phase-agenda {
+  background-color: $imperial-color;
+}
+.time-paused {
+  background: repeating-linear-gradient(
+    45deg,
+    #505050,
+    #505050 4px,
+    #707070 4px,
+    #707070 8px
+  );
+}
+
+.time-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $margin-large;
+  margin-bottom: $margin;
+
+  & > span {
+    display: flex;
+    align-items: center;
+    gap: $margin;
+  }
+}
+
+.time-legend-swatch {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 2px;
+}
+
+.time-timeline-scroll {
+  overflow-x: auto;
+}
+
+.time-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.time-lane {
+  display: flex;
+  align-items: center;
+  height: 1.6em;
+}
+
+.time-lane-label {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  flex: 0 0 6em;
+  padding-right: $padding;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-color: $background-color;
+}
+
+.time-lane-track {
+  position: relative;
+  flex: 1 1 auto;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.time-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 1px;
+}
+
+.time-player-bar {
+  top: 2px;
+  bottom: 2px;
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.time-round-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  padding-left: 2px;
+  border-left: 2px solid $primary-text-color;
+  font-size: 0.8em;
+  line-height: 1.6em;
+  color: black;
+  pointer-events: none;
+}
+
+.time-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 6em;
+  font-size: 0.8em;
+}
+
+.time-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  & th {
+    text-align: left;
+    border-bottom: 4px solid rgba(0, 0, 0, 0.3);
+  }
+
+  & th,
+  & td {
+    white-space: nowrap;
+    padding: $padding $padding-large;
+  }
+
+  & tbody tr:nth-child(even) {
+    background-color: $fieldset-background;
+  }
+}
+
+.time-bar-cell {
+  width: 100%;
+  min-width: 6em;
+}
+
+.time-hbar {
+  height: 1em;
+  outline: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.time-stacked-bar {
+  display: flex;
+
+  & > .time-hbar {
+    flex: 0 0 auto;
+  }
+}

@@ -11,6 +11,7 @@ pub use api::messages::WsMessageOut;
 
 pub mod components;
 pub mod data;
+pub mod format;
 pub mod views;
 
 use dioxus::prelude::*;
