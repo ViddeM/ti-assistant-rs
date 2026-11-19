@@ -1,22 +1,20 @@
-use std::{sync::Arc, time::Duration};
+use std::{collections::BTreeSet, sync::Arc, time::Duration};
 
 use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::player_id::PlayerId,
-    state::time_stats::{PhaseGroup, TimeStats},
+    state::time_stats::{PhaseGroup, TimeSegment, TimeStats},
 };
 
 use crate::{
-    components::spinner::Spinner,
+    components::{button::Button, dropdown::Dropdown, spinner::Spinner},
     data::{game_context::GameContext, server_data::ServerDataContext},
     format::format_std_duration,
     views::history_view_mode::HistoryPlayer,
 };
 
 const TIME_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/time_view_mode.scss");
-
-const PIXELS_PER_HOUR: i64 = 600;
 
 #[component]
 pub fn TimeViewMode() -> Element {
@@ -78,19 +76,57 @@ fn percent(part: Duration, whole: Duration) -> f64 {
     }
 }
 
+const ZOOM_LEVELS: [(&str, i64); 5] = [
+    ("2 h", 2 * 3600),
+    ("1 h", 3600),
+    ("30 min", 30 * 60),
+    ("10 min", 10 * 60),
+    ("2 min", 2 * 60),
+];
+
+const TICK_INTERVALS: [i64; 9] = [60, 2 * 60, 5 * 60, 10 * 60, 15 * 60, 30 * 60, 3600, 2 * 3600, 4 * 3600];
+
 #[component]
 fn Timeline(stats: Arc<TimeStats>) -> Element {
     let gc = use_context::<GameContext>();
     let players = gc.game_state().table_order.clone();
+    let mut zoom: Signal<Option<i64>> = use_signal(|| None);
+    let mut round: Signal<Option<u32>> = use_signal(|| None);
 
-    let start = stats.segments.first().map(|s| s.start).unwrap_or_default();
-    let end = stats.segments.last().map(|s| s.end).unwrap_or_default();
-    let total = (end - start).to_std().unwrap_or_default();
-    let position = |time: DateTime<Utc>| percent((time - start).to_std().unwrap_or_default(), total);
-    let width = (total.as_secs() as i64 * PIXELS_PER_HOUR / 3600).max(0);
+    let rounds = stats
+        .segments
+        .iter()
+        .map(|s| s.round)
+        .collect::<BTreeSet<_>>();
+    let in_range = |segment: &&TimeSegment| round().is_none_or(|r| segment.round == r);
+    let segments = stats.segments.iter().filter(in_range).collect::<Vec<_>>();
+
+    let start = segments.first().map(|s| s.start).unwrap_or_default();
+    let end = segments.last().map(|s| s.end).unwrap_or_default();
+    let total = (end - start).num_seconds().max(1);
+    let position = |time: DateTime<Utc>| ((time - start).num_seconds() as f64 / total as f64 * 100.0).clamp(0.0, 100.0);
+    let bar_style = |segment: &TimeSegment| {
+        format!(
+            "left: {}%; width: {}%",
+            position(segment.start),
+            position(segment.end) - position(segment.start)
+        )
+    };
+
+    let visible = zoom().filter(|window| *window < total).unwrap_or(total);
+    let width = total as f64 / visible as f64 * 100.0;
+    let tick = TICK_INTERVALS
+        .into_iter()
+        .find(|interval| visible / interval <= 8)
+        .unwrap_or(TICK_INTERVALS[TICK_INTERVALS.len() - 1]);
+    let first_tick = (start.timestamp() / tick + 1) * tick;
+    let ticks = (first_tick..end.timestamp())
+        .step_by(tick as usize)
+        .filter_map(|t| DateTime::from_timestamp(t, 0))
+        .collect::<Vec<_>>();
 
     let mut round_starts = Vec::new();
-    for segment in &stats.segments {
+    for segment in &segments {
         if PhaseGroup::from(segment.phase) == PhaseGroup::Strategy
             && round_starts.last().is_none_or(|(round, _)| *round != segment.round)
         {
@@ -101,6 +137,37 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
     rsx! {
         div { class: "card time-card",
             h2 { "Timeline" }
+            div { class: "time-controls",
+                div { class: "time-zoom-buttons",
+                    Button {
+                        disabled: zoom().is_none(),
+                        onclick: move |_| zoom.set(None),
+                        "Fit"
+                    }
+                    for (label, window) in ZOOM_LEVELS.into_iter().filter(|(_, window)| *window < total) {
+                        Button {
+                            key: "{label}",
+                            disabled: zoom() == Some(window),
+                            onclick: move |_| zoom.set(Some(window)),
+                            "{label}"
+                        }
+                    }
+                }
+                Dropdown {
+                    value: round().map(|r| r.to_string()).unwrap_or_default(),
+                    oninput: move |e: FormEvent| round.set(e.value().parse().ok()),
+                    option { value: "", "Whole game" }
+                    for r in rounds.iter() {
+                        option { key: "{r}", value: "{r}",
+                            if *r == 0 {
+                                "Setup"
+                            } else {
+                                "Round {r}"
+                            }
+                        }
+                    }
+                }
+            }
             div { class: "time-legend",
                 for phase in PhaseGroup::ALL {
                     span { key: "{phase}",
@@ -114,15 +181,15 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                 }
             }
             div { class: "time-timeline-scroll",
-                div { class: "time-timeline", style: "min-width: {width}px",
+                div { class: "time-timeline", style: "width: {width}%",
                     div { class: "time-lane",
                         span { class: "time-lane-label", "Phase" }
                         div { class: "time-lane-track",
-                            for (index, segment) in stats.segments.iter().enumerate() {
+                            for (index, segment) in segments.iter().enumerate() {
                                 div {
                                     key: "{index}",
                                     class: if segment.paused { "time-bar time-paused" } else { "time-bar {phase_class(segment.phase.into())}" },
-                                    style: "left: {position(segment.start)}%; width: {position(segment.end) - position(segment.start)}%",
+                                    style: bar_style(segment),
                                     title: "Round {segment.round}, {segment.phase}: {format_std_duration(segment.duration())}",
                                 }
                             }
@@ -142,8 +209,7 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                                 HistoryPlayer { player: player.clone() }
                             }
                             div { class: "time-lane-track",
-                                for (index, segment) in stats
-                                    .segments
+                                for (index, segment) in segments
                                     .iter()
                                     .enumerate()
                                     .filter(|(_, s)| s.tracked && s.player.as_ref() == Some(player))
@@ -151,17 +217,26 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                                     div {
                                         key: "{index}",
                                         class: "time-bar time-player-bar {color_class(&gc, player)}",
-                                        style: "left: {position(segment.start)}%; width: {position(segment.end) - position(segment.start)}%",
+                                        style: bar_style(segment),
                                         title: "{player}, round {segment.round}, {segment.phase}: {format_std_duration(segment.duration())}",
                                     }
                                 }
                             }
                         }
                     }
-                }
-                div { class: "time-axis",
-                    span { "{local_time(start)}" }
-                    span { "{local_time(end)}" }
+                    div { class: "time-lane time-axis",
+                        span { class: "time-lane-label" }
+                        div { class: "time-lane-track",
+                            for time in ticks.iter() {
+                                span {
+                                    key: "{time}",
+                                    class: "time-tick",
+                                    style: "left: {position(*time)}%",
+                                    "{local_time(*time)}"
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -71,6 +71,7 @@
 }
 
 .time-timeline {
+  min-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -127,10 +128,36 @@
 }
 
 .time-axis {
-  display: flex;
-  justify-content: space-between;
-  margin-left: 6em;
+  height: 1.4em;
   font-size: 0.8em;
+
+  & > .time-lane-track {
+    overflow: hidden;
+    background-color: transparent;
+  }
+}
+
+.time-tick {
+  position: absolute;
+  top: 0;
+  padding-left: 2px;
+  border-left: 1px solid $primary-text-color;
+  white-space: nowrap;
+}
+
+.time-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: $margin;
+  margin-bottom: $margin;
+}
+
+.time-zoom-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $margin;
 }
 
 .time-table {
