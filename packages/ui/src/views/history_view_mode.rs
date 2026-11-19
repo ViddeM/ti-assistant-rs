@@ -1,33 +1,32 @@
-use api::endpoints::game_history;
 use dioxus::prelude::*;
-use ti_helper_game_data::{actions::event::Event, common::player_id::PlayerId, game_id::GameId};
+use ti_helper_game_data::{actions::event::Event, common::player_id::PlayerId};
 
-use crate::{components::spinner::Spinner, data::game_context::GameContext};
+use crate::{
+    components::spinner::Spinner,
+    data::{game_context::GameContext, server_data::ServerDataContext},
+};
 
 const HISTORY_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/history_view_mode.scss");
 
 #[component]
 pub fn HistoryViewMode() -> Element {
-    let game_id = use_context::<GameId>();
     let gc = use_context::<GameContext>();
+    let server_data = use_context::<ServerDataContext>();
 
-    let history = use_resource(move || async move {
+    use_effect(move || {
         let _ = gc.game_state();
-        game_history(game_id).await
+        server_data.request_history();
     });
 
     rsx! {
         document::Stylesheet { href: HISTORY_VIEW_MODE_SCSS }
 
         div { class: "history-view-container",
-            match &*history.read() {
+            match server_data.history() {
                 None => rsx! {
                     Spinner {}
                 },
-                Some(Err(err)) => rsx! {
-                    p { "Failed to load the history: {err}" }
-                },
-                Some(Ok(history)) => rsx! {
+                Some(history) => rsx! {
                     div { class: "card",
                         table { class: "history-table",
                             thead {

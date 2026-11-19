@@ -23,6 +23,7 @@ use crate::{
         game_context::GameContext,
         info_context::InfoContext,
         player_view::{PlayerView, PlayerViewContext},
+        server_data::ServerDataContext,
         view_mode::{ViewMode, ViewModeContext},
     },
     views::{
@@ -112,6 +113,16 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
 
     use_context_provider(|| EventContext::new(send_event));
 
+    let request = use_callback(move |msg: WsMessageIn| {
+        spawn(async move {
+            if let Err(err) = socket.send(msg).await {
+                ws_error.set(Some(format!("Failed to send request {err}")));
+            };
+        });
+    });
+    let mut history = use_signal(|| None);
+    use_context_provider(|| ServerDataContext::new(request, history.into()));
+
     let mut game_state = use_signal(|| None);
     let mut game_options = use_signal(|| None);
     let loaded = use_memo(move || game_state.read().is_some() && game_options.read().is_some());
@@ -144,6 +155,9 @@ pub fn GameView<R: PartialEq + Clone + 'static + Routable>(
                     WsMessageOut::NotFound(game_id) => {
                         ws_error.set(Some(format!("Game {game_id} not found")));
                         not_found.set(true);
+                    }
+                    WsMessageOut::History(h) => {
+                        history.set(Some(h));
                     }
                     WsMessageOut::UndoRejected => {
                         awaiting_reply.set(false);

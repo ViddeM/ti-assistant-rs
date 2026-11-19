@@ -2,12 +2,11 @@ use crate::{
     messages::{WsMessageIn, WsMessageOut},
     requests::new_game::NewGame,
 };
-use chrono::{DateTime, Utc};
 use dioxus::{
     fullstack::{JsonEncoding, WebSocketOptions, Websocket},
     prelude::*,
 };
-use ti_helper_game_data::{actions::event::Event, game_id::GameId};
+use ti_helper_game_data::game_id::GameId;
 
 #[cfg(feature = "server")]
 use {
@@ -16,9 +15,11 @@ use {
         state,
     },
     anyhow::Context,
+    chrono::{DateTime, Utc},
     dioxus::{fullstack::TypedWebsocket, server::axum::Extension},
     std::sync::Arc,
     ti_helper_db::queries,
+    ti_helper_game_data::actions::event::Event,
     ti_helper_game_logic::gameplay::{error::GameError, game::Game},
     tokio::{select, sync::RwLock},
 };
@@ -77,15 +78,6 @@ async fn new_game_inner(data: NewGame, state: &state::State) -> anyhow::Result<G
     log::info!("created new game {id:?}");
 
     Ok(id)
-}
-
-#[get("/api/game/{game_id}/history", ext: Extension<Arc<state::State>>)]
-pub async fn game_history(game_id: GameId) -> Result<Vec<(Event, DateTime<Utc>)>, ServerFnError> {
-    let lobby = ext.lobbies.list.read().await.get(&game_id).cloned();
-    match lobby {
-        Some(lobby) => Ok(lobby.read().await.game.history.clone()),
-        None => Err(ServerFnError::new(format!("Game {game_id} is not loaded"))),
-    }
 }
 
 pub type TIWebsocket = Websocket<WsMessageIn, WsMessageOut, JsonEncoding>;
@@ -232,6 +224,10 @@ async fn run_client(
                         if !handle_undo(state, game_id, &lobby, expected).await.context("failed to handle undo event")? {
                             socket.send(WsMessageOut::UndoRejected).await.context("failed to send undo rejected message to client")?;
                         }
+                    }
+                    WsMessageIn::RequestHistory => {
+                        let history = Arc::new(lobby.read().await.game.history.clone());
+                        socket.send(WsMessageOut::History(history)).await.context("failed to send history message to client")?;
                     }
                     WsMessageIn::Event(event) => {
                         match handle_event(state, game_id, &lobby, event).await {

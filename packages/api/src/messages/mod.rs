@@ -11,6 +11,7 @@ use ti_helper_game_data::{
 pub enum WsMessageIn {
     Event(Event),
     Undo((Event, DateTime<Utc>)),
+    RequestHistory,
 }
 
 /// Messages that can be sent to a client.
@@ -38,6 +39,9 @@ pub enum WsMessageOut {
 
     /// Response to [WsMessageIn::Undo] when the event is no longer the last one.
     UndoRejected,
+
+    /// Response to [WsMessageIn::RequestHistory] with every event of the game and when it occurred.
+    History(Arc<Vec<(Event, DateTime<Utc>)>>),
 }
 
 impl WsMessageOut {
