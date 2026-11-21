@@ -46,6 +46,10 @@ pub enum PlanetAttachment {
     Geoform,
     Terraform,
     NanoForge,
+    /// 4X41C "Helios" V1, tied to the planet's space dock.
+    HeliosV1,
+    /// 4X41C "Helios" V2, tied to the planet's space dock.
+    HeliosV2,
 }
 
 /// All relevant information about this planet attachment.
@@ -248,10 +252,20 @@ impl PlanetAttachment {
                 ]
             ),
             PlanetAttachment::NanoForge => al!("Nano-Forge", CodexII, 2, 2),
+            PlanetAttachment::HeliosV1 => a!("4X41C Helios V1", ThundersEdge, 1, 0),
+            PlanetAttachment::HeliosV2 => a!("4X41C Helios V2", ThundersEdge, 2, 0),
         }
     }
 
     /// Returns the ''correct'' variant of this attachment for the provided PlanetInfo.
+    /// Whether this is a 4X41C "Helios" attachment, which is lost when its planet changes owner.
+    pub fn is_helios(&self) -> bool {
+        matches!(
+            self,
+            PlanetAttachment::HeliosV1 | PlanetAttachment::HeliosV2
+        )
+    }
+
     pub fn match_planet(self, planet: &PlanetInfo) -> Self {
         match (self, !planet.tech_specialities.is_empty()) {
             (PlanetAttachment::BioticResearchFacility, true) => {

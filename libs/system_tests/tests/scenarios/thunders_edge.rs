@@ -1,6 +1,6 @@
 //! Thunder's Edge: the expedition, The Obsidian, its planets and its action cards.
 
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use ti_helper_game_data::{
     common::{expansions::Expansion, map::HexPosition, player_id::PlayerId},
@@ -162,6 +162,127 @@ fn coexistence_gives_deepwrought_up_to_five_oceans() {
     g.apply(end("Alice", Planet::Tarana));
     assert_eq!(g.player("Alice").ocean_cards(), 4);
     assert_eq!(g.player("Carol").ocean_cards(), 0);
+}
+
+#[test]
+fn helios_starts_on_ordinian_and_is_lost_with_the_planet() {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::LastBastion)
+            .player("Bob", Faction::ClanOfSaar)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .thunders_edge(),
+    );
+    let attach = |player: &str, planet, attachment| Event::AddPlanetAttachment {
+        player: p(player),
+        planet,
+        attachment,
+    };
+    let remove = |player: &str, planet, attachment| Event::RemovePlanetAttachment {
+        player: p(player),
+        planet,
+        attachment,
+    };
+    assert_eq!(
+        g.state().players[&p("Alice")].planets[&Planet::Ordinian],
+        BTreeSet::from([PlanetAttachment::HeliosV1])
+    );
+
+    g.expect_rejected(
+        attach("Alice", Planet::Ordinian, PlanetAttachment::HeliosV2),
+        "doesn't have the Helios V2 technology",
+    );
+    for planet in [Planet::Bellatrix, Planet::Tarana, Planet::Elnath] {
+        g.apply(Event::SetPlanetOwner {
+            player: Some(p("Alice")),
+            planet,
+        });
+    }
+    g.apply(attach(
+        "Alice",
+        Planet::Bellatrix,
+        PlanetAttachment::HeliosV1,
+    ));
+    g.apply(attach("Alice", Planet::Tarana, PlanetAttachment::HeliosV1));
+    g.expect_rejected(
+        attach("Alice", Planet::Elnath, PlanetAttachment::HeliosV1),
+        "at most 3 Helios",
+    );
+    g.expect_rejected(
+        attach("Alice", Planet::Ordinian, PlanetAttachment::HeliosV1),
+        "Planet already has a Helios",
+    );
+
+    for planet in [Planet::Ordinian, Planet::Bellatrix, Planet::Tarana] {
+        g.apply(remove("Alice", planet, PlanetAttachment::HeliosV1));
+    }
+    g.apply(Event::AddTechToPlayer {
+        player: p("Alice"),
+        tech: Technology::HeliosV2,
+    });
+    g.apply(attach("Alice", Planet::Elnath, PlanetAttachment::HeliosV2));
+    g.expect_rejected(
+        attach("Alice", Planet::Bellatrix, PlanetAttachment::HeliosV1),
+        "replaced by Helios V2",
+    );
+
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Bob")),
+        planet: Planet::Elnath,
+    });
+    assert_eq!(
+        g.state().players[&p("Bob")].planets[&Planet::Elnath],
+        BTreeSet::new(),
+        "Helios is lost when the planet changes owner"
+    );
+}
+
+#[test]
+fn helios_follows_the_v2_tech() {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::LastBastion)
+            .player("Bob", Faction::ClanOfSaar)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .thunders_edge(),
+    );
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Alice")),
+        planet: Planet::Bellatrix,
+    });
+    g.apply(Event::AddPlanetAttachment {
+        player: p("Alice"),
+        planet: Planet::Bellatrix,
+        attachment: PlanetAttachment::HeliosV1,
+    });
+
+    g.apply(Event::AddTechToPlayer {
+        player: p("Alice"),
+        tech: Technology::HeliosV2,
+    });
+    assert_eq!(
+        g.state().players[&p("Alice")].planets[&Planet::Ordinian],
+        BTreeSet::from([PlanetAttachment::HeliosV2])
+    );
+    assert_eq!(
+        g.state().players[&p("Alice")].planets[&Planet::Bellatrix],
+        BTreeSet::from([PlanetAttachment::HeliosV2])
+    );
+
+    g.apply(Event::RemoveTechFromPlayer {
+        player: p("Alice"),
+        tech: Technology::HeliosV2,
+    });
+    assert_eq!(
+        g.state().players[&p("Alice")].planets[&Planet::Ordinian],
+        BTreeSet::from([PlanetAttachment::HeliosV1])
+    );
+    assert_eq!(
+        g.state().players[&p("Alice")].planets[&Planet::Bellatrix],
+        BTreeSet::from([PlanetAttachment::HeliosV1])
+    );
 }
 
 fn complete(player: &str, won_by: &str, placed_in: SystemId) -> Event {

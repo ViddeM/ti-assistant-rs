@@ -92,6 +92,7 @@ pub fn AddPlanetAttachment() -> Element {
         let game_state = gc.game_state();
         let home_planet = game_state.is_home_planet(&planet);
         let planet_traits = game_state.planet_traits(&planet);
+        let selected_player = game_state.players.get(&current_player());
 
         let mut attachments = gc
             .game_options()
@@ -109,6 +110,7 @@ pub fn AddPlanetAttachment() -> Element {
                     true
                 }
             })
+            .filter(|(a, _)| helios_available(a, selected_player))
             .filter(|(a, _)| match a {
                 PlanetAttachment::Geoform => planet == Planet::Elysium,
                 PlanetAttachment::Terraform => !planet.is_mecatol_rex() && !home_planet,
@@ -173,5 +175,17 @@ pub fn AddPlanetAttachment() -> Element {
                 "Add attachment"
             }
         }
+    }
+}
+
+/// Whether a Helios attachment can be added by `player`: V1 is only for Last Bastion, and until
+/// they research V2, which replaces it. V2 needs the V2 technology.
+fn helios_available(attachment: &PlanetAttachment, player: Option<&Player>) -> bool {
+    let is_last_bastion = player.is_some_and(|p| p.faction == Faction::LastBastion);
+    let has_v2_tech = player.is_some_and(|p| p.has_tech(&Technology::HeliosV2));
+    match attachment {
+        PlanetAttachment::HeliosV1 => is_last_bastion && !has_v2_tech,
+        PlanetAttachment::HeliosV2 => has_v2_tech,
+        _ => true,
     }
 }

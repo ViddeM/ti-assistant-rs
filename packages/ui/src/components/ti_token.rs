@@ -23,6 +23,7 @@ const RICH_WORLD: Asset = asset!("/assets/icons/tokens/webp/rich_world_token.web
 const GEOFORM: Asset = asset!("/assets/icons/tokens/webp/geoform_token.webp");
 const TERRAFORM: Asset = asset!("/assets/icons/tokens/webp/terraform_token.webp");
 const NANO_FORGE: Asset = asset!("/assets/icons/tokens/webp/nano_forge_token.webp");
+const HELIOS_V2: Asset = asset!("/assets/icons/tokens/webp/4x41c_helios_v2_token.webp");
 const MIRAGE: Asset = asset!("/assets/icons/tokens/webp/mirage_token.webp");
 const DESTROYED_PLANET: Asset = asset!("/assets/icons/tokens/webp/destroyed_planet_token.webp");
 const THUNDERS_EDGE: Asset = asset!("/assets/icons/tokens/webp/thunders_edge_token.webp");
@@ -47,6 +48,8 @@ pub enum TiToken {
     Geoform,
     Terraform,
     NanoForge,
+    HeliosV1,
+    HeliosV2,
     Mirage,
     DestroyedPlanet,
     ThundersEdge,
@@ -73,6 +76,8 @@ impl TiToken {
             TiToken::Geoform => GEOFORM,
             TiToken::Terraform => TERRAFORM,
             TiToken::NanoForge => NANO_FORGE,
+            // No V1 token artwork is in the repo yet, so V1 uses the V2 image.
+            TiToken::HeliosV1 | TiToken::HeliosV2 => HELIOS_V2,
             TiToken::Mirage => MIRAGE,
             TiToken::DestroyedPlanet => DESTROYED_PLANET,
             TiToken::ThundersEdge => THUNDERS_EDGE,
@@ -109,6 +114,8 @@ impl From<&PlanetAttachment> for TiToken {
             PlanetAttachment::Geoform => TiToken::Geoform,
             PlanetAttachment::Terraform => TiToken::Terraform,
             PlanetAttachment::NanoForge => TiToken::NanoForge,
+            PlanetAttachment::HeliosV1 => TiToken::HeliosV1,
+            PlanetAttachment::HeliosV2 => TiToken::HeliosV2,
         }
     }
 }

@@ -191,6 +191,13 @@ impl GameState {
             return Ok(previous_owner);
         };
 
+        // Helios is tied to the planet's space dock, so it's lost when the planet changes owner.
+        let attachments = if previous_owner.as_ref() == Some(&owner) {
+            attachments
+        } else {
+            attachments.into_iter().filter(|a| !a.is_helios()).collect()
+        };
+
         let legendary =
             planet.info().is_legendary || attachments.iter().any(|a| a.info().set_legendary);
         let moves_shard = (previous_owner.as_ref())

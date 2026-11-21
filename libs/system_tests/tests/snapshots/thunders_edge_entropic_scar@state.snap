@@ -264,7 +264,8 @@ players:
     faction: LastBastion
     color: Orange
     planets:
-      Ordinian: []
+      Ordinian:
+        - HeliosV1
       Revelation: []
     technologies:
       - SarweenTools

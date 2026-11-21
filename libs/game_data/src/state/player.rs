@@ -64,12 +64,18 @@ pub struct Player {
 impl NewPlayer {
     /// Create a [Player] with the corrent starting techs and planets for [NewPlayer::faction].
     pub fn setup(self, expansions: &Expansions) -> Player {
-        let planets = self
+        let mut planets: HashMap<Planet, BTreeSet<PlanetAttachment>> = self
             .faction
             .get_starting_planets()
             .into_iter()
             .map(|p| (p, BTreeSet::new()))
             .collect();
+        if self.faction == Faction::LastBastion {
+            planets.insert(
+                Planet::Ordinian,
+                BTreeSet::from([PlanetAttachment::HeliosV1]),
+            );
+        }
 
         let techs = self.faction.get_starting_techs(expansions);
         let faction_state = match self.faction {
@@ -192,6 +198,21 @@ impl Player {
         };
         state.ocean_cards = count;
         Ok(())
+    }
+
+    /// Keep the player's Helios attachments in line with the Helios V2 technology: they're all
+    /// V2 while the player has the technology, and back to V1 when they don't.
+    pub fn sync_helios_with_tech(&mut self) {
+        let (from, to) = if self.has_tech(&Technology::HeliosV2) {
+            (PlanetAttachment::HeliosV1, PlanetAttachment::HeliosV2)
+        } else {
+            (PlanetAttachment::HeliosV2, PlanetAttachment::HeliosV1)
+        };
+        for attachments in self.planets.values_mut() {
+            if attachments.remove(&from) {
+                attachments.insert(to.clone());
+            }
+        }
     }
 
     /// Remove a planet from the players planet list.

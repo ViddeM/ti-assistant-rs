@@ -325,7 +325,8 @@ players:
       NewTerra: []
       Phlegethon: []
       ThundersEdge: []
-      Ordinian: []
+      Ordinian:
+        - HeliosV1
       Revelation: []
       Elnath: []
     technologies:

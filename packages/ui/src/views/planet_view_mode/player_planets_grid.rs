@@ -402,6 +402,12 @@ fn AttachmentIcon(attachment: PlanetAttachment) -> Element {
         PlanetAttachment::Geoform => rsx! {
             p { class: "white-text", "✹✹✹" }
         },
+        PlanetAttachment::HeliosV1 => rsx! {
+            p { class: "white-text", "Helios V1" }
+        },
+        PlanetAttachment::HeliosV2 => rsx! {
+            p { class: "white-text", "Helios V2" }
+        },
         PlanetAttachment::BioticResearchFacility
         | PlanetAttachment::CyberneticResearchFacility
         | PlanetAttachment::PropulsionResearchFacility
