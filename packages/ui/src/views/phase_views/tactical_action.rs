@@ -4,7 +4,7 @@ use ti_helper_game_data::{
     common::faction::Faction,
     components::{
         galactic_event::GalacticEvent,
-        planet::{Planet, PlanetTrait},
+        planet::{OrbitalBodyType, Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
         relic::Relic,
         tech::Technology,
@@ -439,7 +439,7 @@ pub fn SelectPlanetAttachment(
 
     let planet_traits = use_memo(move || gc.game_state().planet_traits(&planet()));
 
-    if planet_traits().is_empty() {
+    if planet_traits().is_empty() || planet().info().body_type == OrbitalBodyType::SpaceStation {
         return rsx! { "Cannot explore" };
     }
 

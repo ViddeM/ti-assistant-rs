@@ -3,8 +3,14 @@ use std::collections::HashSet;
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::Event,
+    common::faction::Faction,
     common::player_id::PlayerId,
-    components::{planet::Planet, planet_attachment::PlanetAttachment},
+    components::{
+        planet::{OrbitalBodyType, Planet},
+        planet_attachment::PlanetAttachment,
+        tech::Technology,
+    },
+    state::player::Player,
 };
 
 use crate::{
@@ -49,7 +55,13 @@ pub fn AddPlanetAttachment() -> Element {
         let mut planets = available_players()
             .iter()
             .find(|(id, _)| id.eq(&current_player()))
-            .map(|(_, p)| p.planets.keys().cloned().collect::<Vec<_>>())
+            .map(|(_, p)| {
+                p.planets
+                    .keys()
+                    .filter(|planet| planet.info().body_type != OrbitalBodyType::SpaceStation)
+                    .cloned()
+                    .collect::<Vec<_>>()
+            })
             .unwrap_or(vec![]);
         planets.sort();
         planets
