@@ -3,7 +3,7 @@ use ti_helper_game_data::{
     actions::event::Event,
     common::faction::Faction,
     components::strategy_card::StrategyCard,
-    state::game_state::{ActionPhaseProgress, StrategicPrimaryProgress, StrategicProgress},
+    state::game_state::{ActionPhaseProgress, StrategicProgress},
 };
 
 use crate::{
@@ -12,19 +12,15 @@ use crate::{
         event_context::EventContext, game_context::GameContext, info_context::Info,
         player_view::PlayerViewContext,
     },
-    views::phase_views::{
-        strategy_card::{
-            primary_views::{
-                imperial_primary_view::ImperialPrimaryView,
-                politics_primary_view::PoliticsPrimaryView,
-                technology_primary_view::TechnologyPrimaryView,
-                warfare_primary_view::WarfarePrimaryView,
-            },
-            secondary_card::{
-                generic_strategy_card::GenericStrategyCard, tech_secondary::TechSecondary,
-            },
+    views::phase_views::strategy_card::{
+        primary_views::{
+            imperial_primary_view::ImperialPrimaryView, politics_primary_view::PoliticsPrimaryView,
+            technology_primary_view::TechnologyPrimaryView,
+            warfare_primary_view::WarfarePrimaryView,
         },
-        tactical_action::TacticalAction,
+        secondary_card::{
+            generic_strategy_card::GenericStrategyCard, tech_secondary::TechSecondary,
+        },
     },
 };
 
@@ -129,7 +125,7 @@ fn StrategyCardPrimary(progress: ReadSignal<StrategicProgress>) -> Element {
             ImperialPrimaryView { primary, on_commit }
         },
         StrategyCard::Warfare => rsx! {
-            WarfarePrimaryView { }
+            WarfarePrimaryView {}
         },
         _ => {
             rsx! {

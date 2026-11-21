@@ -183,32 +183,45 @@ fn JolnarTechSecondary(player_id: ReadSignal<PlayerId>, player: ReadSignal<Playe
     let mut first_tech: Signal<Option<Technology>> = use_signal(|| None);
     let event = use_context::<EventContext>();
 
+    let send_event = use_callback(move |techs: (Technology, Option<Technology>)| {
+        let (first_tech, second_tech) = techs;
+        event.send_event(Event::StrategicActionSecondary {
+            player: player_id(),
+            action: StrategicSecondaryAction::TechnologyJolNar {
+                first_tech: first_tech,
+                second_tech: second_tech,
+            },
+        })
+    });
+
     rsx! {
         p { class: "warning-text",
-            "Remember Jol=Nar special, either:"
+            "Remember Jol-Nar special, either:"
             br {}
             "Pay 1 token and 4 resources for 1 OR"
+            br {}
+            "Pay 1 token for 1 tech OR"
             br {}
             "Pay 1 token and 6 resources for 2 techs"
         }
 
         if let Some(tech) = first_tech() {
-            p { "First tech: {tech}" }
+            p { "First tech: {tech.info().name}" }
             SelectTechView {
                 player_id: player_id(),
                 on_select: {
                     let f = tech.clone();
-                    move |t| {
-                        event
-                            .send_event(Event::StrategicActionSecondary {
-                                player: player_id(),
-                                action: StrategicSecondaryAction::TechnologyJolNar {
-                                    first_tech: f.clone(),
-                                    second_tech: Some(t),
-                                },
-                            })
-                    }
+                    move |t| { send_event((f.clone(), Some(t))) }
                 },
+            }
+            div { class: "column margin-top",
+                Button {
+                    onclick: move |_| {
+                        let f = tech.clone();
+                        send_event((f.clone(), None));
+                    },
+                    "Done"
+                }
             }
         } else {
             SelectTechView {
