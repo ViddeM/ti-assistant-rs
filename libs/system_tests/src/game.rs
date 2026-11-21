@@ -239,7 +239,7 @@ impl TestGame {
                     .players
                     .values()
                     .filter(|p| p.faction != Faction::CouncilKeleres)
-                    .flat_map(|p| p.technologies.iter().cloned())
+                    .flat_map(|p| p.technologies().iter().cloned())
                     .filter(|t| t.info().origin == TechOrigin::Base)
                     .collect();
                 assert!(

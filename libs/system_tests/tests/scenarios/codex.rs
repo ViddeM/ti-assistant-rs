@@ -170,7 +170,7 @@ pub fn codex_iv_book_of_latvinia_research() -> TestGame {
         .end_turn();
     assert!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .is_superset(&[Technology::SarweenTools, Technology::PlasmaScoring].into())
     );
 
@@ -181,13 +181,13 @@ pub fn codex_iv_book_of_latvinia_research() -> TestGame {
         .relic(Relic::BookOfLatvinia, None)
         .end_turn();
 
-    let bob_techs = g.player("Bob").technologies.clone();
+    let bob_techs = g.player("Bob").technologies().clone();
     let bob = g.turn("Bob").gain_relic(Relic::BookOfLatvinia);
     assert_eq!(bob.phase(), Phase::RelicAction);
     let bob = bob.apply(research("Bob", &[]));
     assert_eq!(bob.phase(), Phase::EndActionTurn);
     assert_eq!(bob.state().action_progress, None);
-    assert_eq!(bob.player("Bob").technologies, bob_techs);
+    assert_eq!(*bob.player("Bob").technologies(), bob_techs);
     bob.take_another_turn()
         .relic(Relic::BookOfLatvinia, None)
         .end_turn();
@@ -369,7 +369,7 @@ fn codex_replaced_techs_are_rejected() {
         .apply(add_tech(Technology::MagenDefenceGridOmegaOmega));
     assert!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .contains(&Technology::MagenDefenceGridOmegaOmega)
     );
 

@@ -26,7 +26,7 @@ pub fn PickOneTechSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
         techs
     });
 
-    let taken_tech = player.technologies.iter().next();
+    let taken_tech = player.technologies().iter().next();
 
     rsx! {
         div { class: "setup-column",

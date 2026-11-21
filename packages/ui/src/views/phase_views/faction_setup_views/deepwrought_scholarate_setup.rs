@@ -20,11 +20,11 @@ pub fn DeepwroughtScholarateSetup(player_id: PlayerId) -> Element {
     let player = use_memo(move || gc.game_state().players[&pi].clone());
 
     let selected_technologies = use_memo(move || {
-        if player().technologies.is_empty() {
+        if player().technologies().is_empty() {
             return None;
         }
 
-        let mut techs = player().technologies.iter().cloned().collect::<Vec<_>>();
+        let mut techs = player().technologies().iter().cloned().collect::<Vec<_>>();
         techs.sort();
         if techs.len() < 2 {
             return None;

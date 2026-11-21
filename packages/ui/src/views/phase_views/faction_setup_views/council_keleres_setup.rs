@@ -58,7 +58,7 @@ pub fn CouncilKeleresSetup(player_id: PlayerId, player: Arc<Player>) -> Element 
             })
     });
 
-    let mut taken_techs = player.technologies.iter().collect::<Vec<_>>();
+    let mut taken_techs = player.technologies().iter().collect::<Vec<_>>();
     taken_techs.sort();
 
     let p2 = Arc::clone(&player_id);

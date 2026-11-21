@@ -461,14 +461,16 @@ impl GameState {
         };
 
         let faction_setup_finished = match player.faction {
-            Faction::Winnu => player.technologies.len() == 1,
-            Faction::ArgentFlight => player.technologies.len() == 2,
-            Faction::CouncilKeleres => player.technologies.len() == 2 && !player.planets.is_empty(),
-            Faction::CrimsonRebellion => player.technologies.len() == 1,
-            Faction::FirmamentObsidian => player.technologies.len() == 1,
-            Faction::LastBastion => player.technologies.len() == 1,
-            Faction::DeepwroughtScholarate => player.technologies.len() == 2,
-            Faction::RalNelConsortium => player.technologies.len() == 1,
+            Faction::Winnu => player.technologies().len() == 1,
+            Faction::ArgentFlight => player.technologies().len() == 2,
+            Faction::CouncilKeleres => {
+                player.technologies().len() == 2 && !player.planets.is_empty()
+            }
+            Faction::CrimsonRebellion => player.technologies().len() == 1,
+            Faction::FirmamentObsidian => player.technologies().len() == 1,
+            Faction::LastBastion => player.technologies().len() == 1,
+            Faction::DeepwroughtScholarate => player.technologies().len() == 2,
+            Faction::RalNelConsortium => player.technologies().len() == 1,
             _ => true,
         };
         let cultural_exchange_finished = !self

@@ -233,7 +233,7 @@ fn ComponentSelectRow() -> Element {
             .players
             .get(&current_player())
             .map(|p| {
-                p.technologies
+                p.technologies()
                     .iter()
                     .filter(|t| t.is_single_button_action())
                     .cloned()

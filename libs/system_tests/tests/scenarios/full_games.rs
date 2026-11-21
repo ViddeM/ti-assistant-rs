@@ -455,7 +455,7 @@ pub fn full_game_pok_six_players() -> TestGame {
     assert!(g.player("Finn").planets.contains_key(&Planet::Mirage));
     assert!(
         g.player("Carol")
-            .technologies
+            .technologies()
             .contains(&Technology::GravityDrive)
     );
     g

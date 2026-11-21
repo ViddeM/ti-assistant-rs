@@ -43,8 +43,9 @@ pub struct Player {
     pub color: Color,
     /// Which planets the player controls and their attachments.
     pub planets: HashMap<Planet, BTreeSet<PlanetAttachment>>,
-    /// Which technologies the player has.
-    pub technologies: BTreeSet<Technology>,
+    /// Which technologies the player has, changed through [Player::gain_tech] and
+    /// [Player::remove_tech] so that the faction effects of technologies stay in sync.
+    technologies: BTreeSet<Technology>,
     /// Which relics the player currently owns.
     pub relics: BTreeSet<Relic>,
     /// Which breakthrough the player currently has, or none if it is not yet unlocked.
@@ -202,7 +203,7 @@ impl Player {
 
     /// Keep the player's Helios attachments in line with the Helios V2 technology: they're all
     /// V2 while the player has the technology, and back to V1 when they don't.
-    pub fn sync_helios_with_tech(&mut self) {
+    fn sync_helios_with_tech(&mut self) {
         let (from, to) = if self.has_tech(&Technology::HeliosV2) {
             (PlanetAttachment::HeliosV1, PlanetAttachment::HeliosV2)
         } else {
@@ -220,20 +221,41 @@ impl Player {
         self.planets.remove(planet);
     }
 
-    /// Add a technology to the players technologie list.
-    pub fn take_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
+    /// The technologies the player has.
+    pub fn technologies(&self) -> &BTreeSet<Technology> {
+        &self.technologies
+    }
+
+    /// Gain a technology, failing if the player already has it.
+    pub fn gain_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
         ensure!(
             !self.has_tech(&tech),
             "Player {self:?} already has tech {tech:?}"
         );
         self.technologies.insert(tech);
+        self.sync_helios_with_tech();
         Ok(())
     }
 
-    /// Research a technology (for actions stating 'gain', use [`take_tech()`] instead), performing necessary checks for that action.
+    /// Gain a technology if the player doesn't already have it. Returns whether it was gained.
+    pub fn grant_tech(&mut self, tech: Technology) -> bool {
+        let gained = self.technologies.insert(tech);
+        self.sync_helios_with_tech();
+        gained
+    }
+
+    /// Remove a technology. Returns whether the player had it.
+    pub fn remove_tech(&mut self, tech: &Technology) -> bool {
+        let removed = self.technologies.remove(tech);
+        self.sync_helios_with_tech();
+        removed
+    }
+
+    /// Research a technology (for actions stating 'gain', use [`Player::gain_tech()`] instead),
+    /// performing necessary checks for that action.
     pub fn research_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
         self.assert_can_research(&tech)?;
-        self.take_tech(tech)
+        self.gain_tech(tech)
     }
 
     /// Asserts that the player is allowed to research `tech`: Nekro Virus can't research, and

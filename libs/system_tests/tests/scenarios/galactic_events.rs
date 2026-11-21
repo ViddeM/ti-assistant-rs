@@ -65,28 +65,28 @@ pub fn galactic_events_age_of_fighters() -> TestGame {
 
     g.auto_setup();
     for player in ["Alice", "Bob", "Carol"] {
-        let technologies = &g.player(player).technologies;
+        let technologies = &g.player(player).technologies();
         assert!(!technologies.contains(&Technology::FighterII));
         assert!(!technologies.contains(&Technology::HybridCrystalFighterII));
     }
 
     g.start_game();
-    let alice = &g.player("Alice").technologies;
+    let alice = &g.player("Alice").technologies();
     assert!(alice.contains(&Technology::HybridCrystalFighterII));
     assert!(!alice.contains(&Technology::FighterII));
     assert!(
         g.player("Bob")
-            .technologies
+            .technologies()
             .contains(&Technology::FighterII)
     );
     assert!(
         g.player("Carol")
-            .technologies
+            .technologies()
             .contains(&Technology::FighterII)
     );
     assert!(
         g.player("Bob")
-            .technologies
+            .technologies()
             .contains(&Technology::NeuralMotivator)
     );
     g
@@ -106,16 +106,28 @@ pub fn galactic_events_advent_of_the_war_sun() -> TestGame {
 
     g.auto_setup();
     for player in ["Alice", "Bob", "Carol"] {
-        assert!(!g.player(player).technologies.contains(&Technology::WarSun));
+        assert!(
+            !g.player(player)
+                .technologies()
+                .contains(&Technology::WarSun)
+        );
     }
 
     g.start_game();
-    assert!(!g.player("Alice").technologies.contains(&Technology::WarSun));
-    assert!(g.player("Bob").technologies.contains(&Technology::WarSun));
-    assert!(g.player("Carol").technologies.contains(&Technology::WarSun));
+    assert!(
+        !g.player("Alice")
+            .technologies()
+            .contains(&Technology::WarSun)
+    );
+    assert!(g.player("Bob").technologies().contains(&Technology::WarSun));
+    assert!(
+        g.player("Carol")
+            .technologies()
+            .contains(&Technology::WarSun)
+    );
     assert!(
         g.player("Bob")
-            .technologies
+            .technologies()
             .contains(&Technology::NeuralMotivator)
     );
     g
@@ -497,7 +509,7 @@ pub fn galactic_events_dangerous_wilds() -> TestGame {
         .research(Planet::Fria, Technology::SarweenTools)
         .commit()
         .end_turn();
-    let alice = &g.player("Alice").technologies;
+    let alice = &g.player("Alice").technologies();
     assert!(alice.contains(&Technology::FleetLogistics));
     assert!(alice.contains(&Technology::SarweenTools));
 
@@ -1013,12 +1025,12 @@ pub fn galactic_events_rapid_mobilization() -> TestGame {
     assert!(owns(&g, "Bob", Planet::Lodor));
     assert!(owns(&g, "Bob", Planet::MeharXull));
     assert!(owns(&g, "Carol", Planet::Quann));
-    let alice = &g.player("Alice").technologies;
+    let alice = &g.player("Alice").technologies();
     assert!(alice.contains(&Technology::GravityDrive));
     assert!(alice.contains(&Technology::NeuralMotivator));
     assert!(
         g.player("Carol")
-            .technologies
+            .technologies()
             .contains(&Technology::AntimassDeflectors)
     );
     assert!(g.state().galactic_events.rapid_mobilization.is_empty());
@@ -1130,7 +1142,7 @@ pub fn galactic_events_minor_factions() -> TestGame {
     );
     assert!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .contains(&Technology::GravityDrive)
     );
 

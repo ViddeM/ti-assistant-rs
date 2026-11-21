@@ -267,7 +267,7 @@ pub fn status_relics_phase_maw_and_crown() -> TestGame {
     assert_eq!(g.phase(), Phase::Agenda);
     assert!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .contains(&Technology::GravityDrive)
     );
     assert!(g.player("Alice").relics.is_empty());

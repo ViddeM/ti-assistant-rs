@@ -43,7 +43,7 @@ pub fn ArgentFlightSetup(player_id: PlayerId, player: Arc<Player>) -> Element {
             .collect::<Vec<_>>()
     });
 
-    let mut taken_techs = player.technologies.iter().collect::<Vec<_>>();
+    let mut taken_techs = player.technologies().iter().collect::<Vec<_>>();
     taken_techs.sort();
 
     rsx! {

@@ -83,7 +83,7 @@ fn VaultsOfTheHeirForm(player: PlayerId) -> Element {
             gc.game_state()
                 .players
                 .get(&player)
-                .map(|p| p.technologies.iter().cloned().collect::<Vec<_>>())
+                .map(|p| p.technologies().iter().cloned().collect::<Vec<_>>())
                 .unwrap_or_default()
         }
     });

@@ -215,7 +215,7 @@ pub fn score_manual_planets_and_techs() -> TestGame {
     );
     assert_eq!(
         g.player("Carol")
-            .technologies
+            .technologies()
             .iter()
             .cloned()
             .collect::<Vec<_>>(),

@@ -291,17 +291,17 @@ pub fn action_strategic_technology() -> TestGame {
 
     assert!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .contains(&Technology::GravityDrive)
     );
     assert!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .contains(&Technology::PlasmaScoring)
     );
     assert!(
         g.player("Bob")
-            .technologies
+            .technologies()
             .contains(&Technology::DacxiveAnimators)
     );
     g
@@ -512,17 +512,17 @@ pub fn action_cards() -> TestGame {
 
     assert!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .contains(&Technology::GravityDrive)
     );
     assert!(
         !g.player("Bob")
-            .technologies
+            .technologies()
             .contains(&Technology::SarweenTools)
     );
     assert!(
         g.player("Carol")
-            .technologies
+            .technologies()
             .contains(&Technology::NeuralMotivator)
     );
     g

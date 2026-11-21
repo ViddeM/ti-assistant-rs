@@ -33,7 +33,7 @@ pub fn setup_base_three_players() -> TestGame {
     assert!(g.player("Alice").planets.contains_key(&Planet::Jord));
     assert_eq!(
         g.player("Alice")
-            .technologies
+            .technologies()
             .iter()
             .cloned()
             .collect::<Vec<_>>(),
@@ -151,7 +151,7 @@ pub fn setup_special_factions() -> TestGame {
     let kel = g.player("Kel");
     assert!(kel.planets.contains_key(&Planet::ArchonRen));
     assert!(kel.planets.contains_key(&Planet::ArchonTau));
-    assert_eq!(kel.technologies.len(), 2);
+    assert_eq!(kel.technologies().len(), 2);
     assert_eq!(g.speaker(), Some("Kel"));
     assert_eq!(g.turn_order(), ["Kel", "Wendy", "Argus"]);
     g

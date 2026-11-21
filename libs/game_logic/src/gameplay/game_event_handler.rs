@@ -69,9 +69,6 @@ pub fn update_game_state(
     let mut new_game_state = game_state.clone();
 
     try_update_game_state(&mut new_game_state, event.clone(), timestamp)?;
-    for player in new_game_state.players.values_mut() {
-        player.sync_helios_with_tech();
-    }
     apply_techs_gained(game_state, &mut new_game_state)?;
     new_game_state.start_pending_fracture_rolls()?;
 
@@ -87,13 +84,13 @@ fn apply_techs_gained(before: &GameState, after: &mut GameState) -> Result<(), G
         .iter()
         .flat_map(|(id, player)| {
             player
-                .technologies
+                .technologies()
                 .iter()
                 .filter(|tech| {
                     !before
                         .players
                         .get(id)
-                        .is_some_and(|p| p.technologies.contains(tech))
+                        .is_some_and(|p| p.technologies().contains(tech))
                 })
                 .map(|tech| (id.clone(), tech.clone()))
         })
@@ -437,7 +434,7 @@ fn try_update_game_state(
             }
 
             ensure!(
-                player.technologies.is_empty(),
+                player.technologies().is_empty(),
                 "Player already has technologies?"
             );
 
@@ -446,7 +443,7 @@ fn try_update_game_state(
             };
 
             for tech in technologies.into_iter() {
-                player.take_tech(tech)?;
+                player.gain_tech(tech)?;
             }
         }
         Event::SetupSpeaker { player } => {
@@ -573,10 +570,10 @@ fn try_update_game_state(
                         Faction::NaaluCollective => Technology::HybridCrystalFighterII,
                         _ => Technology::FighterII,
                     };
-                    player.technologies.insert(tech);
+                    player.grant_tech(tech);
                 }
                 if advent_of_the_war_sun && player.faction != Faction::EmbersOfMuaat {
-                    player.technologies.insert(Technology::WarSun);
+                    player.grant_tech(Technology::WarSun);
                 }
             }
 
@@ -1007,7 +1004,7 @@ fn try_update_game_state(
 
                         if take_tech != remove_tech {
                             current_player.research_tech(take_tech.clone())?;
-                            current_player.technologies.remove(&remove_tech);
+                            current_player.remove_tech(&remove_tech);
                         }
                     }
                     ActionCardAction::Plagiarize { tech } => {
@@ -1018,7 +1015,7 @@ fn try_update_game_state(
                         );
 
                         let current_player = game_state.get_current_player()?;
-                        current_player.take_tech(tech)?;
+                        current_player.gain_tech(tech)?;
                     }
                     ActionCardAction::Brilliance { player: target } => {
                         if let Some(target) = target {
@@ -1317,8 +1314,7 @@ fn try_update_game_state(
                         .players
                         .get_mut(&player)
                         .context("Player not found")?
-                        .technologies
-                        .remove(&purged_tech);
+                        .remove_tech(&purged_tech);
                     game_state.gain_relic_as_action(player.clone(), relic)?;
                 }
                 BreakthroughAction::VisionariaSelect { researched } => {
@@ -1352,7 +1348,7 @@ fn try_update_game_state(
                         .context("Player not found")?;
                     for tech in researched.into_values() {
                         if !deepwrought.has_tech(&tech) {
-                            deepwrought.take_tech(tech)?;
+                            deepwrought.gain_tech(tech)?;
                         }
                     }
                 }
@@ -2060,7 +2056,7 @@ fn try_update_game_state(
                 tech.info().name,
                 p.faction.name()
             );
-            p.take_tech(tech.clone())?;
+            p.gain_tech(tech.clone())?;
             status_state.entropic_scar_techs.insert(player, tech);
         }
         Event::CompleteEntropicScarPhase => {
@@ -2117,7 +2113,7 @@ fn try_update_game_state(
                 "Player doesn't have the Maw of Worlds relic!"
             );
 
-            player.take_tech(tech)?;
+            player.gain_tech(tech)?;
             player.relics.remove(&Relic::MawOfWorlds);
         }
         Event::CompleteRelicsPhase => {
@@ -2434,14 +2430,14 @@ fn try_update_game_state(
                 bail!("Player does not exist?");
             };
 
-            p.technologies.insert(tech);
+            p.grant_tech(tech);
         }
         Event::RemoveTechFromPlayer { player, tech } => {
             let Some(p) = game_state.players.get_mut(&player) else {
                 bail!("Player does not exist?");
             };
 
-            p.technologies.remove(&tech);
+            p.remove_tech(&tech);
         }
         Event::RepealLaw { law } => {
             if law.info().kind != AgendaKind::Law {
@@ -3294,7 +3290,7 @@ fn get_plagiarize_available_techs(
         .players
         .iter()
         .filter(|&(id, _)| id != &current_player_id)
-        .flat_map(|(_, player)| player.technologies.iter())
+        .flat_map(|(_, player)| player.technologies().iter())
         .filter(|tech| !matches!(tech.info().origin, TechOrigin::Faction(..)))
         .filter(|tech| !current_player.has_tech(tech))
         .collect::<HashSet<&Technology>>();

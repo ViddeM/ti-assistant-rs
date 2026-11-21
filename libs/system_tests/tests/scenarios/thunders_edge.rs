@@ -1736,10 +1736,10 @@ pub fn thunders_edge_vaults_of_the_heir() -> TestGame {
     alice.end_turn();
 
     let alice = g.player("Alice");
-    assert!(!alice.technologies.contains(&Technology::BioStims));
+    assert!(!alice.technologies().contains(&Technology::BioStims));
     assert!(
         alice
-            .technologies
+            .technologies()
             .contains(&Technology::PredictiveIntelligence)
     );
     assert!(alice.relics.contains(&Relic::ShardOfTheThrone));
@@ -1801,7 +1801,7 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
     );
     assert!(
         !g.player("Bob")
-            .technologies
+            .technologies()
             .contains(&Technology::GravityDrive)
     );
 
@@ -1818,7 +1818,7 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
     for player in ["Alice", "Bob", "Carol"] {
         assert!(
             g.player(player)
-                .technologies
+                .technologies()
                 .contains(&Technology::GravityDrive)
         );
     }
@@ -1829,7 +1829,7 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
         g.state()
             .players
             .values()
-            .map(|p| p.technologies.clone())
+            .map(|p| p.technologies().clone())
             .collect::<Vec<_>>()
     };
     let before = technologies(&g);

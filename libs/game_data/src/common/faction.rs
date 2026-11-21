@@ -277,7 +277,7 @@ impl Faction {
                 .players
                 .values()
                 .filter(|p| p.faction != Faction::CouncilKeleres)
-                .flat_map(|p| p.technologies.iter())
+                .flat_map(|p| p.technologies().iter())
                 .filter(|t| t.info().origin == TechOrigin::Base)
                 .cloned()
                 .collect(),

@@ -42,7 +42,7 @@ pub fn TechTable() -> Element {
                 .map(|(id, p)| {
                     (
                         id.clone(),
-                        p.technologies.iter().cloned().collect::<Vec<_>>(),
+                        p.technologies().iter().cloned().collect::<Vec<_>>(),
                     )
                 })
                 .collect::<Vec<_>>(),
@@ -207,7 +207,7 @@ pub fn TechTable() -> Element {
                 }
                 tr {
                     {players().into_iter().map(|(id, p)| rsx! {
-                        th { key: "{id}", "{p.technologies.len()}" }
+                        th { key: "{id}", "{p.technologies().len()}" }
                     })}
                 }
             }

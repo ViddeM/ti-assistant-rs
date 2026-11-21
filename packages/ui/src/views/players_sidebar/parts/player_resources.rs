@@ -83,10 +83,10 @@ pub fn PlayerResources(player_id: PlayerId) -> Element {
             .count()
     });
 
-    let num_techs = use_memo(move || player().technologies.len());
+    let num_techs = use_memo(move || player().technologies().len());
     let techs = use_memo(move || {
         player()
-            .technologies
+            .technologies()
             .iter()
             .map(|t| t.info())
             .collect::<Vec<_>>()

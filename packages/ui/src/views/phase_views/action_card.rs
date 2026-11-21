@@ -175,7 +175,7 @@ fn DivertFundingView(send_commit_message: Callback<Option<ActionCardAction>>) ->
             .expect("Current player to exist");
 
         player
-            .technologies
+            .technologies()
             .iter()
             .filter(|t| {
                 let i = t.info();
@@ -603,10 +603,10 @@ fn PlagiarizePlayerRow(
         gc.game_state()
             .players
             .get(&current_player)
-            .cloned()
             .expect("Current player to exist")
-            .technologies
-            .into_iter()
+            .technologies()
+            .iter()
+            .cloned()
             .collect::<Vec<_>>()
     });
     let p1 = player_id.clone();
@@ -616,7 +616,7 @@ fn PlagiarizePlayerRow(
             .players
             .get(&p1)
             .expect("Player to exist")
-            .technologies
+            .technologies()
             .iter()
             .filter(|t| t.info().origin == TechOrigin::Base)
             .filter(|t| !current_player_techs().contains(t))

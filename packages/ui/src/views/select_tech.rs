@@ -41,7 +41,8 @@ pub fn SelectTechView(
             .cloned()
             .expect("Current player to exist")
     });
-    let player_techs = use_memo(move || player().technologies.iter().cloned().collect::<Vec<_>>());
+    let player_techs =
+        use_memo(move || player().technologies().iter().cloned().collect::<Vec<_>>());
     let filtered_techs = filtered_techs.unwrap_or_default();
     let mut available_techs = gc
         .game_options()
