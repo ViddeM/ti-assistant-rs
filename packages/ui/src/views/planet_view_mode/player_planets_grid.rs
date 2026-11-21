@@ -342,7 +342,7 @@ impl PlayerSummary {
 
             for info in attachment_infos.values() {
                 player_info.resources += info.resources as usize;
-                player_info.influence += info.resources as usize;
+                player_info.influence += info.influence as usize;
             }
 
             let mut distinct_tech_specs = HashSet::new();
