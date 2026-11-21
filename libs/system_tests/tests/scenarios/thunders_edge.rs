@@ -51,6 +51,13 @@ fn a_valid_system() -> SystemId {
     systems.remove(0)
 }
 
+#[test]
+fn thunders_edge_can_be_placed_in_a_system_with_only_a_space_station() {
+    let valid = System::valid_thunders_edge_systems();
+    assert!(valid.contains("117"));
+    assert!(!valid.contains("109"));
+}
+
 fn complete(player: &str, won_by: &str, placed_in: SystemId) -> Event {
     Event::CompleteThundersEdgeExpedition {
         player: p(player),

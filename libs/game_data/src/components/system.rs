@@ -7,7 +7,7 @@ use crate::{
     error::GameDataError,
 };
 
-use super::planet::Planet;
+use super::planet::{OrbitalBodyType, Planet};
 
 /// What type of wormhole this is.
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -86,7 +86,12 @@ impl System {
     pub fn valid_thunders_edge_systems() -> HashSet<SystemId> {
         systems()
             .into_iter()
-            .filter(|(_, s)| s.planets.is_empty())
+            .filter(|(_, s)| {
+                // Ensure that if there are any "planets" in the system, all of them are space stations (which is valid for thunders edge).
+                s.planets
+                    .iter()
+                    .all(|planet| planet.info().body_type == OrbitalBodyType::SpaceStation)
+            })
             .filter(|(_, s)| s.system_type != SystemType::Hyperlane)
             .filter(|(_, s)| {
                 !s.anomalies.iter().any(|anomaly| {
