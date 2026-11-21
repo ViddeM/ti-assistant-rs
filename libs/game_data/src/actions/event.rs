@@ -281,6 +281,14 @@ pub enum Event {
         action: BreakthroughAction,
     },
 
+    /// Perform the ACTION of one of the player's technologies.
+    PlayTechAction {
+        /// The player who performs the action.
+        player: PlayerId,
+        /// The technology whose ACTION is performed.
+        tech: Technology,
+    },
+
     /// Begin playing a frontier card.
     FrontierCardActionBegin {
         /// The player who plays the card.
@@ -810,6 +818,7 @@ impl Event {
             | Event::PuppetsOfTheBlade { player }
             | Event::PlayGalacticEventAction { player, .. }
             | Event::PlayBreakthroughAction { player, .. }
+            | Event::PlayTechAction { player, .. }
             | Event::FrontierCardActionBegin { player, .. }
             | Event::FrontierCardActionCommit { player, .. }
             | Event::GainRelicAction { player, .. }

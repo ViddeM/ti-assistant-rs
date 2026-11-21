@@ -227,6 +227,23 @@ fn ComponentSelectRow() -> Element {
             .filter(|b| b.info().kind == BreakthroughKind::Action)
     });
 
+    let single_button_techs = use_memo(move || {
+        let mut techs = gc
+            .game_state()
+            .players
+            .get(&current_player())
+            .map(|p| {
+                p.technologies
+                    .iter()
+                    .filter(|t| t.is_single_button_action())
+                    .cloned()
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        techs.sort();
+        techs
+    });
+
     rsx! {
         div { class: "component-select-container",
             Button {
@@ -252,6 +269,22 @@ fn ComponentSelectRow() -> Element {
                             })
                     },
                     "Breakthrough"
+                }
+            }
+            for tech in single_button_techs() {
+                Button {
+                    key: "{tech:?}",
+                    onclick: {
+                        let tech = tech.clone();
+                        move |_| {
+                            event
+                                .send_event(Event::PlayTechAction {
+                                    player: current_player(),
+                                    tech: tech.clone(),
+                                })
+                        }
+                    },
+                    "{tech.info().name}"
                 }
             }
             Button {

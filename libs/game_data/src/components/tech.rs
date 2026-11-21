@@ -1325,6 +1325,11 @@ impl Technology {
         }
     }
 
+    /// Whether the tech's ACTION is performed with a single button, with no choices to track.
+    pub fn is_single_button_action(&self) -> bool {
+        matches!(self, Technology::Nanomachines | Technology::Vortex)
+    }
+
     /// The [TechInfo] of the side the tech is flipped to once the Obsidian is in play, for the
     /// Firmament techs that have one.
     pub fn obsidian_info(&self) -> Option<TechInfo> {

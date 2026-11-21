@@ -1353,6 +1353,29 @@ fn try_update_game_state(
                 game_state.phase = Phase::EndActionTurn;
             }
         }
+        Event::PlayTechAction { player, tech } => {
+            game_state.assert_phase(Phase::Action)?;
+            game_state.assert_player_turn(&player)?;
+            ensure!(
+                game_state.action_progress.is_none(),
+                "Invalid game state, action_progress not None during Action Phase"
+            );
+            ensure!(
+                tech.is_single_button_action(),
+                "{} doesn't have a single button ACTION",
+                tech.info().name
+            );
+            ensure!(
+                game_state
+                    .players
+                    .get(&player)
+                    .is_some_and(|p| p.has_tech(&tech)),
+                "{player} doesn't have {}",
+                tech.info().name
+            );
+
+            game_state.phase = Phase::EndActionTurn;
+        }
         Event::FrontierCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;

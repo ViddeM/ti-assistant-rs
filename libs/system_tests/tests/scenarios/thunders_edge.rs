@@ -58,6 +58,43 @@ fn thunders_edge_can_be_placed_in_a_system_with_only_a_space_station() {
     assert!(!valid.contains("109"));
 }
 
+#[test]
+fn thunders_edge_single_button_tech_action_ends_the_turn() {
+    let mut g = action_phase(three_players().thunders_edge());
+    let play = |player: &str, tech| Event::PlayTechAction {
+        player: p(player),
+        tech,
+    };
+
+    g.expect_rejected(
+        play("Alice", Technology::Nanomachines),
+        "Alice doesn't have Nanomachines",
+    );
+    g.apply(Event::AddTechToPlayer {
+        player: p("Alice"),
+        tech: Technology::Nanomachines,
+    })
+    .apply(Event::AddTechToPlayer {
+        player: p("Alice"),
+        tech: Technology::GravityDrive,
+    });
+
+    g.expect_rejected(
+        play("Alice", Technology::GravityDrive),
+        "doesn't have a single button ACTION",
+    );
+    g.expect_rejected(play("Bob", Technology::Nanomachines), "wrong players turn");
+
+    g.apply(play("Alice", Technology::Nanomachines));
+    assert_eq!(g.state().phase, Phase::EndActionTurn);
+    g.expect_rejected(
+        play("Alice", Technology::Nanomachines),
+        "expected Action",
+    );
+    g.apply(Event::EndTurn { player: p("Alice") });
+    assert_eq!(g.current_player(), p("Bob"));
+}
+
 fn complete(player: &str, won_by: &str, placed_in: SystemId) -> Event {
     Event::CompleteThundersEdgeExpedition {
         player: p(player),
