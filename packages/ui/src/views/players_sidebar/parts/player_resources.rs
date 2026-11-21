@@ -35,7 +35,7 @@ pub fn PlayerResources(player_id: PlayerId) -> Element {
             .map(|(p, attachments)| (p.clone(), p.info(), attachments.clone()))
             .collect::<Vec<_>>()
     });
-    let num_oceans = use_memo(move || player().ocean_cards().len() as u32);
+    let num_oceans = use_memo(move || player().ocean_cards() as u32);
     let num_resources = use_memo(move || {
         planets()
             .iter()

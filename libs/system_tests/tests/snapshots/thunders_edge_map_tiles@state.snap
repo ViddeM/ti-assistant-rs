@@ -269,8 +269,7 @@ players:
     breakthrough: ~
     factionState:
       Deepwrought:
-        coexisting: []
-        oceans: {}
+        ocean_cards: 0
     leadersFrom: ~
     minorFaction: ~
     homeSystemFrom: ~

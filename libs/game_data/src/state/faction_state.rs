@@ -1,8 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
-
 use serde::{Deserialize, Serialize};
-
-use crate::components::{ocean::Ocean, planet::Planet};
 
 /// State that is specific to a single faction, and only exists for players playing that faction.
 #[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
@@ -16,20 +12,24 @@ pub enum FactionState {
     Deepwrought(DeepwroughtState),
 }
 
-/// State of the Deepwrought Scholarate.
-#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
-pub struct DeepwroughtState {
-    /// The planets the Deepwrought player's units coexist on.
-    pub coexisting: BTreeSet<Planet>,
-    /// The ocean card in play for a coexisting planet, if one was gained for it.
-    pub oceans: BTreeMap<Planet, Ocean>,
-}
-
 impl FactionState {
     /// Returns true if there is no faction specific state.
     pub fn is_none(&self) -> bool {
         matches!(self, FactionState::None)
     }
+}
+
+/// State of the Deepwrought Scholarate.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
+pub struct DeepwroughtState {
+    /// How many ocean cards are in play, at most 5.
+    #[serde(default)]
+    pub ocean_cards: u8,
+}
+
+impl DeepwroughtState {
+    /// The most ocean cards that can be in play.
+    pub const MAX_OCEAN_CARDS: u8 = 5;
 }
 
 /// State of the Firmament / The Obsidian.

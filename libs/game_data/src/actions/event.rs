@@ -17,7 +17,6 @@ use crate::{
         galactic_event::GalacticEvent,
         leaders::Leader,
         objectives::{Objective, public::PublicObjective, secret::SecretObjective},
-        ocean::Ocean,
         planet::Planet,
         planet_attachment::PlanetAttachment,
         relic::Relic,
@@ -290,19 +289,18 @@ pub enum Event {
         tech: Technology,
     },
 
-    /// The Deepwrought player's units begin coexisting on a planet, gaining an ocean card.
-    DeepwroughtCoexistenceBegin {
-        /// The Deepwrought player.
+    /// A player's units begin coexisting on a planet they don't control. If the player is The
+    /// Deepwrought Scholarate, they gain an ocean card (up to 5).
+    CoexistenceBegin {
+        /// The player whose units coexist.
         player: PlayerId,
         /// The planet the units coexist on.
         planet: Planet,
-        /// The ocean card gained, or `None` only if all ocean cards are already in play.
-        ocean: Option<Ocean>,
     },
 
-    /// The Deepwrought player's units stop coexisting on a planet, discarding its ocean card.
-    DeepwroughtCoexistenceEnd {
-        /// The Deepwrought player.
+    /// A player's units stop coexisting on a planet.
+    CoexistenceEnd {
+        /// The player whose units no longer coexist.
         player: PlayerId,
         /// The planet the units no longer coexist on.
         planet: Planet,
@@ -838,8 +836,8 @@ impl Event {
             | Event::PlayGalacticEventAction { player, .. }
             | Event::PlayBreakthroughAction { player, .. }
             | Event::PlayTechAction { player, .. }
-            | Event::DeepwroughtCoexistenceBegin { player, .. }
-            | Event::DeepwroughtCoexistenceEnd { player, .. }
+            | Event::CoexistenceBegin { player, .. }
+            | Event::CoexistenceEnd { player, .. }
             | Event::FrontierCardActionBegin { player, .. }
             | Event::FrontierCardActionCommit { player, .. }
             | Event::GainRelicAction { player, .. }

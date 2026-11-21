@@ -1,17 +1,19 @@
 use dioxus::prelude::*;
+use ti_helper_game_data::common::expansions::Expansion;
 
 use crate::{
     data::game_context::GameContext,
     views::{
         destroyed_planets::DestroyedPlanets,
         planet_view_mode::{
-            add_planet_attachment::AddPlanetAttachment, player_planets_grid::PlayerPlanetsGrid,
-            unclaimed_planets_table::UnclaimedPlanetsTable,
+            add_planet_attachment::AddPlanetAttachment, coexistence_card::CoexistenceCard,
+            player_planets_grid::PlayerPlanetsGrid, unclaimed_planets_table::UnclaimedPlanetsTable,
         },
     },
 };
 
 mod add_planet_attachment;
+mod coexistence_card;
 mod player_planets_grid;
 mod unclaimed_planets_table;
 
@@ -26,6 +28,9 @@ pub fn PlanetViewMode() -> Element {
 
         div { class: "planet-view-container",
             PlayerPlanetsGrid {}
+            if gc.game_state().game_settings.expansions.is_enabled(&Expansion::ThundersEdge) {
+                CoexistenceCard {}
+            }
             if !gc.game_options().planet_attachments.is_empty() {
                 AddPlanetAttachment {}
             }

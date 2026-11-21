@@ -24,7 +24,7 @@ use crate::{
         phase::Phase,
         strategy_card::StrategyCard,
     },
-    state::expedition::TEExpedition,
+    state::{coexistence::Coexistence, expedition::TEExpedition},
 };
 
 use super::{
@@ -154,6 +154,10 @@ pub struct GameState {
     /// Whether the Fracture has entered play. Until then its planets (Cocytus, Lethe, Phlegethon
     /// and Styx) aren't on the board.
     pub fracture_in_play: bool,
+
+    /// The planets players' units coexist on, see [Coexistence]. Only used with Thunder's Edge.
+    #[serde(default, skip_serializing_if = "BTreeSet::is_empty")]
+    pub coexistences: BTreeSet<Coexistence>,
 
     /// The last applied event and when it happened.
     pub last_event: Option<(Event, DateTime<Utc>)>,

@@ -10,9 +10,9 @@ use dioxus_free_icons::{
 };
 use ti_helper_game_data::{
     actions::event::Event,
-    common::player_id::PlayerId,
+    common::{faction::Faction, player_id::PlayerId},
     components::{planet::PlanetTrait, planet_attachment::PlanetAttachment, tech::TechCategory},
-    state::{game_state::GameState, player::Player},
+    state::{faction_state::DeepwroughtState, game_state::GameState, player::Player},
 };
 
 use crate::{
@@ -299,6 +299,21 @@ fn PlayerPlanetsCard(player_id: PlayerId) -> Element {
                             }
                         }
                     }
+                    for i in 0..player().ocean_cards() {
+                        tr { key: "ocean-{i}", class: "planet-row ocean-row",
+                            td { class: NAME_COL_ALIGN, "Ocean card" }
+                            td { class: TRAIT_COL_ALIGN }
+                            td { class: RESOURCE_COL_ALIGN, "1" }
+                            td { class: INFLUENCE_COL_ALIGN, "1" }
+                            td { class: TECH_COL_ALIGN }
+                            td { class: DELETE_COL_ALIGN }
+                        }
+                    }
+                }
+            }
+            if player().faction == Faction::DeepwroughtScholarate {
+                p { class: "ocean-count",
+                    "Ocean cards in play: {player().ocean_cards()} of {DeepwroughtState::MAX_OCEAN_CARDS}"
                 }
             }
         }
@@ -322,7 +337,7 @@ impl PlayerSummary {
     fn from_player(game_state: &GameState, value: &Player) -> Self {
         let mut player_info = PlayerSummary::default();
 
-        let oceans = value.ocean_cards().len();
+        let oceans = value.ocean_cards() as usize;
         player_info.resources += oceans;
         player_info.influence += oceans;
 

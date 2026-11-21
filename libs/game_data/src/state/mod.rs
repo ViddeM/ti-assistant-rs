@@ -1,4 +1,5 @@
 pub mod agenda;
+pub mod coexistence;
 pub mod expedition;
 pub mod faction_state;
 pub mod galactic_events;

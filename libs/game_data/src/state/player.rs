@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeMap, BTreeSet, HashMap},
+    collections::{BTreeSet, HashMap},
     sync::Arc,
 };
 
@@ -11,7 +11,6 @@ use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
     components::{
         breakthrough::Breakthrough,
-        ocean::Ocean,
         planet::Planet,
         planet_attachment::PlanetAttachment,
         relic::Relic,
@@ -178,66 +177,20 @@ impl Player {
         }
     }
 
-    /// The ocean cards in play for The Deepwrought Scholarate, by the planet they are for.
-    pub fn ocean_cards(&self) -> BTreeMap<Planet, Ocean> {
+    /// The number of ocean cards The Deepwrought Scholarate has in play, or 0 for other factions.
+    pub fn ocean_cards(&self) -> u8 {
         match &*self.faction_state {
-            FactionState::Deepwrought(state) => state.oceans.clone(),
-            FactionState::None | FactionState::Firmament(_) => BTreeMap::new(),
+            FactionState::Deepwrought(state) => state.ocean_cards,
+            FactionState::None | FactionState::Firmament(_) => 0,
         }
     }
 
-    /// Start coexisting on `planet` (Oceanbound), gaining `ocean` if one is left. `ocean` must be
-    /// `None` only when all ocean cards are already in play.
-    pub fn begin_deepwrought_coexistence(
-        &mut self,
-        planet: Planet,
-        ocean: Option<Ocean>,
-    ) -> anyhow::Result<()> {
-        let FactionState::Deepwrought(state) = &*self.faction_state else {
-            bail!("Only The Deepwrought Scholarate can coexist");
-        };
-        ensure!(
-            !state.coexisting.contains(&planet),
-            "Already coexisting on {planet:?}"
-        );
-        let in_play: BTreeSet<Ocean> = state.oceans.values().copied().collect();
-        match ocean {
-            Some(ocean) => ensure!(
-                !in_play.contains(&ocean),
-                "{} is already in play",
-                ocean.name()
-            ),
-            None => ensure!(
-                in_play.len() == Ocean::iter().count(),
-                "An ocean card must be gained while one is left"
-            ),
-        }
-
+    /// Set the number of ocean cards The Deepwrought Scholarate has in play.
+    pub fn set_ocean_cards(&mut self, count: u8) -> anyhow::Result<()> {
         let FactionState::Deepwrought(state) = Arc::make_mut(&mut self.faction_state) else {
-            bail!("Only The Deepwrought Scholarate can coexist");
+            bail!("Only The Deepwrought Scholarate has ocean cards");
         };
-        state.coexisting.insert(planet.clone());
-        if let Some(ocean) = ocean {
-            state.oceans.insert(planet, ocean);
-        }
-        Ok(())
-    }
-
-    /// Stop coexisting on `planet`, discarding the ocean card that was gained for it.
-    pub fn end_deepwrought_coexistence(&mut self, planet: &Planet) -> anyhow::Result<()> {
-        let FactionState::Deepwrought(state) = &*self.faction_state else {
-            bail!("Only The Deepwrought Scholarate can coexist");
-        };
-        ensure!(
-            state.coexisting.contains(planet),
-            "Not coexisting on {planet:?}"
-        );
-
-        let FactionState::Deepwrought(state) = Arc::make_mut(&mut self.faction_state) else {
-            bail!("Only The Deepwrought Scholarate can coexist");
-        };
-        state.coexisting.remove(planet);
-        state.oceans.remove(planet);
+        state.ocean_cards = count;
         Ok(())
     }
 

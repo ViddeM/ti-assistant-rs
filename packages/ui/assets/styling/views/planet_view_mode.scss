@@ -53,6 +53,30 @@
   border-bottom: 4px solid rgba(0, 0, 0, 0.3);
 }
 
+.ocean-count {
+  margin: $margin-large 0 0 0;
+}
+
+.coexistence-card {
+  margin-top: $margin-large;
+  padding: $padding-large;
+
+  h2 {
+    margin: 0 0 $margin 0;
+  }
+}
+
+.coexistence-table {
+  width: 100%;
+  margin-bottom: $margin-large;
+}
+
+.coexistence-add {
+  display: flex;
+  flex-direction: column;
+  gap: $margin-large;
+}
+
 .button.unclaim-planet-button {
   border: none;
   background-color: inherit;
@@ -102,6 +126,10 @@
 
 .attachment-row-text {
   color: limegreen;
+}
+
+.ocean-row > td {
+  color: #8ecbff;
 }
 
 .add-planet-attachment-container {

@@ -44,7 +44,9 @@ use ti_helper_game_data::{
     },
     state::{
         agenda::{AgendaRound, MinisterOfAntiquesProgress, Vote, VoteState},
+        coexistence::Coexistence,
         expedition::{ExpeditionClaim, TECompletion, TEExpedition},
+        faction_state::DeepwroughtState,
         galactic_events::RapidMobilizationResolution,
         game_state::{
             ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FractureProgress,
@@ -1376,25 +1378,67 @@ fn try_update_game_state(
 
             game_state.phase = Phase::EndActionTurn;
         }
-        Event::DeepwroughtCoexistenceBegin {
-            player,
-            planet,
-            ocean,
-        } => {
+        Event::CoexistenceBegin { player, planet } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            game_state
+            let owner = (game_state.players.iter())
+                .find(|(_, p)| p.planets.contains_key(&planet))
+                .map(|(id, _)| id.clone());
+            ensure!(
+                owner.is_some(),
+                "{} isn't controlled by a player",
+                planet.info().name
+            );
+            ensure!(
+                owner.as_ref() != Some(&player),
+                "{player} can't coexist on a planet they control"
+            );
+            let coexistence = Coexistence {
+                planet: planet.clone(),
+                player: player.clone(),
+            };
+            ensure!(
+                !game_state.coexistences.contains(&coexistence),
+                "{player} is already coexisting on {}",
+                planet.info().name
+            );
+
+            let coexisting_player = game_state
                 .players
                 .get_mut(&player)
-                .context("Player not found")?
-                .begin_deepwrought_coexistence(planet, ocean)?;
+                .context("Player not found")?;
+            if coexisting_player.faction == Faction::DeepwroughtScholarate {
+                let oceans = coexisting_player.ocean_cards();
+                let max = DeepwroughtState::MAX_OCEAN_CARDS;
+                coexisting_player.set_ocean_cards((oceans + 1).min(max))?;
+            }
+            game_state.coexistences.insert(coexistence);
         }
-        Event::DeepwroughtCoexistenceEnd { player, planet } => {
+        Event::CoexistenceEnd { player, planet } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            game_state
+            let coexistence = Coexistence {
+                planet: planet.clone(),
+                player: player.clone(),
+            };
+            ensure!(
+                game_state.coexistences.contains(&coexistence),
+                "{player} isn't coexisting on {}",
+                planet.info().name
+            );
+            game_state.coexistences.remove(&coexistence);
+
+            let remaining = (game_state.coexistences.iter())
+                .filter(|c| c.player == player)
+                .count() as u8;
+            let coexisting_player = game_state
                 .players
                 .get_mut(&player)
-                .context("Player not found")?
-                .end_deepwrought_coexistence(&planet)?;
+                .context("Player not found")?;
+            if coexisting_player.faction == Faction::DeepwroughtScholarate {
+                let oceans = coexisting_player.ocean_cards();
+                if oceans > remaining {
+                    coexisting_player.set_ocean_cards(remaining)?;
+                }
+            }
         }
         Event::FrontierCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
