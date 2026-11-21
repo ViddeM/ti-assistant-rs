@@ -35,6 +35,7 @@ pub fn PlayerResources(player_id: PlayerId) -> Element {
             .map(|(p, attachments)| (p.clone(), p.info(), attachments.clone()))
             .collect::<Vec<_>>()
     });
+    let num_oceans = use_memo(move || player().ocean_cards().len() as u32);
     let num_resources = use_memo(move || {
         planets()
             .iter()
@@ -42,6 +43,7 @@ pub fn PlayerResources(player_id: PlayerId) -> Element {
                 info.resources + attachments.iter().map(|a| a.info().resources).sum::<u32>()
             })
             .sum::<u32>()
+            + num_oceans()
     });
     let num_influence = use_memo(move || {
         planets()
@@ -50,6 +52,7 @@ pub fn PlayerResources(player_id: PlayerId) -> Element {
                 info.influence + attachments.iter().map(|a| a.info().influence).sum::<u32>()
             })
             .sum::<u32>()
+            + num_oceans()
     });
 
     let planet_traits = use_memo(move || {

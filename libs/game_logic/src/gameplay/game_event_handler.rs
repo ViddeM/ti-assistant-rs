@@ -1376,6 +1376,26 @@ fn try_update_game_state(
 
             game_state.phase = Phase::EndActionTurn;
         }
+        Event::DeepwroughtCoexistenceBegin {
+            player,
+            planet,
+            ocean,
+        } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            game_state
+                .players
+                .get_mut(&player)
+                .context("Player not found")?
+                .begin_deepwrought_coexistence(planet, ocean)?;
+        }
+        Event::DeepwroughtCoexistenceEnd { player, planet } => {
+            game_state.assert_expansion(&Expansion::ThundersEdge)?;
+            game_state
+                .players
+                .get_mut(&player)
+                .context("Player not found")?
+                .end_deepwrought_coexistence(&planet)?;
+        }
         Event::FrontierCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;

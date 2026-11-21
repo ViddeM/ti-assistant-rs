@@ -12,6 +12,8 @@ pub mod galactic_event;
 pub mod leaders;
 /// Objectives.
 pub mod objectives;
+/// Ocean cards of The Deepwrought Scholarate.
+pub mod ocean;
 /// Phases of the game.
 pub mod phase;
 /// Planets.

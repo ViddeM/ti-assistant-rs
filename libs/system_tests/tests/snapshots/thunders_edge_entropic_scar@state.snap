@@ -1,5 +1,6 @@
 ---
 source: libs/system_tests/src/check.rs
+assertion_line: 124
 ---
 round: 2
 gameSettings:
@@ -223,7 +224,10 @@ players:
       - RadicalAdvancement
     relics: []
     breakthrough: ~
-    factionState: None
+    factionState:
+      Deepwrought:
+        coexisting: []
+        oceans: {}
     leadersFrom: ~
     minorFaction: ~
     homeSystemFrom: ~

@@ -1,5 +1,6 @@
 ---
 source: libs/system_tests/src/check.rs
+assertion_line: 124
 ---
 round: 1
 gameSettings:
@@ -35,7 +36,10 @@ players:
       - PlasmaScoring
     relics: []
     breakthrough: VisionariaSelect
-    factionState: None
+    factionState:
+      Deepwrought:
+        coexisting: []
+        oceans: {}
     leadersFrom: ~
     minorFaction: ~
     homeSystemFrom: ~

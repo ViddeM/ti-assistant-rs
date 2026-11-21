@@ -17,6 +17,7 @@ use crate::{
         galactic_event::GalacticEvent,
         leaders::Leader,
         objectives::{Objective, public::PublicObjective, secret::SecretObjective},
+        ocean::Ocean,
         planet::Planet,
         planet_attachment::PlanetAttachment,
         relic::Relic,
@@ -287,6 +288,24 @@ pub enum Event {
         player: PlayerId,
         /// The technology whose ACTION is performed.
         tech: Technology,
+    },
+
+    /// The Deepwrought player's units begin coexisting on a planet, gaining an ocean card.
+    DeepwroughtCoexistenceBegin {
+        /// The Deepwrought player.
+        player: PlayerId,
+        /// The planet the units coexist on.
+        planet: Planet,
+        /// The ocean card gained, or `None` only if all ocean cards are already in play.
+        ocean: Option<Ocean>,
+    },
+
+    /// The Deepwrought player's units stop coexisting on a planet, discarding its ocean card.
+    DeepwroughtCoexistenceEnd {
+        /// The Deepwrought player.
+        player: PlayerId,
+        /// The planet the units no longer coexist on.
+        planet: Planet,
     },
 
     /// Begin playing a frontier card.
@@ -819,6 +838,8 @@ impl Event {
             | Event::PlayGalacticEventAction { player, .. }
             | Event::PlayBreakthroughAction { player, .. }
             | Event::PlayTechAction { player, .. }
+            | Event::DeepwroughtCoexistenceBegin { player, .. }
+            | Event::DeepwroughtCoexistenceEnd { player, .. }
             | Event::FrontierCardActionBegin { player, .. }
             | Event::FrontierCardActionCommit { player, .. }
             | Event::GainRelicAction { player, .. }

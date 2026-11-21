@@ -6,6 +6,7 @@ use ti_helper_game_data::{
     common::{expansions::Expansion, map::HexPosition, player_id::PlayerId},
     components::{
         breakthrough::Breakthrough,
+        ocean::Ocean,
         system::{SystemType, systems},
     },
     state::{
@@ -87,12 +88,87 @@ fn thunders_edge_single_button_tech_action_ends_the_turn() {
 
     g.apply(play("Alice", Technology::Nanomachines));
     assert_eq!(g.state().phase, Phase::EndActionTurn);
-    g.expect_rejected(
-        play("Alice", Technology::Nanomachines),
-        "expected Action",
-    );
+    g.expect_rejected(play("Alice", Technology::Nanomachines), "expected Action");
     g.apply(Event::EndTurn { player: p("Alice") });
     assert_eq!(g.current_player(), p("Bob"));
+}
+
+#[test]
+fn deepwrought_coexistence_gains_and_discards_oceans() {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::DeepwroughtScholarate)
+            .player("Bob", Faction::ClanOfSaar)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .thunders_edge(),
+    );
+    let begin = |planet, ocean| Event::DeepwroughtCoexistenceBegin {
+        player: p("Alice"),
+        planet,
+        ocean,
+    };
+
+    g.expect_rejected(
+        Event::DeepwroughtCoexistenceBegin {
+            player: p("Bob"),
+            planet: Planet::Bellatrix,
+            ocean: Some(Ocean::DeepAbyss),
+        },
+        "Only The Deepwrought Scholarate can coexist",
+    );
+    g.apply(begin(Planet::Ikatena, Some(Ocean::DeepAbyss)));
+    assert_eq!(
+        g.player("Alice").ocean_cards(),
+        BTreeMap::from([(Planet::Ikatena, Ocean::DeepAbyss)])
+    );
+    g.expect_rejected(
+        begin(Planet::Ikatena, Some(Ocean::BrinePool)),
+        "Already coexisting",
+    );
+    g.expect_rejected(
+        begin(Planet::Bellatrix, Some(Ocean::DeepAbyss)),
+        "Deep Abyss is already in play",
+    );
+    g.expect_rejected(
+        begin(Planet::Bellatrix, None),
+        "An ocean card must be gained while one is left",
+    );
+
+    for (planet, ocean) in [
+        (Planet::Bellatrix, Ocean::BrinePool),
+        (Planet::Tarana, Ocean::CoralReef),
+        (Planet::Elnath, Ocean::IceShelf),
+        (Planet::Capha, Ocean::LostFleet),
+    ] {
+        g.apply(begin(planet, Some(ocean)));
+    }
+    g.apply(begin(Planet::MecatolRexOmega, None));
+    assert_eq!(g.player("Alice").ocean_cards().len(), 5);
+
+    g.expect_rejected(
+        Event::DeepwroughtCoexistenceEnd {
+            player: p("Alice"),
+            planet: Planet::Industrex,
+        },
+        "Not coexisting on Industrex",
+    );
+    g.apply(Event::DeepwroughtCoexistenceEnd {
+        player: p("Alice"),
+        planet: Planet::Ikatena,
+    });
+    assert!(
+        !g.player("Alice")
+            .ocean_cards()
+            .contains_key(&Planet::Ikatena)
+    );
+    assert_eq!(g.player("Alice").ocean_cards().len(), 4);
+
+    g.apply(begin(Planet::Ikatena, Some(Ocean::DeepAbyss)));
+    assert_eq!(
+        g.player("Alice").ocean_cards().get(&Planet::Ikatena),
+        Some(&Ocean::DeepAbyss)
+    );
 }
 
 fn complete(player: &str, won_by: &str, placed_in: SystemId) -> Event {

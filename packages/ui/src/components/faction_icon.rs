@@ -102,7 +102,7 @@ pub fn get_faction_icon(faction: &Faction, state: &FactionState) -> Asset {
         (Faction::CouncilKeleres, FactionState::None) => COUNCIL_OF_KELERES_ICON,
         (Faction::LastBastion, FactionState::None) => LAST_BASTION_ICON,
         (Faction::RalNelConsortium, FactionState::None) => RAL_NEL_CONSORTIUM_ICON,
-        (Faction::DeepwroughtScholarate, FactionState::None) => DEEPWROUGHT_SCHOLARATE_ICON,
+        (Faction::DeepwroughtScholarate, _) => DEEPWROUGHT_SCHOLARATE_ICON,
         (Faction::CrimsonRebellion, FactionState::None) => CRIMSON_REBELLION_ICON,
         (Faction::FirmamentObsidian, FactionState::Firmament(FirmamentState { side })) => {
             match side {

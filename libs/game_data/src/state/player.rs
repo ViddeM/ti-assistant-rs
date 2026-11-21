@@ -1,5 +1,5 @@
 use std::{
-    collections::{BTreeSet, HashMap},
+    collections::{BTreeMap, BTreeSet, HashMap},
     sync::Arc,
 };
 
@@ -11,12 +11,13 @@ use crate::{
     common::{color::Color, faction::Faction, game_settings::Expansions},
     components::{
         breakthrough::Breakthrough,
+        ocean::Ocean,
         planet::Planet,
         planet_attachment::PlanetAttachment,
         relic::Relic,
         tech::{TechCategory, TechOrigin, Technology},
     },
-    state::faction_state::{FactionState, FirmamentSide, FirmamentState},
+    state::faction_state::{DeepwroughtState, FactionState, FirmamentSide, FirmamentState},
 };
 
 /// A new player that is currently being created.
@@ -74,6 +75,9 @@ impl NewPlayer {
         let techs = self.faction.get_starting_techs(expansions);
         let faction_state = match self.faction {
             Faction::FirmamentObsidian => FactionState::Firmament(FirmamentState::default()),
+            Faction::DeepwroughtScholarate => {
+                FactionState::Deepwrought(DeepwroughtState::default())
+            }
             _ => FactionState::None,
         };
         let breakthrough = match self.faction {
@@ -119,7 +123,7 @@ impl Player {
     pub fn firmament_side(&self) -> Option<FirmamentSide> {
         match &*self.faction_state {
             FactionState::Firmament(state) => Some(state.side),
-            FactionState::None => None,
+            FactionState::None | FactionState::Deepwrought(_) => None,
         }
     }
 
@@ -172,6 +176,69 @@ impl Player {
                 self.planets.insert(obsidian, attachments);
             }
         }
+    }
+
+    /// The ocean cards in play for The Deepwrought Scholarate, by the planet they are for.
+    pub fn ocean_cards(&self) -> BTreeMap<Planet, Ocean> {
+        match &*self.faction_state {
+            FactionState::Deepwrought(state) => state.oceans.clone(),
+            FactionState::None | FactionState::Firmament(_) => BTreeMap::new(),
+        }
+    }
+
+    /// Start coexisting on `planet` (Oceanbound), gaining `ocean` if one is left. `ocean` must be
+    /// `None` only when all ocean cards are already in play.
+    pub fn begin_deepwrought_coexistence(
+        &mut self,
+        planet: Planet,
+        ocean: Option<Ocean>,
+    ) -> anyhow::Result<()> {
+        let FactionState::Deepwrought(state) = &*self.faction_state else {
+            bail!("Only The Deepwrought Scholarate can coexist");
+        };
+        ensure!(
+            !state.coexisting.contains(&planet),
+            "Already coexisting on {planet:?}"
+        );
+        let in_play: BTreeSet<Ocean> = state.oceans.values().copied().collect();
+        match ocean {
+            Some(ocean) => ensure!(
+                !in_play.contains(&ocean),
+                "{} is already in play",
+                ocean.name()
+            ),
+            None => ensure!(
+                in_play.len() == Ocean::iter().count(),
+                "An ocean card must be gained while one is left"
+            ),
+        }
+
+        let FactionState::Deepwrought(state) = Arc::make_mut(&mut self.faction_state) else {
+            bail!("Only The Deepwrought Scholarate can coexist");
+        };
+        state.coexisting.insert(planet.clone());
+        if let Some(ocean) = ocean {
+            state.oceans.insert(planet, ocean);
+        }
+        Ok(())
+    }
+
+    /// Stop coexisting on `planet`, discarding the ocean card that was gained for it.
+    pub fn end_deepwrought_coexistence(&mut self, planet: &Planet) -> anyhow::Result<()> {
+        let FactionState::Deepwrought(state) = &*self.faction_state else {
+            bail!("Only The Deepwrought Scholarate can coexist");
+        };
+        ensure!(
+            state.coexisting.contains(planet),
+            "Not coexisting on {planet:?}"
+        );
+
+        let FactionState::Deepwrought(state) = Arc::make_mut(&mut self.faction_state) else {
+            bail!("Only The Deepwrought Scholarate can coexist");
+        };
+        state.coexisting.remove(planet);
+        state.oceans.remove(planet);
+        Ok(())
     }
 
     /// Remove a planet from the players planet list.

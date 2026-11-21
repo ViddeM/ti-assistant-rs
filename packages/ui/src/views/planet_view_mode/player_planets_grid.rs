@@ -322,6 +322,10 @@ impl PlayerSummary {
     fn from_player(game_state: &GameState, value: &Player) -> Self {
         let mut player_info = PlayerSummary::default();
 
+        let oceans = value.ocean_cards().len();
+        player_info.resources += oceans;
+        player_info.influence += oceans;
+
         for (planet, attachment) in value.planets.iter() {
             let planet_info = planet.info();
             let attachment_infos = attachment
