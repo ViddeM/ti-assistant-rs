@@ -1518,12 +1518,18 @@ fn try_update_game_state(
                                 .unwrap_or(true),
                             "Mirage system is already set?"
                         );
-                        let player = game_state.get_current_player()?;
-
+                        let player_id = game_state
+                            .current_player
+                            .clone()
+                            .context("No current player")?;
+                        game_state.set_planet_owner(Planet::Mirage, Some(player_id))?;
                         if let Some(attachment) = attachment {
-                            let mut attachments = BTreeSet::new();
-                            attachments.insert(attachment);
-                            player.planets.insert(Planet::Mirage, attachments);
+                            game_state
+                                .get_current_player()?
+                                .planets
+                                .entry(Planet::Mirage)
+                                .or_default()
+                                .insert(attachment);
                         }
 
                         if let Some(milty_info) = game_state.map_data.milty_information.as_mut() {

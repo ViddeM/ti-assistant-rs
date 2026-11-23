@@ -676,6 +676,22 @@ pub fn action_frontier_cards() -> TestGame {
     g
 }
 
+#[test]
+fn mirage_without_attachment_is_gained() {
+    let mut g = action_phase(three_players().pok());
+    g.turn("Alice")
+        .frontier(
+            FrontierCard::Mirage,
+            Some(FrontierCardAction::Mirage {
+                system: None,
+                attachment: None,
+            }),
+        )
+        .end_turn();
+    assert!(g.player("Alice").planets[&Planet::Mirage].is_empty());
+    assert!(g.state().map_data.ever_owned_planets.contains(&Planet::Mirage));
+}
+
 /// Gaining and using relics (purged, or exhausted and kept), and Shard of the Throne moving with
 /// legendary planets and the holder's home planets. A planet destroyed by the Stellar Converter
 /// can't be taken again.
