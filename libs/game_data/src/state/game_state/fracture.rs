@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use anyhow::{bail, ensure};
+use anyhow::ensure;
 use serde::{Deserialize, Serialize};
 
 use crate::{common::player_id::PlayerId, components::phase::Phase};
@@ -8,11 +8,13 @@ use crate::{common::player_id::PlayerId, components::phase::Phase};
 use super::{GameState, action_progress::ActionPhaseProgress};
 
 /// The state for the fracture progress
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct FractureProgressState {
     pub progress: FractureProgress,
     /// The phase to return to after fracture rolling / spawning is complete.
     pub phase: Phase,
+    /// The action that was in progress when the roll started, resumed once the roll is complete.
+    pub interrupted: Option<Box<ActionPhaseProgress>>,
 }
 
 /// The progress of fracture spawning & info.
@@ -85,7 +87,8 @@ impl GameState {
     }
 
     /// Start the Fracture roll for the players queued during the event that was just applied.
-    /// The game returns to the phase it is in now once the rolls are done.
+    /// The game returns to the phase and action it is in now once the rolls are done, see
+    /// [GameState::end_fracture].
     pub fn start_pending_fracture_rolls(&mut self) -> anyhow::Result<()> {
         let mut queued = std::mem::take(&mut self.pending_fracture_rolls).into_iter();
         let Some(first) = queued.next() else {
@@ -95,16 +98,20 @@ impl GameState {
             return Ok(());
         }
 
-        let (mut roll_state, return_phase) = match self.action_progress.take() {
+        let (mut roll_state, return_phase, interrupted) = match self.action_progress.take() {
             Some(ActionPhaseProgress::Fracture(FractureProgressState {
                 progress: FractureProgress::Roll(mut roll_state),
                 phase,
+                interrupted,
             })) => {
                 roll_state.add_player(first)?;
-                (roll_state, phase)
+                (roll_state, phase, interrupted)
             }
-            Some(_) => bail!("Cannot roll for the Fracture while another action is in progress"),
-            None => (FractureRollState::new(first), self.phase),
+            interrupted => (
+                FractureRollState::new(first),
+                self.phase,
+                interrupted.map(Box::new),
+            ),
         };
         for player in queued {
             roll_state.add_player(player)?;
@@ -113,8 +120,15 @@ impl GameState {
         self.action_progress = Some(ActionPhaseProgress::Fracture(FractureProgressState {
             progress: FractureProgress::Roll(roll_state),
             phase: return_phase,
+            interrupted,
         }));
         self.phase = Phase::Fracture;
         Ok(())
+    }
+
+    /// Return to the phase and action that the Fracture roll interrupted.
+    pub fn end_fracture(&mut self, state: FractureProgressState) {
+        self.phase = state.phase;
+        self.action_progress = state.interrupted.map(|action| *action);
     }
 }

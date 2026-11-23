@@ -2978,11 +2978,9 @@ fn try_update_game_state(
             if entered_play {
                 game_state.fracture_in_play = true;
                 state.progress = FractureProgress::Spawned { player };
-            } else {
-                if roll_state.next_player().is_none() {
-                    game_state.phase = state.phase;
-                    game_state.action_progress = None;
-                }
+            } else if roll_state.next_player().is_none() {
+                let state = state.clone();
+                game_state.end_fracture(state);
             }
         }
         Event::FractureSpawned { player } => {
@@ -3005,8 +3003,8 @@ fn try_update_game_state(
                 "Wrong player spawns the fracture, expected {spawner} got {player}"
             );
 
-            game_state.phase = state.phase;
-            game_state.action_progress = None;
+            let state = state.clone();
+            game_state.end_fracture(state);
         }
         Event::GainMinisterOfAntiquesRelic { player, relic } => {
             ensure!(

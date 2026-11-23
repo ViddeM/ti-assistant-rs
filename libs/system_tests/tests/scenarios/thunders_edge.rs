@@ -720,31 +720,40 @@ fn thunders_edge_can_be_placed_with_a_space_station() {
 
 #[test]
 fn thunders_edge_is_in_its_system_in_a_tactical_action() {
-    let mut g = action_phase(three_players().thunders_edge());
-    g.apply(Event::SetThundersEdgeCompletion {
-        new_completion: Some(TECompletion {
-            won_by: p("Alice"),
-            placed_in: "117".to_string(),
-        }),
-    })
-    .apply(Event::SetFractureInPlay { in_play: true });
+    for entered_play in [false, true] {
+        let mut g = action_phase(three_players().thunders_edge());
+        g.apply(Event::SetThundersEdgeCompletion {
+            new_completion: Some(TECompletion {
+                won_by: p("Bob"),
+                placed_in: "117".to_string(),
+            }),
+        });
 
-    let alice = g.turn("Alice").tactical().take(Planet::TheWatchtower);
-    assert_eq!(activated_system(&alice), Some("117".to_string()));
-    assert_eq!(
-        alice.state().planets_in_system(&"117".to_string()),
-        vec![Planet::TheWatchtower, Planet::ThundersEdge]
-    );
-    let alice = alice.take(Planet::ThundersEdge);
-    assert_eq!(activated_system(&alice), Some("117".to_string()));
-    alice.commit().end_turn();
+        let alice = g.turn("Alice").tactical().take(Planet::TheWatchtower);
+        assert_eq!(activated_system(&alice), Some("117".to_string()));
+        assert_eq!(
+            alice.state().planets_in_system(&"117".to_string()),
+            vec![Planet::TheWatchtower, Planet::ThundersEdge]
+        );
 
-    assert!(
-        g.player("Alice")
-            .planets
-            .contains_key(&Planet::ThundersEdge)
-    );
-    assert!(g.player("Alice").breakthrough.is_some());
+        let alice = alice.take(Planet::ThundersEdge);
+        assert_eq!(alice.state().phase, Phase::Fracture);
+        assert_eq!(fracture_roll(&alice), Some(p("Alice")));
+        let mut alice = alice.apply(roll("Alice", entered_play));
+        if entered_play {
+            alice = alice.apply(Event::FractureSpawned { player: p("Alice") });
+        }
+
+        assert_eq!(alice.state().phase, Phase::TacticalAction);
+        assert_eq!(alice.state().fracture_in_play, entered_play);
+        assert_eq!(activated_system(&alice), Some("117".to_string()));
+        alice.commit().end_turn();
+
+        let planets = &g.player("Alice").planets;
+        assert!(planets.contains_key(&Planet::TheWatchtower));
+        assert!(planets.contains_key(&Planet::ThundersEdge));
+        assert!(g.player("Alice").breakthrough.is_some());
+    }
 }
 
 /// Whoever controls Styx has 1 VP from it.
