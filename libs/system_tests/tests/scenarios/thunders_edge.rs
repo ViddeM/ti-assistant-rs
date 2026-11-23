@@ -703,6 +703,21 @@ pub fn thunders_edge_take_planets_without_tile() -> TestGame {
     g
 }
 
+#[test]
+fn thunders_edge_can_be_placed_with_a_space_station() {
+    let mut g = action_phase(three_players().thunders_edge());
+    g.apply(Event::SetThundersEdgeCompletion {
+        new_completion: Some(TECompletion {
+            won_by: p("Alice"),
+            placed_in: "117".to_string(),
+        }),
+    });
+    assert_eq!(
+        g.state().planet_location(&Planet::ThundersEdge),
+        PlanetLocation::Token(Some("117".to_string()))
+    );
+}
+
 /// Whoever controls Styx has 1 VP from it.
 pub fn thunders_edge_styx_victory_point() -> TestGame {
     let mut g = action_phase(three_players().thunders_edge());
