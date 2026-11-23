@@ -689,7 +689,12 @@ fn mirage_without_attachment_is_gained() {
         )
         .end_turn();
     assert!(g.player("Alice").planets[&Planet::Mirage].is_empty());
-    assert!(g.state().map_data.ever_owned_planets.contains(&Planet::Mirage));
+    assert!(
+        g.state()
+            .map_data
+            .ever_owned_planets
+            .contains(&Planet::Mirage)
+    );
 }
 
 /// Gaining and using relics (purged, or exhausted and kept), and Shard of the Throne moving with
