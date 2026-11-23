@@ -236,6 +236,7 @@ fn DivertFundingView(send_commit_message: Callback<Option<ActionCardAction>>) ->
                             }),
                         })
                 },
+                "Commit"
             }
         }
     }
