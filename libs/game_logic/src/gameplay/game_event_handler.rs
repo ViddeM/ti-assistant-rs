@@ -69,7 +69,6 @@ pub fn update_game_state(
     let mut new_game_state = game_state.clone();
 
     try_update_game_state(&mut new_game_state, event.clone(), timestamp)?;
-    new_game_state.start_pending_fracture_rolls()?;
 
     new_game_state.last_event = Some((event, timestamp));
     *game_state = new_game_state;
@@ -3070,6 +3069,7 @@ fn try_update_game_state(
     game_state
         .score
         .update_player_points(&game_state.players, &monument_points);
+    game_state.start_pending_fracture_rolls()?;
 
     Ok(())
 }
