@@ -2,13 +2,14 @@ use std::collections::BTreeSet;
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
+use strum::IntoEnumIterator;
 
 use crate::{
     common::{expansions::Expansion, faction::Faction, map::HexMap, player_id::PlayerId},
     components::{
         planet::{Planet, PlanetTrait},
         relic::Relic,
-        system::{AnomalyType, SystemId},
+        system::{AnomalyType, SystemId, systems},
     },
     state::faction_state::FirmamentSide,
 };
@@ -56,8 +57,8 @@ impl GameState {
     /// Where the planet is on the board.
     ///
     /// Planets without a system tile are only on the board once they have been placed. Where
-    /// Mirage and Avernus are isn't tracked, Thunder's Edge is where the expedition placed it and
-    /// Custodia Vigilia only exists as a card. Only the planets on the shown side of the
+    /// Avernus is isn't tracked, Mirage is in its milty system if that is known, Thunder's Edge is
+    /// where the expedition placed it and Custodia Vigilia only exists as a card. Only the planets on the shown side of the
     /// Firmament / The Obsidian home system tile are on the board. The Fracture planets are only
     /// on the board once the Fracture is in play. A planet that has been destroyed isn't on the
     /// board.
@@ -90,10 +91,32 @@ impl GameState {
                     .values()
                     .any(|p| p.planets.contains_key(planet)) =>
             {
-                PlanetLocation::Token(None)
+                let system = (planet == &Planet::Mirage)
+                    .then(|| self.map_data.milty_information.as_ref())
+                    .flatten()
+                    .and_then(|milty| milty.mirage_system.clone());
+                PlanetLocation::Token(system)
             }
             _ => PlanetLocation::NotOnBoard,
         }
+    }
+
+    /// The planets on the board in `system`, both those on its tile and planet tokens placed in
+    /// it.
+    pub fn planets_in_system(&self, system: &SystemId) -> Vec<Planet> {
+        let tile_planets = systems()
+            .remove(system)
+            .map(|s| s.planets)
+            .unwrap_or_default();
+        let mut planets = Planet::iter()
+            .filter(|planet| match self.planet_location(planet) {
+                PlanetLocation::SystemTile => tile_planets.contains(planet),
+                PlanetLocation::Token(token_system) => token_system.as_ref() == Some(system),
+                PlanetLocation::NotOnBoard => false,
+            })
+            .collect::<Vec<_>>();
+        planets.sort();
+        planets
     }
 
     /// The minor factions dealt to the players ('Minor Factions').

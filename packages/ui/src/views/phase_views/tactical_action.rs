@@ -115,21 +115,17 @@ pub fn TacticalAction() -> Element {
 
     let activated_system = use_memo(move || progress().activated_system);
     let available_planets_in_system = use_memo(move || {
-        let mut planets = gc
-            .game_options()
-            .systems
-            .values()
-            .filter(|&s| activated_system().as_ref().eq(&Some(&s.id)))
-            .flat_map(|s| s.planets.iter())
-            .filter(|&p| gc.game_state().planet_location(p) != PlanetLocation::NotOnBoard)
-            .filter(|&p| {
+        let Some(system) = activated_system() else {
+            return Vec::new();
+        };
+        gc.game_state()
+            .planets_in_system(&system)
+            .into_iter()
+            .filter(|p| {
                 !current_player_planets().contains(p)
                     && taken_planets().iter().find(|(ps, _)| ps.eq(p)).is_none()
             })
-            .cloned()
-            .collect::<Vec<_>>();
-        planets.sort();
-        planets
+            .collect::<Vec<_>>()
     });
 
     let all_planets_not_owned = use_memo(move || {

@@ -220,6 +220,11 @@ pub fn setup_milty_import() -> TestGame {
     let milty = g.state().map_data.milty_information.as_ref().unwrap();
     assert_eq!(milty.mirage_system.as_deref(), Some("65"));
     assert!(g.player("Ben").planets.contains_key(&Planet::Mirage));
+    assert!(
+        g.state()
+            .planets_in_system(&"65".to_string())
+            .contains(&Planet::Mirage)
+    );
     g
 }
 
