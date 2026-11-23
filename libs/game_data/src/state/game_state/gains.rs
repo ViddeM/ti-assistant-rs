@@ -90,12 +90,42 @@ impl GameState {
         Ok(())
     }
 
+    /// Give `player` `tech` and apply its on-gain effects, see [Player::gain_tech].
+    ///
+    /// [Player::gain_tech]: crate::state::player::Player::gain_tech
+    pub fn gain_tech(&mut self, player: &PlayerId, tech: Technology) -> anyhow::Result<()> {
+        (self.players.get_mut(player))
+            .context("Player not found")?
+            .gain_tech(tech.clone())?;
+        self.apply_tech_gained(player, &tech)
+    }
+
+    /// Give `player` `tech` unless they already have it, applying its on-gain effects if they
+    /// didn't, see [Player::grant_tech].
+    ///
+    /// [Player::grant_tech]: crate::state::player::Player::grant_tech
+    pub fn grant_tech(&mut self, player: &PlayerId, tech: Technology) -> anyhow::Result<()> {
+        let gained = (self.players.get_mut(player))
+            .context("Player not found")?
+            .grant_tech(tech.clone());
+        if gained {
+            self.apply_tech_gained(player, &tech)?;
+        }
+        Ok(())
+    }
+
+    /// Have `player` research `tech` and apply its on-gain effects, see [Player::research_tech].
+    ///
+    /// [Player::research_tech]: crate::state::player::Player::research_tech
+    pub fn research_tech(&mut self, player: &PlayerId, tech: Technology) -> anyhow::Result<()> {
+        (self.players.get_mut(player))
+            .context("Player not found")?
+            .research_tech(tech.clone())?;
+        self.apply_tech_gained(player, &tech)
+    }
+
     /// Apply the effects of `player` gaining `tech`.
-    pub fn apply_tech_gained(
-        &mut self,
-        player: &PlayerId,
-        tech: &Technology,
-    ) -> anyhow::Result<()> {
+    fn apply_tech_gained(&mut self, player: &PlayerId, tech: &Technology) -> anyhow::Result<()> {
         if *tech == Technology::IIHQModernization {
             self.set_planet_owner(Planet::CustodiaVigilia, Some(player.clone()))?;
         }

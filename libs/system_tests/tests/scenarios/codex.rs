@@ -40,6 +40,31 @@ pub fn codex_iii_iihq_modernization() -> TestGame {
     g
 }
 
+#[test]
+fn researching_iihq_modernization_gives_custodia_vigilia() {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::CouncilKeleres)
+            .player("Bob", Faction::EmbersOfMuaat)
+            .player("Carol", Faction::XxchaKingdom)
+            .pok()
+            .codex(),
+    );
+    g.turn("Alice")
+        .frontier(
+            FrontierCard::EnigmaticDevice,
+            Some(FrontierCardAction::EnigmaticDevice {
+                tech: Technology::IIHQModernization,
+            }),
+        )
+        .end_turn();
+    assert!(
+        g.player("Alice")
+            .planets
+            .contains_key(&Planet::CustodiaVigilia)
+    );
+}
+
 /// Book of Latvinia gives a point to a player that controls all 4 technology specialties, and
 /// the speaker token to anyone else. The point can also be moved or removed by hand.
 pub fn codex_iv_book_of_latvinia() -> TestGame {

@@ -227,7 +227,7 @@ impl Player {
     }
 
     /// Gain a technology, failing if the player already has it.
-    pub fn gain_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
+    pub(crate) fn gain_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
         ensure!(
             !self.has_tech(&tech),
             "Player {self:?} already has tech {tech:?}"
@@ -238,7 +238,7 @@ impl Player {
     }
 
     /// Gain a technology if the player doesn't already have it. Returns whether it was gained.
-    pub fn grant_tech(&mut self, tech: Technology) -> bool {
+    pub(crate) fn grant_tech(&mut self, tech: Technology) -> bool {
         let gained = self.technologies.insert(tech);
         self.sync_helios_with_tech();
         gained
@@ -253,7 +253,7 @@ impl Player {
 
     /// Research a technology (for actions stating 'gain', use [`Player::gain_tech()`] instead),
     /// performing necessary checks for that action.
-    pub fn research_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
+    pub(crate) fn research_tech(&mut self, tech: Technology) -> anyhow::Result<()> {
         self.assert_can_research(&tech)?;
         self.gain_tech(tech)
     }

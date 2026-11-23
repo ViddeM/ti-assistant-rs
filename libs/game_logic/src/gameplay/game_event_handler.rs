@@ -69,35 +69,10 @@ pub fn update_game_state(
     let mut new_game_state = game_state.clone();
 
     try_update_game_state(&mut new_game_state, event.clone(), timestamp)?;
-    apply_techs_gained(game_state, &mut new_game_state)?;
     new_game_state.start_pending_fracture_rolls()?;
 
     new_game_state.last_event = Some((event, timestamp));
     *game_state = new_game_state;
-    Ok(())
-}
-
-/// Apply the on-gain effects of the techs that players have in `after` but not in `before`.
-fn apply_techs_gained(before: &GameState, after: &mut GameState) -> Result<(), GameError> {
-    let gained = after
-        .players
-        .iter()
-        .flat_map(|(id, player)| {
-            player
-                .technologies()
-                .iter()
-                .filter(|tech| {
-                    !before
-                        .players
-                        .get(id)
-                        .is_some_and(|p| p.technologies().contains(tech))
-                })
-                .map(|tech| (id.clone(), tech.clone()))
-        })
-        .collect::<Vec<_>>();
-    for (player, tech) in gained {
-        after.apply_tech_gained(&player, &tech)?;
-    }
     Ok(())
 }
 
@@ -438,12 +413,8 @@ fn try_update_game_state(
                 "Player already has technologies?"
             );
 
-            let Some(player) = game_state.players.get_mut(&player_id) else {
-                bail!("Player doesn't exist!")
-            };
-
             for tech in technologies.into_iter() {
-                player.gain_tech(tech)?;
+                game_state.gain_tech(&player_id, tech)?;
             }
         }
         Event::SetupSpeaker { player } => {
@@ -564,17 +535,22 @@ fn try_update_game_state(
                 .galactic_events
                 .in_play
                 .contains(&GalacticEvent::AdventOfTheWarSun);
-            for player in game_state.players.values_mut() {
-                if age_of_fighters {
-                    let tech = match player.faction {
+            let event_techs = (game_state.players.iter())
+                .flat_map(|(id, player)| {
+                    let fighter = match player.faction {
                         Faction::NaaluCollective => Technology::HybridCrystalFighterII,
                         _ => Technology::FighterII,
                     };
-                    player.grant_tech(tech);
-                }
-                if advent_of_the_war_sun && player.faction != Faction::EmbersOfMuaat {
-                    player.grant_tech(Technology::WarSun);
-                }
+                    let war_sun = player.faction != Faction::EmbersOfMuaat;
+                    (age_of_fighters.then_some(fighter))
+                        .into_iter()
+                        .chain((advent_of_the_war_sun && war_sun).then_some(Technology::WarSun))
+                        .map(|tech| (id.clone(), tech))
+                        .collect::<Vec<_>>()
+                })
+                .collect::<Vec<_>>();
+            for (player, tech) in event_techs {
+                game_state.grant_tech(&player, tech)?;
             }
 
             if game_state
@@ -773,8 +749,7 @@ fn try_update_game_state(
             }
 
             game_state.assert_enabled(&tech)?;
-            let current_player = game_state.get_current_player()?;
-            current_player.research_tech(tech.clone())?;
+            game_state.research_tech(&player, tech.clone())?;
 
             game_state
                 .tactical_progress_mut()?
@@ -974,8 +949,7 @@ fn try_update_game_state(
                 match data {
                     ActionCardAction::FocusedResearch { tech } => {
                         game_state.assert_enabled(&tech)?;
-                        let current_player = game_state.get_current_player()?;
-                        current_player.research_tech(tech.clone())?;
+                        game_state.research_tech(&player, tech)?;
                     }
                     ActionCardAction::DivertFunding {
                         remove_tech,
@@ -1003,8 +977,8 @@ fn try_update_game_state(
                         );
 
                         if take_tech != remove_tech {
-                            current_player.research_tech(take_tech.clone())?;
-                            current_player.remove_tech(&remove_tech);
+                            game_state.research_tech(&player, take_tech)?;
+                            game_state.get_current_player()?.remove_tech(&remove_tech);
                         }
                     }
                     ActionCardAction::Plagiarize { tech } => {
@@ -1014,8 +988,7 @@ fn try_update_game_state(
                             "Unable to take tech {tech:?} for this action card"
                         );
 
-                        let current_player = game_state.get_current_player()?;
-                        current_player.gain_tech(tech)?;
+                        game_state.gain_tech(&player, tech)?;
                     }
                     ActionCardAction::Brilliance { player: target } => {
                         if let Some(target) = target {
@@ -1335,20 +1308,14 @@ fn try_update_game_state(
                             "{} is a unit upgrade",
                             info.name
                         );
-                        game_state
-                            .players
-                            .get_mut(researcher)
-                            .with_context(|| format!("Player doesn't exist '{researcher}'"))?
-                            .research_tech(tech.clone())?;
+                        game_state.research_tech(researcher, tech.clone())?;
                     }
 
-                    let deepwrought = game_state
-                        .players
-                        .get_mut(&player)
-                        .context("Player not found")?;
                     for tech in researched.into_values() {
+                        let deepwrought =
+                            (game_state.players.get(&player)).context("Player not found")?;
                         if !deepwrought.has_tech(&tech) {
-                            deepwrought.gain_tech(tech)?;
+                            game_state.gain_tech(&player, tech)?;
                         }
                     }
                 }
@@ -1496,9 +1463,7 @@ fn try_update_game_state(
                 match progress {
                     FrontierCardAction::EnigmaticDevice { tech } => {
                         game_state.assert_enabled(&tech)?;
-
-                        let current_player = game_state.get_current_player()?;
-                        current_player.research_tech(tech.clone())?;
+                        game_state.research_tech(&player, tech)?;
                     }
                     FrontierCardAction::Mirage { system, attachment } => {
                         ensure!(
@@ -2044,7 +2009,7 @@ fn try_update_game_state(
             game_state.assert_phase(Phase::EntropicScar)?;
             game_state.assert_enabled(&tech)?;
 
-            let Some(status_state) = game_state.status_phase_state.as_mut() else {
+            let Some(status_state) = game_state.status_phase_state.as_ref() else {
                 bail!("Status phase state not set!")
             };
             ensure!(
@@ -2054,7 +2019,7 @@ fn try_update_game_state(
 
             let p = game_state
                 .players
-                .get_mut(&player)
+                .get(&player)
                 .context("Player doesn't exist")?;
             ensure!(
                 tech.info().origin == TechOrigin::Faction(p.faction),
@@ -2062,8 +2027,11 @@ fn try_update_game_state(
                 tech.info().name,
                 p.faction.name()
             );
-            p.gain_tech(tech.clone())?;
-            status_state.entropic_scar_techs.insert(player, tech);
+            game_state.gain_tech(&player, tech.clone())?;
+            (game_state.status_phase_state.as_mut())
+                .context("Status phase state not set!")?
+                .entropic_scar_techs
+                .insert(player, tech);
         }
         Event::CompleteEntropicScarPhase => {
             game_state.assert_phase(Phase::EntropicScar)?;
@@ -2110,17 +2078,20 @@ fn try_update_game_state(
                 "The Maw of Worlds can only be played when there is an agenda phase (the custodians token is taken)"
             );
 
-            let Some(player) = game_state.players.get_mut(&player) else {
+            let Some(p) = game_state.players.get(&player) else {
                 bail!("Player doesn't exist");
             };
 
             ensure!(
-                player.relics.contains(&Relic::MawOfWorlds),
+                p.relics.contains(&Relic::MawOfWorlds),
                 "Player doesn't have the Maw of Worlds relic!"
             );
 
-            player.gain_tech(tech)?;
-            player.relics.remove(&Relic::MawOfWorlds);
+            game_state.gain_tech(&player, tech)?;
+            (game_state.players.get_mut(&player))
+                .context("Player doesn't exist")?
+                .relics
+                .remove(&Relic::MawOfWorlds);
         }
         Event::CompleteRelicsPhase => {
             game_state.assert_phase(Phase::Relics)?;
@@ -2409,12 +2380,8 @@ fn try_update_game_state(
                 );
             }
 
-            let p = game_state
-                .players
-                .get_mut(&player)
-                .context("Player doesn't exist")?;
             for tech in &technologies {
-                p.research_tech(tech.clone())?;
+                game_state.research_tech(&player, tech.clone())?;
             }
             if minister_research {
                 game_state
@@ -2431,12 +2398,11 @@ fn try_update_game_state(
         }
         Event::AddTechToPlayer { player, tech } => {
             game_state.assert_enabled(&tech)?;
-
-            let Some(p) = game_state.players.get_mut(&player) else {
-                bail!("Player does not exist?");
-            };
-
-            p.grant_tech(tech);
+            ensure!(
+                game_state.players.contains_key(&player),
+                "Player does not exist?"
+            );
+            game_state.grant_tech(&player, tech)?;
         }
         Event::RemoveTechFromPlayer { player, tech } => {
             let Some(p) = game_state.players.get_mut(&player) else {
@@ -3084,12 +3050,8 @@ fn try_update_game_state(
             for planet in planets {
                 game_state.set_planet_owner(planet, Some(player.clone()))?;
             }
-            let p = game_state
-                .players
-                .get_mut(&player)
-                .context("Player doesn't exist")?;
             for tech in technologies {
-                p.research_tech(tech)?;
+                game_state.research_tech(&player, tech)?;
             }
             game_state
                 .galactic_events
@@ -3139,15 +3101,11 @@ fn perform_strategic_primary(
                 "Cannot take a second tech without a first tech"
             );
 
-            let player = game_state
-                .players
-                .get_mut(player)
-                .context("Player not found")?;
             if let Some(t) = first_tech.clone() {
-                player.research_tech(t)?;
+                game_state.research_tech(player, t)?;
             }
             if let Some(t) = second_tech.clone() {
-                player.research_tech(t)?;
+                game_state.research_tech(player, t)?;
             }
 
             Ok(StrategicPrimaryProgress::Technology {
@@ -3201,27 +3159,22 @@ fn perform_strategic_secondary(
 
     match action.clone() {
         StrategicSecondaryAction::Technology { tech } => {
-            let player = game_state
-                .players
-                .get_mut(player)
-                .context("Player not found")?;
-            player.research_tech(tech)?;
+            game_state.research_tech(player, tech)?;
         }
         StrategicSecondaryAction::TechnologyJolNar {
             first_tech,
             second_tech,
         } => {
-            let player = game_state
-                .players
-                .get_mut(player)
-                .context("Player not found")?;
+            let faction = (game_state.players.get(player))
+                .context("Player not found")?
+                .faction;
             ensure!(
-                player.faction == Faction::UniversitiesOfJolNar,
+                faction == Faction::UniversitiesOfJolNar,
                 "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary"
             );
-            player.research_tech(first_tech)?;
+            game_state.research_tech(player, first_tech)?;
             if let Some(t) = second_tech {
-                player.research_tech(t)?;
+                game_state.research_tech(player, t)?;
             }
         }
         _ => {}
