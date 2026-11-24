@@ -198,7 +198,7 @@ impl TakenFrom {
 
 impl TacticalProgress {
     /// Whether `planet` was taken this turn without anybody having owned it before, which is
-    /// when it's explored and grants its relic.
+    /// when it grants its relic.
     pub fn is_first_owned(&self, planet: &Planet) -> bool {
         self.taken_planets.get(planet) == Some(&TakenFrom::NeverOwned)
     }

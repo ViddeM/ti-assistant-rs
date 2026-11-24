@@ -673,11 +673,7 @@ fn try_update_game_state(
                     Some(TakenFrom::Player(_)) => {
                         bail!("Cannot explore planet that was taken from another player")
                     }
-                    Some(TakenFrom::Unowned) => bail!(
-                        "{} has been owned before, so it isn't explored",
-                        planet.info().name
-                    ),
-                    Some(TakenFrom::NeverOwned) => {}
+                    Some(TakenFrom::NeverOwned | TakenFrom::Unowned) => {}
                 }
 
                 ensure!(

@@ -33,13 +33,14 @@ source: libs/system_tests/src/check.rs
   29 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
   30 TacticalActionTakePlanet(Carol)          r1 TacticalAction     Carol
   31 TacticalActionTakePlanet(Carol)          r1 TacticalAction     Carol
-  32 TacticalActionTakePlanet(Carol)          r1 TacticalAction     Carol
-  33 TacticalActionGainRelic(Carol)           r1 TacticalAction     Carol
-  34 ResearchBookOfLatviniaTechs(Carol)       r1 TacticalAction     Carol
-  35 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
-  36 EndTurn(Carol)                           r1 Action             Alice
-  37 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
-  38 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
-  39 TacticalActionGainRelic(Alice)           r1 TacticalAction     Alice
-  40 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
-  41 EndTurn(Alice)                           r1 Action             Bob
+  32 TacticalActionAttachPlanetAttachment(Carol) r1 TacticalAction     Carol
+  33 TacticalActionTakePlanet(Carol)          r1 TacticalAction     Carol
+  34 TacticalActionGainRelic(Carol)           r1 TacticalAction     Carol
+  35 ResearchBookOfLatviniaTechs(Carol)       r1 TacticalAction     Carol
+  36 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
+  37 EndTurn(Carol)                           r1 Action             Alice
+  38 TacticalActionBegin(Alice)               r1 TacticalAction     Alice
+  39 TacticalActionTakePlanet(Alice)          r1 TacticalAction     Alice
+  40 TacticalActionGainRelic(Alice)           r1 TacticalAction     Alice
+  41 TacticalActionCommit(Alice)              r1 EndActionTurn      Alice
+  42 EndTurn(Alice)                           r1 Action             Bob

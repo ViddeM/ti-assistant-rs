@@ -880,7 +880,8 @@ pub fn thunders_edge_the_fracture_enters_play() -> TestGame {
 
 /// The first player to gain a planet in the Fracture gains a relic, with its on-gain effects,
 /// before their tactical action can end. Gaining one that somebody has owned before gives no
-/// relic and isn't explored, and planets given from the admin page never give a relic. Taking
+/// relic but is still explored when nobody controls it, and planets given from the admin page
+/// never give a relic. Taking
 /// legendary Styx from its owner takes Shard of the Throne with it.
 pub fn thunders_edge_fracture_planet_relics() -> TestGame {
     let mut g = action_phase(three_players().pok().codex().thunders_edge());
@@ -953,14 +954,7 @@ pub fn thunders_edge_fracture_planet_relics() -> TestGame {
             gain("Carol", Planet::Lethe, Relic::TheQuantumcore),
             "Carol doesn't gain a relic for Lethe",
         )
-        .expect_rejected(
-            Event::TacticalActionAttachPlanetAttachment {
-                player: p("Carol"),
-                planet: Planet::Centauri,
-                attachment: PlanetAttachment::ParadiseWorld,
-            },
-            "Centauri has been owned before, so it isn't explored",
-        )
+        .attach(Planet::Centauri, PlanetAttachment::ParadiseWorld)
         .take(Planet::Phlegethon)
         .relic_for(Planet::Phlegethon, Some(Relic::BookOfLatvinia))
         .expect_rejected(

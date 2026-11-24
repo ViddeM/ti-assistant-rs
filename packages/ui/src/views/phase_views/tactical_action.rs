@@ -445,12 +445,7 @@ pub fn SelectPlanetAttachment(
                 p { "Taken from {prev}" }
             };
         }
-        TakenFrom::Unowned => {
-            return rsx! {
-                p { "Owned before, so it isn't explored" }
-            };
-        }
-        TakenFrom::NeverOwned => {}
+        TakenFrom::NeverOwned | TakenFrom::Unowned => {}
     }
 
     if let Some(a) = attachment() {

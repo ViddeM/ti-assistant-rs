@@ -71,7 +71,8 @@ players:
     planets:
       ArchonRen: []
       ArchonTau: []
-      Centauri: []
+      Centauri:
+        - ParadiseWorld
       Lethe: []
       Phlegethon: []
     technologies:
@@ -146,9 +147,9 @@ playersPlayTime:
     secs: 360
     nanos: 0
   Carol:
-    secs: 600
+    secs: 660
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:41:00Z"
+currentTurnStartTime: "2025-01-01T12:42:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~
@@ -158,4 +159,4 @@ fractureInPlay: true
 lastEvent:
   - EndTurn:
       player: Alice
-  - "2025-01-01T12:41:00Z"
+  - "2025-01-01T12:42:00Z"
