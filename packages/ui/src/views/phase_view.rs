@@ -7,7 +7,8 @@ use crate::{
         frontier_card::FrontierCardView,
         phase_views::{
             action_card::ActionCardView, action_phase::ActionPhaseView,
-            agenda_phase_view::AgendaPhaseView, creation_phase::CreationPhaseView,
+            agenda_phase_view::AgendaPhaseView, breakthrough_action::BreakthroughActionView,
+            creation_phase::CreationPhaseView,
             end_action_phase::EndActionPhaseView, entropic_scar_phase::EntropicScarPhaseView,
             fracture_view::FractureView, post_setup_phase::PostSetupPhaseView,
             relic_card::RelicCardView, relics_phase::RelicsPhaseView, setup_phase::SetupPhaseView,
@@ -60,6 +61,9 @@ pub fn PhaseView() -> Element {
         },
         Phase::FrontierCardAction => rsx! {
             FrontierCardView {}
+        },
+        Phase::BreakthroughAction => rsx! {
+            BreakthroughActionView {}
         },
         Phase::Agenda => rsx! {
             AgendaPhaseView {}

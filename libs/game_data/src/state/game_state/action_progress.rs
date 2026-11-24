@@ -36,6 +36,8 @@ pub enum ActionPhaseProgress {
     Leader(LeaderProgress),
     /// The progress of a frontier card.
     FrontierCard(FrontierCardProgress),
+    /// The ACTION of the current player's breakthrough is being performed.
+    Breakthrough,
     /// The progress of a relic action.
     Relic(RelicProgress),
     /// The progress of the roll / spawn.

@@ -19,5 +19,6 @@ source: libs/system_tests/src/check.rs
   15 SetBreakthrough(Alice)                   r1 Fracture           Alice
   16 RollForTheFracture(Alice)                r1 Action             Alice
   17 SetRelicOwner(Bob)                       r1 Action             Alice
-  18 PlayBreakthroughAction(Alice)            r1 EndActionTurn      Alice      Alice=1
-  19 EndTurn(Alice)                           r1 Action             Bob
+  18 BreakthroughActionBegin(Alice)           r1 BreakthroughAction Alice
+  19 BreakthroughActionCommit(Alice)          r1 EndActionTurn      Alice      Alice=1
+  20 EndTurn(Alice)                           r1 Action             Bob

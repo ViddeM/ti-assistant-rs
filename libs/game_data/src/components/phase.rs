@@ -37,6 +37,9 @@ pub enum Phase {
     /// Performing a frontier card action
     FrontierCardAction,
 
+    /// Performing a breakthrough action
+    BreakthroughAction,
+
     /// Performing a relic action
     RelicAction,
 
@@ -76,6 +79,7 @@ impl Display for Phase {
                 Phase::ActionCardAction => "Action Card Action",
                 Phase::LeaderAction => "Leader Action",
                 Phase::FrontierCardAction => "Frontier Card Action",
+                Phase::BreakthroughAction => "Breakthrough Action",
                 Phase::RelicAction => "Relic Action",
                 Phase::Fracture => "Fracture",
                 Phase::EndActionTurn => "End Action Turn",

@@ -9,7 +9,7 @@ use ti_helper_game_data::{
     },
     components::{
         action_card::{ActionCard, ActionCardPlay},
-        breakthrough::{Breakthrough, BreakthroughKind},
+        breakthrough::BreakthroughKind,
         frontier_card::FrontierCardType,
         galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
@@ -33,10 +33,7 @@ use crate::{
         event_context::EventContext, game_context::GameContext, info_context::Info,
         player_view::PlayerViewContext,
     },
-    views::{
-        destroyed_planets::planets_on_board, map_view_mode::RingNumbering,
-        phase_views::breakthrough_action::BreakthroughActionView,
-    },
+    views::{destroyed_planets::planets_on_board, map_view_mode::RingNumbering},
 };
 
 const ACTION_PHASE_SCSS: Asset = asset!("/assets/styling/views/phase_views/action_phase.scss");
@@ -161,10 +158,6 @@ pub fn ActionPhaseView() -> Element {
 enum ComponentMode {
     ActionCard,
     GalacticEvent,
-    Breakthrough {
-        player: PlayerId,
-        breakthrough: Breakthrough,
-    },
     PlayRelic,
     GainRelic,
     FrontierCard,
@@ -223,8 +216,8 @@ fn ComponentSelectRow() -> Element {
         gc.game_state()
             .players
             .get(&current_player())
-            .and_then(|p| p.breakthrough.clone())
-            .filter(|b| b.info().kind == BreakthroughKind::Action)
+            .and_then(|p| p.breakthrough.as_ref())
+            .is_some_and(|b| b.info().kind == BreakthroughKind::Action)
     });
 
     let single_button_techs = use_memo(move || {
@@ -258,14 +251,12 @@ fn ComponentSelectRow() -> Element {
                     "Galactic Event"
                 }
             }
-            if let Some(breakthrough) = action_breakthrough() {
+            if action_breakthrough() {
                 Button {
-                    disabled: matches!(*component_mode.read(), ComponentMode::Breakthrough { .. }),
                     onclick: move |_| {
-                        component_mode
-                            .set(ComponentMode::Breakthrough {
+                        event
+                            .send_event(Event::BreakthroughActionBegin {
                                 player: current_player(),
-                                breakthrough: breakthrough.clone(),
                             })
                     },
                     "Breakthrough"
@@ -336,12 +327,6 @@ fn DisplayComponentMode(mode: ReadSignal<ComponentMode>) -> Element {
         },
         ComponentMode::GalacticEvent => rsx! {
             GalacticEventActionView {}
-        },
-        ComponentMode::Breakthrough {
-            player,
-            breakthrough,
-        } => rsx! {
-            BreakthroughActionView { player: player.clone(), breakthrough: breakthrough.clone() }
         },
         ComponentMode::PlayRelic => rsx! {
             PlayRelicView {}

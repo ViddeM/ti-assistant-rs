@@ -1700,14 +1700,15 @@ pub fn thunders_edge_breakthrough_actions() -> TestGame {
             .pok()
             .thunders_edge(),
     );
-    let play = |player: &str, action| Event::PlayBreakthroughAction {
+    let begin = |player: &str| Event::BreakthroughActionBegin { player: p(player) };
+    let play = |player: &str, action| Event::BreakthroughActionCommit {
         player: p(player),
         action,
     };
 
     g.expect_rejected(
-        play("Alice", BreakthroughAction::Psychospore),
-        "Alice doesn't have Psychospore",
+        begin("Alice"),
+        "Alice doesn't have a breakthrough with an action",
     );
     g.apply(Event::SetBreakthrough {
         player: p("Alice"),
@@ -1720,27 +1721,32 @@ pub fn thunders_edge_breakthrough_actions() -> TestGame {
     })
     .apply(roll("Bob", false));
 
-    g.expect_rejected(
-        play("Bob", BreakthroughAction::DeorbitBarrage),
-        "wrong players turn",
-    );
+    g.expect_rejected(begin("Bob"), "wrong players turn");
     let alice = g
         .turn("Alice")
-        .breakthrough(BreakthroughAction::Psychospore);
-    assert_eq!(alice.phase(), Phase::EndActionTurn);
-    alice
         .expect_rejected(
             play("Alice", BreakthroughAction::Psychospore),
-            "expected Action",
+            "expected BreakthroughAction",
+        )
+        .apply(begin("Alice"));
+    assert_eq!(alice.phase(), Phase::BreakthroughAction);
+    let alice = alice.apply(play("Alice", BreakthroughAction::Psychospore));
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice
+        .expect_rejected(begin("Alice"), "expected Action")
+        .expect_rejected(
+            play("Alice", BreakthroughAction::Psychospore),
+            "expected BreakthroughAction",
         )
         .end_turn();
 
     g.turn("Bob")
+        .apply(begin("Bob"))
         .expect_rejected(
             play("Bob", BreakthroughAction::Psychospore),
             "Bob doesn't have Psychospore",
         )
-        .breakthrough(BreakthroughAction::DeorbitBarrage)
+        .apply(play("Bob", BreakthroughAction::DeorbitBarrage))
         .end_turn();
     assert_eq!(g.current_player(), p("Carol"));
     g
@@ -1756,7 +1762,7 @@ pub fn thunders_edge_vaults_of_the_heir() -> TestGame {
             .pok()
             .thunders_edge(),
     );
-    let vaults = |purged_tech, relic| Event::PlayBreakthroughAction {
+    let vaults = |purged_tech, relic| Event::BreakthroughActionCommit {
         player: p("Alice"),
         action: BreakthroughAction::VaultsOfTheHeir { purged_tech, relic },
     };
@@ -1771,20 +1777,18 @@ pub fn thunders_edge_vaults_of_the_heir() -> TestGame {
         player: Some(p("Bob")),
     });
 
-    g.expect_rejected(
-        vaults(Technology::GravityDrive, Relic::ShardOfTheThrone),
-        "Alice doesn't own Gravity Drive",
-    )
-    .expect_rejected(
-        vaults(Technology::BioStims, Relic::TheCodex),
-        "already owned",
-    );
     let alice = g
         .turn("Alice")
-        .breakthrough(BreakthroughAction::VaultsOfTheHeir {
-            purged_tech: Technology::BioStims,
-            relic: Relic::ShardOfTheThrone,
-        });
+        .apply(Event::BreakthroughActionBegin { player: p("Alice") })
+        .expect_rejected(
+            vaults(Technology::GravityDrive, Relic::ShardOfTheThrone),
+            "Alice doesn't own Gravity Drive",
+        )
+        .expect_rejected(
+            vaults(Technology::BioStims, Relic::TheCodex),
+            "already owned",
+        )
+        .apply(vaults(Technology::BioStims, Relic::ShardOfTheThrone));
     assert_eq!(alice.phase(), Phase::EndActionTurn);
     alice.end_turn();
 
@@ -1823,7 +1827,7 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
         })
         .apply(roll(player, false));
     }
-    let visionaria = |researched: &[(&str, Technology)]| Event::PlayBreakthroughAction {
+    let visionaria = |researched: &[(&str, Technology)]| Event::BreakthroughActionCommit {
         player: p("Alice"),
         action: BreakthroughAction::VisionariaSelect {
             researched: researched
@@ -1833,39 +1837,38 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
         },
     };
 
-    g.expect_rejected(
-        visionaria(&[("Alice", Technology::GravityDrive)]),
-        "Alice can't research with their own Visionaria Select",
-    )
-    .expect_rejected(
-        visionaria(&[
-            ("Bob", Technology::GravityDrive),
-            ("Carol", Technology::CarrierII),
-        ]),
-        "Carrier II is a unit upgrade",
-    )
-    .expect_rejected(
-        visionaria(&[("Bob", Technology::GeneticRecombination)]),
-        "Genetic Recombination is a faction technology",
-    )
-    .expect_rejected(
-        visionaria(&[("Bob", Technology::BioStims)]),
-        "already has tech",
-    );
+    let alice = g
+        .turn("Alice")
+        .apply(Event::BreakthroughActionBegin { player: p("Alice") })
+        .expect_rejected(
+            visionaria(&[("Alice", Technology::GravityDrive)]),
+            "Alice can't research with their own Visionaria Select",
+        )
+        .expect_rejected(
+            visionaria(&[
+                ("Bob", Technology::GravityDrive),
+                ("Carol", Technology::CarrierII),
+            ]),
+            "Carrier II is a unit upgrade",
+        )
+        .expect_rejected(
+            visionaria(&[("Bob", Technology::GeneticRecombination)]),
+            "Genetic Recombination is a faction technology",
+        )
+        .expect_rejected(
+            visionaria(&[("Bob", Technology::BioStims)]),
+            "already has tech",
+        );
     assert!(
-        !g.player("Bob")
+        !alice
+            .player("Bob")
             .technologies()
             .contains(&Technology::GravityDrive)
     );
-
-    let alice = g
-        .turn("Alice")
-        .breakthrough(BreakthroughAction::VisionariaSelect {
-            researched: BTreeMap::from([
-                (p("Bob"), Technology::GravityDrive),
-                (p("Carol"), Technology::GravityDrive),
-            ]),
-        });
+    let alice = alice.apply(visionaria(&[
+        ("Bob", Technology::GravityDrive),
+        ("Carol", Technology::GravityDrive),
+    ]));
     assert_eq!(alice.phase(), Phase::EndActionTurn);
     alice.end_turn();
     for player in ["Alice", "Bob", "Carol"] {

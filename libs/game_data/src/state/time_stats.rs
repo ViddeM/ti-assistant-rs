@@ -42,6 +42,7 @@ impl From<Phase> for PhaseGroup {
             | Phase::ActionCardAction
             | Phase::LeaderAction
             | Phase::FrontierCardAction
+            | Phase::BreakthroughAction
             | Phase::RelicAction
             | Phase::Fracture
             | Phase::EndActionTurn => PhaseGroup::Action,

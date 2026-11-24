@@ -327,7 +327,9 @@ impl<'g> Turn<'g> {
     /// Perform the ACTION of the player's breakthrough.
     #[track_caller]
     pub fn breakthrough(self, action: BreakthroughAction) -> Self {
-        self.game.apply(Event::PlayBreakthroughAction {
+        self.game
+            .apply(Event::BreakthroughActionBegin { player: self.id() });
+        self.game.apply(Event::BreakthroughActionCommit {
             player: self.id(),
             action,
         });

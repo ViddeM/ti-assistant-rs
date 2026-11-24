@@ -16,19 +16,38 @@ use crate::{
         button::Button,
         dropdown::{RelicDropdown, TechDropdown},
     },
-    data::{event_context::EventContext, game_context::GameContext},
+    data::{
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+    },
     views::phase_views::action_phase::unowned_relics,
 };
 
 #[component]
-pub fn BreakthroughActionView(player: PlayerId, breakthrough: Breakthrough) -> Element {
-    let name = breakthrough.info().name;
+pub fn BreakthroughActionView() -> Element {
+    let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
+
+    let current_player = use_memo(move || {
+        gc.game_state()
+            .current_player()
+            .expect("Current player to exist in action phase")
+    });
+
+    let breakthrough = use_memo(move || {
+        gc.game_state()
+            .players
+            .get(&current_player())
+            .and_then(|p| p.breakthrough.clone())
+            .expect("Current player to have a breakthrough")
+    });
 
     rsx! {
-        div {
-            fieldset { class: "play-action-card-container",
-                legend { "{name}" }
-                BreakthroughActionForm { player, breakthrough }
+        div { class: "card column",
+            h2 { "{breakthrough().info().name}" }
+            if view.is_active() {
+                BreakthroughActionForm { player: current_player(), breakthrough: breakthrough() }
+            } else {
+                p { "Not your turn, currently {current_player()} is playing" }
             }
         }
     }
@@ -59,7 +78,7 @@ fn BreakthroughActionForm(player: PlayerId, breakthrough: Breakthrough) -> Eleme
         Button {
             onclick: move |_| {
                 event
-                    .send_event(Event::PlayBreakthroughAction {
+                    .send_event(Event::BreakthroughActionCommit {
                         player: player.clone(),
                         action: action.clone(),
                     })
@@ -107,7 +126,7 @@ fn VaultsOfTheHeirForm(player: PlayerId) -> Element {
                 disabled: purged_tech().is_none() || relic().is_none(),
                 onclick: move |_| {
                     event
-                        .send_event(Event::PlayBreakthroughAction {
+                        .send_event(Event::BreakthroughActionCommit {
                             player: player.clone(),
                             action: BreakthroughAction::VaultsOfTheHeir {
                                 purged_tech: purged_tech().expect("Technology to be selected"),
@@ -153,7 +172,7 @@ fn VisionariaSelectForm(player: PlayerId) -> Element {
                 class: "margin-top",
                 onclick: move |_| {
                     event
-                        .send_event(Event::PlayBreakthroughAction {
+                        .send_event(Event::BreakthroughActionCommit {
                             player: player.clone(),
                             action: BreakthroughAction::VisionariaSelect {
                                 researched: researched(),

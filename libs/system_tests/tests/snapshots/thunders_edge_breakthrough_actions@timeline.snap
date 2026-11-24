@@ -20,7 +20,9 @@ source: libs/system_tests/src/check.rs
   16 RollForTheFracture(Alice)                r1 Action             Alice
   17 SetBreakthrough(Bob)                     r1 Fracture           Alice
   18 RollForTheFracture(Bob)                  r1 Action             Alice
-  19 PlayBreakthroughAction(Alice)            r1 EndActionTurn      Alice
-  20 EndTurn(Alice)                           r1 Action             Bob
-  21 PlayBreakthroughAction(Bob)              r1 EndActionTurn      Bob
-  22 EndTurn(Bob)                             r1 Action             Carol
+  19 BreakthroughActionBegin(Alice)           r1 BreakthroughAction Alice
+  20 BreakthroughActionCommit(Alice)          r1 EndActionTurn      Alice
+  21 EndTurn(Alice)                           r1 Action             Bob
+  22 BreakthroughActionBegin(Bob)             r1 BreakthroughAction Bob
+  23 BreakthroughActionCommit(Bob)            r1 EndActionTurn      Bob
+  24 EndTurn(Bob)                             r1 Action             Carol

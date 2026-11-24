@@ -127,7 +127,7 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 480
+    secs: 540
     nanos: 0
   Bob:
     secs: 120
@@ -135,7 +135,7 @@ playersPlayTime:
   Carol:
     secs: 120
     nanos: 0
-currentTurnStartTime: "2025-01-01T12:19:00Z"
+currentTurnStartTime: "2025-01-01T12:20:00Z"
 naaluTelepathy: ~
 teExpedition:
   completed: ~
@@ -145,4 +145,4 @@ fractureInPlay: false
 lastEvent:
   - EndTurn:
       player: Alice
-  - "2025-01-01T12:19:00Z"
+  - "2025-01-01T12:20:00Z"

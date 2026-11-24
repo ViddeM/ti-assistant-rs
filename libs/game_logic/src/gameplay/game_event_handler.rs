@@ -30,6 +30,7 @@ use ti_helper_game_data::{
     components::{
         action_card::{ActionCard, ActionCardPlay},
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind},
+        breakthrough::BreakthroughKind,
         frontier_card::FrontierCardType,
         galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
@@ -1243,12 +1244,29 @@ fn try_update_game_state(
 
             game_state.phase = Phase::EndActionTurn;
         }
-        Event::PlayBreakthroughAction { player, action } => {
+        Event::BreakthroughActionBegin { player } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
             ensure!(
                 game_state.action_progress.is_none(),
                 "Invalid game state, action_progress not None during Action Phase"
+            );
+            ensure!(
+                (game_state.players.get(&player))
+                    .and_then(|p| p.breakthrough.as_ref())
+                    .is_some_and(|b| b.info().kind == BreakthroughKind::Action),
+                "{player} doesn't have a breakthrough with an action"
+            );
+
+            game_state.action_progress = Some(ActionPhaseProgress::Breakthrough);
+            game_state.phase = Phase::BreakthroughAction;
+        }
+        Event::BreakthroughActionCommit { player, action } => {
+            game_state.assert_phase(Phase::BreakthroughAction)?;
+            game_state.assert_player_turn(&player)?;
+            ensure!(
+                game_state.action_progress == Some(ActionPhaseProgress::Breakthrough),
+                "Not currently performing a breakthrough action"
             );
             let breakthrough = action.breakthrough();
             ensure!(
@@ -1259,6 +1277,7 @@ fn try_update_game_state(
                 "{player} doesn't have {}",
                 breakthrough.info().name
             );
+            game_state.action_progress = None;
 
             match action {
                 BreakthroughAction::Psychospore
@@ -3265,6 +3284,7 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::EndActionTurn
         | Phase::LeaderAction
         | Phase::FrontierCardAction
+        | Phase::BreakthroughAction
         | Phase::RelicAction
         | Phase::Fracture
         | Phase::ActionCardAction => true,

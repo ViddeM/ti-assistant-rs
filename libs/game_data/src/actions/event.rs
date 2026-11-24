@@ -273,8 +273,14 @@ pub enum Event {
         action: GalacticEventAction,
     },
 
-    /// Perform the ACTION of the player's breakthrough.
-    PlayBreakthroughAction {
+    /// Begin the ACTION of the player's breakthrough.
+    BreakthroughActionBegin {
+        /// The player who performs the action.
+        player: PlayerId,
+    },
+
+    /// Finish the ACTION of the player's breakthrough.
+    BreakthroughActionCommit {
         /// The player who performs the action.
         player: PlayerId,
         /// Which action it is, and its data.
@@ -834,7 +840,8 @@ impl Event {
             | Event::LeaderActionCommit { player, .. }
             | Event::PuppetsOfTheBlade { player }
             | Event::PlayGalacticEventAction { player, .. }
-            | Event::PlayBreakthroughAction { player, .. }
+            | Event::BreakthroughActionBegin { player }
+            | Event::BreakthroughActionCommit { player, .. }
             | Event::PlayTechAction { player, .. }
             | Event::CoexistenceBegin { player, .. }
             | Event::CoexistenceEnd { player, .. }
