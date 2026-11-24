@@ -25,18 +25,17 @@ source: libs/system_tests/src/check.rs
   21 RollForTheFracture(Carol)                r1 Action             Alice
   22 BreakthroughActionBegin(Alice)           r1 BreakthroughAction Alice
   23 VisionariaSelectDecision(Bob)            r1 BreakthroughAction Alice
-  24 VisionariaSelectDecision(Bob)            r1 BreakthroughAction Alice
-  25 VisionariaSelectDecision(Carol)          r1 BreakthroughAction Alice
-  26 BreakthroughActionCommit(Alice)          r1 EndActionTurn      Alice
-  27 EndTurn(Alice)                           r1 Action             Bob
-  28 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
-  29 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
-  30 EndTurn(Bob)                             r1 Action             Carol
-  31 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
-  32 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
-  33 EndTurn(Carol)                           r1 Action             Alice
-  34 BreakthroughActionBegin(Alice)           r1 BreakthroughAction Alice
-  35 VisionariaSelectDecision(Bob)            r1 BreakthroughAction Alice
-  36 VisionariaSelectDecision(Carol)          r1 BreakthroughAction Alice
-  37 BreakthroughActionCommit(Alice)          r1 EndActionTurn      Alice
-  38 EndTurn(Alice)                           r1 Action             Bob
+  24 VisionariaSelectDecision(Carol)          r1 BreakthroughAction Alice
+  25 BreakthroughActionCommit(Alice)          r1 EndActionTurn      Alice
+  26 EndTurn(Alice)                           r1 Action             Bob
+  27 TacticalActionBegin(Bob)                 r1 TacticalAction     Bob
+  28 TacticalActionCommit(Bob)                r1 EndActionTurn      Bob
+  29 EndTurn(Bob)                             r1 Action             Carol
+  30 TacticalActionBegin(Carol)               r1 TacticalAction     Carol
+  31 TacticalActionCommit(Carol)              r1 EndActionTurn      Carol
+  32 EndTurn(Carol)                           r1 Action             Alice
+  33 BreakthroughActionBegin(Alice)           r1 BreakthroughAction Alice
+  34 VisionariaSelectDecision(Bob)            r1 BreakthroughAction Alice
+  35 VisionariaSelectDecision(Carol)          r1 BreakthroughAction Alice
+  36 BreakthroughActionCommit(Alice)          r1 EndActionTurn      Alice
+  37 EndTurn(Alice)                           r1 Action             Bob

@@ -258,13 +258,15 @@ impl Player {
         self.gain_tech(tech)
     }
 
+    /// Whether the player can research technologies at all: Nekro Virus can't.
+    pub fn can_research(&self) -> bool {
+        self.faction != Faction::NekroVirus
+    }
+
     /// Asserts that the player is allowed to research `tech`: Nekro Virus can't research, and
     /// faction technologies can only be researched by their own faction.
     pub fn assert_can_research(&self, tech: &Technology) -> anyhow::Result<()> {
-        ensure!(
-            self.faction != Faction::NekroVirus,
-            "Nekro Virus cannot research techs"
-        );
+        ensure!(self.can_research(), "Nekro Virus cannot research techs");
         ensure!(
             match tech.info().origin {
                 TechOrigin::Base => true,

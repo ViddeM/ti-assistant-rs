@@ -1859,9 +1859,9 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
             decide("Bob", Some(Technology::BioStims)),
             "already has tech",
         )
-        .apply(decide("Bob", None))
-        .expect_rejected(done.clone(), "Waiting for Carol to decide")
         .apply(decide("Bob", Some(Technology::GravityDrive)))
+        .expect_rejected(done.clone(), "Waiting for Carol to decide")
+        .expect_rejected(decide("Bob", None), "Bob has already decided")
         .apply(decide("Carol", Some(Technology::GravityDrive)));
     assert!(
         !alice
@@ -1900,6 +1900,49 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
     alice.end_turn();
     assert_eq!(technologies(&g), before);
     g
+}
+
+#[test]
+fn nekro_virus_doesnt_decide_on_visionaria_select() {
+    let mut g = action_phase(
+        TestGame::builder()
+            .player("Alice", Faction::DeepwroughtScholarate)
+            .player("Bob", Faction::NekroVirus)
+            .player("Carol", Faction::Arborec)
+            .pok()
+            .thunders_edge(),
+    );
+    g.apply(Event::SetFractureInPlay { in_play: true })
+        .apply(Event::SetBreakthrough {
+            player: p("Alice"),
+            breakthrough: Some(Breakthrough::VisionariaSelect),
+        });
+
+    let alice = g
+        .turn("Alice")
+        .apply(Event::BreakthroughActionBegin { player: p("Alice") })
+        .expect_rejected(
+            Event::VisionariaSelectDecision {
+                player: p("Bob"),
+                tech: Some(Technology::GravityDrive),
+            },
+            "Nekro Virus cannot research techs",
+        )
+        .apply(Event::VisionariaSelectDecision {
+            player: p("Carol"),
+            tech: Some(Technology::GravityDrive),
+        })
+        .apply(Event::BreakthroughActionCommit {
+            player: p("Alice"),
+            action: BreakthroughAction::VisionariaSelect,
+        });
+    assert_eq!(alice.phase(), Phase::EndActionTurn);
+    alice.end_turn();
+    assert!(
+        g.player("Alice")
+            .technologies()
+            .contains(&Technology::GravityDrive)
+    );
 }
 
 fn gain_scar_tech(player: &str, tech: Technology) -> Event {

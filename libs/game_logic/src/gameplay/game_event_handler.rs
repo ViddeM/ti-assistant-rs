@@ -1301,6 +1301,10 @@ fn try_update_game_state(
             else {
                 bail!("Not currently performing a breakthrough action");
             };
+            ensure!(
+                !progress.visionaria_select.contains_key(&player),
+                "{player} has already decided"
+            );
             progress.visionaria_select.insert(player, tech);
         }
         Event::BreakthroughActionCommit { player, action } => {
@@ -1352,9 +1356,11 @@ fn try_update_game_state(
                     game_state.gain_relic_as_action(player.clone(), relic)?;
                 }
                 BreakthroughAction::VisionariaSelect => {
-                    if let Some(undecided) = (game_state.table_order.iter())
-                        .find(|p| **p != player && !progress.visionaria_select.contains_key(*p))
-                    {
+                    if let Some(undecided) = (game_state.table_order.iter()).find(|p| {
+                        **p != player
+                            && game_state.players.get(*p).is_some_and(|p| p.can_research())
+                            && !progress.visionaria_select.contains_key(*p)
+                    }) {
                         bail!("Waiting for {undecided} to decide");
                     }
 
