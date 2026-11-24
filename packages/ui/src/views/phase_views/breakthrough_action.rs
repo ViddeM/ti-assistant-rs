@@ -44,10 +44,8 @@ pub fn BreakthroughActionView() -> Element {
 
     rsx! {
         div { class: "card column",
-            div { class: "center-row",
-                h2 { "{breakthrough().info().name}" }
-                InfoButton { info: Info::Breakthrough(breakthrough()) }
-            }
+            h2 { "{breakthrough().info().name}" }
+            InfoButton { info: Info::Breakthrough(breakthrough()) }
             if breakthrough() == Breakthrough::VisionariaSelect {
                 VisionariaSelectView { deepwrought: current_player() }
             } else if view.is_active() {
