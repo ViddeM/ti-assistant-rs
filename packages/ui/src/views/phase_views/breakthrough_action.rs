@@ -14,9 +14,11 @@ use crate::{
     components::{
         button::Button,
         dropdown::{RelicDropdown, TechDropdown},
+        info_button::InfoButton,
     },
     data::{
-        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
+        event_context::EventContext, game_context::GameContext, info_context::Info,
+        player_view::PlayerViewContext,
     },
     views::phase_views::action_phase::unowned_relics,
 };
@@ -42,7 +44,10 @@ pub fn BreakthroughActionView() -> Element {
 
     rsx! {
         div { class: "card column",
-            h2 { "{breakthrough().info().name}" }
+            div { class: "center-row",
+                h2 { "{breakthrough().info().name}" }
+                InfoButton { info: Info::Breakthrough(breakthrough()) }
+            }
             if breakthrough() == Breakthrough::VisionariaSelect {
                 VisionariaSelectView { deepwrought: current_player() }
             } else if view.is_active() {
@@ -179,9 +184,6 @@ fn VisionariaSelectView(deepwrought: PlayerId) -> Element {
 
     rsx! {
         div { class: "column",
-            p {
-                "Each other player may spend 3 trade goods and give {deepwrought} 1 promissory note to research a non-faction, non-unit upgrade technology. {deepwrought} also gains each technology researched this way."
-            }
             for researcher in other_players() {
                 VisionariaSelectDecisionView {
                     key: "{researcher}",

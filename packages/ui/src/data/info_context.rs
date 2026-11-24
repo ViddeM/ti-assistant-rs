@@ -3,6 +3,7 @@ use ti_helper_game_data::{
     common::game_settings::Expansions,
     components::{
         agenda::Agenda,
+        breakthrough::Breakthrough,
         galactic_event::GalacticEvent,
         leaders::Leader,
         objectives::Objective,
@@ -44,6 +45,7 @@ pub enum Info {
     Tech(Technology),
     Relic(Relic),
     GalacticEvent(GalacticEvent),
+    Breakthrough(Breakthrough),
     Custom {
         title: String,
         subtitle: String,
@@ -61,6 +63,7 @@ impl Info {
             Info::Tech(technology) => technology.info().name,
             Info::Relic(relic) => relic.info().name,
             Info::GalacticEvent(galactic_event) => galactic_event.info().name,
+            Info::Breakthrough(breakthrough) => breakthrough.info().name,
             Info::Custom {
                 title,
                 subtitle: _,
@@ -78,6 +81,7 @@ impl Info {
             Info::Tech(technology) => technology.info().tech_type.to_string(),
             Info::Relic(..) => String::new(),
             Info::GalacticEvent(..) => "Galactic Event".to_string(),
+            Info::Breakthrough(..) => "Breakthrough".to_string(),
             Info::Custom {
                 title: _,
                 subtitle,
@@ -95,6 +99,7 @@ impl Info {
             Info::Tech(..) => None,
             Info::Relic(..) => None,
             Info::GalacticEvent(galactic_event) => Some(galactic_event.info().complexity),
+            Info::Breakthrough(..) => None,
             Info::Custom {
                 title: _,
                 subtitle: _,
@@ -136,6 +141,9 @@ impl Info {
                 InfoDescription::Custom(rsx! {
                     p { class: "galactic-event-description", "{info.description.trim()}" }
                 })
+            }
+            Info::Breakthrough(breakthrough) => {
+                InfoDescription::Description(breakthrough.info().description.trim().to_string())
             }
             Info::Custom {
                 title: _,
