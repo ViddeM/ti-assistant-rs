@@ -268,16 +268,16 @@ fn VisionariaSelectDecisionView(
 
     let choice = match decision {
         Some(Some(tech)) => rsx! {
-            p { "Tech: {tech.info().name}" }
+            p { class: "align-center", "Tech: {tech.info().name}" }
         },
         Some(None) => rsx! {
-            p { "--Skipped--" }
+            p { class: "align-center", "--Skipped--" }
         },
         None if !researcher().can_research() => rsx! {
-            p { "--Nekro Virus cannot research technologies--" }
+            p { class: "align-center", "--Nekro Virus cannot research technologies--" }
         },
         None if !view.display_for(&player) => rsx! {
-            p { "Yet to choose" }
+            p { class: "align-center", "Yet to choose" }
         },
         None => rsx! {
             p { class: "warning-text",
