@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
@@ -18,6 +18,7 @@ use crate::{
         system::SystemId,
         tech::Technology,
     },
+    state::player::Player,
 };
 
 use super::{GameState, fracture::FractureProgressState};
@@ -37,7 +38,7 @@ pub enum ActionPhaseProgress {
     /// The progress of a frontier card.
     FrontierCard(FrontierCardProgress),
     /// The ACTION of the current player's breakthrough is being performed.
-    Breakthrough,
+    Breakthrough(BreakthroughProgress),
     /// The progress of a relic action.
     Relic(RelicProgress),
     /// The progress of the roll / spawn.
@@ -245,6 +246,27 @@ pub struct ActionCardProgress {
 pub enum LeaderProgress {
     /// This leader needs no special handling.
     Nothing { leader: Leader },
+}
+
+/// The progress of a breakthrough ACTION being performed.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct BreakthroughProgress {
+    /// Each other player's Visionaria Select decision: the technology they research, or `None`
+    /// if they don't pay.
+    pub visionaria_select: BTreeMap<PlayerId, Option<Technology>>,
+}
+
+impl BreakthroughProgress {
+    /// The technologies researched with Visionaria Select that `deepwrought` doesn't own yet,
+    /// which they gain as well.
+    pub fn visionaria_select_gains(&self, deepwrought: &Player) -> BTreeSet<Technology> {
+        (self.visionaria_select.values())
+            .flatten()
+            .filter(|tech| !deepwrought.has_tech(tech))
+            .cloned()
+            .collect()
+    }
 }
 
 /// The progress of a frontier card being played.

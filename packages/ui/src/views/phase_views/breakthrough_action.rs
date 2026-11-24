@@ -1,5 +1,3 @@
-use std::collections::BTreeMap;
-
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     actions::event::{BreakthroughAction, Event},
@@ -9,6 +7,7 @@ use ti_helper_game_data::{
         relic::Relic,
         tech::{TechOrigin, TechType, Technology},
     },
+    state::game_state::{ActionPhaseProgress, BreakthroughProgress},
 };
 
 use crate::{
@@ -44,7 +43,9 @@ pub fn BreakthroughActionView() -> Element {
     rsx! {
         div { class: "card column",
             h2 { "{breakthrough().info().name}" }
-            if view.is_active() {
+            if breakthrough() == Breakthrough::VisionariaSelect {
+                VisionariaSelectView { deepwrought: current_player() }
+            } else if view.is_active() {
                 BreakthroughActionForm { player: current_player(), breakthrough: breakthrough() }
             } else {
                 p { "Not your turn, currently {current_player()} is playing" }
@@ -64,11 +65,6 @@ fn BreakthroughActionForm(player: PlayerId, breakthrough: Breakthrough) -> Eleme
         Breakthrough::VaultsOfTheHeir => {
             return rsx! {
                 VaultsOfTheHeirForm { player }
-            };
-        }
-        Breakthrough::VisionariaSelect => {
-            return rsx! {
-                VisionariaSelectForm { player }
             };
         }
         _ => return rsx! {},
@@ -141,61 +137,106 @@ fn VaultsOfTheHeirForm(player: PlayerId) -> Element {
 }
 
 #[component]
-fn VisionariaSelectForm(player: PlayerId) -> Element {
+fn VisionariaSelectView(deepwrought: PlayerId) -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
     let event = use_context::<EventContext>();
 
-    let researched: Signal<BTreeMap<PlayerId, Technology>> = use_signal(BTreeMap::new);
+    let decisions = use_memo(move || match gc.game_state().action_progress.as_ref() {
+        Some(ActionPhaseProgress::Breakthrough(progress)) => progress.clone(),
+        _ => BreakthroughProgress::default(),
+    });
 
     let other_players = use_memo({
-        let player = player.clone();
+        let deepwrought = deepwrought.clone();
         move || {
             gc.game_state()
                 .table_order
                 .iter()
-                .filter(|p| **p != player)
+                .filter(|p| **p != deepwrought)
                 .cloned()
                 .collect::<Vec<_>>()
         }
     });
 
+    let gains = use_memo({
+        let deepwrought = deepwrought.clone();
+        move || {
+            let game_state = gc.game_state();
+            game_state
+                .players
+                .get(&deepwrought)
+                .map(|p| decisions().visionaria_select_gains(p))
+                .unwrap_or_default()
+        }
+    });
+
+    let all_decided = use_memo(move || {
+        other_players()
+            .iter()
+            .all(|p| decisions().visionaria_select.contains_key(p))
+    });
+
     rsx! {
         div { class: "column",
+            p {
+                "Each other player may spend 3 trade goods and give {deepwrought} 1 promissory note to research a non-faction, non-unit upgrade technology. {deepwrought} also gains each technology researched this way."
+            }
             for researcher in other_players() {
-                VisionariaSelectPick {
+                VisionariaSelectDecisionView {
                     key: "{researcher}",
                     player: researcher.clone(),
-                    researched,
+                    deepwrought: deepwrought.clone(),
+                    decision: decisions().visionaria_select.get(&researcher).cloned(),
                 }
             }
-            Button {
-                class: "margin-top",
-                onclick: move |_| {
-                    event
-                        .send_event(Event::BreakthroughActionCommit {
-                            player: player.clone(),
-                            action: BreakthroughAction::VisionariaSelect {
-                                researched: researched(),
-                            },
-                        })
-                },
-                "Play"
+            fieldset {
+                legend { "{deepwrought} gains" }
+                if gains().is_empty() {
+                    p { "Nothing yet" }
+                } else {
+                    ul {
+                        for tech in gains() {
+                            li { key: "{tech}", "{tech.info().name}" }
+                        }
+                    }
+                }
+            }
+            if view.display_for(&deepwrought) {
+                Button {
+                    class: "margin-top",
+                    disabled: !all_decided(),
+                    onclick: {
+                        let deepwrought = deepwrought.clone();
+                        move |_| {
+                            event
+                                .send_event(Event::BreakthroughActionCommit {
+                                    player: deepwrought.clone(),
+                                    action: BreakthroughAction::VisionariaSelect,
+                                })
+                        }
+                    },
+                    "Done"
+                }
+            } else if all_decided() {
+                p { "Waiting for {deepwrought} to finish Visionaria Select" }
             }
         }
     }
 }
 
 #[component]
-fn VisionariaSelectPick(
+fn VisionariaSelectDecisionView(
     player: PlayerId,
-    mut researched: Signal<BTreeMap<PlayerId, Technology>>,
+    deepwrought: PlayerId,
+    decision: Option<Option<Technology>>,
 ) -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
+    let event = use_context::<EventContext>();
 
-    let selected = use_memo({
-        let player = player.clone();
-        move || researched.read().get(&player).cloned()
-    });
+    let mut selected: Signal<Option<Technology>> =
+        use_signal(|| decision.clone().flatten());
 
     let options = use_memo({
         let player = player.clone();
@@ -219,19 +260,53 @@ fn VisionariaSelectPick(
         }
     });
 
+    let decided = match &decision {
+        Some(Some(tech)) => format!("Researches {}", tech.info().name),
+        Some(None) => "Doesn't research".to_string(),
+        None => format!("Waiting for {player} to decide"),
+    };
+
+    let send = move |player: PlayerId, tech: Option<Technology>| {
+        event.send_event(Event::VisionariaSelectDecision { player, tech })
+    };
+
     rsx! {
         fieldset {
             legend { "{player}" }
-            TechDropdown {
-                value: selected,
-                options: options(),
-                on_select: move |tech| {
-                    let mut researched = researched.write();
-                    match tech {
-                        Some(tech) => researched.insert(player.clone(), tech),
-                        None => researched.remove(&player),
-                    };
-                },
+            if view.display_for(&player) {
+                div { class: "column",
+                    p { class: "warning-text",
+                        "Pay 3 trade goods and give {deepwrought} 1 promissory note"
+                    }
+                    TechDropdown {
+                        value: selected,
+                        options: options(),
+                        on_select: move |tech| selected.set(tech),
+                    }
+                    div { class: "center-row margin-top",
+                        Button {
+                            class: "margin-right",
+                            disabled: selected().is_none(),
+                            onclick: {
+                                let player = player.clone();
+                                move |_| send(player.clone(), selected())
+                            },
+                            "Research"
+                        }
+                        Button {
+                            onclick: {
+                                let player = player.clone();
+                                move |_| send(player.clone(), None)
+                            },
+                            "Don't research"
+                        }
+                    }
+                    if decision.is_some() {
+                        p { class: "margin-top", "{decided}" }
+                    }
+                }
+            } else {
+                p { "{decided}" }
             }
         }
     }

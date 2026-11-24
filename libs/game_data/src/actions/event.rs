@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeSet;
 
 use serde::{Deserialize, Serialize};
 use strum_macros::IntoStaticStr;
@@ -310,6 +310,15 @@ pub enum Event {
         player: PlayerId,
         /// The planet the units no longer coexist on.
         planet: Planet,
+    },
+
+    /// Another player's decision during the current player's Visionaria Select: the technology
+    /// they research, or `None` if they don't pay.
+    VisionariaSelectDecision {
+        /// The player who decides.
+        player: PlayerId,
+        /// The technology they research, if they pay.
+        tech: Option<Technology>,
     },
 
     /// Begin playing a frontier card.
@@ -845,6 +854,7 @@ impl Event {
             | Event::PlayTechAction { player, .. }
             | Event::CoexistenceBegin { player, .. }
             | Event::CoexistenceEnd { player, .. }
+            | Event::VisionariaSelectDecision { player, .. }
             | Event::FrontierCardActionBegin { player, .. }
             | Event::FrontierCardActionCommit { player, .. }
             | Event::GainRelicAction { player, .. }
@@ -1116,11 +1126,8 @@ pub enum BreakthroughAction {
         relic: Relic,
     },
     /// Each other player may pay to research a non-faction, non-unit upgrade technology, which
-    /// you also gain.
-    VisionariaSelect {
-        /// The technology each paying player researches.
-        researched: BTreeMap<PlayerId, Technology>,
-    },
+    /// you also gain. The players decide with [Event::VisionariaSelectDecision].
+    VisionariaSelect,
 }
 
 impl BreakthroughAction {
@@ -1131,7 +1138,7 @@ impl BreakthroughAction {
             BreakthroughAction::DeorbitBarrage => Breakthrough::DeorbitBarrage,
             BreakthroughAction::ResonanceGenerator => Breakthrough::ResonanceGenerator,
             BreakthroughAction::VaultsOfTheHeir { .. } => Breakthrough::VaultsOfTheHeir,
-            BreakthroughAction::VisionariaSelect { .. } => Breakthrough::VisionariaSelect,
+            BreakthroughAction::VisionariaSelect => Breakthrough::VisionariaSelect,
         }
     }
 }

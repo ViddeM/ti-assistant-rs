@@ -44,8 +44,9 @@ mod map;
 mod status;
 
 pub use action_progress::{
-    ActionCardProgress, ActionPhaseProgress, FrontierCardProgress, LeaderProgress, RelicProgress,
-    RelicStep, StrategicPrimaryProgress, StrategicProgress, TacticalProgress, TakenFrom,
+    ActionCardProgress, ActionPhaseProgress, BreakthroughProgress, FrontierCardProgress,
+    LeaderProgress, RelicProgress, RelicStep, StrategicPrimaryProgress, StrategicProgress,
+    TacticalProgress, TakenFrom,
 };
 pub use agenda::{AgendaOverrideState, VoteRestriction};
 pub use fracture::{FractureProgress, FractureProgressState, FractureRollState};

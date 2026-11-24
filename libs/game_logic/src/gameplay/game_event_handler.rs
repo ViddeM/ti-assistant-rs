@@ -30,7 +30,7 @@ use ti_helper_game_data::{
     components::{
         action_card::{ActionCard, ActionCardPlay},
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind},
-        breakthrough::BreakthroughKind,
+        breakthrough::{Breakthrough, BreakthroughKind},
         frontier_card::FrontierCardType,
         galactic_event::GalacticEvent,
         leaders::LeaderAbilityKind,
@@ -50,10 +50,10 @@ use ti_helper_game_data::{
         faction_state::DeepwroughtState,
         galactic_events::RapidMobilizationResolution,
         game_state::{
-            ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, FractureProgress,
-            FrontierCardProgress, GameState, LeaderProgress, MapData, MiltyInformation,
-            PlanetLocation, RelicProgress, RelicStep, StrategicPrimaryProgress, StrategicProgress,
-            TacticalProgress, TakenFrom,
+            ActionCardProgress, ActionPhaseProgress, AgendaOverrideState, BreakthroughProgress,
+            FractureProgress, FrontierCardProgress, GameState, LeaderProgress, MapData,
+            MiltyInformation, PlanetLocation, RelicProgress, RelicStep, StrategicPrimaryProgress,
+            StrategicProgress, TacticalProgress, TakenFrom,
         },
         player::NewPlayer,
     },
@@ -1258,16 +1258,59 @@ fn try_update_game_state(
                 "{player} doesn't have a breakthrough with an action"
             );
 
-            game_state.action_progress = Some(ActionPhaseProgress::Breakthrough);
+            game_state.action_progress = Some(ActionPhaseProgress::Breakthrough(
+                BreakthroughProgress::default(),
+            ));
             game_state.phase = Phase::BreakthroughAction;
+        }
+        Event::VisionariaSelectDecision { player, tech } => {
+            game_state.assert_phase(Phase::BreakthroughAction)?;
+            let deepwrought = game_state.current_player()?;
+            ensure!(
+                (game_state.players.get(&deepwrought))
+                    .is_some_and(|p| p.breakthrough == Some(Breakthrough::VisionariaSelect)),
+                "{deepwrought} isn't performing Visionaria Select"
+            );
+            ensure!(
+                player != deepwrought,
+                "{player} can't research with their own Visionaria Select"
+            );
+            let researcher = (game_state.players.get(&player)).context("Player not found")?;
+            if let Some(tech) = &tech {
+                game_state.assert_enabled(tech)?;
+                let info = tech.info();
+                ensure!(
+                    info.origin == TechOrigin::Base,
+                    "{} is a faction technology",
+                    info.name
+                );
+                ensure!(
+                    info.tech_type != TechType::UnitUpgrade,
+                    "{} is a unit upgrade",
+                    info.name
+                );
+                researcher.assert_can_research(tech)?;
+                ensure!(
+                    !researcher.has_tech(tech),
+                    "{player} already has tech {}",
+                    info.name
+                );
+            }
+
+            let Some(ActionPhaseProgress::Breakthrough(progress)) = &mut game_state.action_progress
+            else {
+                bail!("Not currently performing a breakthrough action");
+            };
+            progress.visionaria_select.insert(player, tech);
         }
         Event::BreakthroughActionCommit { player, action } => {
             game_state.assert_phase(Phase::BreakthroughAction)?;
             game_state.assert_player_turn(&player)?;
-            ensure!(
-                game_state.action_progress == Some(ActionPhaseProgress::Breakthrough),
-                "Not currently performing a breakthrough action"
-            );
+            let Some(ActionPhaseProgress::Breakthrough(progress)) =
+                game_state.action_progress.clone()
+            else {
+                bail!("Not currently performing a breakthrough action");
+            };
             let breakthrough = action.breakthrough();
             ensure!(
                 game_state
@@ -1308,33 +1351,23 @@ fn try_update_game_state(
                         .remove_tech(&purged_tech);
                     game_state.gain_relic_as_action(player.clone(), relic)?;
                 }
-                BreakthroughAction::VisionariaSelect { researched } => {
-                    for (researcher, tech) in &researched {
-                        ensure!(
-                            researcher != &player,
-                            "{player} can't research with their own Visionaria Select"
-                        );
-                        game_state.assert_enabled(tech)?;
-                        let info = tech.info();
-                        ensure!(
-                            info.origin == TechOrigin::Base,
-                            "{} is a faction technology",
-                            info.name
-                        );
-                        ensure!(
-                            info.tech_type != TechType::UnitUpgrade,
-                            "{} is a unit upgrade",
-                            info.name
-                        );
-                        game_state.research_tech(researcher, tech.clone())?;
+                BreakthroughAction::VisionariaSelect => {
+                    if let Some(undecided) = (game_state.table_order.iter())
+                        .find(|p| **p != player && !progress.visionaria_select.contains_key(*p))
+                    {
+                        bail!("Waiting for {undecided} to decide");
                     }
 
-                    for tech in researched.into_values() {
-                        let deepwrought =
-                            (game_state.players.get(&player)).context("Player not found")?;
-                        if !deepwrought.has_tech(&tech) {
-                            game_state.gain_tech(&player, tech)?;
+                    let deepwrought =
+                        (game_state.players.get(&player)).context("Player not found")?;
+                    let gains = progress.visionaria_select_gains(deepwrought);
+                    for (researcher, tech) in progress.visionaria_select {
+                        if let Some(tech) = tech {
+                            game_state.research_tech(&researcher, tech)?;
                         }
+                    }
+                    for tech in gains {
+                        game_state.gain_tech(&player, tech)?;
                     }
                 }
             }

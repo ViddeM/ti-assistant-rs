@@ -1,6 +1,6 @@
 //! Thunder's Edge: the expedition, The Obsidian, its planets and its action cards.
 
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeSet, HashMap};
 
 use ti_helper_game_data::{
     common::{expansions::Expansion, map::HexPosition, player_id::PlayerId},
@@ -1827,48 +1827,49 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
         })
         .apply(roll(player, false));
     }
-    let visionaria = |researched: &[(&str, Technology)]| Event::BreakthroughActionCommit {
+    let decide = |player: &str, tech: Option<Technology>| Event::VisionariaSelectDecision {
+        player: p(player),
+        tech,
+    };
+    let done = Event::BreakthroughActionCommit {
         player: p("Alice"),
-        action: BreakthroughAction::VisionariaSelect {
-            researched: researched
-                .iter()
-                .map(|(player, tech)| (p(player), tech.clone()))
-                .collect(),
-        },
+        action: BreakthroughAction::VisionariaSelect,
     };
 
     let alice = g
         .turn("Alice")
+        .expect_rejected(
+            decide("Bob", Some(Technology::GravityDrive)),
+            "expected BreakthroughAction",
+        )
         .apply(Event::BreakthroughActionBegin { player: p("Alice") })
         .expect_rejected(
-            visionaria(&[("Alice", Technology::GravityDrive)]),
+            decide("Alice", Some(Technology::GravityDrive)),
             "Alice can't research with their own Visionaria Select",
         )
         .expect_rejected(
-            visionaria(&[
-                ("Bob", Technology::GravityDrive),
-                ("Carol", Technology::CarrierII),
-            ]),
+            decide("Carol", Some(Technology::CarrierII)),
             "Carrier II is a unit upgrade",
         )
         .expect_rejected(
-            visionaria(&[("Bob", Technology::GeneticRecombination)]),
+            decide("Bob", Some(Technology::GeneticRecombination)),
             "Genetic Recombination is a faction technology",
         )
         .expect_rejected(
-            visionaria(&[("Bob", Technology::BioStims)]),
+            decide("Bob", Some(Technology::BioStims)),
             "already has tech",
-        );
+        )
+        .apply(decide("Bob", None))
+        .expect_rejected(done.clone(), "Waiting for Carol to decide")
+        .apply(decide("Bob", Some(Technology::GravityDrive)))
+        .apply(decide("Carol", Some(Technology::GravityDrive)));
     assert!(
         !alice
             .player("Bob")
             .technologies()
             .contains(&Technology::GravityDrive)
     );
-    let alice = alice.apply(visionaria(&[
-        ("Bob", Technology::GravityDrive),
-        ("Carol", Technology::GravityDrive),
-    ]));
+    let alice = alice.apply(done.clone());
     assert_eq!(alice.phase(), Phase::EndActionTurn);
     alice.end_turn();
     for player in ["Alice", "Bob", "Carol"] {
@@ -1891,9 +1892,10 @@ pub fn thunders_edge_visionaria_select() -> TestGame {
     let before = technologies(&g);
     let alice = g
         .turn("Alice")
-        .breakthrough(BreakthroughAction::VisionariaSelect {
-            researched: BTreeMap::new(),
-        });
+        .apply(Event::BreakthroughActionBegin { player: p("Alice") })
+        .apply(decide("Bob", None))
+        .apply(decide("Carol", None))
+        .apply(done);
     assert_eq!(alice.phase(), Phase::EndActionTurn);
     alice.end_turn();
     assert_eq!(technologies(&g), before);
