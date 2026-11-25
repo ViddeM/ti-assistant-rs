@@ -42,17 +42,16 @@ impl GameState {
     /// Give `relic` to `player` as (part of) their action, after which their turn ends, unless
     /// it's the Book of Latvinia: they research with it first.
     pub fn gain_relic_as_action(&mut self, player: PlayerId, relic: Relic) -> anyhow::Result<()> {
-        self.set_relic_owner(relic.clone(), Some(player))?;
         if relic == Relic::BookOfLatvinia {
             self.action_progress = Some(ActionPhaseProgress::Relic(RelicProgress {
-                relic,
+                relic: relic.clone(),
                 step: RelicStep::Gain,
             }));
             self.phase = Phase::RelicAction;
         } else {
             self.phase = Phase::EndActionTurn;
         }
-        Ok(())
+        self.set_relic_owner(relic, Some(player))
     }
 
     /// Unlock the player's breakthrough and apply its on-gain effects, unless it's already
@@ -86,8 +85,7 @@ impl GameState {
             }
             _ => {}
         }
-        self.roll_for_the_fracture(player);
-        Ok(())
+        self.roll_for_the_fracture(player)
     }
 
     /// Give `player` `tech` and apply its on-gain effects, see [Player::gain_tech].

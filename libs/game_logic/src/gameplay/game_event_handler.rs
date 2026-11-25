@@ -574,7 +574,7 @@ fn try_update_game_state(
                 .map(|(id, _)| id.clone())
                 .collect::<Vec<_>>();
             for player in with_breakthrough {
-                game_state.roll_for_the_fracture(&player);
+                game_state.roll_for_the_fracture(&player)?;
             }
         }
         Event::TakeStrategyCard { player, card } => {
@@ -624,9 +624,6 @@ fn try_update_game_state(
             let has_been_owned = game_state.has_been_owned(&planet);
             let previous_owner =
                 game_state.set_planet_owner(planet.clone(), Some(player.clone()))?;
-            if planet == Planet::ThundersEdge {
-                game_state.gain_breakthrough(&player)?;
-            }
 
             let taken_from = match previous_owner {
                 Some(previous_owner) => TakenFrom::Player(previous_owner),
@@ -635,7 +632,11 @@ fn try_update_game_state(
             };
             let tactical = game_state.tactical_progress_mut()?;
             tactical.activated_system = planet_system;
-            tactical.taken_planets.insert(planet, taken_from);
+            tactical.taken_planets.insert(planet.clone(), taken_from);
+
+            if planet == Planet::ThundersEdge {
+                game_state.gain_breakthrough(&player)?;
+            }
         }
         Event::TacticalActionAttachPlanetAttachment {
             player,
@@ -757,13 +758,15 @@ fn try_update_game_state(
                         .any(|p| p.relics.contains(relic)),
                     "Relic {relic:?} is already owned by another player."
                 );
-                game_state.set_relic_owner(relic.clone(), Some(player))?;
             }
 
             game_state
                 .tactical_progress_mut()?
                 .gained_relics
-                .insert(planet, relic);
+                .insert(planet, relic.clone());
+            if let Some(relic) = relic {
+                game_state.set_relic_owner(relic, Some(player))?;
+            }
         }
         Event::TacticalActionCommit { player } => {
             game_state.assert_phase(Phase::TacticalAction)?;
@@ -925,6 +928,7 @@ fn try_update_game_state(
                 _ => false,
             };
 
+            let mut brilliance_target = None;
             if let Some(data) = data {
                 match data {
                     ActionCardAction::FocusedResearch { tech } => {
@@ -980,7 +984,7 @@ fn try_update_game_state(
                                 target_player.breakthrough.is_none(),
                                 "{target} has already gained their breakthrough"
                             );
-                            game_state.gain_breakthrough(&target)?;
+                            brilliance_target = Some(target);
                         }
                     }
                     ActionCardAction::MercenaryContract { planet } => {
@@ -1040,6 +1044,9 @@ fn try_update_game_state(
             } else {
                 game_state.action_progress = None;
                 game_state.phase = Phase::EndActionTurn;
+            }
+            if let Some(target) = brilliance_target {
+                game_state.gain_breakthrough(&target)?;
             }
         }
         Event::LeaderActionBegin { player, leader } => {
@@ -3024,22 +3031,22 @@ fn try_update_game_state(
                 "{player} has no Minister of Antiques relic to gain"
             );
 
-            let mut next = None;
-            if let Some(relic) = relic {
-                game_state.assert_enabled(&relic)?;
+            if let Some(relic) = &relic {
+                game_state.assert_enabled(relic)?;
                 ensure!(
                     !game_state
                         .players
                         .values()
-                        .any(|p| p.relics.contains(&relic)),
+                        .any(|p| p.relics.contains(relic)),
                     "Relic {relic:?} is already owned by another player."
                 );
-
-                game_state.set_relic_owner(relic.clone(), Some(player.clone()))?;
-                if relic == Relic::BookOfLatvinia {
-                    next = Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player });
-                }
             }
+
+            let next = (relic == Some(Relic::BookOfLatvinia)).then(|| {
+                MinisterOfAntiquesProgress::BookOfLatviniaResearch {
+                    player: player.clone(),
+                }
+            });
             if next.is_none() {
                 game_state.phase = Phase::Agenda;
             }
@@ -3048,6 +3055,9 @@ fn try_update_game_state(
                 .as_mut()
                 .context("agenda state not initialized, this is a bug.")?
                 .minister_of_antiques = next;
+            if let Some(relic) = relic {
+                game_state.set_relic_owner(relic, Some(player))?;
+            }
         }
         Event::ResolveRapidMobilization {
             player,
@@ -3116,7 +3126,6 @@ fn try_update_game_state(
     game_state
         .score
         .update_player_points(&game_state.players, &monument_points);
-    game_state.start_pending_fracture_rolls()?;
 
     Ok(())
 }

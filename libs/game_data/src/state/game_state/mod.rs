@@ -92,10 +92,6 @@ pub struct GameState {
     /// Counts every action turn in the game, so that actions can be tied to a single turn.
     pub turn_number: u32,
 
-    /// Players that must roll for the Fracture once the current event has been applied.
-    #[serde(skip)]
-    pub pending_fracture_rolls: Vec<PlayerId>,
-
     /// Which strategy cards have been spent this action phase.
     pub spent_strategy_cards: BTreeSet<StrategyCard>,
 

@@ -18,7 +18,7 @@ use ti_helper_game_data::{
 use ti_helper_system_tests::prelude::*;
 
 use crate::fixtures::{
-    action_phase, every_thunders_edge_tile_draft, five_player_draft, three_players,
+    action_phase, agenda_phase, every_thunders_edge_tile_draft, five_player_draft, three_players,
 };
 
 scenarios![
@@ -36,6 +36,7 @@ scenarios![
     thunders_edge_overrule_and_strategize,
     thunders_edge_crisis_and_puppets_on_a_string,
     thunders_edge_quantumcore,
+    thunders_edge_minister_of_antiques_quantumcore,
     thunders_edge_map_tiles,
     thunders_edge_breakthrough_actions,
     thunders_edge_vaults_of_the_heir,
@@ -1073,6 +1074,37 @@ pub fn thunders_edge_breakthrough_planets() -> TestGame {
             .planets
             .contains_key(&Planet::CustodiaVigiliaOmega)
     );
+    g
+}
+
+/// The Quantumcore gained through Minister of Antiques rolls for the Fracture, and the roll
+/// returns to the agenda phase.
+pub fn thunders_edge_minister_of_antiques_quantumcore() -> TestGame {
+    let mut g = agenda_phase(three_players().pok().codex().thunders_edge());
+    g.agenda(Agenda::MinisterOfAntiques)
+        .vote_all(elect("Bob"), 1)
+        .resolve_expected();
+    assert_eq!(g.phase(), Phase::AgendaEffect);
+
+    g.apply(Event::GainMinisterOfAntiquesRelic {
+        player: p("Bob"),
+        relic: Some(Relic::TheQuantumcore),
+    });
+    assert!(g.player("Bob").breakthrough.is_some());
+    assert_eq!(g.phase(), Phase::Fracture);
+    assert_eq!(fracture_roll(&g), Some(p("Bob")));
+    assert_eq!(
+        (g.state().agenda.as_ref()).and_then(|agenda| agenda.minister_of_antiques.clone()),
+        None
+    );
+
+    g.apply(roll("Bob", false));
+    assert_eq!(g.phase(), Phase::Agenda);
+    assert_eq!(fracture_roll(&g), None);
+
+    g.agenda(Agenda::ConventionsOfWar)
+        .vote_all(FOR, 1)
+        .resolve_expected();
     g
 }
 
