@@ -2,18 +2,16 @@
 
 use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
-
-use super::{
-    ensure_tactical_action_finished, perform_strategic_primary, perform_strategic_secondary,
-};
 use ti_helper_game_data::{
     actions::strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
-    common::player_id::PlayerId,
+    common::{faction::Faction, player_id::PlayerId},
     components::{phase::Phase, strategy_card::StrategyCard},
     state::game_state::{
         ActionPhaseProgress, GameState, StrategicPrimaryProgress, StrategicProgress,
     },
 };
+
+use super::tactical::ensure_tactical_action_finished;
 
 /// Handles `Event::TakeStrategyCard`.
 pub(super) fn take_strategy_card(
@@ -183,5 +181,109 @@ pub(super) fn strategic_action_commit(game_state: &mut GameState) -> Result<()> 
 
     game_state.action_progress = None;
     game_state.phase = Phase::EndActionTurn;
+    Ok(())
+}
+
+/// Perform the tracked effects of the primary ability of `card` for `player`.
+pub(super) fn perform_strategic_primary(
+    game_state: &mut GameState,
+    player: &PlayerId,
+    card: StrategyCard,
+    action: StrategicPrimaryAction,
+) -> Result<StrategicPrimaryProgress> {
+    game_state.assert_action_expansion(&action)?;
+
+    match (card, action) {
+        (
+            StrategyCard::Technology,
+            StrategicPrimaryAction::Technology {
+                first_tech,
+                second_tech,
+            },
+        ) => {
+            ensure!(
+                second_tech.is_none() || first_tech.is_some(),
+                "Cannot take a second tech without a first tech"
+            );
+
+            if let Some(t) = first_tech.clone() {
+                game_state.research_tech(player, t)?;
+            }
+            if let Some(t) = second_tech.clone() {
+                game_state.research_tech(player, t)?;
+            }
+
+            Ok(StrategicPrimaryProgress::Technology {
+                first_tech,
+                second_tech,
+            })
+        }
+        (StrategyCard::Politics, StrategicPrimaryAction::Politics { new_speaker }) => {
+            game_state.speaker = Some(new_speaker.clone());
+
+            Ok(StrategicPrimaryProgress::Politics { new_speaker })
+        }
+        (StrategyCard::Imperial, StrategicPrimaryAction::Imperial { score_objective }) => {
+            if let Some(objective) = score_objective {
+                let Some(players) = game_state.score.revealed_objectives.get_mut(&objective) else {
+                    bail!("objective {objective:?} has not been revealed");
+                };
+
+                if !players.insert(player.clone()) {
+                    bail!("player {player:?} has already scored {objective:?}");
+                }
+            }
+
+            let controls_mecatol_rex = (game_state.players.get(player))
+                .context("Player not found")?
+                .planets
+                .keys()
+                .any(|p| p.is_mecatol_rex());
+            if controls_mecatol_rex {
+                let imperial_points = game_state.score.imperial.entry(player.clone()).or_default();
+                *imperial_points = imperial_points.saturating_add(1);
+            }
+
+            Ok(StrategicPrimaryProgress::Imperial {
+                objective: score_objective,
+            })
+        }
+        (card, action) => {
+            bail!("Mismatch between progress card {card:?} and action {action:?}")
+        }
+    }
+}
+
+/// Perform the tracked effects of a secondary ability for `player`.
+pub(super) fn perform_strategic_secondary(
+    game_state: &mut GameState,
+    player: &PlayerId,
+    action: &StrategicSecondaryAction,
+) -> Result<()> {
+    game_state.assert_secondary_action_expansion(action)?;
+
+    match action.clone() {
+        StrategicSecondaryAction::Technology { tech } => {
+            game_state.research_tech(player, tech)?;
+        }
+        StrategicSecondaryAction::TechnologyJolNar {
+            first_tech,
+            second_tech,
+        } => {
+            let faction = (game_state.players.get(player))
+                .context("Player not found")?
+                .faction;
+            ensure!(
+                faction == Faction::UniversitiesOfJolNar,
+                "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary"
+            );
+            game_state.research_tech(player, first_tech)?;
+            if let Some(t) = second_tech {
+                game_state.research_tech(player, t)?;
+            }
+        }
+        _ => {}
+    }
+
     Ok(())
 }

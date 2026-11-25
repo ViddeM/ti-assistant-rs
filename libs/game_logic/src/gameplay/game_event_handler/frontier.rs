@@ -1,12 +1,14 @@
 //! Frontier card events.
 
 use anyhow::{Context, Result, bail, ensure};
-
-use ti_helper_game_data::components::frontier_card::FrontierCard;
 use ti_helper_game_data::{
     actions::event::{FrontierCardAction, action_matches_frontier_card},
     common::player_id::PlayerId,
-    components::{frontier_card::FrontierCardType, phase::Phase, planet::Planet},
+    components::{
+        frontier_card::{FrontierCard, FrontierCardType},
+        phase::Phase,
+        planet::Planet,
+    },
     state::game_state::{ActionPhaseProgress, FrontierCardProgress, GameState},
 };
 

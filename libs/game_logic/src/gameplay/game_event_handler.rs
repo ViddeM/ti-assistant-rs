@@ -1,19 +1,13 @@
-use anyhow::{Context, Result, bail, ensure};
+use anyhow::{Result, bail, ensure};
 use chrono::{DateTime, Utc};
 
 use super::error::GameError;
 
 use ti_helper_game_data::{
-    actions::{
-        event::Event,
-        strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
-    },
-    common::{expansions::Expansion, faction::Faction, player_id::PlayerId},
-    components::{phase::Phase, relic::Relic, strategy_card::StrategyCard},
-    state::{
-        expedition::TEExpedition,
-        game_state::{ActionPhaseProgress, GameState, StrategicPrimaryProgress, TacticalProgress},
-    },
+    actions::event::Event,
+    common::expansions::Expansion,
+    components::{phase::Phase, relic::Relic},
+    state::{expedition::TEExpedition, game_state::GameState},
 };
 
 mod action_cards;
@@ -117,7 +111,7 @@ fn try_update_game_state(
         Event::TacticalActionBegin { player } => {
             game_state.assert_phase(Phase::Action)?;
             game_state.assert_player_turn(&player)?;
-            start_tactical_action(game_state);
+            tactical::start_tactical_action(game_state);
         }
         Event::TacticalActionTakePlanet { player, planet } => {
             tactical::take_planet(game_state, player, planet)?
@@ -140,7 +134,7 @@ fn try_update_game_state(
         Event::TacticalActionCommit { player } => {
             game_state.assert_phase(Phase::TacticalAction)?;
             game_state.assert_player_turn(&player)?;
-            ensure_tactical_action_finished(game_state)?;
+            tactical::ensure_tactical_action_finished(game_state)?;
             game_state.action_progress = None;
             game_state.phase = Phase::EndActionTurn;
         }
@@ -431,156 +425,6 @@ fn try_update_game_state(
         .score
         .update_player_points(&game_state.players, &monument_points);
 
-    Ok(())
-}
-
-/// True if the final expedition slot is claimed, but Thunder's Edge hasn't been placed yet.
-fn is_awaiting_thunders_edge_placement(game_state: &GameState) -> bool {
-    (game_state.te_expedition.as_ref()).is_some_and(|te| te.is_awaiting_placement())
-}
-
-/// Perform the tracked effects of the primary ability of `card` for `player`.
-fn perform_strategic_primary(
-    game_state: &mut GameState,
-    player: &PlayerId,
-    card: StrategyCard,
-    action: StrategicPrimaryAction,
-) -> Result<StrategicPrimaryProgress> {
-    game_state.assert_action_expansion(&action)?;
-
-    match (card, action) {
-        (
-            StrategyCard::Technology,
-            StrategicPrimaryAction::Technology {
-                first_tech,
-                second_tech,
-            },
-        ) => {
-            ensure!(
-                second_tech.is_none() || first_tech.is_some(),
-                "Cannot take a second tech without a first tech"
-            );
-
-            if let Some(t) = first_tech.clone() {
-                game_state.research_tech(player, t)?;
-            }
-            if let Some(t) = second_tech.clone() {
-                game_state.research_tech(player, t)?;
-            }
-
-            Ok(StrategicPrimaryProgress::Technology {
-                first_tech,
-                second_tech,
-            })
-        }
-        (StrategyCard::Politics, StrategicPrimaryAction::Politics { new_speaker }) => {
-            game_state.speaker = Some(new_speaker.clone());
-
-            Ok(StrategicPrimaryProgress::Politics { new_speaker })
-        }
-        (StrategyCard::Imperial, StrategicPrimaryAction::Imperial { score_objective }) => {
-            if let Some(objective) = score_objective {
-                let Some(players) = game_state.score.revealed_objectives.get_mut(&objective) else {
-                    bail!("objective {objective:?} has not been revealed");
-                };
-
-                if !players.insert(player.clone()) {
-                    bail!("player {player:?} has already scored {objective:?}");
-                }
-            }
-
-            let controls_mecatol_rex = (game_state.players.get(player))
-                .context("Player not found")?
-                .planets
-                .keys()
-                .any(|p| p.is_mecatol_rex());
-            if controls_mecatol_rex {
-                let imperial_points = game_state.score.imperial.entry(player.clone()).or_default();
-                *imperial_points = imperial_points.saturating_add(1);
-            }
-
-            Ok(StrategicPrimaryProgress::Imperial {
-                objective: score_objective,
-            })
-        }
-        (card, action) => {
-            bail!("Mismatch between progress card {card:?} and action {action:?}")
-        }
-    }
-}
-
-/// Perform the tracked effects of a secondary ability for `player`.
-fn perform_strategic_secondary(
-    game_state: &mut GameState,
-    player: &PlayerId,
-    action: &StrategicSecondaryAction,
-) -> Result<()> {
-    game_state.assert_secondary_action_expansion(action)?;
-
-    match action.clone() {
-        StrategicSecondaryAction::Technology { tech } => {
-            game_state.research_tech(player, tech)?;
-        }
-        StrategicSecondaryAction::TechnologyJolNar {
-            first_tech,
-            second_tech,
-        } => {
-            let faction = (game_state.players.get(player))
-                .context("Player not found")?
-                .faction;
-            ensure!(
-                faction == Faction::UniversitiesOfJolNar,
-                "Only the universities of Jol-Nar can use the 'Brilliant' ability to perform the primary tech action as a secondary"
-            );
-            game_state.research_tech(player, first_tech)?;
-            if let Some(t) = second_tech {
-                game_state.research_tech(player, t)?;
-            }
-        }
-        _ => {}
-    }
-
-    Ok(())
-}
-
-/// Start a tactical action for the current player.
-fn start_tactical_action(game_state: &mut GameState) {
-    game_state.phase = Phase::TacticalAction;
-    game_state.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress::default()));
-}
-
-/// Ensure the tactical action being performed, if any, has gained the relics it owes and has
-/// researched with a Book of Latvinia gained during it.
-fn ensure_tactical_action_finished(game_state: &GameState) -> Result<()> {
-    let Some(tactical) = game_state
-        .action_progress
-        .as_ref()
-        .and_then(ActionPhaseProgress::tactical)
-    else {
-        return Ok(());
-    };
-    if let Some(planet) = tactical
-        .taken_planets
-        .keys()
-        .find(|planet| tactical.owes_relic(planet))
-    {
-        bail!("A relic must be gained for {} first", planet.info().name);
-    }
-    ensure!(
-        !tactical.owes_book_of_latvinia_research(),
-        "The Book of Latvinia must be researched with first"
-    );
-    Ok(())
-}
-
-/// End the current action turn, which isn't possible while Thunder's Edge waits to be placed.
-fn end_action_turn(game_state: &mut GameState) -> Result<()> {
-    ensure!(
-        !is_awaiting_thunders_edge_placement(game_state),
-        "Thunder's Edge must be placed before ending the turn"
-    );
-    game_state.action_progress = None;
-    game_state.phase = Phase::Action;
     Ok(())
 }
 

@@ -2,13 +2,13 @@
 
 use anyhow::{Result, ensure};
 use chrono::{DateTime, Utc};
-
-use super::{end_action_turn, is_awaiting_thunders_edge_placement};
 use ti_helper_game_data::{
     common::{component::Component, player_id::PlayerId},
     components::{action_card::ActionCard, phase::Phase},
     state::game_state::GameState,
 };
+
+use super::thunders_edge::is_awaiting_thunders_edge_placement;
 
 /// Handles `Event::TakeAnotherTurn`.
 pub(super) fn take_another_turn(game_state: &mut GameState, player: PlayerId) -> Result<()> {
@@ -84,5 +84,16 @@ pub(super) fn pass_action(
     } else {
         game_state.advance_turn(timestamp)?;
     }
+    Ok(())
+}
+
+/// End the current action turn, which isn't possible while Thunder's Edge waits to be placed.
+pub(super) fn end_action_turn(game_state: &mut GameState) -> Result<()> {
+    ensure!(
+        !is_awaiting_thunders_edge_placement(game_state),
+        "Thunder's Edge must be placed before ending the turn"
+    );
+    game_state.action_progress = None;
+    game_state.phase = Phase::Action;
     Ok(())
 }

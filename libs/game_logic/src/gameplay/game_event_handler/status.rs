@@ -4,11 +4,14 @@ use std::collections::BTreeSet;
 
 use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
-
-use ti_helper_game_data::components::tech::Technology;
 use ti_helper_game_data::{
     common::player_id::PlayerId,
-    components::{objectives::Objective, phase::Phase, relic::Relic, tech::TechOrigin},
+    components::{
+        objectives::Objective,
+        phase::Phase,
+        relic::Relic,
+        tech::{TechOrigin, Technology},
+    },
     state::game_state::GameState,
 };
 

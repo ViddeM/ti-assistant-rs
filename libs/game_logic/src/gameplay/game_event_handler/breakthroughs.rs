@@ -1,15 +1,13 @@
 //! Breakthrough and technology action events.
 
 use anyhow::{Context, Result, bail, ensure};
-
-use ti_helper_game_data::components::tech::Technology;
 use ti_helper_game_data::{
     actions::event::BreakthroughAction,
     common::player_id::PlayerId,
     components::{
         breakthrough::{Breakthrough, BreakthroughKind},
         phase::Phase,
-        tech::{TechOrigin, TechType},
+        tech::{TechOrigin, TechType, Technology},
     },
     state::game_state::{ActionPhaseProgress, BreakthroughProgress, GameState},
 };

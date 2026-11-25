@@ -1,11 +1,12 @@
 //! Leader events.
 
 use anyhow::{Context, Result, bail, ensure};
-
-use ti_helper_game_data::components::leaders::Leader;
 use ti_helper_game_data::{
     common::{expansions::Expansion, player_id::PlayerId},
-    components::{leaders::LeaderAbilityKind, phase::Phase},
+    components::{
+        leaders::{Leader, LeaderAbilityKind},
+        phase::Phase,
+    },
     state::game_state::{ActionPhaseProgress, GameState, LeaderProgress},
 };
 

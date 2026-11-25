@@ -5,12 +5,6 @@ use std::collections::HashSet;
 use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
 use strum::IntoEnumIterator;
-
-use crate::gameplay::error::GameError;
-
-use super::{
-    end_action_turn, perform_strategic_primary, perform_strategic_secondary, start_tactical_action,
-};
 use ti_helper_game_data::{
     actions::event::{ActionCardAction, action_matches_action_card},
     common::player_id::PlayerId,
@@ -22,6 +16,13 @@ use ti_helper_game_data::{
     },
     state::game_state::{ActionCardProgress, ActionPhaseProgress, GameState, PlanetLocation},
 };
+
+use super::{
+    action_turn::end_action_turn,
+    strategy::{perform_strategic_primary, perform_strategic_secondary},
+    tactical::start_tactical_action,
+};
+use crate::gameplay::error::GameError;
 
 /// Handles `Event::ActionCardActionBegin`.
 pub(super) fn begin(game_state: &mut GameState, player: PlayerId, card: ActionCard) -> Result<()> {

@@ -3,13 +3,10 @@
 use std::collections::BTreeSet;
 
 use anyhow::{Result, bail, ensure};
-
-use ti_helper_game_data::components::objectives::public::PublicObjective;
-use ti_helper_game_data::components::objectives::secret::SecretObjective;
 use ti_helper_game_data::{
     common::player_id::PlayerId,
     components::{
-        objectives::{Objective, ObjectiveKind},
+        objectives::{Objective, ObjectiveKind, public::PublicObjective, secret::SecretObjective},
         phase::Phase,
     },
     state::game_state::GameState,

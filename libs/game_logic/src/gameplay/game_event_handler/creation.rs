@@ -3,9 +3,6 @@
 use std::collections::BTreeSet;
 
 use anyhow::{Context, Result, ensure};
-
-use crate::gameplay::color_assignment::assign_colors;
-
 use ti_helper_game_data::{
     common::{
         faction::Faction,
@@ -23,6 +20,8 @@ use ti_helper_game_data::{
         player::NewPlayer,
     },
 };
+
+use crate::gameplay::color_assignment::assign_colors;
 
 /// Handles `Event::ImportFromMilty`.
 pub(super) fn import_from_milty(

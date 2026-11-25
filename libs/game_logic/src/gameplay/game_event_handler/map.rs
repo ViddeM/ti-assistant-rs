@@ -1,7 +1,6 @@
 //! Planet, attachment and technology events.
 
 use anyhow::{Result, bail, ensure};
-
 use ti_helper_game_data::{
     common::player_id::PlayerId,
     components::{

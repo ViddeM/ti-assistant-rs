@@ -1,15 +1,17 @@
 //! Thunder's Edge events: the expedition, the Fracture, breakthroughs and coexistence.
 
 use anyhow::{Context, Result, bail, ensure};
-
-use ti_helper_game_data::components::system::SystemId;
-use ti_helper_game_data::state::expedition::TEExpeditionSlot;
 use ti_helper_game_data::{
     common::{expansions::Expansion, faction::Faction, player_id::PlayerId},
-    components::{breakthrough::Breakthrough, phase::Phase, planet::Planet, system::System},
+    components::{
+        breakthrough::Breakthrough,
+        phase::Phase,
+        planet::Planet,
+        system::{System, SystemId},
+    },
     state::{
         coexistence::Coexistence,
-        expedition::{ExpeditionClaim, TECompletion},
+        expedition::{ExpeditionClaim, TECompletion, TEExpeditionSlot},
         faction_state::DeepwroughtState,
         game_state::{ActionPhaseProgress, FractureProgress, GameState},
     },
@@ -348,4 +350,9 @@ pub(super) fn coexistence_end(
         }
     }
     Ok(())
+}
+
+/// True if the final expedition slot is claimed, but Thunder's Edge hasn't been placed yet.
+pub(super) fn is_awaiting_thunders_edge_placement(game_state: &GameState) -> bool {
+    (game_state.te_expedition.as_ref()).is_some_and(|te| te.is_awaiting_placement())
 }

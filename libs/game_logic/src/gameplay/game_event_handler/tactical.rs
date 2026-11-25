@@ -1,18 +1,20 @@
 //! Tactical action events.
 
 use anyhow::{Result, bail, ensure};
-
 use ti_helper_game_data::{
     common::player_id::PlayerId,
     components::{
         galactic_event::GalacticEvent,
+        phase::Phase,
         planet::{OrbitalBodyType, Planet, PlanetTrait},
         planet_attachment::PlanetAttachment,
         relic::Relic,
         system::System,
         tech::Technology,
     },
-    state::game_state::{GameState, PlanetLocation, TakenFrom},
+    state::game_state::{
+        ActionPhaseProgress, GameState, PlanetLocation, TacticalProgress, TakenFrom,
+    },
 };
 
 /// Handles `Event::TacticalActionTakePlanet`.
@@ -186,5 +188,35 @@ pub(super) fn gain_relic(
     if let Some(relic) = relic {
         game_state.set_relic_owner(relic, Some(player))?;
     }
+    Ok(())
+}
+
+/// Start a tactical action for the current player.
+pub(super) fn start_tactical_action(game_state: &mut GameState) {
+    game_state.phase = Phase::TacticalAction;
+    game_state.action_progress = Some(ActionPhaseProgress::Tactical(TacticalProgress::default()));
+}
+
+/// Ensure the tactical action being performed, if any, has gained the relics it owes and has
+/// researched with a Book of Latvinia gained during it.
+pub(super) fn ensure_tactical_action_finished(game_state: &GameState) -> Result<()> {
+    let Some(tactical) = game_state
+        .action_progress
+        .as_ref()
+        .and_then(ActionPhaseProgress::tactical)
+    else {
+        return Ok(());
+    };
+    if let Some(planet) = tactical
+        .taken_planets
+        .keys()
+        .find(|planet| tactical.owes_relic(planet))
+    {
+        bail!("A relic must be gained for {} first", planet.info().name);
+    }
+    ensure!(
+        !tactical.owes_book_of_latvinia_research(),
+        "The Book of Latvinia must be researched with first"
+    );
     Ok(())
 }

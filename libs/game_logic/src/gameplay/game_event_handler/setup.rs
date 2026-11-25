@@ -4,9 +4,6 @@ use std::{borrow::BorrowMut, collections::BTreeSet};
 
 use anyhow::{Result, bail, ensure};
 use chrono::{DateTime, Utc};
-
-use crate::gameplay::error::GameError;
-
 use ti_helper_game_data::{
     common::{faction::Faction, map::HexMap, player_id::PlayerId},
     components::{
@@ -19,6 +16,8 @@ use ti_helper_game_data::{
     },
     state::game_state::GameState,
 };
+
+use crate::gameplay::error::GameError;
 
 /// Handles `Event::SetupTheTribunii`.
 pub(super) fn setup_the_tribunii(

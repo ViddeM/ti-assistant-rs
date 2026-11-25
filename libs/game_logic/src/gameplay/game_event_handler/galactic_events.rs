@@ -1,9 +1,8 @@
-//! Galactic event events.
+//! Galactic event actions, monuments and their admin events.
 
 use std::collections::BTreeSet;
 
 use anyhow::{Context, Result, bail, ensure};
-
 use ti_helper_game_data::{
     actions::event::GalacticEventAction,
     common::{

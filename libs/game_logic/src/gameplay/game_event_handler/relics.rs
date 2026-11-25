@@ -1,7 +1,6 @@
 //! Relic events.
 
 use anyhow::{Context, Result, bail, ensure};
-
 use ti_helper_game_data::{
     actions::event::{RelicAction, action_matches_relic},
     common::player_id::PlayerId,
