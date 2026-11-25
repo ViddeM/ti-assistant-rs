@@ -255,12 +255,13 @@ pub fn codex_iv_book_of_latvinia_minister_of_antiques() -> TestGame {
         minister(&g),
         Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player: p("Bob") })
     );
+    assert_eq!(g.phase(), Phase::AgendaEffect);
 
     g.expect_rejected(
         Event::RevealAgenda {
             agenda: Agenda::ConventionsOfWar,
         },
-        "Bob must research with the Book of Latvinia first",
+        "expected Agenda, was AgendaEffect",
     )
     .expect_rejected(
         Event::ResearchBookOfLatviniaTechs {
@@ -275,6 +276,7 @@ pub fn codex_iv_book_of_latvinia_minister_of_antiques() -> TestGame {
     });
     assert!(g.player("Bob").has_tech(&Technology::PlasmaScoring));
     assert_eq!(minister(&g), None);
+    assert_eq!(g.phase(), Phase::Agenda);
 
     g.agenda(Agenda::ConventionsOfWar)
         .vote_all(FOR, 1)

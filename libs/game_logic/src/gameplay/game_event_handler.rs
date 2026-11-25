@@ -81,22 +81,6 @@ fn try_update_game_state(
     event: Event,
     timestamp: DateTime<Utc>,
 ) -> Result<(), GameError> {
-    match game_state
-        .agenda
-        .as_ref()
-        .and_then(|agenda| agenda.minister_of_antiques.as_ref())
-    {
-        Some(MinisterOfAntiquesProgress::GainRelic { player }) => ensure!(
-            matches!(event, Event::GainMinisterOfAntiquesRelic { .. }),
-            "{player} must gain their Minister of Antiques relic first"
-        ),
-        Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player }) => ensure!(
-            matches!(event, Event::ResearchBookOfLatviniaTechs { .. }),
-            "{player} must research with the Book of Latvinia first"
-        ),
-        None => {}
-    }
-
     match event {
         Event::SetSettings { settings } => {
             game_state.assert_phase(Phase::Creation)?;
@@ -2247,6 +2231,9 @@ fn try_update_game_state(
 
             state.vote = None;
             state.round = state.round.next();
+            if minister_of_antiques.is_some() {
+                game_state.phase = Phase::AgendaEffect;
+            }
             state.minister_of_antiques = minister_of_antiques;
         }
         Event::CompleteAgendaPhase => {
@@ -2383,7 +2370,8 @@ fn try_update_game_state(
             player,
             technologies,
         } => {
-            let minister_research = matches!(
+            let minister_research = game_state.phase == Phase::AgendaEffect
+                && matches!(
                 game_state.agenda.as_ref().and_then(|agenda| agenda.minister_of_antiques.as_ref()),
                 Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player: p }) if p == &player
             );
@@ -2442,6 +2430,7 @@ fn try_update_game_state(
                     .as_mut()
                     .context("agenda state not initialized, this is a bug.")?
                     .minister_of_antiques = None;
+                game_state.phase = Phase::Agenda;
             } else if tactical_research {
                 game_state.tactical_progress_mut()?.book_of_latvinia_techs = Some(technologies);
             } else {
@@ -3026,6 +3015,7 @@ fn try_update_game_state(
             game_state.end_fracture(state);
         }
         Event::GainMinisterOfAntiquesRelic { player, relic } => {
+            game_state.assert_phase(Phase::AgendaEffect)?;
             ensure!(
                 matches!(
                     game_state.agenda.as_ref().and_then(|agenda| agenda.minister_of_antiques.as_ref()),
@@ -3049,6 +3039,9 @@ fn try_update_game_state(
                 if relic == Relic::BookOfLatvinia {
                     next = Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player });
                 }
+            }
+            if next.is_none() {
+                game_state.phase = Phase::Agenda;
             }
             game_state
                 .agenda
@@ -3330,6 +3323,7 @@ fn should_track_time_in(phase: Phase) -> bool {
         | Phase::EntropicScar
         | Phase::Status
         | Phase::Agenda
+        | Phase::AgendaEffect
         | Phase::Creation => false,
     }
 }

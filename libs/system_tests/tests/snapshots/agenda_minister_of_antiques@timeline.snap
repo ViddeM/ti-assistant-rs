@@ -52,7 +52,7 @@ source: libs/system_tests/src/check.rs
   48 CastAgendaVote(Bob)                      r1 Agenda             Bob
   49 CastAgendaVote(Carol)                    r1 Agenda             Bob
   50 CastAgendaVote(Alice)                    r1 Agenda             Bob
-  51 ResolveAgenda                            r1 Agenda             Bob
+  51 ResolveAgenda                            r1 AgendaEffect       Bob
   52 GainMinisterOfAntiquesRelic(Bob)         r1 Agenda             Bob
   53 RevealAgenda                             r1 Agenda             Bob
   54 CastAgendaVote(Bob)                      r1 Agenda             Bob

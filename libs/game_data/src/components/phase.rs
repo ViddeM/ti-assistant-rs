@@ -61,6 +61,10 @@ pub enum Phase {
 
     /// The Agenda phase.
     Agenda,
+
+    /// During the Agenda phase, resolving an agenda outcome that needs player input (Minister of
+    /// Antiques).
+    AgendaEffect,
 }
 
 impl Display for Phase {
@@ -87,6 +91,7 @@ impl Display for Phase {
                 Phase::Status => "Status",
                 Phase::Relics => "Relics",
                 Phase::Agenda => "Agenda",
+                Phase::AgendaEffect => "Agenda Effect",
             }
         )
     }

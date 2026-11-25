@@ -12,7 +12,11 @@ impl GameState {
     pub fn status_phases_started(&self) -> u32 {
         let this_round = matches!(
             self.phase,
-            Phase::EntropicScar | Phase::Status | Phase::Relics | Phase::Agenda
+            Phase::EntropicScar
+                | Phase::Status
+                | Phase::Relics
+                | Phase::Agenda
+                | Phase::AgendaEffect
         );
         self.round.saturating_sub(1) + u32::from(this_round)
     }

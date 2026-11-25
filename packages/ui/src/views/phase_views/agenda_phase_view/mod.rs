@@ -30,24 +30,37 @@ pub fn AgendaPhaseView() -> Element {
         document::Stylesheet { href: AGENDA_PHASE_VIEW_SCSS }
 
         if let Some(agenda_state) = state() {
-            match agenda_state.minister_of_antiques.clone() {
-                Some(MinisterOfAntiquesProgress::GainRelic { player }) => rsx! {
-                    MinisterOfAntiques { player_id: player }
-                },
-                Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player }) => {
-                    rsx! {
-                        BookOfLatviniaResearch { player_id: player }
-                    }
-                }
-                None => rsx! {
-                    div { class: "agenda-phase-container",
-                        AgendaInfoView { state: agenda_state.clone() }
-                        AgendaActionsView { state: agenda_state.clone() }
-                    }
-                },
+            div { class: "agenda-phase-container",
+                AgendaInfoView { state: agenda_state.clone() }
+                AgendaActionsView { state: agenda_state.clone() }
             }
         } else {
             p { "Agenda state not set during agenda phase?" }
+        }
+    }
+}
+
+#[component]
+pub fn AgendaEffectView() -> Element {
+    let gc = use_context::<GameContext>();
+
+    let minister_of_antiques = use_memo(move || {
+        (gc.game_state().agenda.as_ref()).and_then(|agenda| agenda.minister_of_antiques.clone())
+    });
+
+    rsx! {
+        document::Stylesheet { href: AGENDA_PHASE_VIEW_SCSS }
+
+        match minister_of_antiques() {
+            Some(MinisterOfAntiquesProgress::GainRelic { player }) => rsx! {
+                MinisterOfAntiques { player_id: player }
+            },
+            Some(MinisterOfAntiquesProgress::BookOfLatviniaResearch { player }) => rsx! {
+                BookOfLatviniaResearch { player_id: player }
+            },
+            None => rsx! {
+                p { "No agenda effect to resolve?" }
+            },
         }
     }
 }

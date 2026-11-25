@@ -47,7 +47,7 @@ impl From<Phase> for PhaseGroup {
             | Phase::Fracture
             | Phase::EndActionTurn => PhaseGroup::Action,
             Phase::EntropicScar | Phase::Status | Phase::Relics => PhaseGroup::Status,
-            Phase::Agenda => PhaseGroup::Agenda,
+            Phase::Agenda | Phase::AgendaEffect => PhaseGroup::Agenda,
         }
     }
 }

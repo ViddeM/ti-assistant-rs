@@ -443,12 +443,13 @@ pub fn agenda_minister_of_antiques() -> TestGame {
         minister(&g),
         Some(MinisterOfAntiquesProgress::GainRelic { player: p("Bob") })
     );
+    assert_eq!(g.phase(), Phase::AgendaEffect);
 
     g.expect_rejected(
         Event::RevealAgenda {
             agenda: Agenda::ConventionsOfWar,
         },
-        "Bob must gain their Minister of Antiques relic first",
+        "expected Agenda, was AgendaEffect",
     )
     .expect_rejected(
         gain("Alice", Some(Relic::TheCodex)),
@@ -461,6 +462,7 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     .apply(gain("Bob", Some(Relic::TheCodex)));
     assert!(g.player("Bob").relics.contains(&Relic::TheCodex));
     assert_eq!(minister(&g), None);
+    assert_eq!(g.phase(), Phase::Agenda);
 
     g.agenda(Agenda::ConventionsOfWar)
         .vote_all(FOR, 1)
@@ -477,7 +479,7 @@ pub fn agenda_minister_of_antiques() -> TestGame {
     assert_eq!(g.state().agenda, None);
     g.expect_rejected(
         gain("Carol", None),
-        "Carol has no Minister of Antiques relic",
+        "expected AgendaEffect, was Action",
     )
     .turn("Alice")
     .tactical()
