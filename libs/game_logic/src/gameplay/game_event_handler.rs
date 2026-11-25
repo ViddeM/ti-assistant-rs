@@ -7,18 +7,16 @@ use super::error::GameError;
 
 use ti_helper_game_data::{
     actions::{
-        event::{Event, FrontierCardAction, action_matches_frontier_card},
+        event::Event,
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::{component::Component, expansions::Expansion, faction::Faction, player_id::PlayerId},
     components::{
         action_card::ActionCard,
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind},
-        frontier_card::FrontierCardType,
         leaders::LeaderAbilityKind,
         objectives::{Objective, ObjectiveKind},
         phase::Phase,
-        planet::Planet,
         relic::Relic,
         strategy_card::StrategyCard,
         tech::TechOrigin,
@@ -27,8 +25,8 @@ use ti_helper_game_data::{
         agenda::{AgendaRound, MinisterOfAntiquesProgress, Vote, VoteState},
         expedition::TEExpedition,
         game_state::{
-            ActionPhaseProgress, AgendaOverrideState, FrontierCardProgress, GameState,
-            LeaderProgress, StrategicPrimaryProgress, StrategicProgress, TacticalProgress,
+            ActionPhaseProgress, AgendaOverrideState, GameState, LeaderProgress,
+            StrategicPrimaryProgress, StrategicProgress, TacticalProgress,
         },
     },
 };
@@ -36,6 +34,7 @@ use ti_helper_game_data::{
 mod action_cards;
 mod breakthroughs;
 mod creation;
+mod frontier;
 mod galactic_events;
 mod map;
 mod relics;
@@ -388,103 +387,10 @@ fn try_update_game_state(
             thunders_edge::coexistence_end(game_state, player, planet)?
         }
         Event::FrontierCardActionBegin { player, card } => {
-            game_state.assert_phase(Phase::Action)?;
-            game_state.assert_player_turn(&player)?;
-            game_state.assert_enabled(&card)?;
-            ensure!(
-                card.info().frontier_type == FrontierCardType::Action,
-                "Only able to play frontier card actions during action phase"
-            );
-            ensure!(
-                game_state.action_progress.is_none(),
-                "Invalid game state, action_progress not None during Action Phase"
-            );
-
-            game_state.action_progress =
-                Some(ActionPhaseProgress::FrontierCard(FrontierCardProgress {
-                    card,
-                }));
-            game_state.phase = Phase::FrontierCardAction;
+            frontier::begin(game_state, player, card)?
         }
         Event::FrontierCardActionCommit { player, data } => {
-            game_state.assert_phase(Phase::FrontierCardAction)?;
-            game_state.assert_player_turn(&player)?;
-
-            let Some(ActionPhaseProgress::FrontierCard(progress)) =
-                game_state.action_progress.as_ref()
-            else {
-                bail!(
-                    "Invalid state, expected frontier card progress, got {:?}",
-                    game_state.action_progress
-                );
-            };
-
-            let current_player_faction = game_state
-                .players
-                .iter()
-                .find(|&(id, _)| &player == id)
-                .context("Current player to exist")?
-                .1
-                .faction;
-            ensure!(
-                action_matches_frontier_card(
-                    &data,
-                    &progress.card,
-                    &current_player_faction,
-                    game_state.map_data.milty_information.is_some()
-                ),
-                "Data provided doesn't match the card being played."
-            );
-
-            if let Some(progress) = data {
-                match progress {
-                    FrontierCardAction::EnigmaticDevice { tech } => {
-                        game_state.assert_enabled(&tech)?;
-                        game_state.research_tech(&player, tech)?;
-                    }
-                    FrontierCardAction::Mirage { system, attachment } => {
-                        ensure!(
-                            !game_state
-                                .players
-                                .values()
-                                .flat_map(|p| p.planets.keys())
-                                .any(|p| p == &Planet::Mirage),
-                            "A player already owns mirage and can only be takn using a tactical action"
-                        );
-                        ensure!(
-                            game_state
-                                .map_data
-                                .milty_information
-                                .as_ref()
-                                .map(|data| data.mirage_system.is_none())
-                                .unwrap_or(true),
-                            "Mirage system is already set?"
-                        );
-                        let player_id = game_state
-                            .current_player
-                            .clone()
-                            .context("No current player")?;
-                        game_state.set_planet_owner(Planet::Mirage, Some(player_id))?;
-                        if let Some(attachment) = attachment {
-                            game_state
-                                .get_current_player()?
-                                .planets
-                                .entry(Planet::Mirage)
-                                .or_default()
-                                .insert(attachment);
-                        }
-
-                        if let Some(milty_info) = game_state.map_data.milty_information.as_mut() {
-                            milty_info.mirage_system = Some(
-                                system.context("System to be chosen when milty info is enabled")?,
-                            );
-                        }
-                    }
-                }
-            }
-
-            game_state.action_progress = None;
-            game_state.phase = Phase::EndActionTurn;
+            frontier::commit(game_state, player, data)?
         }
         Event::GainRelicAction { player, relic } => {
             relics::gain_as_action(game_state, player, relic)?
