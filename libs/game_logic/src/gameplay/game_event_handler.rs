@@ -22,18 +22,15 @@ use ti_helper_game_data::{
         planet::Planet,
         relic::Relic,
         strategy_card::StrategyCard,
-        system::System,
         tech::{TechOrigin, TechType},
     },
     state::{
         agenda::{AgendaRound, MinisterOfAntiquesProgress, Vote, VoteState},
-        coexistence::Coexistence,
-        expedition::{ExpeditionClaim, TECompletion, TEExpedition},
-        faction_state::DeepwroughtState,
+        expedition::TEExpedition,
         game_state::{
-            ActionPhaseProgress, AgendaOverrideState, BreakthroughProgress, FractureProgress,
-            FrontierCardProgress, GameState, LeaderProgress, StrategicPrimaryProgress,
-            StrategicProgress, TacticalProgress,
+            ActionPhaseProgress, AgendaOverrideState, BreakthroughProgress, FrontierCardProgress,
+            GameState, LeaderProgress, StrategicPrimaryProgress, StrategicProgress,
+            TacticalProgress,
         },
     },
 };
@@ -45,6 +42,7 @@ mod map;
 mod relics;
 mod setup;
 mod tactical;
+mod thunders_edge;
 
 /// Update the game_state with the provided event, using the timestamp for time-keeping purposes.
 pub fn update_game_state(
@@ -536,66 +534,10 @@ fn try_update_game_state(
             game_state.phase = Phase::EndActionTurn;
         }
         Event::CoexistenceBegin { player, planet } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            let owner = (game_state.players.iter())
-                .find(|(_, p)| p.planets.contains_key(&planet))
-                .map(|(id, _)| id.clone());
-            ensure!(
-                owner.is_some(),
-                "{} isn't controlled by a player",
-                planet.info().name
-            );
-            ensure!(
-                owner.as_ref() != Some(&player),
-                "{player} can't coexist on a planet they control"
-            );
-            let coexistence = Coexistence {
-                planet: planet.clone(),
-                player: player.clone(),
-            };
-            ensure!(
-                !game_state.coexistences.contains(&coexistence),
-                "{player} is already coexisting on {}",
-                planet.info().name
-            );
-
-            let coexisting_player = game_state
-                .players
-                .get_mut(&player)
-                .context("Player not found")?;
-            if coexisting_player.faction == Faction::DeepwroughtScholarate {
-                let oceans = coexisting_player.ocean_cards();
-                let max = DeepwroughtState::MAX_OCEAN_CARDS;
-                coexisting_player.set_ocean_cards((oceans + 1).min(max))?;
-            }
-            game_state.coexistences.insert(coexistence);
+            thunders_edge::coexistence_begin(game_state, player, planet)?
         }
         Event::CoexistenceEnd { player, planet } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            let coexistence = Coexistence {
-                planet: planet.clone(),
-                player: player.clone(),
-            };
-            ensure!(
-                game_state.coexistences.contains(&coexistence),
-                "{player} isn't coexisting on {}",
-                planet.info().name
-            );
-            game_state.coexistences.remove(&coexistence);
-
-            let remaining = (game_state.coexistences.iter())
-                .filter(|c| c.player == player)
-                .count() as u8;
-            let coexisting_player = game_state
-                .players
-                .get_mut(&player)
-                .context("Player not found")?;
-            if coexisting_player.faction == Faction::DeepwroughtScholarate {
-                let oceans = coexisting_player.ocean_cards();
-                if oceans > remaining {
-                    coexisting_player.set_ocean_cards(remaining)?;
-                }
-            }
+            thunders_edge::coexistence_end(game_state, player, planet)?
         }
         Event::FrontierCardActionBegin { player, card } => {
             game_state.assert_phase(Phase::Action)?;
@@ -1379,174 +1321,22 @@ fn try_update_game_state(
             game_state.agenda_override_state = None;
         }
         Event::ClaimThundersEdgeExpeditionSlot { player, slot } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-
-            let round = game_state.round;
-            let turn = game_state.turn_number;
-            let te = game_state
-                .te_expedition
-                .as_mut()
-                .expect("Thunders Edge enabled but not initialized");
-
-            ensure!(
-                te.progress.get(&slot).map(|claim| &claim.player) != player.as_ref(),
-                "No change provided in event"
-            );
-
-            if let Some(player) = player {
-                te.progress.insert(
-                    slot,
-                    ExpeditionClaim {
-                        player,
-                        round,
-                        turn,
-                        committed: false,
-                    },
-                );
-            } else {
-                te.progress.remove(&slot);
-                te.pending_placement = None;
-            }
+            thunders_edge::claim_expedition_slot(game_state, player, slot)?
         }
         Event::SetBreakthrough {
             player,
             breakthrough,
-        } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            if let Some(b) = &breakthrough {
-                game_state.assert_enabled(b)?;
-            }
-            let player_state = game_state
-                .players
-                .get_mut(&player)
-                .context("Player not found")?;
-
-            ensure!(
-                breakthrough != player_state.breakthrough,
-                "Cannot set breakthrough to None"
-            );
-
-            let previous = std::mem::replace(&mut player_state.breakthrough, breakthrough.clone());
-            if previous.is_none()
-                && let Some(b) = &breakthrough
-            {
-                game_state.apply_breakthrough_gained(&player, b)?;
-            }
-        }
+        } => thunders_edge::set_breakthrough(game_state, player, breakthrough)?,
         Event::CommitToThundersEdgeExpedition { player, slot } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            game_state.assert_phase(Phase::EndActionTurn)?;
-            game_state.assert_player_turn(&player)?;
-
-            ensure!(
-                !game_state.has_committed_to_thunders_edge(&player),
-                "Player has already committed to the expedition this turn"
-            );
-
-            let round = game_state.round;
-            let turn = game_state.turn_number;
-            let te = game_state
-                .te_expedition
-                .as_mut()
-                .expect("Thunders Edge enabled but not initialized");
-
-            ensure!(
-                !te.progress.contains_key(&slot),
-                "Expedition slot is already claimed"
-            );
-
-            te.progress.insert(
-                slot,
-                ExpeditionClaim {
-                    player: player.clone(),
-                    round,
-                    turn,
-                    committed: true,
-                },
-            );
-            if te.is_full() {
-                te.pending_placement = Some(player.clone());
-            }
-
-            game_state.gain_breakthrough(&player)?;
+            thunders_edge::commit_to_expedition(game_state, player, slot)?
         }
         Event::CompleteThundersEdgeExpedition {
             player,
             placed_in,
             won_by,
-        } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            game_state.assert_phase(Phase::EndActionTurn)?;
-            game_state.assert_player_turn(&player)?;
-
-            let te = game_state
-                .te_expedition
-                .as_mut()
-                .expect("Thunders Edge enabled but not initialized");
-
-            ensure!(
-                te.is_awaiting_placement(),
-                "Thunder's Edge is not waiting to be placed"
-            );
-            ensure!(
-                System::valid_thunders_edge_systems().contains(&placed_in),
-                "System is not a valid candidate for Thunder's Edge"
-            );
-
-            let top_contributors = te
-                .get_top_expedition_contributors()
-                .context("Not all expedition slots are claimed")?;
-            ensure!(
-                top_contributors.contains(&won_by),
-                "Only a player with the most claimed slots can win the expedition"
-            );
-
-            te.completed = Some(TECompletion {
-                won_by: won_by.clone(),
-                placed_in,
-            });
-            te.pending_placement = None;
-            game_state.set_planet_owner(Planet::ThundersEdge, Some(won_by.clone()))?;
-            game_state.gain_breakthrough(&won_by)?;
-        }
+        } => thunders_edge::complete_expedition(game_state, player, placed_in, won_by)?,
         Event::SetThundersEdgeCompletion { new_completion } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-            let te = game_state
-                .te_expedition
-                .as_mut()
-                .expect("Thunders Edge enabled but not initialized");
-
-            ensure!(
-                te.completed != new_completion,
-                "No change provided in event"
-            );
-
-            if let Some(comp) = new_completion.as_ref() {
-                // Validate player & system.
-                let valid_systems = System::valid_thunders_edge_systems();
-                ensure!(
-                    valid_systems.contains(&comp.placed_in),
-                    "System is not a valid candidate for Thunder's Edge"
-                );
-
-                ensure!(
-                    game_state.players.contains_key(&comp.won_by),
-                    "Player not found"
-                );
-            } else {
-                ensure!(
-                    !te.is_full(),
-                    "Cannot uncomplete Thunders Edge expedition with all slots claimed"
-                );
-            }
-
-            let changed_winner = (te.completed.as_ref()).map(|c| &c.won_by)
-                != (new_completion.as_ref()).map(|c| &c.won_by);
-            te.completed = new_completion.clone();
-            if changed_winner {
-                game_state
-                    .set_planet_owner(Planet::ThundersEdge, new_completion.map(|c| c.won_by))?;
-            }
+            thunders_edge::set_completion(game_state, new_completion)?
         }
         Event::SetFractureInPlay { in_play } => {
             game_state.assert_expansion(&Expansion::ThundersEdge)?;
@@ -1577,58 +1367,8 @@ fn try_update_game_state(
         Event::RollForTheFracture {
             player,
             entered_play,
-        } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-
-            let Some(progress) = &mut game_state.action_progress else {
-                bail!("No action in progress for the Fracture roll");
-            };
-
-            let ActionPhaseProgress::Fracture(state) = progress else {
-                bail!("Action progress is not fracture roll");
-            };
-
-            let FractureProgress::Roll(roll_state) = &mut state.progress else {
-                bail!("Got roll for fracture during non-roll fracture state");
-            };
-
-            ensure!(
-                roll_state.current_player() == &player,
-                "Wrong player rolled, expected {} got {player}",
-                roll_state.current_player()
-            );
-
-            if entered_play {
-                game_state.fracture_in_play = true;
-                state.progress = FractureProgress::Spawned { player };
-            } else if roll_state.next_player().is_none() {
-                let state = state.clone();
-                game_state.end_fracture(state);
-            }
-        }
-        Event::FractureSpawned { player } => {
-            game_state.assert_expansion(&Expansion::ThundersEdge)?;
-
-            let Some(progress) = game_state.action_progress.as_ref() else {
-                bail!("No action in progress for the Fracture roll");
-            };
-
-            let ActionPhaseProgress::Fracture(state) = progress else {
-                bail!("Action progress is not fracture roll");
-            };
-
-            let FractureProgress::Spawned { player: spawner } = &state.progress else {
-                bail!("Invalid fracture progress");
-            };
-
-            ensure!(
-                spawner == &player,
-                "Wrong player spawns the fracture, expected {spawner} got {player}"
-            );
-
-            let state = state.clone();
-            game_state.end_fracture(state);
-        }
+        } => thunders_edge::roll_for_the_fracture(game_state, player, entered_play)?,
+        Event::FractureSpawned { player } => thunders_edge::fracture_spawned(game_state, player)?,
         Event::GainMinisterOfAntiquesRelic { player, relic } => {
             game_state.assert_phase(Phase::AgendaEffect)?;
             ensure!(
