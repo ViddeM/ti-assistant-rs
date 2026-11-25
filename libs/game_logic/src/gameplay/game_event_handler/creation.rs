@@ -27,7 +27,7 @@ use crate::gameplay::color_assignment::assign_colors;
 pub(super) fn import_from_milty(
     game_state: &mut GameState,
     max_points: u32,
-    milty_data: Box<MiltyData>,
+    milty_data: MiltyData,
 ) -> Result<()> {
     game_state.assert_phase(Phase::Creation)?;
 

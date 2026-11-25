@@ -59,7 +59,7 @@ fn try_update_game_state(
         Event::ImportFromMilty {
             max_points,
             milty_data,
-        } => creation::import_from_milty(game_state, max_points, milty_data)?,
+        } => creation::import_from_milty(game_state, max_points, *milty_data)?,
         Event::SetGalacticEvents { events } => {
             game_state.assert_phase(Phase::Creation)?;
             for event in &events {
