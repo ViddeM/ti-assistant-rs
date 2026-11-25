@@ -10,9 +10,8 @@ use ti_helper_game_data::{
         event::Event,
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
-    common::{component::Component, expansions::Expansion, faction::Faction, player_id::PlayerId},
+    common::{expansions::Expansion, faction::Faction, player_id::PlayerId},
     components::{
-        action_card::ActionCard,
         agenda::{Agenda, AgendaElect, AgendaElectKind, AgendaKind},
         objectives::{Objective, ObjectiveKind},
         phase::Phase,
@@ -31,6 +30,7 @@ use ti_helper_game_data::{
 };
 
 mod action_cards;
+mod action_turn;
 mod breakthroughs;
 mod creation;
 mod frontier;
@@ -205,70 +205,13 @@ fn try_update_game_state(
         }
         Event::RelicActionBegin { player, relic } => relics::begin(game_state, player, relic)?,
         Event::RelicActionCommit { player, data } => relics::commit(game_state, player, data)?,
-        Event::TakeAnotherTurn { player } => {
-            game_state.assert_phase(Phase::EndActionTurn)?;
-            game_state.assert_player_turn(&player)?;
-            ensure!(
-                !game_state.passed_players.contains(&player),
-                "A player that has passed cannot take another turn"
-            );
-
-            ensure!(
-                !is_awaiting_thunders_edge_placement(game_state),
-                "Thunder's Edge must be placed before taking another turn"
-            );
-            game_state.action_progress = None;
-            game_state.turn_number += 1;
-
-            game_state.phase = Phase::Action;
-        }
-        Event::EndTurn { player } => {
-            game_state.assert_phase(Phase::EndActionTurn)?;
-            game_state.assert_player_turn(&player)?;
-            ensure!(
-                game_state.action_progress.is_none(),
-                "Cannot end turn while an action is in progress"
-            );
-
-            end_action_turn(game_state)?;
-            game_state.advance_turn(timestamp)?;
-        }
+        Event::TakeAnotherTurn { player } => action_turn::take_another_turn(game_state, player)?,
+        Event::EndTurn { player } => action_turn::end_turn(game_state, player, timestamp)?,
         Event::PlayCrisis { player } => action_cards::play_crisis(game_state, player, timestamp)?,
         Event::PlayPuppetsOnAString { player } => {
             action_cards::play_puppets_on_a_string(game_state, player, timestamp)?
         }
-        Event::PassAction { player } => {
-            game_state.assert_phase(Phase::Action)?;
-            game_state.assert_player_turn(&player)?;
-            ensure!(
-                !game_state.passed_players.contains(&player),
-                "{player} has already passed"
-            );
-
-            let has_used_strategy_cards = game_state
-                .strategy_card_holders
-                .iter()
-                .filter(|(card, _)| !game_state.spent_strategy_cards.contains(card))
-                .all(|(_, holder)| *holder != player);
-
-            ensure!(
-                has_used_strategy_cards,
-                "player must use all strategy cards before passing"
-            );
-
-            game_state.passed_players.insert(player);
-
-            // A passing player may still commit to the expedition at the end of their turn.
-            let can_commit = (game_state.te_expedition.as_ref()).is_some_and(|te| !te.is_full());
-            let has_end_of_turn_cards = [ActionCard::Crisis, ActionCard::PuppetsOnAString]
-                .iter()
-                .any(|card| card.is_enabled_in(&game_state.game_settings.expansions));
-            if can_commit || has_end_of_turn_cards {
-                game_state.phase = Phase::EndActionTurn;
-            } else {
-                game_state.advance_turn(timestamp)?;
-            }
-        }
+        Event::PassAction { player } => action_turn::pass_action(game_state, player, timestamp)?,
         /* Status phase events */
         Event::ScorePublicObjective { player, objective } => {
             game_state.assert_phase(Phase::Status)?;
