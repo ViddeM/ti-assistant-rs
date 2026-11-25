@@ -3,7 +3,7 @@ use std::{borrow::BorrowMut, collections::BTreeSet};
 use anyhow::{Context, Result, bail, ensure};
 use chrono::{DateTime, Utc};
 
-use super::{color_assignment::assign_colors, error::GameError};
+use super::error::GameError;
 
 use ti_helper_game_data::{
     actions::{
@@ -11,8 +11,8 @@ use ti_helper_game_data::{
         strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     },
     common::{
-        component::Component, expansions::Expansion, faction::Faction, game_settings::GameSettings,
-        map::HexMap, milty_data::MiltyPlayer, player_id::PlayerId,
+        component::Component, expansions::Expansion, faction::Faction, map::HexMap,
+        player_id::PlayerId,
     },
     components::{
         action_card::ActionCard,
@@ -37,19 +37,16 @@ use ti_helper_game_data::{
         faction_state::DeepwroughtState,
         game_state::{
             ActionPhaseProgress, AgendaOverrideState, BreakthroughProgress, FractureProgress,
-            FrontierCardProgress, GameState, LeaderProgress, MapData, MiltyInformation,
-            PlanetLocation, StrategicPrimaryProgress, StrategicProgress, TacticalProgress,
-            TakenFrom,
+            FrontierCardProgress, GameState, LeaderProgress, PlanetLocation,
+            StrategicPrimaryProgress, StrategicProgress, TacticalProgress, TakenFrom,
         },
-        player::NewPlayer,
     },
 };
 
 mod action_cards;
+mod creation;
 mod galactic_events;
 mod relics;
-
-const MIN_PLAYER_COUNT: usize = 3;
 
 /// Update the game_state with the provided event, using the timestamp for time-keeping purposes.
 pub fn update_game_state(
@@ -83,64 +80,7 @@ fn try_update_game_state(
         Event::ImportFromMilty {
             max_points,
             milty_data,
-        } => {
-            game_state.assert_phase(Phase::Creation)?;
-
-            game_state.game_settings = GameSettings {
-                max_points,
-                expansions: milty_data.expansions.clone(),
-            };
-            let mut hex_map = milty_data.hex_map;
-            hex_map.place_crimson_rebellion_home_system();
-            if milty_data.expansions.thunders_edge {
-                hex_map.place_the_fracture();
-            }
-            game_state.map_data = MapData {
-                milty_information: Some(MiltyInformation {
-                    hex_map,
-                    mirage_system: None,
-                }),
-                destroyed_planets: vec![],
-                ever_owned_planets: BTreeSet::new(),
-            };
-
-            // Sorted so that the outcome (e.g. color ties) doesn't depend on HashMap order.
-            let mut players: Vec<&MiltyPlayer> = milty_data.players.values().collect();
-            players.sort_by(|a, b| a.order.cmp(&b.order).then_with(|| a.name.cmp(&b.name)));
-            game_state.table_order = players.iter().map(|p| p.name.clone().into()).collect();
-
-            let colors_map = assign_colors(players.iter().map(|p| p.faction).collect())
-                .context("Failed to assign colors to factions")?;
-            let new_players = players
-                .iter()
-                .map(|p| {
-                    Ok(NewPlayer {
-                        name: p.name.clone(),
-                        faction: p.faction,
-                        color: *colors_map.get(&p.faction).ok_or_else(|| {
-                            anyhow::anyhow!("Faction {:?} did not get a color?", p.faction)
-                        })?,
-                    })
-                })
-                .collect::<anyhow::Result<Vec<NewPlayer>>>()?;
-
-            game_state.players = new_players
-                .into_iter()
-                .map(|p| (p.name.clone().into(), p.setup(&milty_data.expansions)))
-                .collect();
-
-            game_state.speaker = Some(
-                game_state
-                    .table_order
-                    .first()
-                    .cloned()
-                    .context("Expected there to be players from milty?")?,
-            );
-
-            if game_state.game_settings.expansions.thunders_edge {
-                game_state.te_expedition = Some(TEExpedition::default());
-            }
-        }
+        } => creation::import_from_milty(game_state, max_points, milty_data)?,
         Event::SetGalacticEvents { events } => {
             game_state.assert_phase(Phase::Creation)?;
             for event in &events {
@@ -148,71 +88,8 @@ fn try_update_game_state(
             }
             game_state.galactic_events.in_play = events;
         }
-        Event::AddPlayer { player } => {
-            game_state.assert_phase(Phase::Creation)?;
-            game_state.assert_enabled(&player.faction)?;
-            ensure!(
-                game_state.map_data.milty_information.is_none(),
-                "Game was imported from milty, can't add more players!"
-            );
-            ensure!(
-                game_state.players.len() < game_state.max_players(),
-                "can't have more than {} players",
-                game_state.max_players()
-            );
-
-            let id: PlayerId = player.name.clone().into();
-
-            ensure!(
-                !game_state.players.contains_key(&id),
-                "a player called {id:?} already exists",
-            );
-
-            ensure!(
-                game_state
-                    .players
-                    .values()
-                    .all(|other| other.faction != player.faction),
-                "two players can't play the same faction",
-            );
-
-            game_state.table_order.push(id.clone());
-            game_state
-                .players
-                .insert(id, player.setup(&game_state.game_settings.expansions));
-        }
-        Event::CreationDone => {
-            game_state.assert_phase(Phase::Creation)?;
-            ensure!(
-                game_state.players.len() >= MIN_PLAYER_COUNT,
-                "can't have less than {MIN_PLAYER_COUNT} players"
-            );
-            let systems = systems();
-            if let Some(map_data) = game_state.map_data.milty_information.as_ref() {
-                let selected_factions: Vec<Faction> = game_state
-                    .players
-                    .values()
-                    .map(|player| player.faction)
-                    .collect();
-
-                ensure!(
-                    map_data
-                        .hex_map
-                        .tiles
-                        .iter()
-                        .filter_map(|tile| systems.get(&tile.system))
-                        .filter_map(|system| match system.system_type {
-                            SystemType::HomeSystem(faction) => Some(faction),
-                            _ => None,
-                        })
-                        .all(|faction| selected_factions.contains(&faction)),
-                    "Factions from the milty draft map have not yet been picked"
-                );
-            }
-
-            // We do not call change_phase here as we should not track time / calculate turn order here.
-            game_state.phase = Phase::Setup;
-        }
+        Event::AddPlayer { player } => creation::add_player(game_state, player)?,
+        Event::CreationDone => creation::creation_done(game_state)?,
         Event::SetupTheTribunii { player, faction } => {
             game_state.assert_phase(Phase::Setup)?;
             let holder =
