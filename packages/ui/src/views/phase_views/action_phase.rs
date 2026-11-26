@@ -229,7 +229,7 @@ fn ComponentSelectRow() -> Element {
                 p.technologies()
                     .iter()
                     .filter(|t| t.is_single_button_action())
-                    .cloned()
+                    .map(|t| (t.clone(), t.action_available(p)))
                     .collect::<Vec<_>>()
             })
             .unwrap_or_default();
@@ -262,9 +262,11 @@ fn ComponentSelectRow() -> Element {
                     "Breakthrough"
                 }
             }
-            for tech in single_button_techs() {
+            for (tech , available) in single_button_techs() {
                 Button {
                     key: "{tech:?}",
+                    disabled: !available,
+                    title: if !available { "Requires control of Mecatol Rex" },
                     onclick: {
                         let tech = tech.clone();
                         move |_| {

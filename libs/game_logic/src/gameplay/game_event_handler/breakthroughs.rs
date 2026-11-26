@@ -189,6 +189,13 @@ pub(super) fn play_tech_action(
         "{player} doesn't have {}",
         tech.info().name
     );
+    ensure!(
+        game_state
+            .players
+            .get(&player)
+            .is_some_and(|p| tech.action_available(p)),
+        "{player} doesn't control Mecatol Rex"
+    );
 
     game_state.phase = Phase::EndActionTurn;
     Ok(())

@@ -883,3 +883,51 @@ pub fn action_strategic_warfare_has_no_tactical_action() -> TestGame {
         .end_turn();
     g
 }
+
+fn play_tech(player: &str, tech: Technology) -> Event {
+    Event::PlayTechAction {
+        player: p(player),
+        tech,
+    }
+}
+
+fn add_tech(player: &str, tech: Technology) -> Event {
+    Event::AddTechToPlayer {
+        player: p(player),
+        tech,
+    }
+}
+
+#[test]
+fn tech_action_sling_relay_ends_the_turn() {
+    let mut g = action_phase(three_players().pok());
+    g.apply(add_tech("Alice", Technology::SlingRelay));
+    g.apply(play_tech("Alice", Technology::SlingRelay));
+    assert_eq!(g.state().phase, Phase::EndActionTurn);
+}
+
+#[test]
+fn tech_action_lazax_gate_folding_requires_mecatol_rex() {
+    let mut g = action_phase(three_players());
+    g.apply(add_tech("Alice", Technology::LazaxGateFolding));
+    g.expect_rejected(
+        play_tech("Alice", Technology::LazaxGateFolding),
+        "Alice doesn't control Mecatol Rex",
+    );
+    g.apply(Event::SetPlanetOwner {
+        player: Some(p("Alice")),
+        planet: Planet::MecatolRex,
+    });
+    g.apply(play_tech("Alice", Technology::LazaxGateFolding));
+    assert_eq!(g.state().phase, Phase::EndActionTurn);
+}
+
+#[test]
+fn tech_action_executive_order_is_not_a_single_button_action() {
+    let mut g = action_phase(three_players().pok().codex().thunders_edge());
+    g.apply(add_tech("Alice", Technology::ExecutiveOrder));
+    g.expect_rejected(
+        play_tech("Alice", Technology::ExecutiveOrder),
+        "doesn't have a single button ACTION",
+    );
+}

@@ -3,10 +3,14 @@ use std::{collections::HashMap, fmt::Display};
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumIter, EnumString};
 
-use crate::common::{
-    component::{Component, replacements},
-    expansions::Expansion,
-    faction::Faction,
+use crate::{
+    common::{
+        component::{Component, replacements},
+        expansions::Expansion,
+        faction::Faction,
+    },
+    components::planet::Planet,
+    state::player::Player,
 };
 
 /// What category the tech belongs to.
@@ -1327,7 +1331,25 @@ impl Technology {
 
     /// Whether the tech's ACTION is performed with a single button, with no choices to track.
     pub fn is_single_button_action(&self) -> bool {
-        matches!(self, Technology::Nanomachines | Technology::Vortex)
+        matches!(
+            self,
+            Technology::HyperMetabolism
+                | Technology::SlingRelay
+                | Technology::ProductionBiomes
+                | Technology::MageonImplants
+                | Technology::WormholeGeneratorOmega
+                | Technology::LazaxGateFolding
+                | Technology::Nanomachines
+                | Technology::Vortex
+        )
+    }
+
+    /// Whether the player meets the condition of the tech's ACTION.
+    pub fn action_available(&self, player: &Player) -> bool {
+        match self {
+            Technology::LazaxGateFolding => player.planets.keys().any(Planet::is_mecatol_rex),
+            _ => true,
+        }
     }
 
     /// The [TechInfo] of the side the tech is flipped to once the Obsidian is in play, for the
