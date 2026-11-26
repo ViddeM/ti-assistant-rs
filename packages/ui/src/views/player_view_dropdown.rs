@@ -28,6 +28,7 @@ pub fn PlayerViewDropdown() -> Element {
     let currently_viewing_as = use_memo(move || match view.get()() {
         PlayerView::Global => "".to_string(),
         PlayerView::Player { player_id } => player_id.to_string(),
+        PlayerView::Spectator => PlayerView::SPECTATOR.to_string(),
     });
 
     let players = use_memo(move || gc.game_state().players.keys().cloned().collect::<Vec<_>>());

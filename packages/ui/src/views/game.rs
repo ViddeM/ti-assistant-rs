@@ -238,18 +238,8 @@ fn MainGameView(
 ) -> Element {
     let game_state = use_memo(move || game_state().expect("Game state to be loaded"));
     let game_options = use_memo(move || game_options().expect("Game options to be loaded"));
-    let player_view = use_memo(move || {
-        playing_as()
-            .and_then(|name| {
-                game_state()
-                    .players
-                    .get_key_value(name.as_str())
-                    .map(|(player_id, _)| PlayerView::Player {
-                        player_id: player_id.clone(),
-                    })
-            })
-            .unwrap_or(PlayerView::Global)
-    });
+    let player_view =
+        use_memo(move || PlayerView::from_playing_as(playing_as().as_deref(), &game_state()));
     use_context_provider(|| GameContext::new(game_state.into(), game_options.into()));
     use_context_provider(|| {
         PlayerViewContext::new(game_state.into(), player_view.into(), set_view)

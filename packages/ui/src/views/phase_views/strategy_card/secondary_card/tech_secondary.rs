@@ -12,9 +12,7 @@ use ti_helper_game_data::{
 use crate::{
     components::{button::Button, faction_icon::FactionIcon},
     data::{
-        event_context::EventContext,
-        game_context::GameContext,
-        player_view::{PlayerView, PlayerViewContext},
+        event_context::EventContext, game_context::GameContext, player_view::PlayerViewContext,
     },
     views::select_tech::SelectTechView,
 };
@@ -78,10 +76,7 @@ pub fn TechSecondary(progress: ReadSignal<StrategicProgress>) -> Element {
                     };
                 }
 
-                let player_active = match view.get()() {
-                    PlayerView::Global => true,
-                    PlayerView::Player { player_id } => player_id.eq(id),
-                };
+                let player_active = view.display_for(id);
 
                 if !player_active {
                     return (id, player, Choice::OtherPlayer);
