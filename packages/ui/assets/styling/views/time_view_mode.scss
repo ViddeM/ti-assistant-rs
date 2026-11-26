@@ -196,6 +196,15 @@ $time-label-width: 6.5em;
   white-space: nowrap;
 }
 
+.time-break-label {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .time-table {
   width: 100%;
   border-collapse: collapse;

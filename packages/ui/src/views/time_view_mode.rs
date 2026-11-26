@@ -4,6 +4,7 @@ use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use ti_helper_game_data::{
     common::player_id::PlayerId,
+    components::phase::Phase,
     state::time_stats::{PhaseGroup, TimeSegment, TimeStats},
 };
 
@@ -82,8 +83,144 @@ fn phase_class(phase: PhaseGroup) -> String {
     format!("time-phase-{}", phase.to_string().to_lowercase())
 }
 
+const BREAK_WIDTH_PX: f64 = 52.0;
+const MIN_BREAK_SECONDS: i64 = 15 * 60;
+
 fn local_time(time: DateTime<Utc>) -> String {
-    time.with_timezone(&chrono::Local).format("%H:%M").to_string()
+    time.with_timezone(&chrono::Local)
+        .format("%H:%M")
+        .to_string()
+}
+
+fn local_day_and_time(time: DateTime<Utc>) -> String {
+    time.with_timezone(&chrono::Local)
+        .format("%a %H:%M")
+        .to_string()
+}
+
+fn local_date(time: DateTime<Utc>) -> chrono::NaiveDate {
+    time.with_timezone(&chrono::Local).date_naive()
+}
+
+fn break_label(length: Duration) -> String {
+    let seconds = length.as_secs();
+    if seconds >= 3600 {
+        format!("{} h", (seconds + 1800) / 3600)
+    } else {
+        format!("{} min", (seconds + 30) / 60)
+    }
+}
+
+fn is_break(segment: &TimeSegment) -> bool {
+    segment.paused || segment.phase == Phase::Creation
+}
+
+/// Maps times onto the timeline, where every break (a long pause, or the time before the game
+/// was set up) takes up a fixed width and the rest is proportional to the time played.
+#[derive(Clone, PartialEq)]
+struct TimeScale {
+    start: DateTime<Utc>,
+    end: DateTime<Utc>,
+    breaks: Vec<(DateTime<Utc>, DateTime<Utc>)>,
+    active_seconds: i64,
+}
+
+impl TimeScale {
+    fn new(segments: &[&TimeSegment]) -> Self {
+        let start = segments.first().map(|s| s.start).unwrap_or_default();
+        let end = segments.last().map(|s| s.end).unwrap_or_default();
+
+        let mut runs: Vec<(DateTime<Utc>, DateTime<Utc>)> = Vec::new();
+        let mut previous_was_break = false;
+        for segment in segments {
+            let breaking = is_break(segment);
+            if breaking {
+                match runs.last_mut() {
+                    Some(run) if previous_was_break && run.1 == segment.start => {
+                        run.1 = segment.end;
+                    }
+                    _ => runs.push((segment.start, segment.end)),
+                }
+            }
+            previous_was_break = breaking;
+        }
+        let breaks = runs
+            .into_iter()
+            .filter(|(from, to)| (*to - *from).num_seconds() >= MIN_BREAK_SECONDS)
+            .collect::<Vec<_>>();
+
+        let break_seconds: i64 = breaks
+            .iter()
+            .map(|(from, to)| (*to - *from).num_seconds())
+            .sum();
+        let active_seconds = ((end - start).num_seconds() - break_seconds).max(1);
+        Self {
+            start,
+            end,
+            breaks,
+            active_seconds,
+        }
+    }
+
+    fn breaks_width_px(&self) -> f64 {
+        self.breaks.len() as f64 * BREAK_WIDTH_PX
+    }
+
+    /// The played seconds before `time`, and the number of break widths before it.
+    fn offset(&self, time: DateTime<Utc>) -> (f64, f64) {
+        let seconds =
+            |from: DateTime<Utc>, to: DateTime<Utc>| (to - from).num_milliseconds() as f64 / 1000.0;
+        let time = time.clamp(self.start, self.end);
+        let mut active = seconds(self.start, time);
+        let mut breaks = 0.0;
+        for (from, to) in &self.breaks {
+            if time <= *from {
+                break;
+            }
+            if time >= *to {
+                active -= seconds(*from, *to);
+                breaks += 1.0;
+            } else {
+                active -= seconds(*from, time);
+                breaks += seconds(*from, time) / seconds(*from, *to);
+            }
+        }
+        (active, breaks)
+    }
+
+    fn css(&self, (active, breaks): (f64, f64)) -> String {
+        format!(
+            "calc((100% - {}px) * {} + {}px)",
+            self.breaks_width_px(),
+            active / self.active_seconds as f64,
+            breaks * BREAK_WIDTH_PX
+        )
+    }
+
+    fn position(&self, time: DateTime<Utc>) -> String {
+        self.css(self.offset(time))
+    }
+
+    fn width(&self, from: DateTime<Utc>, to: DateTime<Utc>) -> String {
+        let (from, to) = (self.offset(from), self.offset(to));
+        self.css((to.0 - from.0, to.1 - from.1))
+    }
+
+    /// The stretches of play between the breaks.
+    fn stretches(&self) -> Vec<(DateTime<Utc>, DateTime<Utc>)> {
+        let mut stretches = Vec::new();
+        let mut from = self.start;
+        for (break_start, break_end) in &self.breaks {
+            if *break_start > from {
+                stretches.push((from, *break_start));
+            }
+            from = *break_end;
+        }
+        if self.end > from {
+            stretches.push((from, self.end));
+        }
+        stretches
+    }
 }
 
 fn short_duration(duration: Duration) -> String {
@@ -185,36 +322,71 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
         .filter(|segment| round().is_none_or(|r| segment.round == r))
         .collect::<Vec<_>>();
 
-    let start = segments.first().map(|s| s.start).unwrap_or_default();
-    let end = segments.last().map(|s| s.end).unwrap_or_default();
-    let total = (end - start).num_seconds().max(1);
-    let position = |time: DateTime<Utc>| {
-        ((time - start).num_seconds() as f64 / total as f64 * 100.0).clamp(0.0, 100.0)
-    };
+    let scale = TimeScale::new(&segments);
+    let total = scale.active_seconds;
     let bar_style = |bar: &Bar| {
         format!(
-            "left: {}%; width: {}%",
-            position(bar.start),
-            position(bar.end) - position(bar.start)
+            "left: {}; width: {}",
+            scale.position(bar.start),
+            scale.width(bar.start, bar.end)
         )
     };
 
     let visible = zoom().filter(|window| *window < total).unwrap_or(total);
-    let width = total as f64 / visible as f64 * 100.0;
+    let timeline_width = if visible == total {
+        "100%".to_string()
+    } else {
+        format!(
+            "calc({}% + {}px)",
+            total as f64 / visible as f64 * 100.0,
+            scale.breaks_width_px()
+        )
+    };
     let tick = TICK_INTERVALS
         .into_iter()
-        .find(|interval| visible / interval <= 6)
+        .find(|interval| visible / interval <= 10)
         .unwrap_or(TICK_INTERVALS[TICK_INTERVALS.len() - 1]);
-    let first_tick = (start.timestamp() / tick + 1) * tick;
-    let ticks = (first_tick..end.timestamp())
-        .step_by(tick as usize)
-        .filter_map(|t| DateTime::from_timestamp(t, 0))
-        .filter(|time| (end - *time).num_seconds() * 16 > visible)
+    let mut ticks: Vec<(DateTime<Utc>, String)> = Vec::new();
+    for (from, to) in scale.stretches() {
+        let mut new_stretch = true;
+        let (from_offset, to_offset) = (scale.offset(from).0, scale.offset(to).0);
+        let first_tick = (from.timestamp() / tick + 1) * tick;
+        for time in (first_tick..to.timestamp())
+            .step_by(tick as usize)
+            .filter_map(|t| DateTime::from_timestamp(t, 0))
+            .filter(|time| {
+                let offset = scale.offset(*time).0;
+                ((to_offset - offset) as i64) * 14 > visible
+                    && (from == scale.start || ((offset - from_offset) as i64) * 24 > visible)
+            })
+        {
+            let new_day = ticks
+                .last()
+                .is_none_or(|(previous, _)| local_date(*previous) != local_date(time));
+            let label = if new_stretch || new_day {
+                local_day_and_time(time)
+            } else {
+                local_time(time)
+            };
+            new_stretch = false;
+            ticks.push((time, label));
+        }
+    }
+    let break_labels = scale
+        .breaks
+        .iter()
+        .map(|(from, to)| {
+            let length = (*to - *from).to_std().unwrap_or_default();
+            (*from, break_label(length), short_duration(length))
+        })
         .collect::<Vec<_>>();
 
     let mut round_starts: Vec<(u32, DateTime<Utc>)> = Vec::new();
     for segment in &segments {
-        if round_starts.last().is_none_or(|(round, _)| *round != segment.round) {
+        if round_starts
+            .last()
+            .is_none_or(|(round, _)| *round != segment.round)
+        {
             round_starts.push((segment.round, segment.start));
         }
     }
@@ -222,8 +394,12 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
         .iter()
         .enumerate()
         .map(|(index, (round, time))| {
-            let next = round_starts.get(index + 1).map_or(end, |(_, next)| *next);
-            let fits = (next - *time).num_seconds() * 8 > visible;
+            let next = round_starts
+                .get(index + 1)
+                .map_or(scale.end, |(_, next)| *next);
+            let (from, to) = (scale.offset(*time), scale.offset(next));
+            let width = (to.0 - from.0) + (to.1 - from.1) * visible as f64 / 20.0;
+            let fits = (width as i64) * 8 > visible;
             (*round, *time, fits.then(|| round_name(*round)))
         })
         .collect::<Vec<_>>();
@@ -311,13 +487,15 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                     }
                 }
                 div { class: "time-timeline-scroll",
-                    div { class: "time-timeline", style: "width: {width}%",
+                    div {
+                        class: "time-timeline",
+                        style: "width: {timeline_width}",
                         div { class: "time-row time-row-rounds time-track",
                             for (round, time, label) in round_markers.iter() {
                                 span {
                                     key: "{round}",
                                     class: "time-marker",
-                                    style: "left: {position(*time)}%",
+                                    style: "left: {scale.position(*time)}",
                                     title: "{round_name(*round)}",
                                     {label.clone().unwrap_or_default()}
                                 }
@@ -346,12 +524,21 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                             }
                         }
                         div { class: "time-row time-axis time-track",
-                            for time in ticks.iter() {
+                            for (time , label) in ticks.iter() {
                                 span {
                                     key: "{time}",
                                     class: "time-marker",
-                                    style: "left: {position(*time)}%",
-                                    "{local_time(*time)}"
+                                    style: "left: {scale.position(*time)}",
+                                    "{label}"
+                                }
+                            }
+                            for (from , label , length) in break_labels.iter() {
+                                span {
+                                    key: "break-{from}",
+                                    class: "time-break-label",
+                                    style: "left: {scale.position(*from)}; width: {BREAK_WIDTH_PX}px",
+                                    title: "Break: {length}",
+                                    "{label}"
                                 }
                             }
                         }
@@ -495,7 +682,7 @@ fn LongestTurns(stats: Arc<TimeStats>) -> Element {
                             td {
                                 PlayerName { player: turn.player.clone() }
                             }
-                            td { "R{turn.round} {turn.phase}, {local_time(turn.start)}" }
+                            td { "R{turn.round} {turn.phase}, {local_day_and_time(turn.start)}" }
                             td { class: "time-number", "{short_duration(turn.duration)}" }
                         }
                     }
