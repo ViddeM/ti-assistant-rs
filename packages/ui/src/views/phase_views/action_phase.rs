@@ -25,7 +25,7 @@ use crate::{
         button::Button,
         dropdown::{
             ActionCardDropdown, Dropdown, FrontierCardDropdown, PlanetDropdown, RelicDropdown,
-            SystemDropdown, TechDropdown,
+            SystemDropdown,
         },
         info_button::InfoButton,
     },
@@ -225,7 +225,11 @@ fn ComponentSelectRow() -> Element {
         gc.game_state()
             .players
             .get(&current_player())
-            .is_some_and(|p| p.technologies().iter().any(|t| t.is_single_button_action()))
+            .is_some_and(|p| {
+                p.technologies()
+                    .iter()
+                    .any(|t| t.is_single_button_action() && t.action_available(p))
+            })
     });
 
     rsx! {
@@ -379,8 +383,6 @@ fn TechActionView() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
 
-    let mut selected_tech: Signal<Option<Technology>> = use_signal(|| None);
-
     let current_player_id = use_memo(move || {
         gc.game_state()
             .current_player
@@ -397,7 +399,7 @@ fn TechActionView() -> Element {
                 p.technologies()
                     .iter()
                     .filter(|t| t.is_single_button_action())
-                    .cloned()
+                    .map(|t| (t.clone(), t.action_available(p)))
                     .collect::<Vec<_>>()
             })
             .unwrap_or_default();
@@ -405,45 +407,27 @@ fn TechActionView() -> Element {
         techs
     });
 
-    let available = use_memo(move || {
-        let game_state = gc.game_state();
-        match (
-            selected_tech(),
-            game_state.players.get(&current_player_id()),
-        ) {
-            (Some(tech), Some(player)) => tech.action_available(player),
-            _ => false,
-        }
-    });
-
-    let unavailable_reason = use_memo(move || {
-        (selected_tech() == Some(Technology::LazaxGateFolding) && !available())
-            .then_some("Requires control of Mecatol Rex")
-    });
-
     rsx! {
-        div {
-            fieldset { class: "play-action-card-container",
-                legend { "Play Technology" }
-                TechDropdown {
-                    value: selected_tech,
-                    options: action_techs(),
-                    on_select: move |t| selected_tech.set(t),
-                }
-                Button {
-                    disabled: !available(),
-                    title: unavailable_reason(),
-                    onclick: move |_| {
-                        event
-                            .send_event(Event::PlayTechAction {
-                                player: current_player_id(),
-                                tech: selected_tech().expect("Technology to be set"),
-                            })
-                    },
-                    "Play"
-                }
-                if let Some(reason) = unavailable_reason() {
-                    p { class: "warning-text", "{reason}" }
+        fieldset { class: "play-action-card-container",
+            legend { "Play Technology" }
+            div { class: "component-select-container",
+                for (tech , available) in action_techs() {
+                    Button {
+                        key: "{tech:?}",
+                        disabled: !available,
+                        title: if !available { "Requires control of Mecatol Rex" },
+                        onclick: {
+                            let tech = tech.clone();
+                            move |_| {
+                                event
+                                    .send_event(Event::PlayTechAction {
+                                        player: current_player_id(),
+                                        tech: tech.clone(),
+                                    })
+                            }
+                        },
+                        "{tech.info().name}"
+                    }
                 }
             }
         }
