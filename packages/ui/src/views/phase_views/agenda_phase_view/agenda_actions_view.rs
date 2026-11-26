@@ -143,7 +143,11 @@ fn ActiveAgendaView(state: ReadSignal<VoteState>) -> Element {
                 li {
                     "When agenda is revealed"
                     br {}
-                    Button { onclick: move |_| event.send_event(Event::VetoAgenda), "Veto" }
+                    if !view.is_spectator() {
+                        Button { onclick: move |_| event.send_event(Event::VetoAgenda),
+                            "Veto"
+                        }
+                    }
                 }
                 li { "After agenda is revealed" }
                 li {

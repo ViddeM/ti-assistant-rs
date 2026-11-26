@@ -126,7 +126,9 @@ pub fn EndActionPhaseView() -> Element {
             } else {
                 p { "Not your turn, currently {current_player_id()} is playing" }
             }
-            EndOfTurnActionCards { disabled: completion_required() }
+            if !view.is_spectator() {
+                EndOfTurnActionCards { disabled: completion_required() }
+            }
         }
     }
 }

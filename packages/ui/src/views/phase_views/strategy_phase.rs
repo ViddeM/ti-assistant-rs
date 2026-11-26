@@ -151,6 +151,7 @@ fn StrategyCardButton(
 fn NaaluTelepathy() -> Element {
     let gc = use_context::<GameContext>();
     let event = use_context::<EventContext>();
+    let view = use_context::<PlayerViewContext>();
 
     let naalu = use_memo(move || gc.game_state().naalu_telepathy.clone());
     let players = use_memo(move || {
@@ -202,24 +203,28 @@ fn NaaluTelepathy() -> Element {
                     }
                     "Telepathic / Gift of Prescience"
                 }
-                Dropdown {
-                    required: true,
-                    id: "naalu_telepathy_dropdown",
-                    value: "{naalu().unwrap()}",
-                    oninput: move |e: FormEvent| {
-                        event
-                            .send_event(Event::PlayGiftOfPrescience {
-                                player: e.value().into(),
-                            })
-                    },
-                    {
-                        players
-                            .iter()
-                            .map(|p| {
-                                rsx! {
-                                    option { key: "{p}", value: "{p}", "{p}" }
-                                }
-                            })
+                if view.is_spectator() {
+                    p { "{naalu().unwrap()}" }
+                } else {
+                    Dropdown {
+                        required: true,
+                        id: "naalu_telepathy_dropdown",
+                        value: "{naalu().unwrap()}",
+                        oninput: move |e: FormEvent| {
+                            event
+                                .send_event(Event::PlayGiftOfPrescience {
+                                    player: e.value().into(),
+                                })
+                        },
+                        {
+                            players
+                                .iter()
+                                .map(|p| {
+                                    rsx! {
+                                        option { key: "{p}", value: "{p}", "{p}" }
+                                    }
+                                })
+                        }
                     }
                 }
             }
