@@ -42,7 +42,8 @@ Base-game features, whichever expansions are enabled.
 - ❌ Action cards
   - ✅ Actions
   - ❌ Other relevant ones
-- ❌ Tech actions
+- ✅ Tech actions
+  - ❌ Keleres 'Executive Order' (draw an agenda and vote on it immediately, as if speaker)
 - ❌ Status phase
   - ✅ Score objectives
   - ✅ Reveal objectives
