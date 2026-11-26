@@ -90,18 +90,19 @@ fn PlayerSupportForTheThroneView(player_id: PlayerId) -> Element {
             td {
                 PlayerDropdown {
                     value: selected_player,
+                    default_text: "None",
                     on_select: move |p| selected_player.set(p),
                     options: players(),
                 }
             }
             td {
                 Button {
-                    disabled: currently_selected_player().eq(&selected_player()) && selected_player().is_some(),
+                    disabled: currently_selected_player().eq(&selected_player()),
                     onclick: move |_| {
                         event
                             .send_event(Event::GiveSupportForTheThrone {
                                 giver: player_id.clone(),
-                                receiver: selected_player().expect("Selected player to exist"),
+                                receiver: selected_player(),
                             })
                     },
                     "Give"

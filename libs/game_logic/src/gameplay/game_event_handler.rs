@@ -254,7 +254,26 @@ fn try_update_game_state(
         Event::CompleteAgendaPhase => agenda::complete_agenda_phase(game_state, timestamp)?,
         Event::GiveSupportForTheThrone { giver, receiver } => {
             let score = &mut game_state.score;
-            score.support_for_the_throne.insert(giver, receiver);
+            ensure!(
+                !score
+                    .support_for_the_throne
+                    .get(&giver)
+                    .eq(&receiver.as_ref()),
+                "{giver} already gives support for the throne to {receiver:?}"
+            );
+            ensure!(
+                game_state.players.contains_key(&giver),
+                "Giver must be a valid player, got {giver}"
+            );
+            if let Some(receiver) = receiver {
+                ensure!(
+                    game_state.players.contains_key(&receiver),
+                    "Receiver must be a valid player, got {receiver:?}"
+                );
+                score.support_for_the_throne.insert(giver, receiver);
+            } else {
+                score.support_for_the_throne.remove(&giver);
+            }
         }
         Event::AddExtraPoints { player, value } => {
             let extra = game_state.score.extra_points.entry(player).or_default();

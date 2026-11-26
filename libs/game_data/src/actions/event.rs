@@ -503,8 +503,8 @@ pub enum Event {
     GiveSupportForTheThrone {
         /// The player that gives away their support for the throne card.
         giver: PlayerId,
-        /// The player that received the support for the throne card.
-        receiver: PlayerId,
+        /// The player that received the support for the throne card, or None if its removed.
+        receiver: Option<PlayerId>,
     },
 
     /// Set the current custodians, usually set to the first player to take mecatol rex.

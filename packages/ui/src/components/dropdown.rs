@@ -388,6 +388,7 @@ pub fn AgendaDropdown(
 #[component]
 pub fn PlayerDropdown(
     class: Option<String>,
+    default_text: Option<String>,
     value: ReadSignal<Option<PlayerId>>,
     options: Vec<PlayerId>,
     on_select: EventHandler<Option<PlayerId>>,
@@ -406,13 +407,15 @@ pub fn PlayerDropdown(
         }
     };
 
+    let default_text = default_text.unwrap_or("--Select Player--".into());
+
     rsx! {
         Dropdown {
             class: class.unwrap_or_default(),
             value: current_value,
             disabled: disabled.unwrap_or(false),
             oninput,
-            option { value: "", "--Select Player--" }
+            option { value: "", "{default_text}" }
             {
                 options
                     .iter()
