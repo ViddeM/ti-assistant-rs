@@ -228,10 +228,13 @@ impl TimeStats {
             .collect()
     }
 
-    /// The wall-clock time spent in each phase, per round.
+    /// The wall-clock time spent in each phase, per round, leaving out paused time and game
+    /// creation.
     pub fn phase_durations(&self) -> BTreeMap<u32, BTreeMap<PhaseGroup, Duration>> {
         let mut rounds = BTreeMap::<u32, BTreeMap<PhaseGroup, Duration>>::new();
-        for segment in &self.segments {
+        for segment in (self.segments.iter())
+            .filter(|segment| !segment.paused && segment.phase != Phase::Creation)
+        {
             *rounds
                 .entry(segment.round)
                 .or_default()
@@ -248,5 +251,56 @@ impl TimeStats {
             .filter(|segment| segment.paused)
             .map(TimeSegment::duration)
             .sum()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use chrono::TimeDelta;
+
+    use super::*;
+
+    fn segment(start_minute: i64, minutes: i64, phase: Phase, paused: bool) -> TimeSegment {
+        let base = DateTime::<Utc>::default();
+        TimeSegment {
+            start: base + TimeDelta::minutes(start_minute),
+            end: base + TimeDelta::minutes(start_minute + minutes),
+            round: 1,
+            phase,
+            turn_number: 0,
+            player: None,
+            tracked: false,
+            paused,
+        }
+    }
+
+    #[test]
+    fn phase_durations_leave_out_paused_time() {
+        let stats = TimeStats {
+            segments: vec![
+                segment(0, 5, Phase::Strategy, false),
+                segment(5, 600, Phase::Strategy, true),
+                segment(605, 3, Phase::Strategy, false),
+            ],
+        };
+        assert_eq!(
+            stats.phase_durations()[&1][&PhaseGroup::Strategy],
+            Duration::from_secs(8 * 60)
+        );
+        assert_eq!(stats.paused_total(), Duration::from_secs(600 * 60));
+    }
+
+    #[test]
+    fn phase_durations_leave_out_game_creation() {
+        let stats = TimeStats {
+            segments: vec![
+                segment(0, 1000, Phase::Creation, false),
+                segment(1000, 20, Phase::Setup, false),
+            ],
+        };
+        assert_eq!(
+            stats.phase_durations()[&1],
+            BTreeMap::from([(PhaseGroup::Setup, Duration::from_secs(20 * 60))])
+        );
     }
 }
