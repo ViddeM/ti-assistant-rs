@@ -55,7 +55,7 @@ pub fn BreakthroughActionView() -> Element {
             } else if view.is_active() {
                 BreakthroughActionForm { player: current_player(), breakthrough: breakthrough() }
             } else {
-                p { "Not your turn, currently {current_player()} is playing" }
+                p { "Waiting for {current_player()} to resolve {breakthrough().info().name}" }
             }
         }
     }

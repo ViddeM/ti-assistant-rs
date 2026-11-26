@@ -152,7 +152,7 @@ pub fn TacticalAction() -> Element {
         document::Stylesheet { href: TACTICAL_ACTION_VIEW }
 
         if !view.is_active() {
-            p { "Not your turn, waiting for {current_player()}" }
+            p { "Waiting for {current_player()} to finish their tactical action" }
         } else if !taken_planets().is_empty() {
             for (planet, taken_from) in taken_planets().iter() {
                 fieldset { key: "{planet}",

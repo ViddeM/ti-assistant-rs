@@ -40,7 +40,7 @@ pub fn FrontierCardView() -> Element {
             if view.is_active() {
                 FrontierCardProgressView { card }
             } else {
-                p { "Not your turn, currently {current_player()} is playing" }
+                p { "Waiting for {current_player()} to resolve {card().info().name}" }
             }
         }
     }

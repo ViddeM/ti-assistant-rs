@@ -44,7 +44,7 @@ pub fn RelicCardView() -> Element {
                             }
                         } else {
                             rsx! {
-                                p { "Not your turn, currently {current_player_id()} is playing" }
+                                p { "Waiting for {current_player_id()} to resolve {r.relic.info().name}" }
                             }
                         }
                     }

@@ -148,7 +148,7 @@ pub fn ActionPhaseView() -> Element {
                     }
                 }
             } else {
-                p { "Not your turn, current {current_player_id()} is playing" }
+                p { "Waiting for {current_player_id()} to take an action" }
             }
         }
     }
