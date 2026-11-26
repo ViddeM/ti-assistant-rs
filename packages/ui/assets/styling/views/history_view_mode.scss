@@ -5,29 +5,81 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
 
-  & > .card {
-    max-width: 100%;
-    overflow-x: auto;
+.history-list {
+  width: 100%;
+  max-width: $width-large;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.history-date {
+  padding: $padding $padding-large;
+  font-size: $font-size;
+  text-align: center;
+  background-color: $fieldset-background;
+}
+
+.history-entry {
+  display: flex;
+  flex-direction: column;
+  gap: $padding;
+  padding: $padding-large;
+  min-width: 0;
+
+  & + .history-entry {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
-.history-table {
-  width: 100%;
-  border-collapse: collapse;
+.history-entry-line {
+  display: flex;
+  align-items: baseline;
+  gap: $padding-large;
+  min-width: 0;
+}
 
-  & th {
-    border-bottom: 4px solid rgba(0, 0, 0, 0.3);
-  }
+.history-index {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
 
-  & th,
-  & td {
-    text-align: left;
-    white-space: nowrap;
-    padding: $padding $padding-large;
-  }
+.history-event-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  & tbody tr:nth-child(even) {
-    background-color: $fieldset-background;
-  }
+.history-time {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.history-summary {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.history-event-toggle {
+  flex-shrink: 0;
+  min-width: unset;
+  padding: 0 $padding-large;
+}
+
+.history-event {
+  margin: 0;
+  padding: $padding-large;
+  max-height: 20em;
+  overflow: auto;
+  border-radius: $border-radius;
+  background-color: $fieldset-background;
+  font-size: $font-size;
 }

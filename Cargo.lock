@@ -4392,6 +4392,7 @@ dependencies = [
  "dioxus-free-icons",
  "dioxus-primitives",
  "dioxus-sdk",
+ "serde_json",
  "strum",
  "ti_helper_game_data",
 ]
