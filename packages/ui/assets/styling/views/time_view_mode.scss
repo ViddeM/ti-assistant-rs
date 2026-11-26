@@ -149,6 +149,7 @@ $time-label-width: 6.5em;
 }
 
 .time-timeline {
+  position: relative;
   min-width: 100%;
 }
 
@@ -196,13 +197,12 @@ $time-label-width: 6.5em;
   white-space: nowrap;
 }
 
-.time-break-label {
+.time-break {
   position: absolute;
-  top: 0;
+  top: calc(1.2em * 0.8 + 2px);
   bottom: 0;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .time-table {

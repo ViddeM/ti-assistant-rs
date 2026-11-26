@@ -83,8 +83,7 @@ fn phase_class(phase: PhaseGroup) -> String {
     format!("time-phase-{}", phase.to_string().to_lowercase())
 }
 
-const BREAK_WIDTH_PX: f64 = 52.0;
-const MIN_BREAK_SECONDS: i64 = 15 * 60;
+const BREAK_WIDTH_PX: f64 = 6.0;
 
 fn local_time(time: DateTime<Utc>) -> String {
     time.with_timezone(&chrono::Local)
@@ -102,21 +101,12 @@ fn local_date(time: DateTime<Utc>) -> chrono::NaiveDate {
     time.with_timezone(&chrono::Local).date_naive()
 }
 
-fn break_label(length: Duration) -> String {
-    let seconds = length.as_secs();
-    if seconds >= 3600 {
-        format!("{} h", (seconds + 1800) / 3600)
-    } else {
-        format!("{} min", (seconds + 30) / 60)
-    }
-}
-
 fn is_break(segment: &TimeSegment) -> bool {
     segment.paused || segment.phase == Phase::Creation
 }
 
-/// Maps times onto the timeline, where every break (a long pause, or the time before the game
-/// was set up) takes up a fixed width and the rest is proportional to the time played.
+/// Maps times onto the timeline, where every break (a pause, or the time before the game was set
+/// up) is collapsed into a fixed-width marker and the rest is proportional to the time played.
 #[derive(Clone, PartialEq)]
 struct TimeScale {
     start: DateTime<Utc>,
@@ -144,10 +134,7 @@ impl TimeScale {
             }
             previous_was_break = breaking;
         }
-        let breaks = runs
-            .into_iter()
-            .filter(|(from, to)| (*to - *from).num_seconds() >= MIN_BREAK_SECONDS)
-            .collect::<Vec<_>>();
+        let breaks = runs;
 
         let break_seconds: i64 = breaks
             .iter()
@@ -349,7 +336,7 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
     let mut ticks: Vec<(DateTime<Utc>, String)> = Vec::new();
     for (from, to) in scale.stretches() {
         let mut new_stretch = true;
-        let (from_offset, to_offset) = (scale.offset(from).0, scale.offset(to).0);
+        let to_offset = scale.offset(to).0;
         let first_tick = (from.timestamp() / tick + 1) * tick;
         for time in (first_tick..to.timestamp())
             .step_by(tick as usize)
@@ -357,7 +344,6 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
             .filter(|time| {
                 let offset = scale.offset(*time).0;
                 ((to_offset - offset) as i64) * 14 > visible
-                    && (from == scale.start || ((offset - from_offset) as i64) * 24 > visible)
             })
         {
             let new_day = ticks
@@ -372,15 +358,6 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
             ticks.push((time, label));
         }
     }
-    let break_labels = scale
-        .breaks
-        .iter()
-        .map(|(from, to)| {
-            let length = (*to - *from).to_std().unwrap_or_default();
-            (*from, break_label(length), short_duration(length))
-        })
-        .collect::<Vec<_>>();
-
     let mut round_starts: Vec<(u32, DateTime<Utc>)> = Vec::new();
     for segment in &segments {
         if round_starts
@@ -490,6 +467,13 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                     div {
                         class: "time-timeline",
                         style: "width: {timeline_width}",
+                        for (from , _) in scale.breaks.iter() {
+                            div {
+                                key: "break-{from}",
+                                class: "time-break time-paused",
+                                style: "left: {scale.position(*from)}; width: {BREAK_WIDTH_PX}px",
+                            }
+                        }
                         div { class: "time-row time-row-rounds time-track",
                             for (round, time, label) in round_markers.iter() {
                                 span {
@@ -529,15 +513,6 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                                     key: "{time}",
                                     class: "time-marker",
                                     style: "left: {scale.position(*time)}",
-                                    "{label}"
-                                }
-                            }
-                            for (from , label , length) in break_labels.iter() {
-                                span {
-                                    key: "break-{from}",
-                                    class: "time-break-label",
-                                    style: "left: {scale.position(*from)}; width: {BREAK_WIDTH_PX}px",
-                                    title: "Break: {length}",
                                     "{label}"
                                 }
                             }
