@@ -2,7 +2,7 @@ use dioxus::prelude::*;
 use ti_helper_game_data::components::phase::Phase;
 
 use crate::{
-    data::game_context::GameContext,
+    data::{game_context::GameContext, player_view::PlayerViewContext},
     views::{
         frontier_card::FrontierCardView,
         phase_views::{
@@ -21,8 +21,18 @@ use crate::{
 #[component]
 pub fn PhaseView() -> Element {
     let gc = use_context::<GameContext>();
+    let view = use_context::<PlayerViewContext>();
+    let phase = gc.game_state().phase;
 
-    match gc.game_state().phase {
+    if view.is_spectator() && matches!(phase, Phase::Creation | Phase::Setup | Phase::PostSetup) {
+        return rsx! {
+            div { class: "card",
+                p { "Waiting for the game to be set up" }
+            }
+        };
+    }
+
+    match phase {
         Phase::Creation => rsx! {
             CreationPhaseView {}
         },
