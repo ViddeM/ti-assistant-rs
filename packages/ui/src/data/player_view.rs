@@ -28,10 +28,6 @@ impl PlayerViewContext {
         (self.set_view)(None);
     }
 
-    pub fn set_spectator(&self) {
-        (self.set_view)(Some(PlayerView::SPECTATOR.to_string()));
-    }
-
     pub fn set_player(&self, player_id: PlayerId) {
         (self.set_view)(Some(player_id.to_string()));
     }

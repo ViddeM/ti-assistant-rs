@@ -41,6 +41,7 @@ pub fn PlayerViewDropdown() -> Element {
                 value: "{currently_viewing_as()}",
                 oninput: handle_playing_as_change,
                 option { value: "", "Global view" }
+                option { value: PlayerView::SPECTATOR, "Spectator" }
                 for player in players().iter() {
                     option { value: player.to_string(), "{player}" }
                 }
