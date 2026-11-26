@@ -6,7 +6,11 @@ use strum_macros::IntoStaticStr;
 use crate::{
     actions::strategic::{StrategicPrimaryAction, StrategicSecondaryAction},
     common::{
-        faction::Faction, game_settings::GameSettings, map::Coordinate, milty_data::MiltyData,
+        expansions::Expansion,
+        faction::Faction,
+        game_settings::{Expansions, GameSettings},
+        map::Coordinate,
+        milty_data::MiltyData,
         player_id::PlayerId,
     },
     components::{
@@ -933,6 +937,417 @@ impl Event {
             | Event::AddAgendaResolve { .. } => None,
         }
     }
+
+    /// A short description of what the event contains, such as the card played or the planet
+    /// taken. The player from [Event::player] isn't repeated, and events without anything more
+    /// to say have an empty summary.
+    pub fn summary(&self) -> String {
+        match self {
+            Event::SetSettings { settings } => format!(
+                "{} points, {}",
+                settings.max_points,
+                expansion_names(&settings.expansions)
+            ),
+            Event::ImportFromMilty {
+                max_points,
+                milty_data,
+            } => format!(
+                "{}: {} players, {max_points} points, {}",
+                milty_data.game_name,
+                milty_data.players.len(),
+                expansion_names(&milty_data.expansions)
+            ),
+            Event::SetGalacticEvents { events } => names(events, |e| e.info().name),
+            Event::AddPlayer { player } => {
+                format!("{} ({})", player.faction.name(), player.color.name())
+            }
+            Event::SetupTheTribunii { faction, .. } => {
+                format!("{}'s home system", faction.name())
+            }
+            Event::SetupCulturalExchange { faction, .. } => faction.name(),
+            Event::SetupMinorFaction {
+                faction,
+                replaced_system,
+                ..
+            } => match replaced_system {
+                Some(system) => format!("{}, replacing system {system}", faction.name()),
+                None => faction.name(),
+            },
+            Event::SetupPlayerTechs { technologies, .. } => names(technologies, |t| t.info().name),
+            Event::RevealInitialObjectives {
+                first_objective,
+                second_objective,
+            } => format!(
+                "{} and {}",
+                first_objective.info().name,
+                second_objective.info().name
+            ),
+            Event::RevealAllPublicObjectives {
+                stage_one,
+                stage_two,
+            } => format!(
+                "Stage I: {}; Stage II: {}",
+                names(stage_one, |o| o.info().name),
+                names(stage_two, |o| o.info().name)
+            ),
+            Event::TakeStrategyCard { card, .. } | Event::StrategicActionBegin { card, .. } => {
+                card.to_string()
+            }
+            Event::TacticalActionTakePlanet { planet, .. }
+            | Event::CoexistenceBegin { planet, .. }
+            | Event::CoexistenceEnd { planet, .. }
+            | Event::BuildMonument { planet, .. }
+            | Event::DestroyMonument { planet } => planet.info().name,
+            Event::TacticalActionAttachPlanetAttachment {
+                planet, attachment, ..
+            }
+            | Event::AddPlanetAttachment {
+                planet, attachment, ..
+            }
+            | Event::RemovePlanetAttachment {
+                planet, attachment, ..
+            } => format!("{} on {}", attachment.info().name, planet.info().name),
+            Event::TacticalActionResearchTechnology { planet, tech, .. } => {
+                format!("{} for {}", tech.info().name, planet.info().name)
+            }
+            Event::TacticalActionGainRelic { planet, relic, .. } => {
+                format!("{} for {}", relic_name(relic), planet.info().name)
+            }
+            Event::StrategicActionPrimary { action, .. } => primary_summary(action),
+            Event::StrategicActionSecondary { action, .. } => secondary_summary(action),
+            Event::ActionCardActionBegin { card, .. } => card.info().name,
+            Event::ActionCardActionCommit { data, .. } => match data {
+                None | Some(ActionCardAction::MercenaryContract { planet: None }) => String::new(),
+                Some(ActionCardAction::FocusedResearch { tech })
+                | Some(ActionCardAction::Plagiarize { tech }) => tech.info().name,
+                Some(ActionCardAction::DivertFunding {
+                    remove_tech,
+                    take_tech,
+                }) => format!(
+                    "{} replaced with {}",
+                    remove_tech.info().name,
+                    take_tech.info().name
+                ),
+                Some(ActionCardAction::Brilliance {
+                    player: Some(player),
+                }) => format!("{player} gains their breakthrough"),
+                Some(ActionCardAction::Brilliance { player: None }) => {
+                    "Readied a planet".to_string()
+                }
+                Some(ActionCardAction::MercenaryContract {
+                    planet: Some(planet),
+                }) => format!("{} returned to the deck", planet.info().name),
+                Some(ActionCardAction::Overrule {
+                    card,
+                    primary: Some(primary),
+                }) => format!("{card}: {}", primary_summary(primary)),
+                Some(ActionCardAction::Overrule {
+                    card,
+                    primary: None,
+                }) => card.to_string(),
+                Some(ActionCardAction::Strategize { card, secondary }) => {
+                    format!("{card}: {}", secondary_summary(secondary))
+                }
+            },
+            Event::LeaderActionBegin { leader, .. } | Event::LeaderActionCommit { leader, .. } => {
+                leader.to_string()
+            }
+            Event::PlayGalacticEventAction { action, .. } => {
+                let name = action.event().info().name;
+                match action {
+                    GalacticEventAction::ConventionsOfWarAbandoned { planet } => {
+                        format!("{name}: purged {}", planet.info().name)
+                    }
+                    GalacticEventAction::AgeOfExploration {
+                        tile: Some((system, _)),
+                    } => format!("{name}: system {system}"),
+                    GalacticEventAction::TotalWar
+                    | GalacticEventAction::MercenariesForHire
+                    | GalacticEventAction::StellarAtomics
+                    | GalacticEventAction::AgeOfExploration { tile: None } => name,
+                }
+            }
+            Event::BreakthroughActionCommit { action, .. } => {
+                let name = action.breakthrough().info().name;
+                match action {
+                    BreakthroughAction::VaultsOfTheHeir { purged_tech, relic } => format!(
+                        "{name}: purged {} for {}",
+                        purged_tech.info().name,
+                        relic.info().name
+                    ),
+                    BreakthroughAction::Psychospore
+                    | BreakthroughAction::DeorbitBarrage
+                    | BreakthroughAction::ResonanceGenerator
+                    | BreakthroughAction::VisionariaSelect => name,
+                }
+            }
+            Event::PlayTechAction { tech, .. }
+            | Event::GainEntropicScarTech { tech, .. }
+            | Event::PlayMawOfWorlds { tech, .. }
+            | Event::AddTechToPlayer { tech, .. }
+            | Event::RemoveTechFromPlayer { tech, .. } => tech.info().name,
+            Event::VisionariaSelectDecision { tech, .. } => match tech {
+                Some(tech) => tech.info().name,
+                None => "Skipped".to_string(),
+            },
+            Event::FrontierCardActionBegin { card, .. } => card.info().name,
+            Event::FrontierCardActionCommit { data, .. } => match data {
+                None => String::new(),
+                Some(FrontierCardAction::EnigmaticDevice { tech }) => tech.info().name,
+                Some(FrontierCardAction::Mirage { system, attachment }) => {
+                    let mut parts = Vec::new();
+                    if let Some(system) = system {
+                        parts.push(format!("In system {system}"));
+                    }
+                    if let Some(attachment) = attachment {
+                        parts.push(format!("With {}", attachment.info().name));
+                    }
+                    parts.join("; ")
+                }
+            },
+            Event::GainRelicAction { relic, .. } | Event::RelicActionBegin { relic, .. } => {
+                relic.info().name
+            }
+            Event::RelicActionCommit { data, .. } => match data {
+                None => String::new(),
+                Some(RelicAction::StellarConverter { planet }) => {
+                    format!("Destroyed {}", planet.info().name)
+                }
+                Some(RelicAction::NanoForge { planet }) => planet.info().name,
+            },
+            Event::ScorePublicObjective { objective, .. } => match objective {
+                Some(objective) => objective.info().name,
+                None => "None scored".to_string(),
+            },
+            Event::ScoreSecretObjective { objective, .. } => match objective {
+                Some(objective) => objective.info().name,
+                None => "None scored".to_string(),
+            },
+            Event::RevealPublicObjective { objective }
+            | Event::RevealExtraPublicObjective { objective } => objective.info().name,
+            Event::PlayNeuraloop {
+                purged_relic,
+                replacement,
+                ..
+            } => format!(
+                "Purged {}, replaced with {}",
+                purged_relic.info().name,
+                replacement.info().name
+            ),
+            Event::RevealAgenda { agenda }
+            | Event::AddAgendaBegin { agenda }
+            | Event::RepealLaw { law: agenda } => agenda.info().name,
+            Event::CastAgendaVote { outcome, votes, .. } => match outcome {
+                Some(outcome) => {
+                    format!("{}: {}", outcome.to_display_value(), count(*votes, "vote"))
+                }
+                None => "Abstained".to_string(),
+            },
+            Event::AddAgendaPlayerVote { outcome, votes, .. } => {
+                format!("{}: {}", outcome.to_display_value(), count(*votes, "vote"))
+            }
+            Event::ResolveAgenda { outcome } => match outcome {
+                Some(outcome) => outcome.to_display_value(),
+                None => "Discarded".to_string(),
+            },
+            Event::AddAgendaResolve { elected_outcome } => elected_outcome.to_display_value(),
+            Event::GiveSupportForTheThrone { receiver, .. } => match receiver {
+                Some(receiver) => format!("To {receiver}"),
+                None => "Removed".to_string(),
+            },
+            Event::SetCustodians { player }
+            | Event::SetShardForTheThroneOwner { player }
+            | Event::SetCrownOfEmphidiaOwner { player }
+            | Event::SetBookOfLatviniaOwner { player }
+            | Event::SetZealousOrthodoxyOwner { player } => player_or_nobody(player),
+            Event::SetRelicOwner { relic, player } => {
+                format!("{} to {}", relic.info().name, player_or_nobody(player))
+            }
+            Event::SetPlanetOwner { player, planet } => {
+                format!("{} to {}", planet.info().name, player_or_nobody(player))
+            }
+            Event::AddExtraPoints { value, .. } | Event::AddImperial { value, .. } => {
+                format!("{value:+}")
+            }
+            Event::ScoreExtraPublicObjective { objective, .. }
+            | Event::UnscoreObjective { objective, .. } => objective.info().name,
+            Event::ScoreExtraSecretObjective { objective, .. }
+            | Event::UnscoreSecretObjective { objective, .. } => objective.info().name,
+            Event::ResearchBookOfLatviniaTechs { technologies, .. } => {
+                names(technologies, |t| t.info().name)
+            }
+            Event::ClaimThundersEdgeExpeditionSlot { player, slot } => {
+                format!("{}: {}", player_or_nobody(player), slot.description())
+            }
+            Event::CommitToThundersEdgeExpedition { slot, .. } => slot.description().to_string(),
+            Event::CompleteThundersEdgeExpedition {
+                placed_in, won_by, ..
+            } => format!("Won by {won_by}, placed in system {placed_in}"),
+            Event::SetThundersEdgeCompletion { new_completion } => match new_completion {
+                Some(completion) => format!(
+                    "Won by {}, placed in system {}",
+                    completion.won_by, completion.placed_in
+                ),
+                None => "Not completed".to_string(),
+            },
+            Event::SetFractureInPlay { in_play } => match in_play {
+                true => "In play".to_string(),
+                false => "Out of play".to_string(),
+            },
+            Event::SetStellarAtomicsUsed { used, .. } => match used {
+                true => "Used".to_string(),
+                false => "Unused".to_string(),
+            },
+            Event::SetTotalWarPoints { points, .. } => count(*points, "point"),
+            Event::SetMonumentCommodities {
+                planet,
+                commodities,
+            } => format!(
+                "{} on {}",
+                count(*commodities, "commodity"),
+                planet.info().name
+            ),
+            Event::RollForTheFracture { entered_play, .. } => match entered_play {
+                true => "The Fracture enters play".to_string(),
+                false => "No effect".to_string(),
+            },
+            Event::GainMinisterOfAntiquesRelic { relic, .. } => relic_name(relic),
+            Event::ResolveRapidMobilization {
+                planets,
+                technologies,
+                ..
+            } => format!(
+                "Planets: {}; technologies: {}",
+                names(planets, |p| p.info().name),
+                names(technologies, |t| t.info().name)
+            ),
+            Event::SetBreakthrough { breakthrough, .. } => match breakthrough {
+                Some(breakthrough) => breakthrough.info().name,
+                None => "None".to_string(),
+            },
+            Event::TrackTime { paused } => match paused {
+                true => "Paused".to_string(),
+                false => "Resumed".to_string(),
+            },
+            Event::SetPlanetDestroyed { planet, destroyed } => match destroyed {
+                true => format!("{} destroyed", planet.info().name),
+                false => format!("{} restored", planet.info().name),
+            },
+            Event::CreationDone
+            | Event::SetupSpeaker { .. }
+            | Event::StartGame
+            | Event::PlayGiftOfPrescience { .. }
+            | Event::CompleteStrategyPhase
+            | Event::TacticalActionBegin { .. }
+            | Event::TacticalActionCommit { .. }
+            | Event::StrategicActionCommit
+            | Event::PuppetsOfTheBlade { .. }
+            | Event::BreakthroughActionBegin { .. }
+            | Event::EndTurn { .. }
+            | Event::TakeAnotherTurn { .. }
+            | Event::PlayCrisis { .. }
+            | Event::PlayPuppetsOnAString { .. }
+            | Event::PassAction { .. }
+            | Event::CompleteStatusPhase
+            | Event::CompleteEntropicScarPhase
+            | Event::CompletePostSetupPhase
+            | Event::PlayCrownOfEmphidia { .. }
+            | Event::CompleteRelicsPhase
+            | Event::VetoAgenda
+            | Event::CompleteAgendaPhase
+            | Event::FractureSpawned { .. }
+            | Event::AddAgendaCancel => String::new(),
+        }
+    }
+}
+
+fn names<'a, T: 'a>(items: impl IntoIterator<Item = &'a T>, name: impl Fn(&T) -> String) -> String {
+    let names = items.into_iter().map(name).collect::<Vec<_>>();
+    if names.is_empty() {
+        "None".to_string()
+    } else {
+        names.join(", ")
+    }
+}
+
+fn expansion_names(expansions: &Expansions) -> String {
+    let enabled = [
+        Expansion::ProphecyOfKings,
+        Expansion::Codex,
+        Expansion::CodexII,
+        Expansion::CodexIII,
+        Expansion::CodexIV,
+        Expansion::ThundersEdge,
+    ]
+    .into_iter()
+    .filter(|e| expansions.is_enabled(e))
+    .map(|e| e.name())
+    .collect::<Vec<_>>();
+    if enabled.is_empty() {
+        "base game".to_string()
+    } else {
+        enabled.join(", ")
+    }
+}
+
+fn count(n: impl Into<i64>, noun: &str) -> String {
+    let n = n.into();
+    match (n.abs() == 1, noun.strip_suffix('y')) {
+        (true, _) => format!("{n} {noun}"),
+        (false, Some(stem)) => format!("{n} {stem}ies"),
+        (false, None) => format!("{n} {noun}s"),
+    }
+}
+
+fn player_or_nobody(player: &Option<PlayerId>) -> String {
+    match player {
+        Some(player) => player.to_string(),
+        None => "Nobody".to_string(),
+    }
+}
+
+fn relic_name(relic: &Option<Relic>) -> String {
+    match relic {
+        Some(relic) => relic.info().name,
+        None => "No relic".to_string(),
+    }
+}
+
+fn primary_summary(action: &StrategicPrimaryAction) -> String {
+    match action {
+        StrategicPrimaryAction::Technology {
+            first_tech,
+            second_tech,
+        } => match (first_tech, second_tech) {
+            (None, None) => "No technology".to_string(),
+            _ => names(first_tech.iter().chain(second_tech), |t| t.info().name),
+        },
+        StrategicPrimaryAction::Politics { new_speaker } => format!("{new_speaker} is speaker"),
+        StrategicPrimaryAction::Imperial { score_objective } => match score_objective {
+            Some(objective) => format!("Scored {}", objective.info().name),
+            None => "No objective scored".to_string(),
+        },
+    }
+}
+
+fn secondary_summary(action: &StrategicSecondaryAction) -> String {
+    match action {
+        StrategicSecondaryAction::Skip => "Skipped".to_string(),
+        StrategicSecondaryAction::Technology { tech } => tech.info().name,
+        StrategicSecondaryAction::TechnologyJolNar {
+            first_tech,
+            second_tech,
+        } => names(std::iter::once(first_tech).chain(second_tech), |t| {
+            t.info().name
+        }),
+        StrategicSecondaryAction::Leadership
+        | StrategicSecondaryAction::Diplomacy
+        | StrategicSecondaryAction::Politics
+        | StrategicSecondaryAction::Construction
+        | StrategicSecondaryAction::Trade
+        | StrategicSecondaryAction::Warfare
+        | StrategicSecondaryAction::Imperial => "Performed".to_string(),
+    }
 }
 
 /// The actions taken for specific action cards.
@@ -1140,5 +1555,51 @@ impl BreakthroughAction {
             BreakthroughAction::VaultsOfTheHeir { .. } => Breakthrough::VaultsOfTheHeir,
             BreakthroughAction::VisionariaSelect => Breakthrough::VisionariaSelect,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn summaries_describe_the_event_contents() {
+        let summary = |event: Event| event.summary();
+        assert_eq!(
+            summary(Event::GiveSupportForTheThrone {
+                giver: "Bob".into(),
+                receiver: Some("Alice".into()),
+            }),
+            "To Alice"
+        );
+        assert_eq!(
+            summary(Event::CastAgendaVote {
+                player: "Bob".into(),
+                outcome: Some(AgendaElect::Player("Alice".into())),
+                votes: 1,
+            }),
+            "Alice: 1 vote"
+        );
+        assert_eq!(
+            summary(Event::SetMonumentCommodities {
+                planet: Planet::Abyz,
+                commodities: 3,
+            }),
+            "3 commodities on Abyz"
+        );
+        assert_eq!(
+            summary(Event::TacticalActionAttachPlanetAttachment {
+                player: "Alice".into(),
+                planet: Planet::Centauri,
+                attachment: PlanetAttachment::ParadiseWorld,
+            }),
+            "Paradise World on Centauri"
+        );
+        assert_eq!(
+            summary(Event::PassAction {
+                player: "Alice".into()
+            }),
+            ""
+        );
     }
 }
