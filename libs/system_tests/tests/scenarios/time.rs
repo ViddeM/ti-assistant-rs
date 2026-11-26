@@ -6,9 +6,9 @@ use ti_helper_game_data::state::time_stats::PhaseGroup;
 use ti_helper_game_logic::gameplay::time_stats::time_stats;
 use ti_helper_system_tests::prelude::*;
 
-use crate::fixtures::{SIMPLE_PICKS, three_players};
+use crate::fixtures::{SIMPLE_PICKS, agenda_phase, three_players};
 
-scenarios![time_tracking_and_pause];
+scenarios![time_tracking_and_pause, time_agenda_phase_not_tracked];
 
 fn minutes(minutes: i64) -> TimeDelta {
     TimeDelta::minutes(minutes)
@@ -62,5 +62,34 @@ pub fn time_tracking_and_pause() -> TestGame {
 
     let round_1 = &stats.phase_durations()[&1];
     assert_eq!(round_1[&PhaseGroup::Status], Duration::from_secs(10 * 60));
+    g
+}
+
+/// Time in the agenda phase isn't anyone's turn.
+pub fn time_agenda_phase_not_tracked() -> TestGame {
+    let mut g = agenda_phase(three_players().pok().clock_step(TimeDelta::zero()));
+    let before = g.state().players_play_time.clone();
+
+    g.advance(minutes(10))
+        .agenda(Agenda::ConventionsOfWar)
+        .vote_all(FOR, 2)
+        .resolve_expected();
+    g.advance(minutes(5))
+        .agenda(Agenda::PoliticalCensure)
+        .vote_all(elect("Carol"), 1)
+        .resolve_expected();
+    g.advance(minutes(5)).complete_agenda_phase();
+    assert_eq!(g.phase(), Phase::Strategy);
+    assert_eq!(g.state().players_play_time, before);
+
+    let now = g.history().last().expect("Events to exist").1;
+    let stats = time_stats(g.history(), now).expect("History to replay");
+    assert!(
+        stats
+            .turns()
+            .iter()
+            .all(|turn| turn.phase != PhaseGroup::Agenda),
+        "No turn in the agenda phase"
+    );
     g
 }

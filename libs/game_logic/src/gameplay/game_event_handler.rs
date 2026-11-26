@@ -335,7 +335,7 @@ fn try_update_game_state(
             game_state.time_tracking_paused = paused;
             if paused {
                 game_state.commit_turn_time(timestamp)?;
-            } else if should_track_time_in(game_state.phase) {
+            } else if game_state.phase.tracks_time() {
                 game_state.current_turn_start_time = Some(timestamp);
             }
         }
@@ -445,30 +445,4 @@ fn try_update_game_state(
         .update_player_points(&game_state.players, &monument_points);
 
     Ok(())
-}
-
-/// Returns false if we should never track time in the provided phase, true otherwise.
-fn should_track_time_in(phase: Phase) -> bool {
-    match phase {
-        Phase::Strategy
-        | Phase::Action
-        | Phase::StrategicAction
-        | Phase::TacticalAction
-        | Phase::EndActionTurn
-        | Phase::LeaderAction
-        | Phase::FrontierCardAction
-        | Phase::BreakthroughAction
-        | Phase::RelicAction
-        | Phase::Fracture
-        | Phase::ActionCardAction => true,
-
-        Phase::Relics
-        | Phase::Setup
-        | Phase::PostSetup
-        | Phase::EntropicScar
-        | Phase::Status
-        | Phase::Agenda
-        | Phase::AgendaEffect
-        | Phase::Creation => false,
-    }
 }

@@ -67,6 +67,34 @@ pub enum Phase {
     AgendaEffect,
 }
 
+impl Phase {
+    /// Whether turn time is tracked in this phase.
+    pub fn tracks_time(&self) -> bool {
+        match self {
+            Phase::Strategy
+            | Phase::Action
+            | Phase::StrategicAction
+            | Phase::TacticalAction
+            | Phase::EndActionTurn
+            | Phase::LeaderAction
+            | Phase::FrontierCardAction
+            | Phase::BreakthroughAction
+            | Phase::RelicAction
+            | Phase::Fracture
+            | Phase::ActionCardAction => true,
+
+            Phase::Relics
+            | Phase::Setup
+            | Phase::PostSetup
+            | Phase::EntropicScar
+            | Phase::Status
+            | Phase::Agenda
+            | Phase::AgendaEffect
+            | Phase::Creation => false,
+        }
+    }
+}
+
 impl Display for Phase {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(

@@ -136,7 +136,7 @@ availableLeaders:
 timeTrackingPaused: false
 playersPlayTime:
   Alice:
-    secs: 1560
+    secs: 1440
     nanos: 0
   Bob:
     secs: 1200

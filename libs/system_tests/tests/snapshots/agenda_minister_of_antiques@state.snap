@@ -239,7 +239,7 @@ playersPlayTime:
     secs: 1140
     nanos: 0
   Bob:
-    secs: 1440
+    secs: 660
     nanos: 0
   Carol:
     secs: 720

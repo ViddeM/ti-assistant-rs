@@ -296,7 +296,7 @@ impl GameState {
         }
 
         self.commit_turn_time(timestamp)?;
-        if !self.time_tracking_paused {
+        if !self.time_tracking_paused && phase.tracks_time() {
             self.current_turn_start_time = Some(timestamp);
         }
 

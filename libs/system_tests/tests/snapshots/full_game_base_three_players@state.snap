@@ -499,10 +499,10 @@ playersPlayTime:
     secs: 3060
     nanos: 0
   Bob:
-    secs: 4620
+    secs: 3180
     nanos: 0
   Carol:
-    secs: 4260
+    secs: 2940
     nanos: 0
 currentTurnStartTime: "2025-01-01T15:58:00Z"
 naaluTelepathy: ~

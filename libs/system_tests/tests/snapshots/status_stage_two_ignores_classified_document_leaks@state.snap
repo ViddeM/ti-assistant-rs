@@ -365,12 +365,12 @@ playersPlayTime:
     secs: 2460
     nanos: 0
   Bob:
-    secs: 4200
+    secs: 2160
     nanos: 0
   Carol:
     secs: 2400
     nanos: 0
-currentTurnStartTime: "2025-01-01T15:10:00Z"
+currentTurnStartTime: ~
 naaluTelepathy: ~
 teExpedition: ~
 fractureInPlay: false
