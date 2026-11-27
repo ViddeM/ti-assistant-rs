@@ -7,7 +7,10 @@ use ti_helper_game_data::{
         planet_attachment::PlanetAttachment,
         system::{System, SystemId, systems},
     },
-    state::game_state::{GameState, PlanetLocation},
+    state::{
+        game_state::{GameState, PlanetLocation},
+        player::Player,
+    },
 };
 
 use crate::components::ti_token::TiToken;
@@ -25,6 +28,12 @@ pub(super) const TILE_HALF_HEIGHT: f32 = TILE_HEIGHT * 0.5;
 
 /// Offset of the owner label relative to the planet position (fraction of tile size).
 const OWNER_LABEL_OFFSET: (f32, f32) = (0.0, 0.08);
+
+/// Distance (in SVG units) from the owner label to the first coexistence label below it.
+const COEXISTENCE_LABEL_OFFSET: f32 = 26.0;
+
+/// Distance (in SVG units) between stacked coexistence labels.
+const COEXISTENCE_LABEL_SPACING: f32 = 24.0;
 
 // We can have multiple attachments for a single planet, positions for each.
 const ATTACHMENT_OFFSETS: [(f32, f32); 5] = [
@@ -46,6 +55,7 @@ pub struct MapLayout {
     pub tiles: Vec<TileLayout>,
     pub tokens: Vec<TokenLayout>,
     pub owners: Vec<OwnerLabel>,
+    pub coexistences: Vec<CoexistenceLabel>,
     /// Centers of the positions inside the galaxy that have no tile, so they can be shown as placeholders.
     pub empty_slots: Vec<(f32, f32)>,
 }
@@ -71,6 +81,16 @@ pub struct TokenLayout {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct OwnerLabel {
+    pub planet: Planet,
+    pub x: f32,
+    pub y: f32,
+    pub name: String,
+    pub color: Color,
+}
+
+/// A player whose units coexist on a planet, shown below the planet's owner label.
+#[derive(Debug, Clone, PartialEq)]
+pub struct CoexistenceLabel {
     pub planet: Planet,
     pub x: f32,
     pub y: f32,
@@ -175,6 +195,16 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         .filter(|(_, attachments)| !attachments.is_empty())
         .collect::<HashMap<&Planet, &BTreeSet<PlanetAttachment>>>();
 
+    let mut coexisting_players: HashMap<&Planet, Vec<&Player>> = HashMap::new();
+    for coexistence in &game_state.coexistences {
+        if let Some(player) = game_state.players.get(&coexistence.player) {
+            coexisting_players
+                .entry(&coexistence.planet)
+                .or_default()
+                .push(player);
+        }
+    }
+
     let mut system_planets: HashMap<SystemId, Vec<Planet>> = systems()
         .into_iter()
         .map(|(system_id, system)| (system_id, system.planets))
@@ -213,6 +243,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
     let mut tiles = Vec::new();
     let mut tokens = Vec::new();
     let mut owners = Vec::new();
+    let mut coexistences = Vec::new();
 
     let hex_map = &milty_information.hex_map;
     for (tile, (center, rotation_degrees)) in hex_map
@@ -240,9 +271,6 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         }
 
         for planet in system_planets.get(&tile.system).into_iter().flatten() {
-            let Some(owner) = planet_owner.get(planet) else {
-                continue;
-            };
             let offset = planet_offset(planet);
             let (x, y) = on_tile(
                 center,
@@ -251,6 +279,30 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
                     offset.1 + OWNER_LABEL_OFFSET.1,
                 ),
             );
+            let owner = planet_owner.get(planet);
+
+            let first_y = match owner {
+                Some(_) => y + COEXISTENCE_LABEL_OFFSET,
+                None => y,
+            };
+            for (index, player) in coexisting_players
+                .get(planet)
+                .into_iter()
+                .flatten()
+                .enumerate()
+            {
+                coexistences.push(CoexistenceLabel {
+                    planet: planet.clone(),
+                    x,
+                    y: first_y + COEXISTENCE_LABEL_SPACING * index as f32,
+                    name: player.name.to_string(),
+                    color: player.color,
+                });
+            }
+
+            let Some(owner) = owner else {
+                continue;
+            };
             owners.push(OwnerLabel {
                 planet: planet.clone(),
                 x,
@@ -317,6 +369,7 @@ pub fn build_layout(game_state: &GameState) -> Option<MapLayout> {
         tiles,
         tokens,
         owners,
+        coexistences,
         empty_slots,
     })
 }

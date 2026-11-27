@@ -95,6 +95,57 @@
   fill: $player-color-pink;
 }
 
+.map-coexistence {
+  pointer-events: none;
+}
+
+.map-coexistence-bg {
+  fill: rgba(0, 0, 0, 0.8);
+  stroke-width: 2px;
+  stroke-dasharray: 6 4;
+}
+
+.map-coexistence-text {
+  font-size: 18px;
+}
+
+.map-owner-blue .map-coexistence-bg,
+.map-owner-black .map-coexistence-bg {
+  fill: rgba(255, 255, 255, 0.6);
+}
+
+.map-owner-black .map-coexistence-bg {
+  stroke: $player-color-black;
+}
+
+.map-owner-blue .map-coexistence-bg {
+  stroke: $player-color-blue;
+}
+
+.map-owner-green .map-coexistence-bg {
+  stroke: $player-color-green;
+}
+
+.map-owner-red .map-coexistence-bg {
+  stroke: $player-color-red;
+}
+
+.map-owner-yellow .map-coexistence-bg {
+  stroke: $player-color-yellow;
+}
+
+.map-owner-purple .map-coexistence-bg {
+  stroke: $player-color-purple;
+}
+
+.map-owner-orange .map-coexistence-bg {
+  stroke: $player-color-orange;
+}
+
+.map-owner-pink .map-coexistence-bg {
+  stroke: $player-color-pink;
+}
+
 .map-empty-slot {
   fill: rgba(255, 255, 255, 0.04);
   stroke: rgba(255, 255, 255, 0.35);

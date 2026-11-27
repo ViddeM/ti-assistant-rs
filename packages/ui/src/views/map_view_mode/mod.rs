@@ -249,5 +249,25 @@ fn MapContents(layout: ReadSignal<MapLayout>) -> Element {
                 text { class: "map-owner-text", x: owner.x, y: owner.y, "{owner.name}" }
             }
         }
+
+        for label in layout.coexistences.iter() {
+            g {
+                key: "coexistence-{label.planet}-{label.name}",
+                class: "map-coexistence map-owner-{label.color.name()}",
+                rect {
+                    class: "map-coexistence-bg",
+                    x: label.x - 40.0,
+                    y: label.y - 10.0,
+                    width: 80,
+                    height: 20,
+                }
+                text {
+                    class: "map-owner-text map-coexistence-text",
+                    x: label.x,
+                    y: label.y,
+                    "+ {label.name}"
+                }
+            }
+        }
     }
 }
