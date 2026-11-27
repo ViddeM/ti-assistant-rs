@@ -280,6 +280,25 @@ fn try_update_game_state(
             *extra = extra.saturating_add(value);
         }
         Event::SetCustodians { player } => game_state.score.custodians = player,
+        Event::SetSpeaker { player } => {
+            ensure!(
+                game_state.players.contains_key(&player),
+                "Player does not exist"
+            );
+            game_state.speaker = Some(player);
+            match game_state.phase {
+                Phase::Strategy if game_state.strategy_card_holders.is_empty() => {
+                    let tracked = game_state.commit_turn_time(timestamp)?;
+                    game_state.calculate_strategy_turn_order()?;
+                    game_state.current_player = game_state.turn_order.first().cloned();
+                    if tracked {
+                        game_state.current_turn_start_time = Some(timestamp);
+                    }
+                }
+                Phase::Agenda => game_state.calculate_agenda_turn_order()?,
+                _ => {}
+            }
+        }
         Event::AddImperial { player, value } => {
             let imperial = game_state.score.imperial.entry(player).or_default();
             *imperial = imperial.saturating_add(value);

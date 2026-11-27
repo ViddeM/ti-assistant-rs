@@ -517,6 +517,12 @@ pub enum Event {
         player: Option<PlayerId>,
     },
 
+    /// Set the speaker, for when an effect without its own event changes the speaker.
+    SetSpeaker {
+        /// The player who shall be the new speaker.
+        player: PlayerId,
+    },
+
     /// Increment the `extra_points` value for a player with the given value.
     AddExtraPoints {
         /// The player who shall receive the extra points.
@@ -917,6 +923,7 @@ impl Event {
             | Event::ResolveAgenda { .. }
             | Event::CompleteAgendaPhase
             | Event::SetCustodians { .. }
+            | Event::SetSpeaker { .. }
             | Event::RevealExtraPublicObjective { .. }
             | Event::SetShardForTheThroneOwner { .. }
             | Event::SetCrownOfEmphidiaOwner { .. }
@@ -1155,6 +1162,7 @@ impl Event {
                 Some(receiver) => format!("To {receiver}"),
                 None => "Removed".to_string(),
             },
+            Event::SetSpeaker { player } => player.to_string(),
             Event::SetCustodians { player }
             | Event::SetShardForTheThroneOwner { player }
             | Event::SetCrownOfEmphidiaOwner { player }

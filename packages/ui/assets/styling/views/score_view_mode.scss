@@ -267,3 +267,22 @@ $extra-color: hsl(120, 70%, 40%);
   color: white;
   margin-left: 0.5rem;
 }
+
+.speaker-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.speaker-view-players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $margin-large;
+}
+
+.speaker-view-player {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

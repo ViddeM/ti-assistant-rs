@@ -15,6 +15,7 @@ scenarios![
     agenda_elect_planet_with_trait,
     agenda_elect_non_home_planet,
     agenda_minister_of_antiques,
+    agenda_set_speaker,
 ];
 
 fn vote(player: &str, outcome: AgendaElect, votes: u16) -> Event {
@@ -477,14 +478,52 @@ pub fn agenda_minister_of_antiques() -> TestGame {
         elected_outcome: elect("Carol"),
     });
     assert_eq!(g.state().agenda, None);
-    g.expect_rejected(
-        gain("Carol", None),
-        "expected AgendaEffect, was Action",
-    )
-    .turn("Alice")
-    .tactical()
-    .commit()
-    .end_turn();
+    g.expect_rejected(gain("Carol", None), "expected AgendaEffect, was Action")
+        .turn("Alice")
+        .tactical()
+        .commit()
+        .end_turn();
     assert_eq!(g.player("Carol").relics, carol_relics);
+    g
+}
+
+/// Changing the speaker (Politics Rider) makes them vote last on the next agenda and pick
+/// first in the strategy phase, unless picking has already started.
+pub fn agenda_set_speaker() -> TestGame {
+    let mut g = agenda_phase(three_players().pok());
+    assert_eq!(g.speaker(), Some("Alice"));
+
+    g.agenda(Agenda::ConventionsOfWar)
+        .vote_all(FOR, 1)
+        .resolve_expected();
+    g.expect_rejected(
+        Event::SetSpeaker { player: p("Dave") },
+        "Player does not exist",
+    )
+    .apply(Event::SetSpeaker { player: p("Bob") });
+    assert_eq!(g.speaker(), Some("Bob"));
+    assert_eq!(g.turn_order(), ["Carol", "Alice", "Bob"]);
+
+    g.agenda(Agenda::FleetRegulations)
+        .vote_all(FOR, 1)
+        .resolve_expected();
+    g.complete_agenda_phase();
+    assert_eq!((g.phase(), g.round()), (Phase::Strategy, 2));
+    assert_eq!(g.current_player(), p("Bob"));
+
+    // Before any pick, the new speaker picks first.
+    g.apply(Event::SetSpeaker { player: p("Carol") });
+    assert_eq!(g.turn_order(), ["Carol", "Alice", "Bob"]);
+    assert_eq!(g.current_player(), p("Carol"));
+
+    // Once picking has started, the order stays.
+    g.apply(Event::TakeStrategyCard {
+        player: p("Carol"),
+        card: StrategyCard::Leadership,
+    })
+    .apply(Event::SetSpeaker { player: p("Bob") });
+    assert_eq!(g.speaker(), Some("Bob"));
+    assert_eq!(g.turn_order(), ["Carol", "Alice", "Bob"]);
+    assert_eq!(g.current_player(), p("Alice"));
     g
 }
