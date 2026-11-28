@@ -1,5 +1,7 @@
 use std::{collections::BTreeSet, sync::Arc, time::Duration};
 
+use chrono::{DateTime, Utc};
+
 use dioxus::prelude::*;
 use ti_helper_game_data::state::time_stats::{PhaseGroup, TimeStats};
 
@@ -8,11 +10,14 @@ use crate::{
     data::{game_context::GameContext, server_data::ServerDataContext},
     views::time_scale::{
         BREAK_WIDTH_PX, Bar, PlayerName, TimeScale, color_class, local_day_and_time, merge_bars,
-        phase_class, round_name, short_duration,
+        phase_bars, phase_class, round_name, short_duration,
     },
 };
 
 const TIME_VIEW_MODE_SCSS: Asset = asset!("/assets/styling/views/time_view_mode.scss");
+
+const SCORE_LINE_SPACING_PX: f64 = 2.0;
+const SCORE_PLOT_PADDING_PX: f64 = 10.0;
 
 const ZOOM_LEVELS: [(&str, i64); 5] = [
     ("2 h", 2 * 3600),
@@ -47,6 +52,7 @@ pub fn TimeViewMode() -> Element {
                 },
                 Some(stats) => rsx! {
                     Timeline { stats: stats.clone() }
+                    ScoreChart { stats: stats.clone() }
                     TimePerRound { stats: stats.clone() }
                     Leaderboard { stats: stats.clone() }
                     TurnStats { stats: stats.clone() }
@@ -107,17 +113,7 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
     let ticks = scale.ticks(visible);
     let round_markers = scale.round_markers(&segments, visible);
 
-    let phase_bars = merge_bars(segments.iter().copied(), |segment| {
-        let phase = PhaseGroup::from(segment.phase);
-        Some(if segment.paused {
-            ("time-paused".to_string(), "Paused".to_string())
-        } else {
-            (
-                phase_class(phase),
-                format!("{}, {phase}", round_name(segment.round)),
-            )
-        })
-    });
+    let phase_bars = phase_bars(&segments);
     let player_bars = players
         .iter()
         .map(|player| {
@@ -230,6 +226,204 @@ fn Timeline(stats: Arc<TimeStats>) -> Element {
                                         style: bar_style(bar),
                                         title: "{bar.title}",
                                     }
+                                }
+                            }
+                        }
+                        div { class: "time-row time-axis time-track",
+                            for (time , label) in ticks.iter() {
+                                span {
+                                    key: "{time}",
+                                    class: "time-marker",
+                                    style: "left: {scale.position(*time)}",
+                                    "{label}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[derive(Clone, PartialEq)]
+struct ScoreRun {
+    start: DateTime<Utc>,
+    end: DateTime<Utc>,
+    points: i8,
+    round: u32,
+}
+
+#[component]
+fn ScoreChart(stats: Arc<TimeStats>) -> Element {
+    let gc = use_context::<GameContext>();
+    let state = gc.game_state();
+    let players = state.table_order.clone();
+
+    let segments = stats.segments.iter().collect::<Vec<_>>();
+    let scale = TimeScale::new(&segments);
+    let visible = scale.active_seconds;
+    let ticks = scale.ticks(visible);
+    let round_markers = scale.round_markers(&segments, visible);
+    let phase_bars = phase_bars(&segments);
+
+    let lines = players
+        .iter()
+        .map(|player| {
+            let mut runs: Vec<ScoreRun> = Vec::new();
+            for segment in &segments {
+                let points = segment.scores.get(player).copied().unwrap_or_default();
+                match runs.last_mut() {
+                    Some(run) if run.points == points => run.end = segment.end,
+                    _ => runs.push(ScoreRun {
+                        start: segment.start,
+                        end: segment.end,
+                        points,
+                        round: segment.round,
+                    }),
+                }
+            }
+            if let Some(run) = runs.last_mut() {
+                run.end = scale.end;
+            }
+            let current = state
+                .score
+                .player_points
+                .get(player)
+                .copied()
+                .unwrap_or_default();
+            (player.clone(), runs, current)
+        })
+        .collect::<Vec<_>>();
+
+    let all_points = lines
+        .iter()
+        .flat_map(|(_, runs, current)| runs.iter().map(|run| run.points).chain([*current]));
+    let low = all_points.clone().min().unwrap_or_default().min(0);
+    let target = i8::try_from(state.game_settings.max_points).unwrap_or(i8::MAX);
+    let high = all_points.max().unwrap_or_default().max(target);
+    let span = f64::from((high - low).max(1));
+    let fraction = |points: i8| f64::from(points - low) / span;
+    let bottom = |points: i8, offset: f64| {
+        format!(
+            "calc({SCORE_PLOT_PADDING_PX}px + (100% - {}px) * {} + {offset}px)",
+            2.0 * SCORE_PLOT_PADDING_PX,
+            fraction(points)
+        )
+    };
+    let height = |from: i8, to: i8| {
+        format!(
+            "calc((100% - {}px) * {})",
+            2.0 * SCORE_PLOT_PADDING_PX,
+            (fraction(to) - fraction(from)).abs()
+        )
+    };
+    let label_step = if span > 12.0 { 2 } else { 1 };
+    let grid = (low..=high)
+        .map(|points| {
+            let label = (points % label_step == 0 || points == high).then_some(points);
+            (points, bottom(points, 0.0), label)
+        })
+        .collect::<Vec<_>>();
+    let center = (lines.len().saturating_sub(1)) as f64 / 2.0;
+    let offset = |index: usize| (index as f64 - center) * SCORE_LINE_SPACING_PX;
+
+    rsx! {
+        div { class: "card time-card time-wide",
+            h2 { "Scores" }
+            div { class: "time-legend",
+                for player in players.iter() {
+                    PlayerName { key: "{player}", player: player.clone() }
+                }
+            }
+            div { class: "score-chart-body",
+                div { class: "score-y-labels",
+                    div { class: "time-row time-row-rounds" }
+                    div { class: "score-y-axis",
+                        for (points , bottom , label) in grid.iter() {
+                            if let Some(label) = label {
+                                span {
+                                    key: "{points}",
+                                    class: "score-y-label",
+                                    style: "bottom: {bottom}",
+                                    "{label}"
+                                }
+                            }
+                        }
+                    }
+                }
+                div { class: "time-timeline-scroll",
+                    div { class: "time-timeline score-timeline",
+                        for (from , _) in scale.breaks.iter() {
+                            div {
+                                key: "break-{from}",
+                                class: "time-break time-paused",
+                                style: "left: {scale.position(*from)}; width: {BREAK_WIDTH_PX}px",
+                            }
+                        }
+                        div { class: "time-row time-row-rounds time-track",
+                            for (round , time , label) in round_markers.iter() {
+                                span {
+                                    key: "{round}",
+                                    class: "time-marker",
+                                    style: "left: {scale.position(*time)}",
+                                    title: "{round_name(*round)}",
+                                    {label.clone().unwrap_or_default()}
+                                }
+                            }
+                        }
+                        div { class: "score-plot time-track",
+                            for (points , bottom , _) in grid.iter() {
+                                div {
+                                    key: "grid-{points}",
+                                    class: if *points == target { "score-gridline score-victory-line" } else { "score-gridline" },
+                                    style: "bottom: {bottom}",
+                                }
+                            }
+                            for (round , time , _) in round_markers.iter() {
+                                div {
+                                    key: "round-{round}",
+                                    class: "score-round-line",
+                                    style: "left: {scale.position(*time)}",
+                                }
+                            }
+                            for (index , (player , runs , current)) in lines.iter().enumerate() {
+                                div { key: "{player}", class: "score-line",
+                                    for (run_index , run) in runs.iter().enumerate() {
+                                        div {
+                                            key: "{run_index}",
+                                            class: "score-run {color_class(&gc, player)}",
+                                            style: "left: {scale.position(run.start)}; width: {scale.width(run.start, run.end)}; bottom: {bottom(run.points, offset(index))}",
+                                            title: "{player}: {run.points} points ({round_name(run.round)})",
+                                        }
+                                        if let Some(previous) = run_index.checked_sub(1).map(|i| runs[i].points) {
+                                            div {
+                                                class: "score-step {color_class(&gc, player)}",
+                                                style: "left: {scale.position(run.start)}; bottom: {bottom(previous.min(run.points), offset(index))}; height: {height(previous, run.points)}",
+                                            }
+                                        }
+                                    }
+                                    if let Some(last) = runs.last().filter(|last| last.points != *current) {
+                                        div {
+                                            class: "score-step score-step-end {color_class(&gc, player)}",
+                                            style: "left: {scale.position(scale.end)}; bottom: {bottom(last.points.min(*current), offset(index))}; height: {height(last.points, *current)}",
+                                        }
+                                    }
+                                    div {
+                                        class: "score-end {color_class(&gc, player)}",
+                                        style: "left: {scale.position(scale.end)}; bottom: {bottom(*current, offset(index))}",
+                                        title: "{player}: {current} points",
+                                    }
+                                }
+                            }
+                        }
+                        div { class: "time-row time-track score-phase-row",
+                            for (index , bar) in phase_bars.iter().enumerate() {
+                                div {
+                                    key: "{index}",
+                                    class: "time-bar {bar.class}",
+                                    style: "left: {scale.position(bar.start)}; width: {scale.width(bar.start, bar.end)}",
+                                    title: "{bar.title}",
                                 }
                             }
                         }

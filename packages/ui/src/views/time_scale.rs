@@ -299,3 +299,18 @@ pub(crate) fn merge_bars<'a>(
         })
         .collect()
 }
+
+/// The phase of the game over `segments`, or that time-tracking was paused.
+pub(crate) fn phase_bars(segments: &[&TimeSegment]) -> Vec<Bar> {
+    merge_bars(segments.iter().copied(), |segment| {
+        let phase = PhaseGroup::from(segment.phase);
+        Some(if segment.paused {
+            ("time-paused".to_string(), "Paused".to_string())
+        } else {
+            (
+                phase_class(phase),
+                format!("{}, {phase}", round_name(segment.round)),
+            )
+        })
+    })
+}
