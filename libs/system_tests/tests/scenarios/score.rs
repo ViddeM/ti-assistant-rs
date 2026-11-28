@@ -16,7 +16,7 @@ pub fn score_manual_adjustments() -> TestGame {
     let mut g = three_players().pok().start();
     let support = |giver: &str, receiver: &str| Event::GiveSupportForTheThrone {
         giver: p(giver),
-        receiver: p(receiver),
+        receiver: Some(p(receiver)),
     };
 
     g.apply(Event::SetCustodians {

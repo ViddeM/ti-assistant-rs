@@ -179,7 +179,7 @@ pub fn full_game_base_three_players() -> TestGame {
         .end_turn();
     g.apply(Event::GiveSupportForTheThrone {
         giver: p("Carol"),
-        receiver: p("Alice"),
+        receiver: Some(p("Alice")),
     });
     g.play_out_action_phase()
         .status_phase()
@@ -327,7 +327,7 @@ pub fn full_game_pok_six_players() -> TestGame {
         .end_turn();
     g.apply(Event::GiveSupportForTheThrone {
         giver: p("Bob"),
-        receiver: p("Finn"),
+        receiver: Some(p("Finn")),
     });
     g.play_out_action_phase()
         .status_phase()
