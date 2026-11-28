@@ -84,6 +84,8 @@ pub struct TimeSegment {
     pub tracked: bool,
     /// Whether time-tracking was paused.
     pub paused: bool,
+    /// The points of each player.
+    pub scores: BTreeMap<PlayerId, i8>,
 }
 
 impl TimeSegment {
@@ -271,6 +273,7 @@ mod tests {
             player: None,
             tracked: false,
             paused,
+            scores: BTreeMap::new(),
         }
     }
 

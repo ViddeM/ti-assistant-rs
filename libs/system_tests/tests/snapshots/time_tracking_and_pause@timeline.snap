@@ -43,11 +43,11 @@ source: libs/system_tests/src/check.rs
   39 PassAction(Bob)                          r1 Action             Carol
   40 PassAction(Carol)                        r1 Action             Alice
   41 PassAction(Alice)                        r1 Status             Alice
-  42 ScorePublicObjective(Alice)              r1 Status             Alice
-  43 ScorePublicObjective(Bob)                r1 Status             Alice
-  44 ScorePublicObjective(Carol)              r1 Status             Alice
-  45 ScoreSecretObjective(Alice)              r1 Status             Alice
-  46 ScoreSecretObjective(Bob)                r1 Status             Alice
+  42 ScoreSecretObjective(Bob)                r1 Status             Alice      Bob=1
+  43 ScorePublicObjective(Alice)              r1 Status             Alice
+  44 ScorePublicObjective(Bob)                r1 Status             Alice
+  45 ScorePublicObjective(Carol)              r1 Status             Alice
+  46 ScoreSecretObjective(Alice)              r1 Status             Alice
   47 ScoreSecretObjective(Carol)              r1 Status             Alice
   48 RevealPublicObjective                    r1 Status             Alice
   49 CompleteStatusPhase                      r2 Strategy           Alice

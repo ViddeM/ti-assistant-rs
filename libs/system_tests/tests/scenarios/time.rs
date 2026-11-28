@@ -39,7 +39,10 @@ pub fn time_tracking_and_pause() -> TestGame {
     g.play_out_action_phase();
 
     // Time in the status phase isn't tracked.
-    g.advance(minutes(10))
+    g.advance(minutes(4))
+        .status_phase()
+        .secret("Bob", SecretObjective::BecomeTheGatekeeper);
+    g.advance(minutes(6))
         .status_phase()
         .reveal(PublicObjective::ExpandBorders)
         .complete();
@@ -62,6 +65,14 @@ pub fn time_tracking_and_pause() -> TestGame {
 
     let round_1 = &stats.phase_durations()[&1];
     assert_eq!(round_1[&PhaseGroup::Status], Duration::from_secs(10 * 60));
+
+    let bob_scored = stats
+        .segments
+        .iter()
+        .find(|segment| segment.scores.get(&p("Bob")) == Some(&1))
+        .expect("Bob's point to be in a segment");
+    assert_eq!(bob_scored.phase, Phase::Status);
+    assert_eq!(bob_scored.duration(), Duration::from_secs(6 * 60));
     g
 }
 

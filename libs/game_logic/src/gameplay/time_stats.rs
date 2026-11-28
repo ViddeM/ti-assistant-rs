@@ -30,6 +30,9 @@ pub fn time_stats(
             player: state.current_player.clone(),
             tracked: state.current_turn_start_time.is_some(),
             paused: state.time_tracking_paused,
+            scores: (state.score.player_points.iter())
+                .map(|(player, points)| (player.clone(), *points))
+                .collect(),
         };
 
         match open.take() {
@@ -66,4 +69,5 @@ fn same_period(a: &TimeSegment, b: &TimeSegment) -> bool {
         && a.player == b.player
         && a.tracked == b.tracked
         && a.paused == b.paused
+        && a.scores == b.scores
 }

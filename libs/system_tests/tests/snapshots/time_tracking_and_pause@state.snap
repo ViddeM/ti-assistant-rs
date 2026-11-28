@@ -90,13 +90,15 @@ score:
   maxPoints: 10
   playerPoints:
     Alice: 0
-    Bob: 0
+    Bob: 1
     Carol: 0
   revealedObjectives:
     CornerTheMarket: []
     DevelopWeaponry: []
     ExpandBorders: []
-  secretObjectives: {}
+  secretObjectives:
+    Bob:
+      - BecomeTheGatekeeper
   supportForTheThrone: {}
   shardOfTheThrone: ~
   crownOfEmphidia: ~
@@ -119,7 +121,7 @@ statusPhaseState:
     Carol: []
   scoredSecretObjectives:
     Alice: ~
-    Bob: ~
+    Bob: BecomeTheGatekeeper
     Carol: ~
   revealedObjective: ExpandBorders
   entropicScarTechs: {}
