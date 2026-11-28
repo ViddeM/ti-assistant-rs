@@ -19,4 +19,5 @@ pub mod score_view_mode;
 pub mod select_tech;
 pub mod tech_view_mode;
 pub mod thunders_edge_view_mode;
+pub mod time_scale;
 pub mod time_view_mode;
